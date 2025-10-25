@@ -1,4 +1,4 @@
-import 'package:flutter_app_template/core/data/storage/storage.dart';
+import 'package:locnet_app/core/data/storage/storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPrefsStorage implements IKeyValueStorage {

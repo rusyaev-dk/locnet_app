@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app_template/app/app.dart';
-import 'package:flutter_app_template/core/core.dart';
+import 'package:locnet_app/app/app.dart';
+import 'package:locnet_app/core/core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ToastListener<B extends StateStreamable<S>, S, L extends S>

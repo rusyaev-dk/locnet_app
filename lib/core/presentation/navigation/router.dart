@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app_template/features/auth/presentation/presentation.dart';
-import 'package:flutter_app_template/features/home/presentation/presentation.dart';
-import 'package:flutter_app_template/features/root/root_screen.dart';
-import 'package:flutter_app_template/features/splash/splash_screen.dart';
+import 'package:locnet_app/features/auth/presentation/presentation.dart';
+import 'package:locnet_app/features/home/presentation/presentation.dart';
+import 'package:locnet_app/features/root/root_screen.dart';
+import 'package:locnet_app/features/splash/splash_screen.dart';
 import 'package:go_router/go_router.dart';
 
 class AppRouter {

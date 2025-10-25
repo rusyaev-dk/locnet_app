@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter_app_template/app/app.dart';
-import 'package:flutter_app_template/core/core.dart';
-import 'package:flutter_app_template/features/auth/domain/domain.dart';
+import 'package:locnet_app/app/app.dart';
+import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/features/auth/domain/domain.dart';
 
 part 'auth_state.dart';
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app_template/uikit/uikit.dart';
+import 'package:locnet_app/uikit/uikit.dart';
 
 class ThemeSwitchButton extends StatelessWidget {
   const ThemeSwitchButton({

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app_template/core/utils/utils.dart';
-import 'package:flutter_app_template/di/di.dart';
-import 'package:flutter_app_template/features/auth/domain/domain.dart';
-import 'package:flutter_app_template/features/auth/presentation/presentation.dart';
-import 'package:flutter_app_template/features/settings/data/data.dart';
-import 'package:flutter_app_template/features/settings/presentation/presentation.dart';
+import 'package:locnet_app/core/utils/utils.dart';
+import 'package:locnet_app/di/di.dart';
+import 'package:locnet_app/features/auth/domain/domain.dart';
+import 'package:locnet_app/features/auth/presentation/presentation.dart';
+import 'package:locnet_app/features/settings/data/data.dart';
+import 'package:locnet_app/features/settings/presentation/presentation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 

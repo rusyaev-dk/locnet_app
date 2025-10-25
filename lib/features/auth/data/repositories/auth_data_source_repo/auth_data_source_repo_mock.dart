@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter_app_template/features/auth/data/data.dart';
-import 'package:flutter_app_template/features/auth/domain/domain.dart';
+import 'package:locnet_app/features/auth/data/data.dart';
+import 'package:locnet_app/features/auth/domain/domain.dart';
 
 final class AuthDataSourceRepoMock implements IAuthDataSourceRepo {
   const AuthDataSourceRepoMock();

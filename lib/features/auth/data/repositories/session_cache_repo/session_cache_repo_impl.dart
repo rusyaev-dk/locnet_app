@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:flutter_app_template/core/core.dart';
-import 'package:flutter_app_template/features/auth/data/data.dart';
-import 'package:flutter_app_template/features/auth/domain/domain.dart';
+import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/features/auth/data/data.dart';
+import 'package:locnet_app/features/auth/domain/domain.dart';
 
 final class SessionCacheRepo implements ISessionCacheRepo {
   SessionCacheRepo({required IKeyValueStorage storage}) : _storage = storage;

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart'; // for kIsWeb
 import 'package:flutter/material.dart';
-import 'package:flutter_app_template/uikit/uikit.dart';
+import 'package:locnet_app/uikit/uikit.dart';
 import 'package:go_router/go_router.dart';
 
 class PopScreenButton extends StatelessWidget {

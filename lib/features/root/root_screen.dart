@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app_template/core/core.dart';
-import 'package:flutter_app_template/features/settings/presentation/presentation.dart';
+import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/features/settings/presentation/presentation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RootScreen extends StatelessWidget {

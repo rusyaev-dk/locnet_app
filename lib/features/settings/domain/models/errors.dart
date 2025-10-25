@@ -1,4 +1,4 @@
-import 'package:flutter_app_template/core/core.dart';
+import 'package:locnet_app/core/core.dart';
 
 enum SettingsErrorType implements IMessageKey {
   localeChangeFail('locale_change_fail'),

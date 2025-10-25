@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app_template/features/auth/presentation/presentation.dart';
+import 'package:locnet_app/features/auth/presentation/presentation.dart';
 
 enum AuthFlowStatus {
   unknown, // app just started

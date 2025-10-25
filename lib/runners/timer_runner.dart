@@ -1,4 +1,4 @@
-import 'package:flutter_app_template/core/utils/utils.dart';
+import 'package:locnet_app/core/utils/utils.dart';
 
 /// A simple stopwatch helper to measure app startup time.
 class TimerRunner {

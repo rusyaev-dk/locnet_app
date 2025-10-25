@@ -1,5 +1,5 @@
-import 'package:flutter_app_template/app/app.dart';
-import 'package:flutter_app_template/runners/app_runner.dart';
+import 'package:locnet_app/app/app.dart';
+import 'package:locnet_app/runners/app_runner.dart';
 
 /// flutter run --dart-define=APP_ENV=prod
 

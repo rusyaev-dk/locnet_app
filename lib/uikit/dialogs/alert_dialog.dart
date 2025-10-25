@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app_template/uikit/uikit.dart';
+import 'package:locnet_app/uikit/uikit.dart';
 
 class AppAlertDialog extends StatelessWidget {
   const AppAlertDialog({

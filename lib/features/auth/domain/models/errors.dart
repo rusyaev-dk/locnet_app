@@ -1,4 +1,4 @@
-import 'package:flutter_app_template/core/core.dart';
+import 'package:locnet_app/core/core.dart';
 
 enum SessionErrorType implements IMessageKey {
   loadFail('load_fail'),

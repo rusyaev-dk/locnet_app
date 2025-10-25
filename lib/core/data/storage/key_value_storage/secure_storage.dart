@@ -1,4 +1,4 @@
-import 'package:flutter_app_template/core/data/storage/storage.dart';
+import 'package:locnet_app/core/data/storage/storage.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SecureStorage implements IKeyValueStorage {

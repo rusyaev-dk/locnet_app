@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app_template/app/app.dart';
-import 'package:flutter_app_template/gen/gen.dart';
-import 'package:flutter_app_template/uikit/uikit.dart';
+import 'package:locnet_app/app/app.dart';
+import 'package:locnet_app/gen/gen.dart';
+import 'package:locnet_app/uikit/uikit.dart';
 import 'package:provider/provider.dart';
 
 extension AppContextExt on BuildContext {

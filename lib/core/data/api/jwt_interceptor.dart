@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_app_template/core/data/api/api.dart';
+import 'package:locnet_app/core/data/api/api.dart';
 
 class JwtRefreshInterceptor extends Interceptor {
   JwtRefreshInterceptor({required IAuthTokenProvider authTokenProvider})

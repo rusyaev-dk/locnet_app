@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app_template/app/app.dart';
-import 'package:flutter_app_template/core/presentation/presentation.dart';
+import 'package:locnet_app/app/app.dart';
+import 'package:locnet_app/core/presentation/presentation.dart';
 
 /// A screen shown when a fatal error occurs in the application.
 class ErrorScreen extends StatelessWidget {

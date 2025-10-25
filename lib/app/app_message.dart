@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter_app_template/core/core.dart';
+import 'package:locnet_app/core/core.dart';
 
 /// One-off UI message with optional interpolation args.
 class AppMessage extends Equatable {

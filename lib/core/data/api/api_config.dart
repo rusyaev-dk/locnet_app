@@ -1,4 +1,4 @@
-import 'package:flutter_app_template/app/app.dart';
+import 'package:locnet_app/app/app.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 final class ApiConfig {

@@ -1,6 +1,6 @@
-import 'package:flutter_app_template/app/app.dart';
-import 'package:flutter_app_template/core/core.dart';
-import 'package:flutter_app_template/features/settings/data/data.dart';
+import 'package:locnet_app/app/app.dart';
+import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/features/settings/data/data.dart';
 
 class SettingsRepo implements ISettingsRepo {
   SettingsRepo({required IKeyValueStorage storage}) : _storage = storage;
