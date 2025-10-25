@@ -78,7 +78,7 @@ linter:
     prefer_final_locals: true # Использовать final для локальных переменных
     public_member_api_docs: false # Не требовать документацию для всех публичных членов
     require_trailing_commas: true # Требовать запятые в конце для улучшения форматирования
-    sort_constructors_first: false # Требовать размещать конструкторы первыми
+    sort_constructors_first: true # Требовать размещать конструкторы первыми
     sort_pub_dependencies: false # Не требовать сортировки зависимостей в pubspec
     sort_unnamed_constructors_first: false # Не требовать размещать безымянные конструкторы первыми
     use_is_even_rather_than_modulo: true # Использовать isEven вместо % 2 == 0
