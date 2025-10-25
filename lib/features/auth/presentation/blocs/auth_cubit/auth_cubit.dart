@@ -34,7 +34,7 @@ final class AuthCubit extends Cubit<AuthState> {
       emit(
         AuthFailureState(
           failure: e,
-          message: AppMessage(key: SessionErrorType.loadFail),
+          message: AppMessage(key: SessionMessageType.loadFail),
         ),
       );
       _logger.exception(e, st);

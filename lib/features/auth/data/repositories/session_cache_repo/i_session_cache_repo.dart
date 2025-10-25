@@ -1,7 +1,9 @@
-import 'package:locnet_app/features/auth/domain/domain.dart';
+import 'package:locnet_app/features/auth/data/data.dart';
 
 abstract interface class ISessionCacheRepo {
-  Future<bool> saveSession({required Session session});
-  Future<Session> loadSession();
+  Future<bool> saveSession({required SessionDTO sessionDTO});
+
+  Future<SessionDTO> loadSession();
+
   Future<bool> clearSession();
 }

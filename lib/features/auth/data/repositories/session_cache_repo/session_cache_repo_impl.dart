@@ -2,44 +2,40 @@ import 'dart:convert';
 
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/auth/data/data.dart';
-import 'package:locnet_app/features/auth/domain/domain.dart';
 
 final class SessionCacheRepo implements ISessionCacheRepo {
   SessionCacheRepo({required IKeyValueStorage storage}) : _storage = storage;
 
   final IKeyValueStorage _storage;
-  final String _sessionKey = "session";
+  static const String _sessionKey = 'session_dto';
 
   @override
-  Future<bool> saveSession({required Session session}) async {
+  Future<bool> saveSession({required SessionDTO sessionDTO}) async {
     try {
-      final String jsonString = jsonEncode(session.toJson());
-      final bool isSaved = await _storage.save<String>(
-        key: _sessionKey,
-        value: jsonString,
-      );
-      return isSaved;
+      final String jsonString = jsonEncode(sessionDTO.toJson());
+      return await _storage.save<String>(key: _sessionKey, value: jsonString);
     } catch (error) {
-      rethrow;
+      throw Exception('Failed to save session: $error');
     }
   }
 
   @override
-  Future<Session> loadSession() async {
+  Future<SessionDTO> loadSession() async {
     try {
       final String? rawJson = await _storage.get<String>(key: _sessionKey);
 
-      if (rawJson != null && rawJson.isNotEmpty) {
-        final Map<String, dynamic> jsonMap =
-            jsonDecode(rawJson) as Map<String, dynamic>;
-        return Session.fromJson(jsonMap);
+      if (rawJson == null || rawJson.isEmpty) {
+        throw StateError('No cached session found');
       }
 
-      throw StateError("No Session object cached!");
+      final Map<String, dynamic> jsonMap =
+          jsonDecode(rawJson) as Map<String, dynamic>;
+
+      return SessionDTO.fromJson(jsonMap);
     } on FormatException catch (error) {
-      throw FormatException('Corrupted cached session JSON: ${error.message}');
+      throw FormatException('Invalid cached session JSON: ${error.message}');
     } catch (error) {
-      rethrow;
+      throw Exception('Failed to load session: $error');
     }
   }
 
@@ -47,8 +43,8 @@ final class SessionCacheRepo implements ISessionCacheRepo {
   Future<bool> clearSession() async {
     try {
       return await _storage.delete(key: _sessionKey);
-    } catch (e) {
-      rethrow;
+    } catch (error) {
+      throw Exception('Failed to clear session: $error');
     }
   }
 }
