@@ -17,12 +17,32 @@ final class AuthCubit extends Cubit<AuthState> {
   final AuthInteractor _authInteractor;
   final ILogger _logger;
 
-  Future<void> _restoreOrFetch() async {
+  Future<void> login({required String login, required String password}) async {
     try {
       if (state is! AuthLoadingState) {
         emit(const AuthLoadingState(message: null));
       }
       _logger.info("Trying to login...");
+
+      // TODO: implement
+
+    } catch (e, st) {
+      emit(
+        AuthFailureState(
+          failure: e,
+          message: AppMessage(key: SessionMessageType.unauthorized),
+        ),
+      );
+      _logger.exception(e, st);
+    }
+  }
+
+  Future<void> _restoreOrFetch() async {
+    try {
+      if (state is! AuthLoadingState) {
+        emit(const AuthLoadingState(message: null));
+      }
+      _logger.info("Trying to restore auth session...");
 
       // TODO: remove the delay
       await Future.delayed(const Duration(seconds: 7));
