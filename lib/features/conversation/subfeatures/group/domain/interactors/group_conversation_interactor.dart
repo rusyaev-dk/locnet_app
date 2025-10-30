@@ -1,13 +1,17 @@
 import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/features/conversation/data/data.dart';
 import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/group/data/data.dart';
 
 final class GroupConversationInteractor {
   GroupConversationInteractor({
     required IGroupConversationRepo groupConversationRepo,
-  }) : _groupConversationRepo = groupConversationRepo;
+    required IConversationRepo conversationRepo,
+  }) : _groupConversationRepo = groupConversationRepo,
+       _conversationRepo = conversationRepo;
 
   final IGroupConversationRepo _groupConversationRepo;
+  final IConversationRepo _conversationRepo;
 
   Future<Conversation> createGroup({
     required String creatorId,
@@ -44,8 +48,8 @@ final class GroupConversationInteractor {
     required String userId,
     required bool newNotificationsStatus,
   }) async {
-    return await _groupConversationRepo.toggleNotifications(
-      groupConversationId: groupConversationId,
+    return await _conversationRepo.toggleNotifications(
+      conversationId: groupConversationId,
       userId: userId,
       newNotificationsStatus: newNotificationsStatus,
     );

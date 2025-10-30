@@ -12,12 +12,6 @@ abstract interface class IGroupConversationRepo {
 
   Future<Conversation> updateGroup({required Conversation updatedGroup});
 
-  Future<bool> toggleNotifications({
-    required String groupConversationId,
-    required String userId,
-    required bool newNotificationsStatus,
-  });
-
   Future<bool> deleteGroup({required String groupConversationId});
 
   Future<List<User>> loadGroupParticipants({

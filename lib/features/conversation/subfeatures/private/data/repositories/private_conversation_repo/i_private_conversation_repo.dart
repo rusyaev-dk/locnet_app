@@ -6,12 +6,6 @@ abstract interface class IPrivateConversationRepo {
     required String recipientId,
   });
 
-  Future<bool> toggleNotifications({
-    required String conversationId,
-    required String userId,
-    required bool newNotificationsStatus,
-  });
-
   Future<bool> blockCompanion({
     required String companionId,
     required String blockedByUserId,

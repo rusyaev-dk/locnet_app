@@ -12,12 +12,6 @@ abstract interface class IChannelRepo {
 
   Future<Conversation> updateChannel({required Conversation updatedChannel});
 
-  Future<bool> toggleNotifications({
-    required String channelId,
-    required String userId,
-    required bool newNotificationsStatus,
-  });
-
   Future<bool> deleteChannel({required String channelId});
 
   Future<List<User>> loadChannelSubscribers({required String channelId});

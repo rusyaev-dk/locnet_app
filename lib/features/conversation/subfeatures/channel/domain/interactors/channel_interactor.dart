@@ -1,12 +1,17 @@
 import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/features/conversation/data/data.dart';
 import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/channel/data/data.dart';
 
 final class ChannelInteractor {
-  ChannelInteractor({required IChannelRepo channelRepo})
-    : _channelRepo = channelRepo;
+  ChannelInteractor({
+    required IChannelRepo channelRepo,
+    required IConversationRepo conversationRepo,
+  }) : _channelRepo = channelRepo,
+       _conversationRepo = conversationRepo;
 
   final IChannelRepo _channelRepo;
+  final IConversationRepo _conversationRepo;
 
   Future<Conversation> createChannel({
     required String creatorId,
@@ -31,19 +36,19 @@ final class ChannelInteractor {
   }
 
   Future<bool> toggleNotifications({
-    required String conversationId,
+    required String channelId,
     required String userId,
     required bool newNotificationsStatus,
   }) async {
-    return await _channelRepo.toggleNotifications(
-      channelId: conversationId,
+    return await _conversationRepo.toggleNotifications(
+      conversationId: channelId,
       userId: userId,
       newNotificationsStatus: newNotificationsStatus,
     );
   }
 
-  Future<bool> deleteChannel({required String conversationId}) async {
-    return await _channelRepo.deleteChannel(channelId: conversationId);
+  Future<bool> deleteChannel({required String channelId}) async {
+    return await _channelRepo.deleteChannel(channelId: channelId);
   }
 
   Future<bool> subscribeToChannel({

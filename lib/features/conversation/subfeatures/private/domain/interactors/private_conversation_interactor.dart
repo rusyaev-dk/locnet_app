@@ -1,12 +1,16 @@
+import 'package:locnet_app/features/conversation/data/data.dart';
 import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/data/data.dart';
 
 final class PrivateConversationInteractor {
   PrivateConversationInteractor({
     required IPrivateConversationRepo privateConversationRepo,
-  }) : _privateConversationRepo = privateConversationRepo;
+    required IConversationRepo conversationRepo,
+  }) : _privateConversationRepo = privateConversationRepo,
+       _conversationRepo = conversationRepo;
 
   final IPrivateConversationRepo _privateConversationRepo;
+  final IConversationRepo _conversationRepo;
 
   Future<Conversation> startConversation({
     required String initiatorId,
@@ -23,7 +27,7 @@ final class PrivateConversationInteractor {
     required String userId,
     required bool newNotificationsStatus,
   }) async {
-    return await _privateConversationRepo.toggleNotifications(
+    return await _conversationRepo.toggleNotifications(
       conversationId: conversationId,
       userId: userId,
       newNotificationsStatus: newNotificationsStatus,
