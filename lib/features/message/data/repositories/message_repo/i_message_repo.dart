@@ -8,6 +8,6 @@ abstract interface class IMessageRepo {
 
   Future<List<MessageRead>> loadMessageReads({
     required String conversationId,
-    required String userId,
+    required String messageId,
   });
 }
