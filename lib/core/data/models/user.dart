@@ -6,6 +6,7 @@ class UserDTO extends Equatable {
     required this.username,
     required this.password,
     required this.firstName,
+    required this.languageCode,
     required this.isDeleted,
     required this.isBanned,
     required this.createdAt,
@@ -19,6 +20,7 @@ class UserDTO extends Equatable {
   final String username; // varchar
   final String password; // text (hash)
   final String firstName; // varchar
+  final String languageCode; // varchar (e.g. 'en', 'ru')
   final String? lastName; // varchar?
   final String? description; // varchar?
   final String? avatarId; // uuid?
@@ -40,6 +42,7 @@ class UserDTO extends Equatable {
       username: json['username'] as String,
       password: json['password'] as String,
       firstName: json['firstName'] as String,
+      languageCode: json['languageCode'] as String,
       lastName: json['lastName'] as String?,
       description: json['description'] as String?,
       avatarId: json['avatarId'] as String?,
@@ -55,6 +58,7 @@ class UserDTO extends Equatable {
     'username': username,
     'password': password,
     'firstName': firstName,
+    'languageCode': languageCode,
     'lastName': lastName,
     'description': description,
     'avatarId': avatarId,
@@ -69,6 +73,7 @@ class UserDTO extends Equatable {
     String? username,
     String? password,
     String? firstName,
+    String? languageCode,
     String? lastName,
     String? description,
     String? avatarId,
@@ -82,6 +87,7 @@ class UserDTO extends Equatable {
       username: username ?? this.username,
       password: password ?? this.password,
       firstName: firstName ?? this.firstName,
+      languageCode: languageCode ?? this.languageCode,
       lastName: lastName ?? this.lastName,
       description: description ?? this.description,
       avatarId: avatarId ?? this.avatarId,
@@ -98,6 +104,7 @@ class UserDTO extends Equatable {
     username,
     password,
     firstName,
+    languageCode,
     lastName,
     description,
     avatarId,

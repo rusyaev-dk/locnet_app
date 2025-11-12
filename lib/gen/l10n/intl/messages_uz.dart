@@ -22,7 +22,46 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+    "apiConnectionException": MessageLookupByLibrary.simpleMessage(
+      "Ulanish xatosi, internet aloqasini tekshiring",
+    ),
+    "apiForbiddenException": MessageLookupByLibrary.simpleMessage(
+      "Ruxsat etilmagan amal, sizda bu harakatni bajarish huquqi yo‘q",
+    ),
+    "apiNotFoundException": MessageLookupByLibrary.simpleMessage(
+      "So‘ralgan ma’lumot topilmadi",
+    ),
+    "apiServerException": MessageLookupByLibrary.simpleMessage(
+      "Server xatosi, keyinroq urinib ko‘ring",
+    ),
+    "apiTimeoutException": MessageLookupByLibrary.simpleMessage(
+      "So‘rov vaqti tugadi, qayta urinib ko‘ring",
+    ),
+    "apiUnauthorizedException": MessageLookupByLibrary.simpleMessage(
+      "Avtorizatsiya xatosi, iltimos qayta tizimga kiring",
+    ),
+    "apiUnknownException": MessageLookupByLibrary.simpleMessage(
+      "Server bilan bog‘lanishda noma’lum xato yuz berdi",
+    ),
+    "apiValidationException": MessageLookupByLibrary.simpleMessage(
+      "Ma’lumotlarni tekshirishda xato, kiritilgan ma’lumotlarni tekshiring",
+    ),
+    "appException": MessageLookupByLibrary.simpleMessage(
+      "Ilovada xatolik yuz berdi",
+    ),
     "apply": MessageLookupByLibrary.simpleMessage("Qo‘llash"),
+    "authExpiredSessionException": MessageLookupByLibrary.simpleMessage(
+      "Sessiya muddati tugagan, iltimos qayta tizimga kiring",
+    ),
+    "authInvalidCredentialsException": MessageLookupByLibrary.simpleMessage(
+      "Kiritilgan ma’lumotlar noto‘g‘ri, login yoki parolni tekshiring",
+    ),
+    "authUnauthorizedException": MessageLookupByLibrary.simpleMessage(
+      "Siz tizimga kirmagansiz, iltimos qayta tizimga kiring",
+    ),
+    "authUnknownException": MessageLookupByLibrary.simpleMessage(
+      "Avtorizatsiya jarayonida noma’lum xato yuz berdi",
+    ),
     "back": MessageLookupByLibrary.simpleMessage("Orqaga"),
     "cancel": MessageLookupByLibrary.simpleMessage("Bekor qilish"),
     "clear": MessageLookupByLibrary.simpleMessage("Tozalash"),
@@ -30,38 +69,82 @@ class MessageLookup extends MessageLookupByLibrary {
     "confirm": MessageLookupByLibrary.simpleMessage("Tasdiqlash"),
     "delete": MessageLookupByLibrary.simpleMessage("O‘chirish"),
     "edit": MessageLookupByLibrary.simpleMessage("Tahrirlash"),
+    "filteringClearException": MessageLookupByLibrary.simpleMessage(
+      "Filtrlarni tozalab bo‘lmadi",
+    ),
+    "filteringSaveException": MessageLookupByLibrary.simpleMessage(
+      "Filtrlarni saqlab bo‘lmadi",
+    ),
+    "filteringUpdateException": MessageLookupByLibrary.simpleMessage(
+      "Filtrlarni yangilab bo‘lmadi",
+    ),
     "language": MessageLookupByLibrary.simpleMessage("Til"),
-    "localeChangeError": MessageLookupByLibrary.simpleMessage(
-      "Tilni o‘zgartirib bo‘lmadi",
-    ),
-    "localeRestoreError": MessageLookupByLibrary.simpleMessage(
-      "Tilni yuklab bo‘lmadi",
-    ),
     "next": MessageLookupByLibrary.simpleMessage("Keyingi"),
-    "noInternetError": MessageLookupByLibrary.simpleMessage(
-      "Internetga ulanish yo‘q",
-    ),
     "ok": MessageLookupByLibrary.simpleMessage("OK"),
-    "requestTimeoutError": MessageLookupByLibrary.simpleMessage(
-      "So‘rov bajarilish vaqti tugadi",
-    ),
     "reset": MessageLookupByLibrary.simpleMessage("Tiklash"),
     "save": MessageLookupByLibrary.simpleMessage("Saqlash"),
-    "settings": MessageLookupByLibrary.simpleMessage("Sozlamalar"),
-    "share": MessageLookupByLibrary.simpleMessage("Ulashish"),
-    "themeMode": MessageLookupByLibrary.simpleMessage("Mavzu"),
-    "themeModeChangeError": MessageLookupByLibrary.simpleMessage(
-      "Mavzuni o‘zgartirib bo‘lmadi",
+    "searchUnknownException": MessageLookupByLibrary.simpleMessage(
+      "Qidiruvda noma’lum xato yuz berdi",
     ),
+    "settings": MessageLookupByLibrary.simpleMessage("Sozlamalar"),
+    "settingsLocaleChangeException": MessageLookupByLibrary.simpleMessage(
+      "Ilova tilini o‘zgartirib bo‘lmadi",
+    ),
+    "settingsRestoreLocaleException": MessageLookupByLibrary.simpleMessage(
+      "Ilova tilini tiklab bo‘lmadi",
+    ),
+    "settingsRestoreThemeModeException": MessageLookupByLibrary.simpleMessage(
+      "Ilova mavzusini tiklab bo‘lmadi",
+    ),
+    "settingsThemeModeChangeException": MessageLookupByLibrary.simpleMessage(
+      "Ilova mavzusini o‘zgartirib bo‘lmadi",
+    ),
+    "settingsUnknownException": MessageLookupByLibrary.simpleMessage(
+      "Sozlamalarda noma’lum xato yuz berdi",
+    ),
+    "share": MessageLookupByLibrary.simpleMessage("Ulashish"),
+    "sortingClearException": MessageLookupByLibrary.simpleMessage(
+      "Saralashni tozalab bo‘lmadi",
+    ),
+    "sortingSaveException": MessageLookupByLibrary.simpleMessage(
+      "Saralashni saqlab bo‘lmadi",
+    ),
+    "sortingUpdateException": MessageLookupByLibrary.simpleMessage(
+      "Saralashni yangilab bo‘lmadi",
+    ),
+    "storageDeleteException": MessageLookupByLibrary.simpleMessage(
+      "Ma’lumotni o‘chirishda xato yuz berdi",
+    ),
+    "storageNotFoundException": MessageLookupByLibrary.simpleMessage(
+      "Saqlangan ma’lumot topilmadi",
+    ),
+    "storageReadException": MessageLookupByLibrary.simpleMessage(
+      "Saqlangan ma’lumotni o‘qishda xato yuz berdi",
+    ),
+    "storageSerializationException": MessageLookupByLibrary.simpleMessage(
+      "Ma’lumotlarni saqlash formatida xato",
+    ),
+    "storageUnknownException": MessageLookupByLibrary.simpleMessage(
+      "Xotira bilan ishlashda noma’lum xato yuz berdi",
+    ),
+    "storageWriteException": MessageLookupByLibrary.simpleMessage(
+      "Ma’lumotni saqlashda xato yuz berdi",
+    ),
+    "themeMode": MessageLookupByLibrary.simpleMessage("Mavzu"),
     "themeModeDark": MessageLookupByLibrary.simpleMessage("Qorong‘i"),
     "themeModeLight": MessageLookupByLibrary.simpleMessage("Yorug‘"),
-    "themeModeRestoreError": MessageLookupByLibrary.simpleMessage(
-      "Mavzuni yuklab bo‘lmadi",
-    ),
     "themeModeSystem": MessageLookupByLibrary.simpleMessage("Tizimiy"),
-    "unauthorizedError": MessageLookupByLibrary.simpleMessage(
-      "Avtorizatsiya talab qilinadi",
+    "userFavouritesAddException": MessageLookupByLibrary.simpleMessage(
+      "Sevimlilarga qo‘shib bo‘lmadi",
     ),
-    "unknownError": MessageLookupByLibrary.simpleMessage("Noma’lum xato"),
+    "userFavouritesDeleteException": MessageLookupByLibrary.simpleMessage(
+      "Sevimlilardan o‘chirib bo‘lmadi",
+    ),
+    "userFavouritesLoadException": MessageLookupByLibrary.simpleMessage(
+      "Sevimlilarni yuklab bo‘lmadi",
+    ),
+    "userFavouritesUnknownException": MessageLookupByLibrary.simpleMessage(
+      "Sevimlilar bilan ishlashda noma’lum xato yuz berdi",
+    ),
   };
 }

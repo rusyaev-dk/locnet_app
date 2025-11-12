@@ -1,8 +1,9 @@
 // ignore_for_file: sort_constructors_first
 
 import 'package:equatable/equatable.dart';
+import 'package:locnet_app/core/core.dart';
 
-class SessionDTO extends Equatable {
+final class SessionDTO extends Equatable {
   const SessionDTO({
     required this.sessionId,
     required this.userId,
@@ -37,39 +38,31 @@ class SessionDTO extends Equatable {
   final DateTime createdAt; // timestamp
   final DateTime updatedAt; // timestamp
 
+  /// Creates a [SessionDTO] from a JSON map.
+  /// Accepts multiple date formats and field naming variants.
   factory SessionDTO.fromJson(Map<String, dynamic> json) {
-    DateTime nn(dynamic v) {
-      if (v is DateTime) return v;
-      if (v is int) return DateTime.fromMillisecondsSinceEpoch(v);
-      return DateTime.parse(v as String);
-    }
-
-    DateTime? opt(dynamic v) {
-      if (v == null) return null;
-      if (v is DateTime) return v;
-      if (v is int) return DateTime.fromMillisecondsSinceEpoch(v);
-      return DateTime.parse(v as String);
-    }
-
     return SessionDTO(
       sessionId: json['sessionId'] as String,
       userId: json['userId'] as String,
       refreshToken: json['refreshToken'] as String,
       accessToken: json['accessToken'] as String,
-      expiresAt: nn(json['expiresAt']),
+      expiresAt: DateTimeFormatter.parse(json['expiresAt']),
       isExpired: json['isExpired'] as bool,
       isTerminated: json['isTerminated'] as bool?,
-      terminatedAt: opt(json['terminatedAt']),
+      terminatedAt: json['terminatedAt'] != null
+          ? DateTimeFormatter.parse(json['terminatedAt'])
+          : null,
       ipAddress: json['IPAddress'] as String? ?? json['ipAddress'] as String?,
       macAddress: json['macAddress'] as String?,
       deviceName: json['deviceName'] as String?,
       deviceType: json['deviceType'] as String?,
       os: json['OS'] as String? ?? json['os'] as String?,
-      createdAt: nn(json['createdAt']),
-      updatedAt: nn(json['updatedAt']),
+      createdAt: DateTimeFormatter.parse(json['createdAt']),
+      updatedAt: DateTimeFormatter.parse(json['updatedAt']),
     );
   }
 
+  /// Converts this DTO to a JSON-compatible map.
   Map<String, dynamic> toJson() => <String, dynamic>{
     'sessionId': sessionId,
     'userId': userId,
@@ -88,6 +81,7 @@ class SessionDTO extends Equatable {
     'updatedAt': updatedAt.toIso8601String(),
   };
 
+  /// Returns a new [SessionDTO] with updated fields.
   SessionDTO copyWith({
     String? sessionId,
     String? userId,

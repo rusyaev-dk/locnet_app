@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +14,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     required ILogger logger,
   }) : _settingsRepository = settingsRepository,
        _logger = logger,
-       super(SettingsInitialState()) {
+       super(const SettingsInitialState()) {
     _restoreSettings();
   }
 
@@ -31,14 +29,15 @@ class SettingsCubit extends Cubit<SettingsState> {
       final prevState = state as SettingsLoadedState;
 
       final bool changeLocaleSuccess = await _settingsRepository.changeLocale(
-        newLocale.languageCode,
+        newLocale: newLocale.languageCode,
       );
 
       if (!changeLocaleSuccess) {
-        prevState.copyWith(
-          message: AppMessage(key: SettingsErrorType.localeChangeFail),
+        final failure = SettingsLocaleChangeException(
+          message: "Failed to update app locale",
         );
-        _logger.exception("Failed update app locale...");
+        emit(prevState.copyWith(failure: failure));
+        _logger.exception(failure, StackTrace.current);
         return;
       }
 
@@ -46,13 +45,14 @@ class SettingsCubit extends Cubit<SettingsState> {
         emit(prevState.copyWith(locale: newLocale));
       }
     } catch (e, st) {
+      _logger.exception(e, st);
       emit(
         SettingsFailureState(
-          failure: e,
-          message: AppMessage(key: GlobalMessageType.unknownError),
+          failure: e is AppException
+              ? e
+              : AppUnknownException(message: e.toString(), stackTrace: st),
         ),
       );
-      _logger.exception(e, st);
     }
   }
 
@@ -65,14 +65,15 @@ class SettingsCubit extends Cubit<SettingsState> {
 
       final String code = _encodeThemeMode(newMode);
       final bool changeThemeSuccess = await _settingsRepository.changeThemeMode(
-        code,
+        themeCode: code,
       );
 
       if (!changeThemeSuccess) {
-        prevState.copyWith(
-          message: AppMessage(key: SettingsErrorType.themeModeChangeFail),
+        final failure = SettingsThemeModeChangeException(
+          message: "Failed to update app theme mode",
         );
-        _logger.exception("Failed change app theme mode...");
+        emit(prevState.copyWith(failure: failure));
+        _logger.exception(failure, StackTrace.current);
         return;
       }
 
@@ -80,20 +81,21 @@ class SettingsCubit extends Cubit<SettingsState> {
         emit(prevState.copyWith(themeMode: newMode));
       }
     } catch (e, st) {
+      _logger.exception(e, st);
       emit(
         SettingsFailureState(
-          failure: extensionStreamHasListener,
-          message: AppMessage(key: GlobalMessageType.unknownError),
+          failure: e is AppException
+              ? e
+              : AppUnknownException(message: e.toString(), stackTrace: st),
         ),
       );
-      _logger.exception(e, st);
     }
   }
 
   Future<void> _restoreSettings() async {
     try {
       if (state is! SettingsLoadingState) {
-        emit(SettingsLoadingState());
+        emit(const SettingsLoadingState());
       }
 
       final List<dynamic> results = await Future.wait([
@@ -111,13 +113,14 @@ class SettingsCubit extends Cubit<SettingsState> {
         SettingsLoadedState(locale: restoredLocale, themeMode: restoredTheme),
       );
     } catch (e, st) {
+      _logger.exception(e, st);
       emit(
         SettingsFailureState(
-          failure: e,
-          message: AppMessage(key: GlobalMessageType.unknownError),
+          failure: e is AppException
+              ? e
+              : AppUnknownException(message: e.toString(), stackTrace: st),
         ),
       );
-      _logger.exception(e, st);
     }
   }
 

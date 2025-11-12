@@ -1,50 +1,54 @@
 part of 'settings_cubit.dart';
 
-sealed class SettingsState extends Equatable {}
+sealed class SettingsState extends Equatable {
+  const SettingsState({this.failure});
+
+  final Object? failure;
+}
 
 final class SettingsInitialState extends SettingsState {
+  const SettingsInitialState({super.failure});
+
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [failure];
 }
 
 final class SettingsLoadingState extends SettingsState {
+  const SettingsLoadingState({super.failure});
+
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [failure];
 }
 
 final class SettingsLoadedState extends SettingsState {
-  SettingsLoadedState({
+  const SettingsLoadedState({
     required this.locale,
     required this.themeMode,
-    this.message,
+    super.failure,
   });
 
   final Locale locale;
   final ThemeMode themeMode;
-  final AppMessage? message;
 
   SettingsLoadedState copyWith({
     Locale? locale,
     ThemeMode? themeMode,
-    AppMessage? message,
+    Object? failure,
   }) {
     return SettingsLoadedState(
       locale: locale ?? this.locale,
       themeMode: themeMode ?? this.themeMode,
-      message: message,
+      failure: failure,
     );
   }
 
   @override
-  List<Object> get props => [locale, themeMode];
+  List<Object?> get props => <Object?>[locale, themeMode, failure];
 }
 
 final class SettingsFailureState extends SettingsState {
-  SettingsFailureState({required this.failure, this.message});
-
-  final Object failure;
-    final AppMessage? message;
+  const SettingsFailureState({required super.failure});
 
   @override
-  List<Object?> get props => [failure, message];
+  List<Object?> get props => [failure];
 }

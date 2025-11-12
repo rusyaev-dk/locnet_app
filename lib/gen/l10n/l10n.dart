@@ -119,46 +119,6 @@ class S {
     return Intl.message('Поделиться', name: 'share', desc: '', args: []);
   }
 
-  /// `Неизвестная ошибка`
-  String get unknownError {
-    return Intl.message(
-      'Неизвестная ошибка',
-      name: 'unknownError',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Нет подключения к интернету`
-  String get noInternetError {
-    return Intl.message(
-      'Нет подключения к интернету',
-      name: 'noInternetError',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Истекло время ожидания запроса`
-  String get requestTimeoutError {
-    return Intl.message(
-      'Истекло время ожидания запроса',
-      name: 'requestTimeoutError',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Необходимо авторизоваться`
-  String get unauthorizedError {
-    return Intl.message(
-      'Необходимо авторизоваться',
-      name: 'unauthorizedError',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `Настройки`
   String get settings {
     return Intl.message('Настройки', name: 'settings', desc: '', args: []);
@@ -194,41 +154,351 @@ class S {
     return Intl.message('Тёмная', name: 'themeModeDark', desc: '', args: []);
   }
 
-  /// `Не удалось сменить язык`
-  String get localeChangeError {
+  /// `Произошла ошибка приложения`
+  String get appException {
     return Intl.message(
-      'Не удалось сменить язык',
-      name: 'localeChangeError',
+      'Произошла ошибка приложения',
+      name: 'appException',
       desc: '',
       args: [],
     );
   }
 
-  /// `Не удалось загрузить язык`
-  String get localeRestoreError {
+  /// `Ошибка авторизации, пожалуйста, войдите снова`
+  String get apiUnauthorizedException {
     return Intl.message(
-      'Не удалось загрузить язык',
-      name: 'localeRestoreError',
+      'Ошибка авторизации, пожалуйста, войдите снова',
+      name: 'apiUnauthorizedException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ошибка сервера, попробуйте позже`
+  String get apiServerException {
+    return Intl.message(
+      'Ошибка сервера, попробуйте позже',
+      name: 'apiServerException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ошибка валидации данных, проверьте введённую информацию`
+  String get apiValidationException {
+    return Intl.message(
+      'Ошибка валидации данных, проверьте введённую информацию',
+      name: 'apiValidationException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ошибка соединения, проверьте интернет-подключение`
+  String get apiConnectionException {
+    return Intl.message(
+      'Ошибка соединения, проверьте интернет-подключение',
+      name: 'apiConnectionException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Неизвестная ошибка при запросе к серверу`
+  String get apiUnknownException {
+    return Intl.message(
+      'Неизвестная ошибка при запросе к серверу',
+      name: 'apiUnknownException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Запрашиваемый ресурс не найден`
+  String get apiNotFoundException {
+    return Intl.message(
+      'Запрашиваемый ресурс не найден',
+      name: 'apiNotFoundException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Доступ запрещён, у вас нет прав для выполнения этого действия`
+  String get apiForbiddenException {
+    return Intl.message(
+      'Доступ запрещён, у вас нет прав для выполнения этого действия',
+      name: 'apiForbiddenException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Время ожидания запроса истекло, повторите попытку`
+  String get apiTimeoutException {
+    return Intl.message(
+      'Время ожидания запроса истекло, повторите попытку',
+      name: 'apiTimeoutException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ошибка чтения данных из хранилища`
+  String get storageReadException {
+    return Intl.message(
+      'Ошибка чтения данных из хранилища',
+      name: 'storageReadException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ошибка сериализации данных`
+  String get storageSerializationException {
+    return Intl.message(
+      'Ошибка сериализации данных',
+      name: 'storageSerializationException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Неизвестная ошибка при работе с хранилищем`
+  String get storageUnknownException {
+    return Intl.message(
+      'Неизвестная ошибка при работе с хранилищем',
+      name: 'storageUnknownException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Данные не найдены в хранилище`
+  String get storageNotFoundException {
+    return Intl.message(
+      'Данные не найдены в хранилище',
+      name: 'storageNotFoundException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ошибка сохранения данных в хранилище`
+  String get storageWriteException {
+    return Intl.message(
+      'Ошибка сохранения данных в хранилище',
+      name: 'storageWriteException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ошибка удаления данных из хранилища`
+  String get storageDeleteException {
+    return Intl.message(
+      'Ошибка удаления данных из хранилища',
+      name: 'storageDeleteException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Вы не авторизованы, пожалуйста, войдите снова`
+  String get authUnauthorizedException {
+    return Intl.message(
+      'Вы не авторизованы, пожалуйста, войдите снова',
+      name: 'authUnauthorizedException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Неверные учетные данные, проверьте логин или пароль`
+  String get authInvalidCredentialsException {
+    return Intl.message(
+      'Неверные учетные данные, проверьте логин или пароль',
+      name: 'authInvalidCredentialsException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Сессия истекла, пожалуйста, выполните вход снова`
+  String get authExpiredSessionException {
+    return Intl.message(
+      'Сессия истекла, пожалуйста, выполните вход снова',
+      name: 'authExpiredSessionException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Неизвестная ошибка при авторизации`
+  String get authUnknownException {
+    return Intl.message(
+      'Неизвестная ошибка при авторизации',
+      name: 'authUnknownException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Не удалось сохранить сортировку`
+  String get sortingSaveException {
+    return Intl.message(
+      'Не удалось сохранить сортировку',
+      name: 'sortingSaveException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Не удалось сбросить сортировку`
+  String get sortingClearException {
+    return Intl.message(
+      'Не удалось сбросить сортировку',
+      name: 'sortingClearException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Не удалось обновить сортировку`
+  String get sortingUpdateException {
+    return Intl.message(
+      'Не удалось обновить сортировку',
+      name: 'sortingUpdateException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Не удалось сохранить фильтры`
+  String get filteringSaveException {
+    return Intl.message(
+      'Не удалось сохранить фильтры',
+      name: 'filteringSaveException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Не удалось сбросить фильтры`
+  String get filteringClearException {
+    return Intl.message(
+      'Не удалось сбросить фильтры',
+      name: 'filteringClearException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Не удалось обновить фильтры`
+  String get filteringUpdateException {
+    return Intl.message(
+      'Не удалось обновить фильтры',
+      name: 'filteringUpdateException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Неизвестная ошибка при поиске`
+  String get searchUnknownException {
+    return Intl.message(
+      'Неизвестная ошибка при поиске',
+      name: 'searchUnknownException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Не удалось сменить язык`
+  String get settingsLocaleChangeException {
+    return Intl.message(
+      'Не удалось сменить язык',
+      name: 'settingsLocaleChangeException',
       desc: '',
       args: [],
     );
   }
 
   /// `Не удалось сменить тему`
-  String get themeModeChangeError {
+  String get settingsThemeModeChangeException {
     return Intl.message(
       'Не удалось сменить тему',
-      name: 'themeModeChangeError',
+      name: 'settingsThemeModeChangeException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Не удалось загрузить язык`
+  String get settingsRestoreLocaleException {
+    return Intl.message(
+      'Не удалось загрузить язык',
+      name: 'settingsRestoreLocaleException',
       desc: '',
       args: [],
     );
   }
 
   /// `Не удалось загрузить тему`
-  String get themeModeRestoreError {
+  String get settingsRestoreThemeModeException {
     return Intl.message(
       'Не удалось загрузить тему',
-      name: 'themeModeRestoreError',
+      name: 'settingsRestoreThemeModeException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Неизвестная ошибка при работе с настройками`
+  String get settingsUnknownException {
+    return Intl.message(
+      'Неизвестная ошибка при работе с настройками',
+      name: 'settingsUnknownException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Не удалось добавить в избранное`
+  String get userFavouritesAddException {
+    return Intl.message(
+      'Не удалось добавить в избранное',
+      name: 'userFavouritesAddException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Не удалось удалить из избранного`
+  String get userFavouritesDeleteException {
+    return Intl.message(
+      'Не удалось удалить из избранного',
+      name: 'userFavouritesDeleteException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Не удалось загрузить избранное`
+  String get userFavouritesLoadException {
+    return Intl.message(
+      'Не удалось загрузить избранное',
+      name: 'userFavouritesLoadException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Неизвестная ошибка при работе с избранным`
+  String get userFavouritesUnknownException {
+    return Intl.message(
+      'Неизвестная ошибка при работе с избранным',
+      name: 'userFavouritesUnknownException',
       desc: '',
       args: [],
     );

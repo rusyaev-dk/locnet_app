@@ -9,7 +9,7 @@ final class AuthRepoMock implements IAuthRepo {
   const AuthRepoMock();
 
   @override
-  Future<AuthSession> login({required Object initData}) async {
+  Future<Session> login({required Object initData}) async {
     // Simulate network delay
     await Future<void>.delayed(const Duration(milliseconds: 250));
 
@@ -32,11 +32,11 @@ final class AuthRepoMock implements IAuthRepo {
     );
 
     // Convert DTO → domain
-    return AuthSession.fromDTO(dto);
+    return Session.fromDTO(dto);
   }
 
   @override
-  Future<AuthSession> refresh({required String refreshToken}) async {
+  Future<Session> refresh({required String refreshToken}) async {
     await Future<void>.delayed(const Duration(milliseconds: 150));
 
     final SessionDTO dto = SessionDTO(
@@ -56,7 +56,7 @@ final class AuthRepoMock implements IAuthRepo {
       updatedAt: DateTime.now(),
     );
 
-    return AuthSession.fromDTO(dto);
+    return Session.fromDTO(dto);
   }
 
   @override

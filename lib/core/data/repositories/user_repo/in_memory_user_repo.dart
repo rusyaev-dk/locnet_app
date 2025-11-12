@@ -68,6 +68,7 @@ final class InMemoryUserRepo implements IUserRepo {
     final UserDTO admin = UserDTO(
       userId: adminId,
       username: 'admin',
+      languageCode: 'ru',
       password: 'hash_admin_password',
       firstName: 'Admin',
       description: 'System administrator',
@@ -152,6 +153,7 @@ final class InMemoryUserRepo implements IUserRepo {
       final UserDTO dto = UserDTO(
         userId: id,
         username: candidate,
+        languageCode: 'ru',
         password: 'hash_${candidate}_pw',
         firstName: first,
         lastName: last,

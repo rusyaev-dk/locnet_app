@@ -4,6 +4,10 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:go_router/go_router.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/data/data.dart';
 import 'package:locnet_app/core/presentation/navigation/router.dart';
@@ -11,10 +15,6 @@ import 'package:locnet_app/core/utils/utils.dart';
 import 'package:locnet_app/di/di.dart';
 import 'package:locnet_app/features/error/error_screen.dart';
 import 'package:locnet_app/runners/runners.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:talker_bloc_logger/talker_bloc_logger_observer.dart';
 import 'package:talker_dio_logger/talker_dio_logger_interceptor.dart';
@@ -145,15 +145,6 @@ class AppRunner {
     );
 
     final apiConfig = ApiConfig(env);
-    final httpClient = DioHttpClient(dio: dio, apiConfig: apiConfig);
-    final authTokenProvider = AuthTokenProvider(
-      httpClient: httpClient,
-      tokenStorage: storageAggregator.secureStorage,
-    );
-
-    dio.interceptors.add(
-      JwtRefreshInterceptor(authTokenProvider: authTokenProvider),
-    );
 
     return AppScope(
       env: env,

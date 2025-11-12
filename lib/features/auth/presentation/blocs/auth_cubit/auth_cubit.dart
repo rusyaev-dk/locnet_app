@@ -10,7 +10,7 @@ final class AuthCubit extends Cubit<AuthState> {
   AuthCubit({required AuthInteractor authInteractor, required ILogger logger})
     : _authInteractor = authInteractor,
       _logger = logger,
-      super(const AuthInitialState(message: null)) {
+      super(const AuthInitialState()) {
     _restoreOrFetch();
   }
 
@@ -20,17 +20,17 @@ final class AuthCubit extends Cubit<AuthState> {
   Future<void> login({required String login, required String password}) async {
     try {
       if (state is! AuthLoadingState) {
-        emit(const AuthLoadingState(message: null));
+        emit(const AuthLoadingState());
       }
       _logger.info("Trying to login...");
 
       // TODO: implement
-
     } catch (e, st) {
       emit(
         AuthFailureState(
-          failure: e,
-          message: AppMessage(key: SessionMessageType.unauthorized),
+          failure: e is AppException
+              ? e
+              : AppUnknownException(message: e.toString(), stackTrace: st),
         ),
       );
       _logger.exception(e, st);
@@ -40,7 +40,7 @@ final class AuthCubit extends Cubit<AuthState> {
   Future<void> _restoreOrFetch() async {
     try {
       if (state is! AuthLoadingState) {
-        emit(const AuthLoadingState(message: null));
+        emit(const AuthLoadingState());
       }
       _logger.info("Trying to restore auth session...");
 
@@ -53,8 +53,9 @@ final class AuthCubit extends Cubit<AuthState> {
     } catch (e, st) {
       emit(
         AuthFailureState(
-          failure: e,
-          message: AppMessage(key: SessionMessageType.loadFail),
+          failure: e is AppException
+              ? e
+              : AppUnknownException(message: e.toString(), stackTrace: st),
         ),
       );
       _logger.exception(e, st);
@@ -64,9 +65,9 @@ final class AuthCubit extends Cubit<AuthState> {
   Future<void> signOut() async {
     try {
       await _authInteractor.signOut();
-      emit(const AuthUnauthenticatedState(message: null));
+      emit(const AuthUnauthenticatedState());
     } catch (e, st) {
-      emit(const AuthUnauthenticatedState(message: null));
+      emit(const AuthUnauthenticatedState());
       _logger.exception(e, st);
     }
   }

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:locnet_app/core/utils/utils.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/di/di.dart';
 import 'package:locnet_app/features/auth/domain/domain.dart';
 import 'package:locnet_app/features/auth/presentation/presentation.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 class AppProvidersWrapper extends StatelessWidget {
@@ -24,6 +24,10 @@ class AppProvidersWrapper extends StatelessWidget {
       providers: [
         Provider<AppScope>(create: (context) => appScope),
         Provider<ILogger>(create: (context) => appScope.logger),
+        Provider<IHttpClient>(
+          create: (context) =>
+              DioHttpClient(dio: appScope.dio, apiConfig: appScope.apiConfig),
+        ),
       ],
       child: MultiRepositoryProvider(
         providers: [
