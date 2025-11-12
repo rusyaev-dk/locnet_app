@@ -23,22 +23,12 @@ import 'package:talker_flutter/talker_flutter.dart';
 
 part 'errors_handlers.dart';
 
-/// Timeout for initializing dependencies.
-/// If exceeded, an error screen will be shown.
-/// Should be moved to env later.
 const _initTimeout = Duration(seconds: 7);
 
-/// Runner class that configures the app on startup.
-///
-/// Initialization order:
-/// 1. _initApp — initialize app configuration
-/// 2. initialize app repositories (to be added)
-/// 3. runApp — launch the application
-/// 4. _onAppLoaded — after the app is launched
 class AppRunner {
   AppRunner(this.env);
 
-  final AppEnv env;
+  final AppEnvType env;
   late final GoRouter router;
   late final TimerRunner _timerRunner;
 
@@ -50,7 +40,7 @@ class AppRunner {
       final ILogger logger = AppLogger(talker: talker);
       _timerRunner = TimerRunner(logger: logger);
 
-      await dotenv.load(fileName: 'env/${env.fileName}');
+      await dotenv.load(fileName: 'env/${env.toString()}');
       logger.log('Environment file loaded. Env type: ${env.name}');
 
       await _initApp();
@@ -111,7 +101,7 @@ class AppRunner {
   Future<AppScope> _initDependencies({
     required ILogger logger,
     required Talker talker,
-    required AppEnv env,
+    required AppEnvType env,
     required TimerRunner timerRunner,
   }) async {
     // TODO: remove the delay
@@ -120,7 +110,7 @@ class AppRunner {
 
     final dio = Dio();
 
-    if (env == AppEnv.dev || env == AppEnv.stage) {
+    if (env == AppEnvType.dev || env == AppEnvType.stage) {
       Bloc.observer = TalkerBlocObserver(talker: talker);
       dio.interceptors.add(
         TalkerDioLogger(
@@ -144,11 +134,12 @@ class AppRunner {
       sharedPrefsStorage: sharedPrefsStorage,
     );
 
-    final apiConfig = ApiConfig(env);
+    final apiConfig = ApiConfig(baseUrl: dotenv.env["BASE_URL"]!);
+    final appConfig = AppConfig();
 
     return AppScope(
       env: env,
-      appConfig: AppConfig(),
+      appConfig: appConfig,
       apiConfig: apiConfig,
       sharedPreferences: sharedPrefs,
       flutterSecureStorage: flutterSecureStorage,

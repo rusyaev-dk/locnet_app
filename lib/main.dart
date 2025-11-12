@@ -6,10 +6,10 @@ import 'package:locnet_app/runners/app_runner.dart';
 void main() {
   const envString = String.fromEnvironment('APP_ENV', defaultValue: 'dev');
 
-  final AppEnv env = switch (envString) {
-    'dev' => AppEnv.dev,
-    'stage' => AppEnv.stage,
-    'prod' => AppEnv.prod,
+  final AppEnvType env = switch (envString) {
+    'dev' => AppEnvType.dev,
+    'stage' => AppEnvType.stage,
+    'prod' => AppEnvType.prod,
     _ => throw Exception('Unknown APP_ENV: $envString'),
   };
 

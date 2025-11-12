@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/di/di.dart';
+import 'package:locnet_app/features/auth/data/data.dart';
 import 'package:locnet_app/features/auth/domain/domain.dart';
 import 'package:locnet_app/features/auth/presentation/presentation.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
@@ -35,6 +36,20 @@ class AppProvidersWrapper extends StatelessWidget {
             create: (context) => SettingsRepo(
               storage: appScope.storageAggregator.sharedPrefsStorage,
             ),
+          ),
+          RepositoryProvider<ISessionCacheRepo>(
+            create: (context) {
+              final cacheRepo = SessionCacheRepo(
+                storage: appScope.storageAggregator.secureStorage,
+              );
+              appScope.dio.interceptors.add(
+                JWTInterceptor(
+                  sessionCacheRepo: cacheRepo,
+                  logger: appScope.logger,
+                ),
+              );
+              return cacheRepo;
+            },
           ),
         ],
         child: _InteractorProviders(child: _BlocProviders(child: child)),

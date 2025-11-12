@@ -16,11 +16,11 @@ final class AuthInteractor {
     throw UnimplementedError();
   }
 
-  Future<(Session, User)> login() async {
+  Future<(Session, User)> logIn() async {
     throw UnimplementedError();
   }
 
-  Future<void> signOut() async {
+  Future<void> logOut() async {
     throw UnimplementedError();
   }
 }

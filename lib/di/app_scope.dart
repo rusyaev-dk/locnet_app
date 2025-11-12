@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/data/data.dart';
 import 'package:locnet_app/core/utils/utils.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
@@ -20,7 +20,7 @@ final class AppScope {
     required this.logger,
   });
 
-  final AppEnv env;
+  final AppEnvType env;
   final AppConfig appConfig;
   final ApiConfig apiConfig;
   final SharedPreferences sharedPreferences;

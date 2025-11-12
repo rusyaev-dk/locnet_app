@@ -1,4 +1,4 @@
-enum AppEnv {
+enum AppEnvType {
   /// Dev (mock environment)
   dev('dev.env'),
 
@@ -8,8 +8,10 @@ enum AppEnv {
   /// Production
   prod('prod.env');
 
-  const AppEnv(this.fileName);
+  const AppEnvType(this.value);
 
-  /// Corresponding filename for environment configuration.
-  final String fileName;
+  final String value;
+
+  @override
+  String toString() => value;
 }

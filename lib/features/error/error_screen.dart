@@ -7,7 +7,7 @@ class ErrorScreen extends StatelessWidget {
   const ErrorScreen({
     required this.error,
     required this.stackTrace,
-    this.env = AppEnv.dev,
+    this.env = AppEnvType.dev,
     super.key,
     this.onRetry,
   });
@@ -19,7 +19,7 @@ class ErrorScreen extends StatelessWidget {
   final StackTrace? stackTrace;
 
   /// Current application environment.
-  final AppEnv env;
+  final AppEnvType env;
 
   /// Optional retry callback to relaunch the app initialization.
   final VoidCallback? onRetry;
@@ -54,7 +54,8 @@ class ErrorScreen extends StatelessWidget {
       textTheme: const TextTheme(bodyMedium: TextStyle(fontSize: 16)),
     );
 
-    final bool showStackTrace = env == AppEnv.dev || env == AppEnv.stage;
+    final bool showStackTrace =
+        env == AppEnvType.dev || env == AppEnvType.stage;
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,

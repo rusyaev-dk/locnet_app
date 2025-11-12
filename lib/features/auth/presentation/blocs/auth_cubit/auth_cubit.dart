@@ -26,6 +26,7 @@ final class AuthCubit extends Cubit<AuthState> {
 
       // TODO: implement
     } catch (e, st) {
+      _logger.exception(e, st);
       emit(
         AuthFailureState(
           failure: e is AppException
@@ -33,7 +34,6 @@ final class AuthCubit extends Cubit<AuthState> {
               : AppUnknownException(message: e.toString(), stackTrace: st),
         ),
       );
-      _logger.exception(e, st);
     }
   }
 
@@ -47,10 +47,11 @@ final class AuthCubit extends Cubit<AuthState> {
       // TODO: remove the delay
       await Future.delayed(const Duration(seconds: 7));
 
-      final (Session, User) bundle = await _authInteractor.login();
+      final (Session, User) bundle = await _authInteractor.logIn();
 
       emit(AuthAuthenticatedState(user: bundle.$2));
     } catch (e, st) {
+      _logger.exception(e, st);
       emit(
         AuthFailureState(
           failure: e is AppException
@@ -58,17 +59,16 @@ final class AuthCubit extends Cubit<AuthState> {
               : AppUnknownException(message: e.toString(), stackTrace: st),
         ),
       );
-      _logger.exception(e, st);
     }
   }
 
-  Future<void> signOut() async {
+  Future<void> logOut() async {
     try {
-      await _authInteractor.signOut();
+      await _authInteractor.logOut();
       emit(const AuthUnauthenticatedState());
     } catch (e, st) {
-      emit(const AuthUnauthenticatedState());
       _logger.exception(e, st);
+      emit(const AuthUnauthenticatedState());
     }
   }
 }
