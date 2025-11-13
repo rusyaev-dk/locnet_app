@@ -99,6 +99,7 @@ class _InteractorProviders extends StatelessWidget {
             userRepo: context.read<IUserRepo>(),
             sessionCacheRepo: context.read<ISessionCacheRepo>(),
             userCacheRepo: context.read<IUserCacheRepo>(),
+            logger: context.read<ILogger>(),
           ),
         ),
       ],
