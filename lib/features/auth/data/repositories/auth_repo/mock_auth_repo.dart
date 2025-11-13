@@ -5,8 +5,8 @@ import 'package:locnet_app/features/auth/data/data.dart';
 
 /// Mock implementation of IAuthRepo for development and testing.
 /// Does not perform real network calls.
-final class AuthRepoMock implements IAuthRepo {
-  const AuthRepoMock();
+final class MockAuthRepo implements IAuthRepo {
+  const MockAuthRepo();
 
   @override
   Future<Session> login({required Object initData}) async {

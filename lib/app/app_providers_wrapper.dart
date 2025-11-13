@@ -5,6 +5,7 @@ import 'package:locnet_app/di/di.dart';
 import 'package:locnet_app/features/auth/data/data.dart';
 import 'package:locnet_app/features/auth/domain/domain.dart';
 import 'package:locnet_app/features/auth/presentation/presentation.dart';
+import 'package:locnet_app/features/conversation/data/data.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
 import 'package:provider/provider.dart';
@@ -29,12 +30,31 @@ class AppProvidersWrapper extends StatelessWidget {
           create: (context) =>
               DioHttpClient(dio: appScope.dio, apiConfig: appScope.apiConfig),
         ),
+        Provider<IWebSocketClient>(create: (context) => MockWebSocketClient()),
       ],
       child: MultiRepositoryProvider(
         providers: [
+          RepositoryProvider<IUserRepo>(
+            create: (context) => InMemoryUserRepo(),
+          ),
+          RepositoryProvider<IAuthRepo>(
+            create: (context) => const MockAuthRepo(),
+          ),
+          RepositoryProvider<IConversationRepo>(
+            create: (context) => WebSocketConversationRepo(
+              webSocketClient: context.read<IWebSocketClient>(),
+              logger: appScope.logger,
+            ),
+          ),
+
           RepositoryProvider<ISettingsRepo>(
             create: (context) => SettingsRepo(
               storage: appScope.storageAggregator.sharedPrefsStorage,
+            ),
+          ),
+          RepositoryProvider<IUserCacheRepo>(
+            create: (context) => UserCacheRepo(
+              storage: appScope.storageAggregator.secureStorage,
             ),
           ),
           RepositoryProvider<ISessionCacheRepo>(
@@ -69,7 +89,12 @@ class _InteractorProviders extends StatelessWidget {
       providers: [
         RepositoryProvider<AuthInteractor>(
           lazy: false,
-          create: (context) => AuthInteractor(),
+          create: (context) => AuthInteractor(
+            authRepo: context.read<IAuthRepo>(),
+            userRepo: context.read<IUserRepo>(),
+            sessionCacheRepo: context.read<ISessionCacheRepo>(),
+            userCacheRepo: context.read<IUserCacheRepo>(),
+          ),
         ),
       ],
       child: child,

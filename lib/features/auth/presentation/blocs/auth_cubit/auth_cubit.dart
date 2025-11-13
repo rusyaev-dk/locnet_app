@@ -47,9 +47,10 @@ final class AuthCubit extends Cubit<AuthState> {
       // TODO: remove the delay
       await Future.delayed(const Duration(seconds: 7));
 
-      final (Session, User) bundle = await _authInteractor.logIn();
+      final Session _ = await _authInteractor.logIn();
+      final User user = await _authInteractor.getCachedUser();
 
-      emit(AuthAuthenticatedState(user: bundle.$2));
+      emit(AuthAuthenticatedState(user: user));
     } catch (e, st) {
       _logger.exception(e, st);
       emit(

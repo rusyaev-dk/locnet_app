@@ -56,15 +56,11 @@ final class InMemoryUserRepo implements IUserRepo {
     }
   }
 
-  // ---------------------------
-  // Seeding helpers (private)
-  // ---------------------------
-
   void _seedInitialData({required int randomUsersCount}) {
     final DateTime now = DateTime.now();
 
-    // Seed admin
-    final String adminId = _uuidV4();
+    // Seed admins
+    const String adminId = 'usr-admin';
     final UserDTO admin = UserDTO(
       userId: adminId,
       username: 'admin',

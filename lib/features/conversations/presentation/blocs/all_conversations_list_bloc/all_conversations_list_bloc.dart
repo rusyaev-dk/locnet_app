@@ -14,10 +14,10 @@ part 'all_conversations_list_state.dart';
 class AllConversationsListBloc
     extends Bloc<AllConversationsListEvent, AllConversationsListState> {
   AllConversationsListBloc({
-    required ConversationsListInteractor feedInteractor,
+    required ConversationsListInteractor conversationsListInteractor,
     required ILogger logger,
     required IConversationRepo conversationRepo,
-  }) : _feedInteractor = feedInteractor,
+  }) : _conversationsListInteractor = conversationsListInteractor,
        _logger = logger,
        _conversationRepo = conversationRepo,
        super(const AllConversationsListInitial()) {
@@ -32,7 +32,7 @@ class AllConversationsListBloc
     );
   }
 
-  final ConversationsListInteractor _feedInteractor;
+  final ConversationsListInteractor _conversationsListInteractor;
   final ILogger _logger;
   final IConversationRepo _conversationRepo;
 
@@ -54,8 +54,8 @@ class AllConversationsListBloc
         }
       }
 
-      final List<Conversation> loadedConversations = await _feedInteractor
-          .loadConversations(page: page);
+      final List<Conversation> loadedConversations =
+          await _conversationsListInteractor.loadConversations(page: page);
 
       final AllConversationsListState currentState = state;
 
