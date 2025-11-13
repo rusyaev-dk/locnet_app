@@ -7,6 +7,7 @@ import 'package:locnet_app/features/auth/domain/domain.dart';
 import 'package:locnet_app/features/auth/presentation/presentation.dart';
 import 'package:locnet_app/features/conversation/data/data.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
+import 'package:locnet_app/features/settings/domain/domain.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
 import 'package:provider/provider.dart';
 
@@ -87,6 +88,10 @@ class _InteractorProviders extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
+        RepositoryProvider<SettingsInteractor>(
+          create: (context) =>
+              SettingsInteractor(settingsRepo: context.read<ISettingsRepo>()),
+        ),
         RepositoryProvider<AuthInteractor>(
           lazy: false,
           create: (context) => AuthInteractor(
@@ -122,7 +127,8 @@ class _BlocProviders extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => SettingsCubit(
-            settingsRepository: context.read<ISettingsRepo>(),
+            settingsInteractor: context.read<SettingsInteractor>(),
+            authInteractor: context.read<AuthInteractor>(),
             logger: appScope.logger,
           ),
         ),

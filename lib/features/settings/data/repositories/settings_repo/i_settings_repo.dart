@@ -1,7 +1,7 @@
 abstract interface class ISettingsRepo {
-  Future<bool> changeLocale({required String newLocale});
-  Future<String> getCurrentLocale();
+  Future<bool> changeLanguage({required String languageCode});
+  Future<String> getCurrentLanguageCode();
 
-  Future<bool> changeThemeMode({required String themeCode});
+  Future<bool> changeThemeMode({required String themeMode});
   Future<String> getCurrentThemeMode();
 }

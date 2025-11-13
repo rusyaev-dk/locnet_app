@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:locnet_app/features/settings/presentation/presentation.dart';
 
 class PanelScreen extends StatefulWidget {
   const PanelScreen({required this.child, super.key});
@@ -28,6 +29,7 @@ class _PanelScreenState extends State<PanelScreen> {
     final String location = GoRouterState.of(context).uri.path;
 
     return Scaffold(
+      drawer: const SettingsDrawer(),
       body: Row(
         children: <Widget>[
           _PanelSidebar(width: _sidebarWidth, currentLocation: location),
@@ -119,33 +121,33 @@ class _PanelSidebar extends StatelessWidget {
                 isSelected: _isSelected('/panel/settings'),
                 isCollapsed: isCollapsed,
                 onTap: () {
-                  context.go('/panel/settings');
+                  Scaffold.of(context).openDrawer();
                 },
               ),
-              const Spacer(),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: isCollapsed
-                      ? Center(
-                          child: IconButton(
-                            onPressed: () {
-                              // TODO: implement logout flow.
-                            },
-                            icon: const Icon(Icons.logout),
-                            tooltip: 'Logout',
-                          ),
-                        )
-                      : OutlinedButton.icon(
-                          onPressed: () {
-                            // TODO: implement logout flow.
-                          },
-                          icon: const Icon(Icons.logout),
-                          label: const Text('Logout'),
-                        ),
-                ),
-              ),
+              // const Spacer(),
+              // Padding(
+              //   padding: const EdgeInsets.all(16),
+              //   child: SizedBox(
+              //     width: double.infinity,
+              //     child: isCollapsed
+              //         ? Center(
+              //             child: IconButton(
+              //               onPressed: () {
+              //                 // TODO: implement logout flow.
+              //               },
+              //               icon: const Icon(Icons.logout),
+              //               tooltip: 'Logout',
+              //             ),
+              //           )
+              //         : OutlinedButton.icon(
+              //             onPressed: () {
+              //               // TODO: implement logout flow.
+              //             },
+              //             icon: const Icon(Icons.logout),
+              //             label: const Text('Logout'),
+              //           ),
+              //   ),
+              // ),
             ],
           );
         },

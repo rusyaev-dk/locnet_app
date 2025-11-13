@@ -3,22 +3,25 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/settings/data/data.dart';
+import 'package:locnet_app/features/auth/domain/domain.dart';
 import 'package:locnet_app/features/settings/domain/domain.dart';
 
 part 'settings_state.dart';
 
 class SettingsCubit extends Cubit<SettingsState> {
   SettingsCubit({
-    required ISettingsRepo settingsRepository,
+    required SettingsInteractor settingsInteractor,
+    required AuthInteractor authInteractor,
     required ILogger logger,
-  }) : _settingsRepository = settingsRepository,
+  }) : _settingsInteractor = settingsInteractor,
+       _authInteractor = authInteractor,
        _logger = logger,
        super(const SettingsInitialState()) {
     _restoreSettings();
   }
 
-  final ISettingsRepo _settingsRepository;
+  final SettingsInteractor _settingsInteractor;
+  final AuthInteractor _authInteractor;
   final ILogger _logger;
 
   Future<void> changeLocale(Locale newLocale) async {
@@ -28,8 +31,8 @@ class SettingsCubit extends Cubit<SettingsState> {
       }
       final prevState = state as SettingsLoadedState;
 
-      final bool changeLocaleSuccess = await _settingsRepository.changeLocale(
-        newLocale: newLocale.languageCode,
+      final bool changeLocaleSuccess = await _settingsInteractor.changeLanguage(
+        languageCode: newLocale.languageCode,
       );
 
       if (!changeLocaleSuccess) {
@@ -64,8 +67,8 @@ class SettingsCubit extends Cubit<SettingsState> {
       final prevState = state as SettingsLoadedState;
 
       final String code = _encodeThemeMode(newMode);
-      final bool changeThemeSuccess = await _settingsRepository.changeThemeMode(
-        themeCode: code,
+      final bool changeThemeSuccess = await _settingsInteractor.changeThemeMode(
+        themeMode: code,
       );
 
       if (!changeThemeSuccess) {
@@ -99,8 +102,8 @@ class SettingsCubit extends Cubit<SettingsState> {
       }
 
       final List<dynamic> results = await Future.wait([
-        _settingsRepository.getCurrentLocale(),
-        _settingsRepository.getCurrentThemeMode(),
+        _settingsInteractor.getCurrentLanguage(),
+        _settingsInteractor.getCurrentThemeMode(),
       ]);
 
       final String localeCode = results[0] as String;
@@ -108,9 +111,14 @@ class SettingsCubit extends Cubit<SettingsState> {
 
       final Locale restoredLocale = Locale(localeCode);
       final ThemeMode restoredTheme = _decodeThemeMode(themeCode);
+      final Session restoredSession = await _authInteractor.getSession();
 
       emit(
-        SettingsLoadedState(locale: restoredLocale, themeMode: restoredTheme),
+        SettingsLoadedState(
+          locale: restoredLocale,
+          themeMode: restoredTheme,
+          session: restoredSession,
+        ),
       );
     } catch (e, st) {
       _logger.exception(e, st);

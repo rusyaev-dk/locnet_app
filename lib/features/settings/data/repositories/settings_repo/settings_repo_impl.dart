@@ -10,18 +10,18 @@ class SettingsRepo implements ISettingsRepo {
   final String _themeKey = "theme";
 
   @override
-  Future<bool> changeLocale({required String newLocale}) async {
-    return await _storage.save(key: _localeKey, value: newLocale);
+  Future<bool> changeLanguage({required String languageCode}) async {
+    return await _storage.save(key: _localeKey, value: languageCode);
   }
 
   @override
-  Future<String> getCurrentLocale() async {
+  Future<String> getCurrentLanguageCode() async {
     return await _storage.get(key: _localeKey) ?? AppConfig.defaultLanguageCode;
   }
 
   @override
-  Future<bool> changeThemeMode({required String themeCode}) async {
-    return await _storage.save(key: _themeKey, value: themeCode);
+  Future<bool> changeThemeMode({required String themeMode}) async {
+    return await _storage.save(key: _themeKey, value: themeMode);
   }
 
   @override
