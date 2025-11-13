@@ -45,12 +45,10 @@ final class GroupConversationInteractor {
 
   Future<bool> toggleNotifications({
     required String groupConversationId,
-    required String userId,
     required bool newNotificationsStatus,
   }) async {
     return await _conversationRepo.toggleNotifications(
       conversationId: groupConversationId,
-      userId: userId,
       newNotificationsStatus: newNotificationsStatus,
     );
   }

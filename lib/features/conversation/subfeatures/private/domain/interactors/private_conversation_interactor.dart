@@ -24,12 +24,10 @@ final class PrivateConversationInteractor {
 
   Future<bool> toggleNotifications({
     required String conversationId,
-    required String userId,
     required bool newNotificationsStatus,
   }) async {
     return await _conversationRepo.toggleNotifications(
       conversationId: conversationId,
-      userId: userId,
       newNotificationsStatus: newNotificationsStatus,
     );
   }

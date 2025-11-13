@@ -37,12 +37,10 @@ final class ChannelInteractor {
 
   Future<bool> toggleNotifications({
     required String channelId,
-    required String userId,
     required bool newNotificationsStatus,
   }) async {
     return await _conversationRepo.toggleNotifications(
       conversationId: channelId,
-      userId: userId,
       newNotificationsStatus: newNotificationsStatus,
     );
   }
