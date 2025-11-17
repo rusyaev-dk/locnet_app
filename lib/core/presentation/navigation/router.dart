@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/auth/presentation/presentation.dart';
 import 'package:locnet_app/features/conversations/presentation/presentation.dart';
 import 'package:locnet_app/features/panel/presentation/presentation.dart';
@@ -29,35 +30,46 @@ class AppRouter {
         final AuthFlowStatus status = authListenable.status;
         final String location = state.uri.path;
 
+        // Loading state
         if (status == AuthFlowStatus.loading) {
           return location == '/' ? null : '/';
         }
 
-        switch (status) {
-          case AuthFlowStatus.authenticated:
-            if (location == '/' || location == '/registration') {
-              return '/panel/welcome';
-            }
+        // Unauthenticated user
+        if (status == AuthFlowStatus.unauthenticated) {
+          final bool isAuthRoute =
+              location == AppRoutes.login || location == AppRoutes.registration;
 
-            final bool isPanelRoute = location.startsWith('/panel');
-
-            if (!isPanelRoute) {
-              return '/panel/welcome';
-            }
-
+          // Allow switching between login and registration
+          if (isAuthRoute) {
             return null;
+          }
 
-          case AuthFlowStatus.unauthenticated:
-            if (location == '/' || location == '/registration') {
-              return null;
-            }
-
-            return '/registration';
-
-          case AuthFlowStatus.unknown:
-          case AuthFlowStatus.loading:
-            return null;
+          // Redirect everything else to login
+          return AppRoutes.login;
         }
+
+        // Authenticated user
+        if (status == AuthFlowStatus.authenticated) {
+          // If authenticated, do not allow visiting login/registration/root
+          if (location == '/' ||
+              location == AppRoutes.login ||
+              location == AppRoutes.registration) {
+            return AppRoutes.welcome;
+          }
+
+          // If route is inside /panel → allow
+          final bool isPanelRoute = location.startsWith(AppRoutes.panel);
+          if (isPanelRoute) {
+            return null;
+          }
+
+          // Any other route → redirect to welcome
+          return AppRoutes.welcome;
+        }
+
+        // Unknown state
+        return null;
       },
       routes: <RouteBase>[
         GoRoute(
@@ -75,6 +87,16 @@ class AppRouter {
             GoRouterState state,
           ) {
             return const RegistrationScreenWrapper(child: RegistrationScreen());
+          }),
+        ),
+        GoRoute(
+          path: '/login',
+          name: 'login',
+          pageBuilder: buildPageTransition((
+            BuildContext context,
+            GoRouterState state,
+          ) {
+            return const LoginScreenWrapper(child: LoginScreen());
           }),
         ),
         ShellRoute(

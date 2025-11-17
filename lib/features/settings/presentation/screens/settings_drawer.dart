@@ -318,7 +318,7 @@ class _LocaleSelector extends StatelessWidget {
           .toList(),
       onChanged: (Locale? newLocale) {
         if (newLocale != null) {
-          settingsCubit.changeLocale(newLocale);
+          settingsCubit.changeLanguage(newLocale);
         }
       },
       decoration: const InputDecoration(

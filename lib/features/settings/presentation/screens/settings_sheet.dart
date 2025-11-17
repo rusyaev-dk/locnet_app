@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SettingsSheet extends StatelessWidget {
   const SettingsSheet({super.key});
@@ -123,7 +123,7 @@ class SettingsContent extends StatelessWidget {
           },
           onValueChanged: (Locale? locale) {
             if (locale == null) return;
-            context.read<SettingsCubit>().changeLocale(locale);
+            context.read<SettingsCubit>().changeLanguage(locale);
           },
         ),
 

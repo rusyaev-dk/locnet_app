@@ -53,5 +53,17 @@
   "userFavouritesAddException": "Sevimlilarga qo‘shib bo‘lmadi",
   "userFavouritesDeleteException": "Sevimlilardan o‘chirib bo‘lmadi",
   "userFavouritesLoadException": "Sevimlilarni yuklab bo‘lmadi",
-  "userFavouritesUnknownException": "Sevimlilar bilan ishlashda noma’lum xato yuz berdi"
+  "userFavouritesUnknownException": "Sevimlilar bilan ishlashda noma’lum xato yuz berdi",
+  "authorization": "Авторизация",
+    "signIn": "Войти",
+    "login": "Логин",
+    "password": "Пароль",
+    "repeatPassword": "Повторите пароль",
+    "passwordsMatchException": "Пароли не сопадают",
+    "registrationQuestion": "Не зарегистрированы?",
+    "alreadyRegisteredQuestion": "Уже зарегистрированы?",
+    "registration": "Регистрация",
+    "name": "Имя",
+    "surname": "Фамилия",
+    "jobPosition": "Должность"
 }

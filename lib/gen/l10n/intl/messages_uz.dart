@@ -22,6 +22,9 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+    "alreadyRegisteredQuestion": MessageLookupByLibrary.simpleMessage(
+      "Уже зарегистрированы?",
+    ),
     "apiConnectionException": MessageLookupByLibrary.simpleMessage(
       "Ulanish xatosi, internet aloqasini tekshiring",
     ),
@@ -62,6 +65,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "authUnknownException": MessageLookupByLibrary.simpleMessage(
       "Avtorizatsiya jarayonida noma’lum xato yuz berdi",
     ),
+    "authorization": MessageLookupByLibrary.simpleMessage("Авторизация"),
     "back": MessageLookupByLibrary.simpleMessage("Orqaga"),
     "cancel": MessageLookupByLibrary.simpleMessage("Bekor qilish"),
     "clear": MessageLookupByLibrary.simpleMessage("Tozalash"),
@@ -78,9 +82,20 @@ class MessageLookup extends MessageLookupByLibrary {
     "filteringUpdateException": MessageLookupByLibrary.simpleMessage(
       "Filtrlarni yangilab bo‘lmadi",
     ),
+    "jobPosition": MessageLookupByLibrary.simpleMessage("Должность"),
     "language": MessageLookupByLibrary.simpleMessage("Til"),
+    "login": MessageLookupByLibrary.simpleMessage("Логин"),
     "next": MessageLookupByLibrary.simpleMessage("Keyingi"),
     "ok": MessageLookupByLibrary.simpleMessage("OK"),
+    "password": MessageLookupByLibrary.simpleMessage("Пароль"),
+    "passwordsMatchException": MessageLookupByLibrary.simpleMessage(
+      "Пароли не сопадают",
+    ),
+    "registration": MessageLookupByLibrary.simpleMessage("Регистрация"),
+    "registrationQuestion": MessageLookupByLibrary.simpleMessage(
+      "Не зарегистрированы?",
+    ),
+    "repeatPassword": MessageLookupByLibrary.simpleMessage("Повторите пароль"),
     "reset": MessageLookupByLibrary.simpleMessage("Tiklash"),
     "save": MessageLookupByLibrary.simpleMessage("Saqlash"),
     "searchUnknownException": MessageLookupByLibrary.simpleMessage(
@@ -103,6 +118,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Sozlamalarda noma’lum xato yuz berdi",
     ),
     "share": MessageLookupByLibrary.simpleMessage("Ulashish"),
+    "signIn": MessageLookupByLibrary.simpleMessage("Войти"),
     "sortingClearException": MessageLookupByLibrary.simpleMessage(
       "Saralashni tozalab bo‘lmadi",
     ),

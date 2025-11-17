@@ -15,6 +15,22 @@ import 'package:flutter_svg/flutter_svg.dart' as _svg;
 import 'package:lottie/lottie.dart' as _lottie;
 import 'package:vector_graphics/vector_graphics.dart' as _vg;
 
+class $EnvGen {
+  const $EnvGen();
+
+  /// File path: env/dev.env
+  String get dev => 'env/dev.env';
+
+  /// File path: env/prod.env
+  String get prod => 'env/prod.env';
+
+  /// File path: env/stage.env
+  String get stage => 'env/stage.env';
+
+  /// List of all assets
+  List<String> get values => [dev, prod, stage];
+}
+
 class $AssetsFontsGen {
   const $AssetsFontsGen();
 
@@ -46,11 +62,17 @@ class $AssetsFontsGen {
 class $AssetsIconsGen {
   const $AssetsIconsGen();
 
-  /// File path: assets/icons/home.svg
-  SvgGenImage get home => const SvgGenImage('assets/icons/home.svg');
+  /// File path: assets/icons/GB.svg
+  SvgGenImage get gb => const SvgGenImage('assets/icons/GB.svg');
+
+  /// File path: assets/icons/RU.svg
+  SvgGenImage get ru => const SvgGenImage('assets/icons/RU.svg');
+
+  /// File path: assets/icons/UZ.svg
+  SvgGenImage get uz => const SvgGenImage('assets/icons/UZ.svg');
 
   /// List of all assets
-  List<SvgGenImage> get values => [home];
+  List<SvgGenImage> get values => [gb, ru, uz];
 }
 
 class $AssetsLottieGen {
@@ -70,6 +92,7 @@ class Assets {
   static const $AssetsFontsGen fonts = $AssetsFontsGen();
   static const $AssetsIconsGen icons = $AssetsIconsGen();
   static const $AssetsLottieGen lottie = $AssetsLottieGen();
+  static const $EnvGen env = $EnvGen();
 }
 
 class SvgGenImage {

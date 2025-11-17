@@ -22,6 +22,9 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+    "alreadyRegisteredQuestion": MessageLookupByLibrary.simpleMessage(
+      "Уже зарегистрированы?",
+    ),
     "apiConnectionException": MessageLookupByLibrary.simpleMessage(
       "Ошибка соединения, проверьте интернет-подключение",
     ),
@@ -62,6 +65,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "authUnknownException": MessageLookupByLibrary.simpleMessage(
       "Неизвестная ошибка при авторизации",
     ),
+    "authorization": MessageLookupByLibrary.simpleMessage("Авторизация"),
     "back": MessageLookupByLibrary.simpleMessage("Назад"),
     "cancel": MessageLookupByLibrary.simpleMessage("Отмена"),
     "clear": MessageLookupByLibrary.simpleMessage("Очистить"),
@@ -78,9 +82,22 @@ class MessageLookup extends MessageLookupByLibrary {
     "filteringUpdateException": MessageLookupByLibrary.simpleMessage(
       "Не удалось обновить фильтры",
     ),
+    "firstName": MessageLookupByLibrary.simpleMessage("Имя"),
+    "jobPosition": MessageLookupByLibrary.simpleMessage("Должность"),
     "language": MessageLookupByLibrary.simpleMessage("Язык"),
+    "lastName": MessageLookupByLibrary.simpleMessage("Фамилия"),
+    "login": MessageLookupByLibrary.simpleMessage("Логин"),
     "next": MessageLookupByLibrary.simpleMessage("Далее"),
     "ok": MessageLookupByLibrary.simpleMessage("ОК"),
+    "password": MessageLookupByLibrary.simpleMessage("Пароль"),
+    "passwordsMatchException": MessageLookupByLibrary.simpleMessage(
+      "Пароли не сопадают",
+    ),
+    "registration": MessageLookupByLibrary.simpleMessage("Регистрация"),
+    "registrationQuestion": MessageLookupByLibrary.simpleMessage(
+      "Не зарегистрированы?",
+    ),
+    "repeatPassword": MessageLookupByLibrary.simpleMessage("Повторите пароль"),
     "reset": MessageLookupByLibrary.simpleMessage("Сбросить"),
     "save": MessageLookupByLibrary.simpleMessage("Сохранить"),
     "searchUnknownException": MessageLookupByLibrary.simpleMessage(
@@ -103,6 +120,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Неизвестная ошибка при работе с настройками",
     ),
     "share": MessageLookupByLibrary.simpleMessage("Поделиться"),
+    "signIn": MessageLookupByLibrary.simpleMessage("Войти"),
     "sortingClearException": MessageLookupByLibrary.simpleMessage(
       "Не удалось сбросить сортировку",
     ),

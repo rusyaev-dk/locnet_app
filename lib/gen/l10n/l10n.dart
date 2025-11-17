@@ -503,6 +503,96 @@ class S {
       args: [],
     );
   }
+
+  /// `Авторизация`
+  String get authorization {
+    return Intl.message(
+      'Авторизация',
+      name: 'authorization',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Войти`
+  String get signIn {
+    return Intl.message('Войти', name: 'signIn', desc: '', args: []);
+  }
+
+  /// `Логин`
+  String get login {
+    return Intl.message('Логин', name: 'login', desc: '', args: []);
+  }
+
+  /// `Пароль`
+  String get password {
+    return Intl.message('Пароль', name: 'password', desc: '', args: []);
+  }
+
+  /// `Повторите пароль`
+  String get repeatPassword {
+    return Intl.message(
+      'Повторите пароль',
+      name: 'repeatPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Пароли не сопадают`
+  String get passwordsMatchException {
+    return Intl.message(
+      'Пароли не сопадают',
+      name: 'passwordsMatchException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Не зарегистрированы?`
+  String get registrationQuestion {
+    return Intl.message(
+      'Не зарегистрированы?',
+      name: 'registrationQuestion',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Уже зарегистрированы?`
+  String get alreadyRegisteredQuestion {
+    return Intl.message(
+      'Уже зарегистрированы?',
+      name: 'alreadyRegisteredQuestion',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Регистрация`
+  String get registration {
+    return Intl.message(
+      'Регистрация',
+      name: 'registration',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Имя`
+  String get firstName {
+    return Intl.message('Имя', name: 'firstName', desc: '', args: []);
+  }
+
+  /// `Фамилия`
+  String get lastName {
+    return Intl.message('Фамилия', name: 'lastName', desc: '', args: []);
+  }
+
+  /// `Должность`
+  String get jobPosition {
+    return Intl.message('Должность', name: 'jobPosition', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

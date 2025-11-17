@@ -37,6 +37,32 @@ final class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  Future<void> register({
+    required String firstName,
+    required String lastName,
+    required String jobPosition,
+    required String login,
+    required String password,
+  }) async {
+    try {
+      if (state is! AuthLoadingState) {
+        emit(const AuthLoadingState());
+      }
+      _logger.info("Trying to register...");
+
+      // TODO: implement
+    } catch (e, st) {
+      _logger.exception(e, st);
+      emit(
+        AuthFailureState(
+          failure: e is AppException
+              ? e
+              : AppUnknownException(message: e.toString(), stackTrace: st),
+        ),
+      );
+    }
+  }
+
   Future<void> _restoreOrFetch() async {
     try {
       if (state is! AuthLoadingState) {
@@ -45,12 +71,13 @@ final class AuthCubit extends Cubit<AuthState> {
       _logger.info("Trying to restore auth session...");
 
       // TODO: remove the delay
-      await Future.delayed(const Duration(seconds: 7));
+      await Future.delayed(const Duration(seconds: 3));
 
-      final Session _ = await _authInteractor.logIn();
-      final User user = await _authInteractor.getUser();
+      // final Session _ = await _authInteractor.logIn();
+      // final User user = await _authInteractor.getUser();
 
-      emit(AuthAuthenticatedState(user: user));
+      // emit(AuthAuthenticatedState(user: user));
+      emit(const AuthUnauthenticatedState());
     } catch (e, st) {
       _logger.exception(e, st);
       emit(

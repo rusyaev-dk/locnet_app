@@ -4,86 +4,54 @@ import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/auth/presentation/presentation.dart';
 
-class RegistrationScreenWrapper extends StatelessWidget {
-  const RegistrationScreenWrapper({required this.child, super.key});
+class LoginScreenWrapper extends StatelessWidget {
+  const LoginScreenWrapper({required this.child, super.key});
 
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<RegistrationCubit>(
-      create: (BuildContext context) =>
-          RegistrationCubit(logger: context.read<ILogger>()),
+    return BlocProvider(
+      create: (context) => LoginCubit(logger: context.read<ILogger>()),
       child: child,
     );
   }
 }
 
-class RegistrationScreen extends StatefulWidget {
-  const RegistrationScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<RegistrationScreen> createState() => _RegistrationScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _RegistrationScreenState extends State<RegistrationScreen> {
-  late final TextEditingController _firstNameController;
-  late final TextEditingController _lastNameController;
-  late final TextEditingController _jobPositionController;
+class _LoginScreenState extends State<LoginScreen> {
   late final TextEditingController _loginController;
   late final TextEditingController _passwordController;
-  late final TextEditingController _repeatPasswordController;
 
   @override
   void initState() {
     super.initState();
-    _firstNameController = TextEditingController();
-    _lastNameController = TextEditingController();
-    _jobPositionController = TextEditingController();
     _loginController = TextEditingController();
     _passwordController = TextEditingController();
-    _repeatPasswordController = TextEditingController();
   }
 
   @override
   void dispose() {
-    _firstNameController.dispose();
-    _lastNameController.dispose();
-    _jobPositionController.dispose();
     _loginController.dispose();
     _passwordController.dispose();
-    _repeatPasswordController.dispose();
     super.dispose();
   }
 
   Future<void> _onSubmit() async {
-    final String firstName = _firstNameController.text.trim();
-    final String lastName = _lastNameController.text.trim();
-    final String jobPosition = _jobPositionController.text.trim();
     final String login = _loginController.text.trim();
     final String password = _passwordController.text.trim();
-    final String repeatPassword = _repeatPasswordController.text.trim();
 
-    if (firstName.isEmpty ||
-        lastName.isEmpty ||
-        jobPosition.isEmpty ||
-        login.isEmpty ||
-        password.isEmpty ||
-        repeatPassword.isEmpty) {
+    if (login.isEmpty || password.isEmpty) {
       return;
     }
 
-    if (password != repeatPassword) {
-      return;
-    }
-
-    await context.read<AuthCubit>().register(
-      firstName: firstName,
-      lastName: lastName,
-      jobPosition: jobPosition,
-      login: login,
-      password: password,
-    );
+    await context.read<AuthCubit>().login(login: login, password: password);
   }
 
   @override
@@ -95,43 +63,35 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       body: SafeArea(
         child: ToastListener<AuthCubit, AuthState, AuthFailureState>(
           bloc: context.read<AuthCubit>(),
-          messageOf: (BuildContext context, AuthFailureState state) =>
+          messageOf: (context, AuthFailureState state) =>
               AppExceptionsTranslator.translate(context, state.failure),
           child: BlocBuilder<AuthCubit, AuthState>(
             builder: (BuildContext context, AuthState state) {
               switch (state) {
                 case AuthLoadingState():
                   return const Center(child: CircularProgressIndicator());
+
                 case AuthInitialState():
-                  return _RegistrationScrollableForm(
-                    firstNameController: _firstNameController,
-                    lastNameController: _lastNameController,
-                    jobPositionController: _jobPositionController,
+                  return _AuthScrollableForm(
                     loginController: _loginController,
                     passwordController: _passwordController,
-                    repeatPasswordController: _repeatPasswordController,
                     onSubmit: _onSubmit,
                   );
+
                 case AuthUnauthenticatedState():
-                  return _RegistrationScrollableForm(
-                    firstNameController: _firstNameController,
-                    lastNameController: _lastNameController,
-                    jobPositionController: _jobPositionController,
+                  return _AuthScrollableForm(
                     loginController: _loginController,
                     passwordController: _passwordController,
-                    repeatPasswordController: _repeatPasswordController,
                     onSubmit: _onSubmit,
                   );
+
                 case AuthFailureState():
-                  return _RegistrationScrollableForm(
-                    firstNameController: _firstNameController,
-                    lastNameController: _lastNameController,
-                    jobPositionController: _jobPositionController,
+                  return _AuthScrollableForm(
                     loginController: _loginController,
                     passwordController: _passwordController,
-                    repeatPasswordController: _repeatPasswordController,
                     onSubmit: _onSubmit,
                   );
+
                 case AuthAuthenticatedState():
                   return const SizedBox.shrink();
               }
@@ -143,23 +103,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 }
 
-class _RegistrationScrollableForm extends StatelessWidget {
-  const _RegistrationScrollableForm({
-    required this.firstNameController,
-    required this.lastNameController,
-    required this.jobPositionController,
+class _AuthScrollableForm extends StatelessWidget {
+  const _AuthScrollableForm({
     required this.loginController,
     required this.passwordController,
-    required this.repeatPasswordController,
     required this.onSubmit,
   });
 
-  final TextEditingController firstNameController;
-  final TextEditingController lastNameController;
-  final TextEditingController jobPositionController;
   final TextEditingController loginController;
   final TextEditingController passwordController;
-  final TextEditingController repeatPasswordController;
   final Future<void> Function() onSubmit;
 
   @override
@@ -177,7 +129,7 @@ class _RegistrationScrollableForm extends StatelessWidget {
                 constraints: BoxConstraints(maxWidth: isWide ? 960 : 480),
                 child: isWide
                     ? Row(
-                        children: <Widget>[
+                        children: [
                           const Expanded(
                             child: Align(
                               alignment: Alignment.centerLeft,
@@ -189,20 +141,15 @@ class _RegistrationScrollableForm extends StatelessWidget {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: <Widget>[
+                              children: [
                                 const Align(
                                   alignment: Alignment.topRight,
                                   child: LanguageSwitcherButton(),
                                 ),
                                 const SizedBox(height: 24),
-                                RegistrationCard(
-                                  firstNameController: firstNameController,
-                                  lastNameController: lastNameController,
-                                  jobPositionController: jobPositionController,
+                                LogInCard(
                                   loginController: loginController,
                                   passwordController: passwordController,
-                                  repeatPasswordController:
-                                      repeatPasswordController,
                                   onSubmit: onSubmit,
                                 ),
                               ],
@@ -213,7 +160,7 @@ class _RegistrationScrollableForm extends StatelessWidget {
                     : Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: <Widget>[
+                        children: [
                           const Align(
                             alignment: Alignment.topRight,
                             child: LanguageSwitcherButton(),
@@ -221,13 +168,9 @@ class _RegistrationScrollableForm extends StatelessWidget {
                           const SizedBox(height: 24),
                           const LocNetBranding(),
                           const SizedBox(height: 32),
-                          RegistrationCard(
-                            firstNameController: firstNameController,
-                            lastNameController: lastNameController,
-                            jobPositionController: jobPositionController,
+                          LogInCard(
                             loginController: loginController,
                             passwordController: passwordController,
-                            repeatPasswordController: repeatPasswordController,
                             onSubmit: onSubmit,
                           ),
                         ],

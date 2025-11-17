@@ -53,5 +53,17 @@
     "userFavouritesAddException": "Не удалось добавить в избранное",
     "userFavouritesDeleteException": "Не удалось удалить из избранного",
     "userFavouritesLoadException": "Не удалось загрузить избранное",
-    "userFavouritesUnknownException": "Неизвестная ошибка при работе с избранным"
+    "userFavouritesUnknownException": "Неизвестная ошибка при работе с избранным",
+    "authorization": "Авторизация",
+    "signIn": "Войти",
+    "login": "Логин",
+    "password": "Пароль",
+    "repeatPassword": "Повторите пароль",
+    "passwordsMatchException": "Пароли не сопадают",
+    "registrationQuestion": "Не зарегистрированы?",
+    "alreadyRegisteredQuestion": "Уже зарегистрированы?",
+    "registration": "Регистрация",
+    "firstName": "Имя",
+    "lastName": "Фамилия",
+    "jobPosition": "Должность"
 }

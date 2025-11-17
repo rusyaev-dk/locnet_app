@@ -24,7 +24,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   final AuthInteractor _authInteractor;
   final ILogger _logger;
 
-  Future<void> changeLocale(Locale newLocale) async {
+  Future<void> changeLanguage(Locale newLocale) async {
     try {
       if (state is! SettingsLoadedState) {
         return;
