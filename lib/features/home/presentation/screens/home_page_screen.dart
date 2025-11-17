@@ -269,7 +269,7 @@ class _OverviewStatCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: colorScheme.primary.withAlpha(24),
+                color: colorScheme.secondary,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(iconData, size: 20, color: colorScheme.primary),
@@ -375,7 +375,7 @@ class _RecentActivityItem extends StatelessWidget {
           width: 36,
           height: 36,
           decoration: BoxDecoration(
-            color: colorScheme.primary.withAlpha(24),
+            color: colorScheme.secondary,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(iconData, size: 20, color: colorScheme.primary),

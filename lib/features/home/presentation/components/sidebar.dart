@@ -16,7 +16,7 @@ class PanelSidebar extends StatefulWidget {
 
 class _PanelSidebarState extends State<PanelSidebar> {
   static const double _collapsedWidth = 80;
-  static const double _expandedWidth = 260;
+  static const double _expandedWidth = 304;
 
   // Breakpoint for switching layout from collapsed to expanded
   static const double _collapsedBreakpoint = 120;
@@ -45,7 +45,7 @@ class _PanelSidebarState extends State<PanelSidebar> {
       curve: Curves.easeOutCubic,
       width: _targetWidth,
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest,
+        color: colorScheme.secondary,
         borderRadius: const BorderRadius.only(
           topRight: Radius.circular(24),
           bottomRight: Radius.circular(24),
@@ -69,7 +69,7 @@ class _PanelSidebarState extends State<PanelSidebar> {
               const SizedBox(height: 16),
               Padding(
                 padding: EdgeInsets.symmetric(
-                  horizontal: isCollapsedLayout ? 8 : 20,
+                  horizontal: isCollapsedLayout ? 8 : 16,
                 ),
                 child: Align(
                   alignment: isCollapsedLayout
@@ -109,7 +109,6 @@ class _PanelSidebarState extends State<PanelSidebar> {
                       ],
                       const Spacer(),
                       _SidebarToggleButton(
-                        // Для анимации иконки используем целевое состояние
                         isCollapsed: _isCollapsed,
                         onToggle: _toggleCollapsed,
                       ),
@@ -196,7 +195,7 @@ class _SidebarToggleButton extends StatelessWidget {
           height: 28,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
-            color: colorScheme.surfaceContainerHighest.withAlpha(160),
+            color: colorScheme.secondary,
           ),
           child: Center(
             child: AnimatedRotation(
@@ -205,7 +204,7 @@ class _SidebarToggleButton extends StatelessWidget {
               turns: isCollapsed ? 0.5 : 0.0,
               child: Icon(
                 Icons.chevron_left,
-                size: 18,
+                size: 22,
                 color: colorScheme.onSurfaceVariant,
               ),
             ),

@@ -16,11 +16,16 @@ class SettingsDrawer extends StatelessWidget {
     final textScheme = context.textScheme;
 
     return Drawer(
-      backgroundColor: Colors.transparent,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topRight: Radius.circular(24),
+          bottomRight: Radius.circular(24),
+        ),
+      ),
       child: SafeArea(
         child: Container(
           decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerHighest,
+            color: colorScheme.secondary,
             borderRadius: const BorderRadius.only(
               topRight: Radius.circular(24),
               bottomRight: Radius.circular(24),
@@ -187,7 +192,7 @@ class _SettingsCloseButton extends StatelessWidget {
           height: 32,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            color: colorScheme.surfaceContainerHighest.withAlpha(180),
+            color: colorScheme.secondary,
           ),
           child: Icon(
             Icons.close,

@@ -47,7 +47,7 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
       primaryContainer = const Color(0xFFDBEAFE), // blue-100
       onPrimaryContainer = const Color(0xFF0B1120),
 
-      secondary = const Color(0xFF0EA5E9), // cyan-500
+      secondary = const Color(0x182563EB),
       onSecondary = const Color(0xFF001319),
       secondaryContainer = const Color(0xFFCFF5FF),
       onSecondaryContainer = const Color(0xFF022C3A),
@@ -92,22 +92,24 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
     : primary = const Color(0xFF60A5FA), // blue-400
       onPrimary = const Color(0xFF0B1120),
       primaryContainer = const Color(0xFF1D4ED8), // blue-700
-      onPrimaryContainer = const Color(0xFFDBEAFE),
+      onPrimaryContainer = const Color(0xFFDBEAFE), // blue-100
 
-      secondary = const Color(0xFF38BDF8), // sky-400
-      onSecondary = const Color(0xFF02131A),
+      secondary = const Color(
+        0x182563EB,
+      ), // soft primary tint (same base as light)
+      onSecondary = const Color(0xFFE5E7EB), // gray-200
       secondaryContainer = const Color(0xFF075985), // sky-800
-      onSecondaryContainer = const Color(0xFFE0F2FE),
+      onSecondaryContainer = const Color(0xFFE0F2FE), // sky-100
 
-      tertiary = const Color(0xFFF97316),
+      tertiary = const Color(0xFFF97316), // orange-500
       onTertiary = const Color(0xFF1F1304),
-      tertiaryContainer = const Color(0xFF9A3412),
-      onTertiaryContainer = const Color(0xFFFDE7C3),
+      tertiaryContainer = const Color(0xFF9A3412), // orange-800
+      onTertiaryContainer = const Color(0xFFFDE7C3), // orange-100
 
-      error = const Color(0xFFF97373),
+      error = const Color(0xFFF87171), // red-400
       onError = const Color(0xFF450A0A),
-      errorContainer = const Color(0xFF7F1D1D),
-      onErrorContainer = const Color(0xFFFEE2E2),
+      errorContainer = const Color(0xFF7F1D1D), // red-900
+      onErrorContainer = const Color(0xFFFEE2E2), // red-100
 
       surface = const Color(0xFF020617), // slate-950
       onSurface = const Color(0xFFE5E7EB),
@@ -128,12 +130,14 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
 
       inverseSurface = const Color(0xFFF9FAFB),
       onInverseSurface = const Color(0xFF020617),
-      inversePrimary = const Color(0xFF2563EB),
+      inversePrimary = const Color(
+        0xFF2563EB,
+      ), // blue-600 (matches light.primary)
 
       surfaceTint = const Color(0xFF60A5FA),
       shimmer = const Color(0xFF374151), // slate-700
 
-      approval = const Color(0xFF22C55E);
+      approval = const Color(0xFF22C55E); // green-500
 
   final Color primary;
   final Color onPrimary;

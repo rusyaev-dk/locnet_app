@@ -58,7 +58,7 @@ class SidebarItem extends StatelessWidget {
                     borderRadius: BorderRadius.circular(13),
                     color: isSelected
                         ? colorScheme.primary.withAlpha(40)
-                        : colorScheme.surfaceContainerHighest,
+                        : colorScheme.secondary,
                   ),
                   child: Icon(
                     icon,
