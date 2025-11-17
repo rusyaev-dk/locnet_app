@@ -154,6 +154,16 @@ class S {
     return Intl.message('Тёмная', name: 'themeModeDark', desc: '', args: []);
   }
 
+  /// `Как на устройстве`
+  String get deviceThemeMode {
+    return Intl.message(
+      'Как на устройстве',
+      name: 'deviceThemeMode',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Попробовать снова`
   String get retry {
     return Intl.message('Попробовать снова', name: 'retry', desc: '', args: []);
@@ -597,6 +607,241 @@ class S {
   /// `Должность`
   String get jobPosition {
     return Intl.message('Должность', name: 'jobPosition', desc: '', args: []);
+  }
+
+  /// `Внешний вид`
+  String get appearance {
+    return Intl.message('Внешний вид', name: 'appearance', desc: '', args: []);
+  }
+
+  /// `Выберите облик приложения`
+  String get chooseHowTheAppLooks {
+    return Intl.message(
+      'Выберите облик приложения',
+      name: 'chooseHowTheAppLooks',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Выберите язык интерфейса`
+  String get selectInterfaceLanguage {
+    return Intl.message(
+      'Выберите язык интерфейса',
+      name: 'selectInterfaceLanguage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Текущая сессия`
+  String get currentSession {
+    return Intl.message(
+      'Текущая сессия',
+      name: 'currentSession',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Детали сессии`
+  String get sessionDetails {
+    return Intl.message(
+      'Детали сессии',
+      name: 'sessionDetails',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Да`
+  String get yesLabel {
+    return Intl.message('Да', name: 'yesLabel', desc: '', args: []);
+  }
+
+  /// `Нет`
+  String get noLabel {
+    return Intl.message('Нет', name: 'noLabel', desc: '', args: []);
+  }
+
+  /// `Истекла`
+  String get sessionStatusExpired {
+    return Intl.message(
+      'Истекла',
+      name: 'sessionStatusExpired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Активна`
+  String get sessionStatusActive {
+    return Intl.message(
+      'Активна',
+      name: 'sessionStatusActive',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Завершена`
+  String get sessionStatusTerminated {
+    return Intl.message(
+      'Завершена',
+      name: 'sessionStatusTerminated',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `ID пользователя`
+  String get sessionUserId {
+    return Intl.message(
+      'ID пользователя',
+      name: 'sessionUserId',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `ID сессии`
+  String get sessionSessionId {
+    return Intl.message(
+      'ID сессии',
+      name: 'sessionSessionId',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Имя устройства`
+  String get sessionDeviceName {
+    return Intl.message(
+      'Имя устройства',
+      name: 'sessionDeviceName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Тип устройства`
+  String get sessionDeviceType {
+    return Intl.message(
+      'Тип устройства',
+      name: 'sessionDeviceType',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `ОС`
+  String get sessionOs {
+    return Intl.message('ОС', name: 'sessionOs', desc: '', args: []);
+  }
+
+  /// `IP-адрес`
+  String get sessionIpAddress {
+    return Intl.message(
+      'IP-адрес',
+      name: 'sessionIpAddress',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `MAC-адрес`
+  String get sessionMacAddress {
+    return Intl.message(
+      'MAC-адрес',
+      name: 'sessionMacAddress',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Создана`
+  String get sessionCreatedAt {
+    return Intl.message(
+      'Создана',
+      name: 'sessionCreatedAt',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Обновлена`
+  String get sessionUpdatedAt {
+    return Intl.message(
+      'Обновлена',
+      name: 'sessionUpdatedAt',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Истекает`
+  String get sessionExpiresAt {
+    return Intl.message(
+      'Истекает',
+      name: 'sessionExpiresAt',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Завершена`
+  String get sessionTerminatedAt {
+    return Intl.message(
+      'Завершена',
+      name: 'sessionTerminatedAt',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Истекла`
+  String get sessionIsExpired {
+    return Intl.message(
+      'Истекла',
+      name: 'sessionIsExpired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Завершена`
+  String get sessionIsTerminated {
+    return Intl.message(
+      'Завершена',
+      name: 'sessionIsTerminated',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Неизвестно`
+  String get unknownValue {
+    return Intl.message('Неизвестно', name: 'unknownValue', desc: '', args: []);
+  }
+
+  /// `Переписки`
+  String get conversations {
+    return Intl.message('Переписки', name: 'conversations', desc: '', args: []);
+  }
+
+  /// `Хранилище`
+  String get storage {
+    return Intl.message('Хранилище', name: 'storage', desc: '', args: []);
+  }
+
+  /// `Домашняя страница`
+  String get homePage {
+    return Intl.message(
+      'Домашняя страница',
+      name: 'homePage',
+      desc: '',
+      args: [],
+    );
   }
 }
 

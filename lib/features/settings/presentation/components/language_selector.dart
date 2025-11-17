@@ -10,10 +10,7 @@ class LanguageSelector extends StatelessWidget {
   final Locale selectedLocale;
 
   List<Locale> get _supportedLocales {
-    return <Locale>[
-      const Locale('en'),
-      const Locale('ru'),
-    ];
+    return <Locale>[const Locale('en'), const Locale('ru'), const Locale('uz')];
   }
 
   String _mapLocaleToLabel(Locale locale) {
@@ -21,6 +18,9 @@ class LanguageSelector extends StatelessWidget {
       case 'ru':
         return 'Русский';
       case 'en':
+        return 'English';
+      case 'uz':
+        return "O'zbek";
       default:
         return 'English';
     }
@@ -33,7 +33,7 @@ class LanguageSelector extends StatelessWidget {
     final textScheme = context.textScheme;
 
     return DropdownButtonFormField<Locale>(
-      value: _supportedLocales.firstWhere(
+      initialValue: _supportedLocales.firstWhere(
         (Locale locale) => locale.languageCode == selectedLocale.languageCode,
         orElse: () => selectedLocale,
       ),
@@ -43,9 +43,7 @@ class LanguageSelector extends StatelessWidget {
               value: locale,
               child: Text(
                 _mapLocaleToLabel(locale),
-                style: textScheme.label.copyWith(
-                  color: colorScheme.onSurface,
-                ),
+                style: textScheme.label.copyWith(color: colorScheme.onSurface),
               ),
             ),
           )

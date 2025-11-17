@@ -52,6 +52,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "appException": MessageLookupByLibrary.simpleMessage(
       "Произошла ошибка приложения",
     ),
+    "appearance": MessageLookupByLibrary.simpleMessage("Внешний вид"),
     "apply": MessageLookupByLibrary.simpleMessage("Применить"),
     "authExpiredSessionException": MessageLookupByLibrary.simpleMessage(
       "Сессия истекла, пожалуйста, выполните вход снова",
@@ -68,10 +69,18 @@ class MessageLookup extends MessageLookupByLibrary {
     "authorization": MessageLookupByLibrary.simpleMessage("Авторизация"),
     "back": MessageLookupByLibrary.simpleMessage("Назад"),
     "cancel": MessageLookupByLibrary.simpleMessage("Отмена"),
+    "chooseHowTheAppLooks": MessageLookupByLibrary.simpleMessage(
+      "Выберите облик приложения",
+    ),
     "clear": MessageLookupByLibrary.simpleMessage("Очистить"),
     "close": MessageLookupByLibrary.simpleMessage("Закрыть"),
     "confirm": MessageLookupByLibrary.simpleMessage("Подтвердить"),
+    "conversations": MessageLookupByLibrary.simpleMessage("Переписки"),
+    "currentSession": MessageLookupByLibrary.simpleMessage("Текущая сессия"),
     "delete": MessageLookupByLibrary.simpleMessage("Удалить"),
+    "deviceThemeMode": MessageLookupByLibrary.simpleMessage(
+      "Как на устройстве",
+    ),
     "edit": MessageLookupByLibrary.simpleMessage("Редактировать"),
     "filteringClearException": MessageLookupByLibrary.simpleMessage(
       "Не удалось сбросить фильтры",
@@ -83,11 +92,13 @@ class MessageLookup extends MessageLookupByLibrary {
       "Не удалось обновить фильтры",
     ),
     "firstName": MessageLookupByLibrary.simpleMessage("Имя"),
+    "homePage": MessageLookupByLibrary.simpleMessage("Домашняя страница"),
     "jobPosition": MessageLookupByLibrary.simpleMessage("Должность"),
     "language": MessageLookupByLibrary.simpleMessage("Язык"),
     "lastName": MessageLookupByLibrary.simpleMessage("Фамилия"),
     "login": MessageLookupByLibrary.simpleMessage("Логин"),
     "next": MessageLookupByLibrary.simpleMessage("Далее"),
+    "noLabel": MessageLookupByLibrary.simpleMessage("Нет"),
     "ok": MessageLookupByLibrary.simpleMessage("ОК"),
     "password": MessageLookupByLibrary.simpleMessage("Пароль"),
     "passwordsMatchException": MessageLookupByLibrary.simpleMessage(
@@ -104,6 +115,28 @@ class MessageLookup extends MessageLookupByLibrary {
     "searchUnknownException": MessageLookupByLibrary.simpleMessage(
       "Неизвестная ошибка при поиске",
     ),
+    "selectInterfaceLanguage": MessageLookupByLibrary.simpleMessage(
+      "Выберите язык интерфейса",
+    ),
+    "sessionCreatedAt": MessageLookupByLibrary.simpleMessage("Создана"),
+    "sessionDetails": MessageLookupByLibrary.simpleMessage("Детали сессии"),
+    "sessionDeviceName": MessageLookupByLibrary.simpleMessage("Имя устройства"),
+    "sessionDeviceType": MessageLookupByLibrary.simpleMessage("Тип устройства"),
+    "sessionExpiresAt": MessageLookupByLibrary.simpleMessage("Истекает"),
+    "sessionIpAddress": MessageLookupByLibrary.simpleMessage("IP-адрес"),
+    "sessionIsExpired": MessageLookupByLibrary.simpleMessage("Истекла"),
+    "sessionIsTerminated": MessageLookupByLibrary.simpleMessage("Завершена"),
+    "sessionMacAddress": MessageLookupByLibrary.simpleMessage("MAC-адрес"),
+    "sessionOs": MessageLookupByLibrary.simpleMessage("ОС"),
+    "sessionSessionId": MessageLookupByLibrary.simpleMessage("ID сессии"),
+    "sessionStatusActive": MessageLookupByLibrary.simpleMessage("Активна"),
+    "sessionStatusExpired": MessageLookupByLibrary.simpleMessage("Истекла"),
+    "sessionStatusTerminated": MessageLookupByLibrary.simpleMessage(
+      "Завершена",
+    ),
+    "sessionTerminatedAt": MessageLookupByLibrary.simpleMessage("Завершена"),
+    "sessionUpdatedAt": MessageLookupByLibrary.simpleMessage("Обновлена"),
+    "sessionUserId": MessageLookupByLibrary.simpleMessage("ID пользователя"),
     "settings": MessageLookupByLibrary.simpleMessage("Настройки"),
     "settingsLocaleChangeException": MessageLookupByLibrary.simpleMessage(
       "Не удалось сменить язык",
@@ -131,6 +164,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "sortingUpdateException": MessageLookupByLibrary.simpleMessage(
       "Не удалось обновить сортировку",
     ),
+    "storage": MessageLookupByLibrary.simpleMessage("Хранилище"),
     "storageDeleteException": MessageLookupByLibrary.simpleMessage(
       "Ошибка удаления данных из хранилища",
     ),
@@ -153,6 +187,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "themeModeDark": MessageLookupByLibrary.simpleMessage("Тёмная"),
     "themeModeLight": MessageLookupByLibrary.simpleMessage("Светлая"),
     "themeModeSystem": MessageLookupByLibrary.simpleMessage("Системная"),
+    "unknownValue": MessageLookupByLibrary.simpleMessage("Неизвестно"),
     "userFavouritesAddException": MessageLookupByLibrary.simpleMessage(
       "Не удалось добавить в избранное",
     ),
@@ -165,5 +200,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "userFavouritesUnknownException": MessageLookupByLibrary.simpleMessage(
       "Неизвестная ошибка при работе с избранным",
     ),
+    "yesLabel": MessageLookupByLibrary.simpleMessage("Да"),
   };
 }

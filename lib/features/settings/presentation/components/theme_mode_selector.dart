@@ -11,9 +11,11 @@ class ThemeModeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final SettingsCubit settingsCubit = context.read<SettingsCubit>();
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
+    final l10n = context.l10n;
+
+    final SettingsCubit settingsCubit = context.read<SettingsCubit>();
 
     return Column(
       children: [
@@ -26,11 +28,11 @@ class ThemeModeSelector extends StatelessWidget {
             }
           },
           title: Text(
-            'System',
+            l10n.themeModeSystem,
             style: textScheme.label.copyWith(color: colorScheme.onSurface),
           ),
           subtitle: Text(
-            'Use device theme',
+            l10n.deviceThemeMode,
             style: textScheme.label.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),
@@ -46,15 +48,10 @@ class ThemeModeSelector extends StatelessWidget {
             }
           },
           title: Text(
-            'Light',
+            l10n.themeModeLight,
             style: textScheme.label.copyWith(color: colorScheme.onSurface),
           ),
-          subtitle: Text(
-            'Bright theme',
-            style: textScheme.label.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
+
           dense: true,
         ),
         RadioListTile<ThemeMode>(
@@ -66,15 +63,10 @@ class ThemeModeSelector extends StatelessWidget {
             }
           },
           title: Text(
-            'Dark',
+            l10n.themeModeDark,
             style: textScheme.label.copyWith(color: colorScheme.onSurface),
           ),
-          subtitle: Text(
-            'Dark theme',
-            style: textScheme.label.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
+
           dense: true,
         ),
       ],

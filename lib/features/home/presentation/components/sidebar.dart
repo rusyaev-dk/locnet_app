@@ -16,7 +16,7 @@ class PanelSidebar extends StatefulWidget {
 
 class _PanelSidebarState extends State<PanelSidebar> {
   static const double _collapsedWidth = 80;
-  static const double _expandedWidth = 240;
+  static const double _expandedWidth = 260;
 
   // Breakpoint for switching layout from collapsed to expanded
   static const double _collapsedBreakpoint = 120;
@@ -38,6 +38,7 @@ class _PanelSidebarState extends State<PanelSidebar> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
+    final l10n = context.l10n;
 
     return AnimatedContainer(
       duration: kThemeChangeDuration,
@@ -93,7 +94,7 @@ class _PanelSidebarState extends State<PanelSidebar> {
                         ),
                       ),
                       if (!isCollapsedLayout) ...[
-                        const SizedBox(width: 10),
+                        const SizedBox(width: 15),
                         Flexible(
                           child: Text(
                             'LocNet',
@@ -101,6 +102,7 @@ class _PanelSidebarState extends State<PanelSidebar> {
                             overflow: TextOverflow.ellipsis,
                             style: textScheme.headline.copyWith(
                               color: colorScheme.onSurface,
+                              fontSize: 20,
                             ),
                           ),
                         ),
@@ -124,7 +126,7 @@ class _PanelSidebarState extends State<PanelSidebar> {
                   ),
                   children: [
                     SidebarItem(
-                      label: 'Welcome',
+                      label: l10n.homePage,
                       icon: Icons.home_outlined,
                       isSelected: _isSelected(AppRoutes.home),
                       isCollapsed: isCollapsedLayout,
@@ -133,7 +135,7 @@ class _PanelSidebarState extends State<PanelSidebar> {
                       },
                     ),
                     SidebarItem(
-                      label: 'Conversations',
+                      label: l10n.conversations,
                       icon: Icons.chat_bubble_outline,
                       isSelected: _isSelected(AppRoutes.conversations),
                       isCollapsed: isCollapsedLayout,
@@ -142,7 +144,7 @@ class _PanelSidebarState extends State<PanelSidebar> {
                       },
                     ),
                     SidebarItem(
-                      label: 'Storage',
+                      label: l10n.storage,
                       icon: Icons.folder_outlined,
                       isSelected: _isSelected(AppRoutes.storage),
                       isCollapsed: isCollapsedLayout,
@@ -151,7 +153,7 @@ class _PanelSidebarState extends State<PanelSidebar> {
                       },
                     ),
                     SidebarItem(
-                      label: 'Settings',
+                      label: l10n.settings,
                       icon: Icons.settings_outlined,
                       isSelected: _isSelected(AppRoutes.settings),
                       isCollapsed: isCollapsedLayout,

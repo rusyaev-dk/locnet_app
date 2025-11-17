@@ -62,7 +62,7 @@ class SidebarItem extends StatelessWidget {
                   ),
                   child: Icon(
                     icon,
-                    size: 16,
+                    size: 20,
                     color: isSelected
                         ? colorScheme.primary
                         : colorScheme.onSurfaceVariant,
@@ -80,6 +80,7 @@ class SidebarItem extends StatelessWidget {
                         color: isSelected
                             ? colorScheme.primary
                             : colorScheme.onSurfaceVariant,
+                        fontSize: 16.5,
                       ),
                     ),
                   ),

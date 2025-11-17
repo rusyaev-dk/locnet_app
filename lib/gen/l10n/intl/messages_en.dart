@@ -52,6 +52,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "appException": MessageLookupByLibrary.simpleMessage(
       "Application error occurred",
     ),
+    "appearance": MessageLookupByLibrary.simpleMessage("Appearance"),
     "apply": MessageLookupByLibrary.simpleMessage("Apply"),
     "authExpiredSessionException": MessageLookupByLibrary.simpleMessage(
       "Session expired, please sign in again",
@@ -68,10 +69,18 @@ class MessageLookup extends MessageLookupByLibrary {
     "authorization": MessageLookupByLibrary.simpleMessage("Authorization"),
     "back": MessageLookupByLibrary.simpleMessage("Back"),
     "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
+    "chooseHowTheAppLooks": MessageLookupByLibrary.simpleMessage(
+      "Choose how the app looks",
+    ),
     "clear": MessageLookupByLibrary.simpleMessage("Clear"),
     "close": MessageLookupByLibrary.simpleMessage("Close"),
     "confirm": MessageLookupByLibrary.simpleMessage("Confirm"),
+    "conversations": MessageLookupByLibrary.simpleMessage("Conversations"),
+    "currentSession": MessageLookupByLibrary.simpleMessage("Current session"),
     "delete": MessageLookupByLibrary.simpleMessage("Delete"),
+    "deviceThemeMode": MessageLookupByLibrary.simpleMessage(
+      "Same as on device",
+    ),
     "edit": MessageLookupByLibrary.simpleMessage("Edit"),
     "filteringClearException": MessageLookupByLibrary.simpleMessage(
       "Failed to reset filters",
@@ -82,12 +91,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "filteringUpdateException": MessageLookupByLibrary.simpleMessage(
       "Failed to update filters",
     ),
-    "firstName": MessageLookupByLibrary.simpleMessage("First name"),
+    "homePage": MessageLookupByLibrary.simpleMessage("Home page"),
     "jobPosition": MessageLookupByLibrary.simpleMessage("Job position"),
     "language": MessageLookupByLibrary.simpleMessage("Language"),
-    "lastName": MessageLookupByLibrary.simpleMessage("Last name"),
     "login": MessageLookupByLibrary.simpleMessage("Login"),
     "next": MessageLookupByLibrary.simpleMessage("Next"),
+    "noLabel": MessageLookupByLibrary.simpleMessage("No"),
     "ok": MessageLookupByLibrary.simpleMessage("OK"),
     "password": MessageLookupByLibrary.simpleMessage("Password"),
     "passwordsMatchException": MessageLookupByLibrary.simpleMessage(
@@ -99,11 +108,37 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "repeatPassword": MessageLookupByLibrary.simpleMessage("Repeat password"),
     "reset": MessageLookupByLibrary.simpleMessage("Reset"),
-    "retry": MessageLookupByLibrary.simpleMessage("Попробовать снова"),
+    "retry": MessageLookupByLibrary.simpleMessage("Try again"),
     "save": MessageLookupByLibrary.simpleMessage("Save"),
     "searchUnknownException": MessageLookupByLibrary.simpleMessage(
       "Unknown error occurred during search",
     ),
+    "selectInterfaceLanguage": MessageLookupByLibrary.simpleMessage(
+      "Select interface language",
+    ),
+    "sessionCreatedAt": MessageLookupByLibrary.simpleMessage("Created at"),
+    "sessionDetails": MessageLookupByLibrary.simpleMessage("Session details"),
+    "sessionDeviceName": MessageLookupByLibrary.simpleMessage("Device name"),
+    "sessionDeviceType": MessageLookupByLibrary.simpleMessage("Device type"),
+    "sessionExpiresAt": MessageLookupByLibrary.simpleMessage("Expires at"),
+    "sessionIpAddress": MessageLookupByLibrary.simpleMessage("IP address"),
+    "sessionIsExpired": MessageLookupByLibrary.simpleMessage("Is expired"),
+    "sessionIsTerminated": MessageLookupByLibrary.simpleMessage(
+      "Is terminated",
+    ),
+    "sessionMacAddress": MessageLookupByLibrary.simpleMessage("MAC address"),
+    "sessionOs": MessageLookupByLibrary.simpleMessage("OS"),
+    "sessionSessionId": MessageLookupByLibrary.simpleMessage("Session ID"),
+    "sessionStatusActive": MessageLookupByLibrary.simpleMessage("Active"),
+    "sessionStatusExpired": MessageLookupByLibrary.simpleMessage("Expired"),
+    "sessionStatusTerminated": MessageLookupByLibrary.simpleMessage(
+      "Terminated",
+    ),
+    "sessionTerminatedAt": MessageLookupByLibrary.simpleMessage(
+      "Terminated at",
+    ),
+    "sessionUpdatedAt": MessageLookupByLibrary.simpleMessage("Updated at"),
+    "sessionUserId": MessageLookupByLibrary.simpleMessage("User ID"),
     "settings": MessageLookupByLibrary.simpleMessage("Settings"),
     "settingsLocaleChangeException": MessageLookupByLibrary.simpleMessage(
       "Failed to change language",
@@ -131,6 +166,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "sortingUpdateException": MessageLookupByLibrary.simpleMessage(
       "Failed to update sorting",
     ),
+    "storage": MessageLookupByLibrary.simpleMessage("Storage"),
     "storageDeleteException": MessageLookupByLibrary.simpleMessage(
       "Error deleting data from storage",
     ),
@@ -153,6 +189,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "themeModeDark": MessageLookupByLibrary.simpleMessage("Dark"),
     "themeModeLight": MessageLookupByLibrary.simpleMessage("Light"),
     "themeModeSystem": MessageLookupByLibrary.simpleMessage("System"),
+    "unknownValue": MessageLookupByLibrary.simpleMessage("Unknown"),
     "userFavouritesAddException": MessageLookupByLibrary.simpleMessage(
       "Failed to add to favorites",
     ),
@@ -165,5 +202,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "userFavouritesUnknownException": MessageLookupByLibrary.simpleMessage(
       "Unknown error occurred while accessing favorites",
     ),
+    "yesLabel": MessageLookupByLibrary.simpleMessage("Yes"),
   };
 }

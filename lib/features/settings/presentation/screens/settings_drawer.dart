@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
@@ -72,6 +73,7 @@ class _SettingsLoadedView extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
+    final l10n = context.l10n;
 
     final Locale selectedLocale = settingsState.locale;
     final ThemeMode selectedThemeMode = settingsState.themeMode;
@@ -87,21 +89,21 @@ class _SettingsLoadedView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const _SettingsSectionTitle(title: 'Appearance'),
+                _SettingsSectionTitle(title: l10n.appearance),
                 const SizedBox(height: 8),
                 SettingsGroupCard(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Theme',
+                        l10n.themeMode,
                         style: textScheme.headline.copyWith(
                           fontSize: textScheme.headline.fontSize,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Choose how the app looks',
+                        l10n.chooseHowTheAppLooks,
                         style: textScheme.label.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
@@ -112,21 +114,14 @@ class _SettingsLoadedView extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                const _SettingsSectionTitle(title: 'Language'),
+                _SettingsSectionTitle(title: l10n.language),
                 const SizedBox(height: 8),
                 SettingsGroupCard(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'App language',
-                        style: textScheme.headline.copyWith(
-                          fontSize: textScheme.headline.fontSize,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Select interface language',
+                        l10n.selectInterfaceLanguage,
                         style: textScheme.label.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
@@ -137,7 +132,7 @@ class _SettingsLoadedView extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                const _SettingsSectionTitle(title: 'Current session'),
+                _SettingsSectionTitle(title: l10n.currentSession),
                 const SizedBox(height: 8),
                 SessionInfoCard(session: settingsState.session),
                 const SizedBox(height: 24),
@@ -157,13 +152,14 @@ class _SettingsHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
+    final l10n = context.l10n;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
           Text(
-            'Settings',
+            l10n.settings,
             style: textScheme.display.copyWith(color: colorScheme.onSurface),
           ),
           const Spacer(),
@@ -183,7 +179,7 @@ class _SettingsCloseButton extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: () {
-          Navigator.of(context).maybePop();
+          GoRouter.of(context).pop();
         },
         borderRadius: BorderRadius.circular(999),
         child: Container(

@@ -47,7 +47,7 @@ class AppRunner {
       _initErrorHandlers(logger, env);
 
       runApp(
-        TemplateApp(
+        LocnetApp(
           initDependencies: () {
             return _initDependencies(
               logger: logger,

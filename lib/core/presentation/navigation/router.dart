@@ -56,7 +56,6 @@ class AppRouter {
           }
 
           return AppRoutes.home;
-
         }
 
         return null;
@@ -105,7 +104,7 @@ class AppRouter {
                 BuildContext context,
                 GoRouterState state,
               ) {
-                return const HomeWelcomeScreen();
+                return const HomePageScreen();
               }),
               routes: <RouteBase>[
                 GoRoute(

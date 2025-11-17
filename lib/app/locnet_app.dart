@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:go_router/go_router.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/di/di.dart';
@@ -8,20 +11,17 @@ import 'package:locnet_app/features/settings/presentation/presentation.dart';
 import 'package:locnet_app/features/splash/splash_screen.dart';
 import 'package:locnet_app/gen/gen.dart';
 import 'package:locnet_app/uikit/themes/app_theme_data.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:go_router/go_router.dart';
 
-class TemplateApp extends StatefulWidget {
-  const TemplateApp({required this.initDependencies, super.key});
+class LocnetApp extends StatefulWidget {
+  const LocnetApp({required this.initDependencies, super.key});
 
   final Future<AppScope> Function() initDependencies;
 
   @override
-  State<TemplateApp> createState() => _TemplateAppState();
+  State<LocnetApp> createState() => _LocnetAppState();
 }
 
-class _TemplateAppState extends State<TemplateApp> {
+class _LocnetAppState extends State<LocnetApp> {
   late Future<AppScope> _initFuture;
 
   @override
@@ -112,7 +112,7 @@ class _App extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           locale: locale,
-          supportedLocales: const [Locale('ru'), Locale('uz')],
+          supportedLocales: const [Locale('ru'), Locale('uz'), Locale('en')],
           theme: AppThemeData.lightTheme,
           darkTheme: AppThemeData.darkTheme,
           themeMode: themeMode,

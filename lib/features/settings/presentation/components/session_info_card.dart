@@ -15,14 +15,11 @@ class SessionInfoCard extends StatelessWidget {
     return formatter.format(dateTime.toLocal());
   }
 
-  String _boolToStatus(bool value) {
-    return value ? 'Yes' : 'No';
-  }
-
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
+    final l10n = context.l10n;
 
     final bool isTerminated = session.isTerminated ?? false;
 
@@ -31,10 +28,8 @@ class SessionInfoCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Session details',
-            style: textScheme.headline.copyWith(
-              color: colorScheme.onSurface,
-            ),
+            l10n.sessionDetails,
+            style: textScheme.headline.copyWith(color: colorScheme.onSurface),
           ),
           const SizedBox(height: 12),
           Wrap(
@@ -43,7 +38,9 @@ class SessionInfoCard extends StatelessWidget {
             children: [
               Chip(
                 label: Text(
-                  session.isExpired ? 'Expired' : 'Active',
+                  session.isExpired
+                      ? l10n.sessionStatusExpired
+                      : l10n.sessionStatusActive,
                   style: textScheme.label.copyWith(
                     color: colorScheme.onPrimary,
                   ),
@@ -62,7 +59,7 @@ class SessionInfoCard extends StatelessWidget {
               if (isTerminated)
                 Chip(
                   label: Text(
-                    'Terminated',
+                    l10n.sessionStatusTerminated,
                     style: textScheme.label.copyWith(
                       color: colorScheme.onSurface,
                     ),
@@ -72,68 +69,43 @@ class SessionInfoCard extends StatelessWidget {
                     size: 18,
                     color: colorScheme.onSurface,
                   ),
-                  backgroundColor:
-                      colorScheme.surfaceContainerHighest.withAlpha(200),
+                  backgroundColor: colorScheme.surfaceContainerHighest
+                      .withAlpha(200),
                 ),
             ],
           ),
           const SizedBox(height: 12),
+          _SessionInfoRow(label: l10n.sessionUserId, value: session.userId),
           _SessionInfoRow(
-            label: 'User ID',
-            value: session.userId,
-          ),
-          _SessionInfoRow(
-            label: 'Session ID',
+            label: l10n.sessionSessionId,
             value: session.sessionId,
           ),
           const SizedBox(height: 8),
           _SessionInfoRow(
-            label: 'Device name',
-            value: session.deviceName ?? 'Unknown',
+            label: l10n.sessionDeviceName,
+            value: session.deviceName ?? l10n.unknownValue,
           ),
           _SessionInfoRow(
-            label: 'Device type',
-            value: session.deviceType ?? 'Unknown',
+            label: l10n.sessionDeviceType,
+            value: session.deviceType ?? l10n.unknownValue,
           ),
           _SessionInfoRow(
-            label: 'OS',
-            value: session.os ?? 'Unknown',
-          ),
-          const SizedBox(height: 8),
-          _SessionInfoRow(
-            label: 'IP address',
-            value: session.ipAddress ?? 'Unknown',
-          ),
-          _SessionInfoRow(
-            label: 'MAC address',
-            value: session.macAddress ?? 'Unknown',
+            label: l10n.sessionOs,
+            value: session.os ?? l10n.unknownValue,
           ),
           const SizedBox(height: 8),
           _SessionInfoRow(
-            label: 'Created at',
-            value: _formatDateTime(session.createdAt),
+            label: l10n.sessionIpAddress,
+            value: session.ipAddress ?? l10n.unknownValue,
           ),
           _SessionInfoRow(
-            label: 'Updated at',
-            value: _formatDateTime(session.updatedAt),
+            label: l10n.sessionMacAddress,
+            value: session.macAddress ?? l10n.unknownValue,
           ),
+          const SizedBox(height: 8),
           _SessionInfoRow(
-            label: 'Expires at',
+            label: l10n.sessionExpiresAt,
             value: _formatDateTime(session.expiresAt),
-          ),
-          if (isTerminated && session.terminatedAt != null)
-            _SessionInfoRow(
-              label: 'Terminated at',
-              value: _formatDateTime(session.terminatedAt!),
-            ),
-          const SizedBox(height: 8),
-          _SessionInfoRow(
-            label: 'Is expired',
-            value: _boolToStatus(session.isExpired),
-          ),
-          _SessionInfoRow(
-            label: 'Is terminated',
-            value: _boolToStatus(isTerminated),
           ),
         ],
       ),
@@ -170,9 +142,7 @@ class _SessionInfoRow extends StatelessWidget {
           Expanded(
             child: Text(
               value,
-              style: textScheme.label.copyWith(
-                color: colorScheme.onSurface,
-              ),
+              style: textScheme.label.copyWith(color: colorScheme.onSurface),
               textAlign: TextAlign.right,
             ),
           ),

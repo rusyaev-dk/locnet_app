@@ -23,7 +23,7 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "alreadyRegisteredQuestion": MessageLookupByLibrary.simpleMessage(
-      "Уже зарегистрированы?",
+      "Ro‘yxatdan o‘tganmisiz?",
     ),
     "apiConnectionException": MessageLookupByLibrary.simpleMessage(
       "Ulanish xatosi, internet aloqasini tekshiring",
@@ -52,6 +52,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "appException": MessageLookupByLibrary.simpleMessage(
       "Ilovada xatolik yuz berdi",
     ),
+    "appearance": MessageLookupByLibrary.simpleMessage("Ko\'rinish"),
     "apply": MessageLookupByLibrary.simpleMessage("Qo‘llash"),
     "authExpiredSessionException": MessageLookupByLibrary.simpleMessage(
       "Sessiya muddati tugagan, iltimos qayta tizimga kiring",
@@ -65,13 +66,21 @@ class MessageLookup extends MessageLookupByLibrary {
     "authUnknownException": MessageLookupByLibrary.simpleMessage(
       "Avtorizatsiya jarayonida noma’lum xato yuz berdi",
     ),
-    "authorization": MessageLookupByLibrary.simpleMessage("Авторизация"),
+    "authorization": MessageLookupByLibrary.simpleMessage("Avtorizatsiya"),
     "back": MessageLookupByLibrary.simpleMessage("Orqaga"),
     "cancel": MessageLookupByLibrary.simpleMessage("Bekor qilish"),
+    "chooseHowTheAppLooks": MessageLookupByLibrary.simpleMessage(
+      "Ilovaning ko\'rinishini tanlang",
+    ),
     "clear": MessageLookupByLibrary.simpleMessage("Tozalash"),
     "close": MessageLookupByLibrary.simpleMessage("Yopish"),
     "confirm": MessageLookupByLibrary.simpleMessage("Tasdiqlash"),
+    "conversations": MessageLookupByLibrary.simpleMessage("Muloqotlar"),
+    "currentSession": MessageLookupByLibrary.simpleMessage("Joriy sessiya"),
     "delete": MessageLookupByLibrary.simpleMessage("O‘chirish"),
+    "deviceThemeMode": MessageLookupByLibrary.simpleMessage(
+      "Qurilma sozlamalariga mos",
+    ),
     "edit": MessageLookupByLibrary.simpleMessage("Tahrirlash"),
     "filteringClearException": MessageLookupByLibrary.simpleMessage(
       "Filtrlarni tozalab bo‘lmadi",
@@ -82,26 +91,62 @@ class MessageLookup extends MessageLookupByLibrary {
     "filteringUpdateException": MessageLookupByLibrary.simpleMessage(
       "Filtrlarni yangilab bo‘lmadi",
     ),
-    "jobPosition": MessageLookupByLibrary.simpleMessage("Должность"),
+    "homePage": MessageLookupByLibrary.simpleMessage("Bosh sahifa"),
+    "jobPosition": MessageLookupByLibrary.simpleMessage("Lavozim"),
     "language": MessageLookupByLibrary.simpleMessage("Til"),
-    "login": MessageLookupByLibrary.simpleMessage("Логин"),
+    "login": MessageLookupByLibrary.simpleMessage("Login"),
     "next": MessageLookupByLibrary.simpleMessage("Keyingi"),
+    "noLabel": MessageLookupByLibrary.simpleMessage("Yoʻq"),
     "ok": MessageLookupByLibrary.simpleMessage("OK"),
-    "password": MessageLookupByLibrary.simpleMessage("Пароль"),
+    "password": MessageLookupByLibrary.simpleMessage("Parol"),
     "passwordsMatchException": MessageLookupByLibrary.simpleMessage(
-      "Пароли не сопадают",
+      "Parollar mos emas",
     ),
-    "registration": MessageLookupByLibrary.simpleMessage("Регистрация"),
+    "registration": MessageLookupByLibrary.simpleMessage("Ro‘yxatdan o‘tish"),
     "registrationQuestion": MessageLookupByLibrary.simpleMessage(
-      "Не зарегистрированы?",
+      "Ro‘yxatdan o‘tmagansiz?",
     ),
-    "repeatPassword": MessageLookupByLibrary.simpleMessage("Повторите пароль"),
+    "repeatPassword": MessageLookupByLibrary.simpleMessage(
+      "Parolni takrorlang",
+    ),
     "reset": MessageLookupByLibrary.simpleMessage("Tiklash"),
-    "retry": MessageLookupByLibrary.simpleMessage("Попробовать снова"),
+    "retry": MessageLookupByLibrary.simpleMessage("Qayta urinib ko‘ring"),
     "save": MessageLookupByLibrary.simpleMessage("Saqlash"),
     "searchUnknownException": MessageLookupByLibrary.simpleMessage(
       "Qidiruvda noma’lum xato yuz berdi",
     ),
+    "selectInterfaceLanguage": MessageLookupByLibrary.simpleMessage(
+      "Interfeys tilini tanlang",
+    ),
+    "sessionCreatedAt": MessageLookupByLibrary.simpleMessage(
+      "Yaratilgan vaqti",
+    ),
+    "sessionDetails": MessageLookupByLibrary.simpleMessage(
+      "Sessiya tafsilotlari",
+    ),
+    "sessionDeviceName": MessageLookupByLibrary.simpleMessage("Qurilma nomi"),
+    "sessionDeviceType": MessageLookupByLibrary.simpleMessage("Qurilma turi"),
+    "sessionExpiresAt": MessageLookupByLibrary.simpleMessage("Tugash vaqti"),
+    "sessionIpAddress": MessageLookupByLibrary.simpleMessage("IP-manzil"),
+    "sessionIsExpired": MessageLookupByLibrary.simpleMessage("Muddati tugagan"),
+    "sessionIsTerminated": MessageLookupByLibrary.simpleMessage("Yakunlangan"),
+    "sessionMacAddress": MessageLookupByLibrary.simpleMessage("MAC-manzil"),
+    "sessionOs": MessageLookupByLibrary.simpleMessage("OS"),
+    "sessionSessionId": MessageLookupByLibrary.simpleMessage("Sessiya ID"),
+    "sessionStatusActive": MessageLookupByLibrary.simpleMessage("Faol"),
+    "sessionStatusExpired": MessageLookupByLibrary.simpleMessage(
+      "Muddati tugagan",
+    ),
+    "sessionStatusTerminated": MessageLookupByLibrary.simpleMessage(
+      "Tugatildi",
+    ),
+    "sessionTerminatedAt": MessageLookupByLibrary.simpleMessage(
+      "Yakunlangan vaqti",
+    ),
+    "sessionUpdatedAt": MessageLookupByLibrary.simpleMessage(
+      "Yangilangan vaqti",
+    ),
+    "sessionUserId": MessageLookupByLibrary.simpleMessage("Foydalanuvchi ID"),
     "settings": MessageLookupByLibrary.simpleMessage("Sozlamalar"),
     "settingsLocaleChangeException": MessageLookupByLibrary.simpleMessage(
       "Ilova tilini o‘zgartirib bo‘lmadi",
@@ -119,7 +164,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Sozlamalarda noma’lum xato yuz berdi",
     ),
     "share": MessageLookupByLibrary.simpleMessage("Ulashish"),
-    "signIn": MessageLookupByLibrary.simpleMessage("Войти"),
+    "signIn": MessageLookupByLibrary.simpleMessage("Kirish"),
     "sortingClearException": MessageLookupByLibrary.simpleMessage(
       "Saralashni tozalab bo‘lmadi",
     ),
@@ -129,6 +174,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "sortingUpdateException": MessageLookupByLibrary.simpleMessage(
       "Saralashni yangilab bo‘lmadi",
     ),
+    "storage": MessageLookupByLibrary.simpleMessage("Xotira"),
     "storageDeleteException": MessageLookupByLibrary.simpleMessage(
       "Ma’lumotni o‘chirishda xato yuz berdi",
     ),
@@ -151,6 +197,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "themeModeDark": MessageLookupByLibrary.simpleMessage("Qorong‘i"),
     "themeModeLight": MessageLookupByLibrary.simpleMessage("Yorug‘"),
     "themeModeSystem": MessageLookupByLibrary.simpleMessage("Tizimiy"),
+    "unknownValue": MessageLookupByLibrary.simpleMessage("Nomaʼlum"),
     "userFavouritesAddException": MessageLookupByLibrary.simpleMessage(
       "Sevimlilarga qo‘shib bo‘lmadi",
     ),
@@ -163,5 +210,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "userFavouritesUnknownException": MessageLookupByLibrary.simpleMessage(
       "Sevimlilar bilan ishlashda noma’lum xato yuz berdi",
     ),
+    "yesLabel": MessageLookupByLibrary.simpleMessage("Ha"),
   };
 }
