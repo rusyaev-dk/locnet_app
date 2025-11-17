@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
+import 'package:locnet_app/uikit/uikit.dart';
 
 class SettingsDrawer extends StatelessWidget {
   const SettingsDrawer({super.key});
@@ -164,41 +165,17 @@ class _SettingsHeader extends StatelessWidget {
         children: [
           Text(
             l10n.settings,
-            style: textScheme.display.copyWith(color: colorScheme.onSurface),
+            style: textScheme.display.copyWith(
+              color: colorScheme.onSurface,
+              fontSize: 25,
+            ),
           ),
           const Spacer(),
-          _SettingsCloseButton(),
+          AppIconButton(
+            onPressed: () => Navigator.of(context).pop(),
+            icon: Icons.close,
+          ),
         ],
-      ),
-    );
-  }
-}
-
-class _SettingsCloseButton extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = context.colorScheme;
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () {
-          Navigator.of(context).pop();
-        },
-        borderRadius: BorderRadius.circular(999),
-        child: Container(
-          width: 32,
-          height: 32,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            color: colorScheme.secondary,
-          ),
-          child: Icon(
-            Icons.close,
-            size: 18,
-            color: colorScheme.onSurfaceVariant,
-          ),
-        ),
       ),
     );
   }

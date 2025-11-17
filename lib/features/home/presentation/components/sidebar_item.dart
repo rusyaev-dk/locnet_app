@@ -52,8 +52,9 @@ class SidebarItem extends StatelessWidget {
                   : MainAxisAlignment.start,
               children: [
                 Container(
-                  width: 26,
-                  height: 26,
+                  width: 30,
+                  height: 30,
+                  padding: const EdgeInsets.all(2),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(13),
                     color: isSelected

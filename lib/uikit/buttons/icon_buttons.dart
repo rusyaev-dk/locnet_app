@@ -1,84 +1,54 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:locnet_app/uikit/uikit.dart';
+import 'package:locnet_app/app/app.dart';
 
-class CustomIconButton extends StatelessWidget {
-  const CustomIconButton({
+class AppIconButton extends StatelessWidget {
+  const AppIconButton({
     required this.icon,
     required this.onPressed,
     super.key,
-    this.iconSize,
-    this.iconColor,
-  });
-
-  final IconData icon;
-  final double? iconSize;
-  final Color? iconColor;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = AppColorScheme.of(context);
-
-    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
-      return CupertinoButton(
-        padding: EdgeInsets.zero,
-        onPressed: onPressed,
-        child: Icon(
-          icon,
-          size: iconSize,
-          color: iconColor ?? colorScheme.onSurface,
-        ),
-      );
-    } else {
-      return IconButton(
-        padding: EdgeInsets.zero,
-        onPressed: onPressed,
-        icon: Icon(
-          icon,
-          size: iconSize,
-          color: iconColor ?? colorScheme.onSurface,
-        ),
-      );
-    }
-  }
-}
-
-class CustomIconButtonCircled extends StatelessWidget {
-  const CustomIconButtonCircled({
-    required this.icon,
-    required this.onPressed,
-    required this.diameter,
-    super.key,
-    this.iconSize,
-    this.iconColor,
+    this.tooltip,
     this.backgroundColor,
+    this.foregroundColor,
+    this.borderRadius,
+    this.buttonSize = 33,
+    this.iconSize = 17,
   });
 
   final IconData icon;
-  final double? iconSize;
-  final Color? iconColor;
-  final VoidCallback onPressed;
-  final double diameter;
+  final String? tooltip;
   final Color? backgroundColor;
+  final Color? foregroundColor;
+  final double? buttonSize;
+  final double? iconSize;
+  final BorderRadius? borderRadius;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = AppColorScheme.of(context);
+    final colorScheme = context.colorScheme;
+    final borderRadius =
+        this.borderRadius ?? BorderRadius.circular(buttonSize! / 2.5);
 
-    return Container(
-      height: diameter,
-      width: diameter,
-      decoration: BoxDecoration(
-        color: backgroundColor ?? colorScheme.surface,
-        borderRadius: BorderRadius.circular(diameter / 2),
-      ),
-      child: CustomIconButton(
-        icon: icon,
-        onPressed: onPressed,
-        iconSize: iconSize,
-        iconColor: iconColor,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          onPressed();
+        },
+        borderRadius: borderRadius,
+        child: Container(
+          height: buttonSize,
+          width: buttonSize,
+          decoration: BoxDecoration(
+            color: backgroundColor ?? colorScheme.secondary,
+            borderRadius: borderRadius,
+          ),
+          child: Icon(
+            icon,
+            size: iconSize,
+            color: foregroundColor ?? colorScheme.onSurface,
+          ),
+        ),
       ),
     );
   }
