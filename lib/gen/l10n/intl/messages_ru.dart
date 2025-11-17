@@ -99,6 +99,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "repeatPassword": MessageLookupByLibrary.simpleMessage("Повторите пароль"),
     "reset": MessageLookupByLibrary.simpleMessage("Сбросить"),
+    "retry": MessageLookupByLibrary.simpleMessage("Попробовать снова"),
     "save": MessageLookupByLibrary.simpleMessage("Сохранить"),
     "searchUnknownException": MessageLookupByLibrary.simpleMessage(
       "Неизвестная ошибка при поиске",

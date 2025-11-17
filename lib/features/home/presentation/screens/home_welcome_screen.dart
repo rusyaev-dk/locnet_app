@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class PanelWelcomeScreen extends StatelessWidget {
-  const PanelWelcomeScreen({super.key});
+class HomeWelcomeScreen extends StatelessWidget {
+  const HomeWelcomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -4,8 +4,8 @@ import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/auth/presentation/presentation.dart';
 
-class LoginScreenWrapper extends StatelessWidget {
-  const LoginScreenWrapper({required this.child, super.key});
+class LogInScreenWrapper extends StatelessWidget {
+  const LogInScreenWrapper({required this.child, super.key});
 
   final Widget child;
 
@@ -18,14 +18,14 @@ class LoginScreenWrapper extends StatelessWidget {
   }
 }
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class LogInScreen extends StatefulWidget {
+  const LogInScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<LogInScreen> createState() => _LogInScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LogInScreenState extends State<LogInScreen> {
   late final TextEditingController _loginController;
   late final TextEditingController _passwordController;
 

@@ -7,10 +7,12 @@ import 'package:locnet_app/features/auth/domain/domain.dart';
 part 'auth_state.dart';
 
 final class AuthCubit extends Cubit<AuthState> {
-  AuthCubit({required AuthInteractor authInteractor, required ILogger logger})
-    : _authInteractor = authInteractor,
-      _logger = logger,
-      super(const AuthInitialState()) {
+  AuthCubit({
+    required AuthInteractor authInteractor,
+    required ILogger logger,
+  }) : _authInteractor = authInteractor,
+       _logger = logger,
+       super(const AuthInitialState()) {
     _restoreOrFetch();
   }
 
@@ -24,7 +26,10 @@ final class AuthCubit extends Cubit<AuthState> {
       }
       _logger.info("Trying to login...");
 
-      // TODO: implement
+      final _ = await _authInteractor.logIn();
+      final user = await _authInteractor.getUser();
+
+      emit(AuthAuthenticatedState(user: user));
     } catch (e, st) {
       _logger.exception(e, st);
       emit(

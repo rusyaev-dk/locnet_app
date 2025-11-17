@@ -92,6 +92,12 @@ class _InteractorProviders extends StatelessWidget {
           create: (context) =>
               SettingsInteractor(settingsRepo: context.read<ISettingsRepo>()),
         ),
+        RepositoryProvider<UserInteractor>(
+          create: (context) => UserInteractor(
+            userRepo: context.read<IUserRepo>(),
+            logger: context.read<ILogger>(),
+          ),
+        ),
         RepositoryProvider<AuthInteractor>(
           lazy: false,
           create: (context) => AuthInteractor(

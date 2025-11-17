@@ -38,102 +38,103 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
     required this.inversePrimary,
     required this.surfaceTint,
     required this.shimmer,
-    required this.activatedFilterButtonColor,
-    required this.inActivatedFilterButtonColor,
-    required this.activatedThemeButtonColor,
-    required this.inActivatedThemeButtonColor,
-    required this.sectionBackgroundColor,
-    required this.settingsBackgroundColor,
     required this.approval,
   });
 
   const AppColorScheme.light()
-    : primary = const Color.fromARGB(255, 46, 133, 233),
+    : primary = const Color(0xFF2563EB), // blue-600
       onPrimary = const Color(0xFFFFFFFF),
-      primaryContainer = const Color(0xFF90CAF9),
-      onPrimaryContainer = const Color(0xFF000000),
-      secondary = const Color(0xFF039BE5),
-      onSecondary = const Color(0xFFFFFFFF),
-      secondaryContainer = const Color(0xFFCBE6FF),
-      onSecondaryContainer = const Color(0xFF000000),
-      tertiary = const Color(0xFF0277BD),
-      onTertiary = const Color(0xFFFFFFFF),
-      tertiaryContainer = const Color(0xFFBEDCFF),
-      onTertiaryContainer = const Color(0xFF000000),
-      error = const Color.fromARGB(255, 218, 3, 43),
+      primaryContainer = const Color(0xFFDBEAFE), // blue-100
+      onPrimaryContainer = const Color(0xFF0B1120),
+
+      secondary = const Color(0xFF0EA5E9), // cyan-500
+      onSecondary = const Color(0xFF001319),
+      secondaryContainer = const Color(0xFFCFF5FF),
+      onSecondaryContainer = const Color(0xFF022C3A),
+
+      tertiary = const Color(0xFFF97316), // orange-500
+      onTertiary = const Color(0xFF1F1304),
+      tertiaryContainer = const Color(0xFFFFEDD5),
+      onTertiaryContainer = const Color(0xFF451A03),
+
+      error = const Color(0xFFDC2626), // red-600
       onError = const Color(0xFFFFFFFF),
-      errorContainer = const Color(0xFFFCD9DF),
-      onErrorContainer = const Color(0xFF000000),
-      surface = const Color(0xFFFCFCFC),
-      onSurface = const Color(0xFF111111),
-      surfaceDim = const Color(0xFFE0E0E0),
-      surfaceBright = const Color(0xFFFDFDFD),
+      errorContainer = const Color(0xFFFEE2E2),
+      onErrorContainer = const Color(0xFF450A0A),
+
+      surface = const Color(0xFFF9FAFB), // slate-50
+      onSurface = const Color(0xFF020617), // slate-950
+      surfaceDim = const Color(0xFFE5E7EB), // gray-200
+      surfaceBright = const Color(0xFFFFFFFF),
       surfaceContainerLowest = const Color(0xFFFFFFFF),
-      surfaceContainerLow = const Color(0xFFF8F8F8),
-      surfaceContainer = const Color(0xFFF3F3F3),
-      surfaceContainerHigh = const Color(0xFFEDEDED),
-      surfaceContainerHighest = const Color(0xFFE7E7E7),
-      onSurfaceVariant = const Color(0xFF393939),
-      outline = const Color(0xFF919191),
-      outlineVariant = const Color(0xFFD1D1D1),
+      surfaceContainerLow = const Color(0xFFF3F4F6), // gray-100
+      surfaceContainer = const Color(0xFFE5E7EB),
+      surfaceContainerHigh = const Color(0xFFD1D5DB), // gray-300
+      surfaceContainerHighest = const Color(0xFFCBD5E1), // slate-300
+
+      onSurfaceVariant = const Color(0xFF4B5563), // gray-600
+      outline = const Color(0xFFCBD5E1),
+      outlineVariant = const Color(0xFFE5E7EB),
+
       shadow = const Color(0xFF000000),
-      scrim = const Color(0xFF000000),
-      inverseSurface = const Color(0xFF2A2A2A),
-      onInverseSurface = const Color(0xFFF1F1F1),
-      inversePrimary = const Color(0xFFAEDFFF),
-      surfaceTint = const Color(0xFF1565C0),
-      shimmer = const Color(0xFFD1D1D1),
-      activatedFilterButtonColor = const Color(0xFFb2b2b2),
-      inActivatedFilterButtonColor = const Color(0xFFe0e0e2),
-      activatedThemeButtonColor = const Color(0xFFFFFFFF),
-      inActivatedThemeButtonColor = const Color(0xFFDADADA),
-      sectionBackgroundColor = const Color(0xFFFFFFFF),
-      settingsBackgroundColor = const Color.fromARGB(255, 242, 242, 242),
-      approval = Colors.green;
+      scrim = const Color(0xFF020617),
+
+      inverseSurface = const Color(0xFF020617),
+      onInverseSurface = const Color(0xFFE5E7EB),
+      inversePrimary = const Color(0xFF60A5FA), // blue-400
+
+      surfaceTint = const Color(0xFF2563EB),
+      shimmer = const Color(0xFFE5E7EB),
+
+      approval = const Color(0xFF22C55E); // green-500
 
   const AppColorScheme.dark()
-    : primary = const Color(0xFF90CAF9),
-      onPrimary = const Color(0xFF000000),
-      primaryContainer = const Color(0xFF0D47A1),
-      onPrimaryContainer = const Color(0xFFFFFFFF),
-      secondary = const Color(0xFF81D4FA),
-      onSecondary = const Color(0xFF000000),
-      secondaryContainer = const Color(0xFF004B73),
-      onSecondaryContainer = const Color(0xFFFFFFFF),
-      tertiary = const Color(0xFFE1F5FE),
-      onTertiary = const Color(0xFF000000),
-      tertiaryContainer = const Color(0xFF1A567D),
-      onTertiaryContainer = const Color(0xFFFFFFFF),
-      error = const Color(0xFFCF6679),
-      onError = const Color(0xFF000000),
-      errorContainer = const Color(0xFFB1384E),
-      onErrorContainer = const Color(0xFFFFFFFF),
-      surface = const Color(0xFF080808),
-      onSurface = const Color(0xFFF1F1F1),
-      surfaceDim = const Color(0xFF060606),
-      surfaceBright = const Color(0xFF2C2C2C),
-      surfaceContainerLowest = const Color(0xFF010101),
-      surfaceContainerLow = const Color(0xFF0E0E0E),
-      surfaceContainer = const Color(0xFF151515),
-      surfaceContainerHigh = const Color(0xFF1D1D1D),
-      surfaceContainerHighest = const Color(0xFF282828),
-      onSurfaceVariant = const Color(0xFFCACACA),
-      outline = const Color(0xFF777777),
-      outlineVariant = const Color(0xFF414141),
+    : primary = const Color(0xFF60A5FA), // blue-400
+      onPrimary = const Color(0xFF0B1120),
+      primaryContainer = const Color(0xFF1D4ED8), // blue-700
+      onPrimaryContainer = const Color(0xFFDBEAFE),
+
+      secondary = const Color(0xFF38BDF8), // sky-400
+      onSecondary = const Color(0xFF02131A),
+      secondaryContainer = const Color(0xFF075985), // sky-800
+      onSecondaryContainer = const Color(0xFFE0F2FE),
+
+      tertiary = const Color(0xFFF97316),
+      onTertiary = const Color(0xFF1F1304),
+      tertiaryContainer = const Color(0xFF9A3412),
+      onTertiaryContainer = const Color(0xFFFDE7C3),
+
+      error = const Color(0xFFF97373),
+      onError = const Color(0xFF450A0A),
+      errorContainer = const Color(0xFF7F1D1D),
+      onErrorContainer = const Color(0xFFFEE2E2),
+
+      surface = const Color(0xFF020617), // slate-950
+      onSurface = const Color(0xFFE5E7EB),
+      surfaceDim = const Color(0xFF020617),
+      surfaceBright = const Color(0xFF111827), // slate-900
+      surfaceContainerLowest = const Color(0xFF000000),
+      surfaceContainerLow = const Color(0xFF030712),
+      surfaceContainer = const Color(0xFF020617),
+      surfaceContainerHigh = const Color(0xFF111827),
+      surfaceContainerHighest = const Color(0xFF1F2937), // slate-800
+
+      onSurfaceVariant = const Color(0xFF9CA3AF), // gray-400
+      outline = const Color(0xFF4B5563), // gray-600
+      outlineVariant = const Color(0xFF1F2937),
+
       shadow = const Color(0xFF000000),
       scrim = const Color(0xFF000000),
-      inverseSurface = const Color(0xFFE8E8E8),
-      onInverseSurface = const Color(0xFF2A2A2A),
-      inversePrimary = const Color(0xFF445B6B),
-      surfaceTint = const Color(0xFF90CAF9),
-      shimmer = const Color(0xFFD1D1D1),
-      activatedFilterButtonColor = const Color(0xFFb2b2b2),
-      inActivatedFilterButtonColor = const Color(0xFFe0e0e2),
-      activatedThemeButtonColor = const Color(0xFFFFFFFF),
-      inActivatedThemeButtonColor = const Color(0xFFDADADA),
-      sectionBackgroundColor = const Color(0xFFFFFFFF),
-      settingsBackgroundColor = const Color.fromARGB(255, 242, 242, 242),
-      approval = Colors.green;
+
+      inverseSurface = const Color(0xFFF9FAFB),
+      onInverseSurface = const Color(0xFF020617),
+      inversePrimary = const Color(0xFF2563EB),
+
+      surfaceTint = const Color(0xFF60A5FA),
+      shimmer = const Color(0xFF374151), // slate-700
+
+      approval = const Color(0xFF22C55E);
+
   final Color primary;
   final Color onPrimary;
   final Color primaryContainer;
@@ -169,12 +170,6 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
   final Color inversePrimary;
   final Color surfaceTint;
   final Color shimmer;
-  final Color activatedFilterButtonColor;
-  final Color inActivatedFilterButtonColor;
-  final Color activatedThemeButtonColor;
-  final Color inActivatedThemeButtonColor;
-  final Color sectionBackgroundColor;
-  final Color settingsBackgroundColor;
   final Color approval;
 
   @override
@@ -214,12 +209,6 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
     Color? inversePrimary,
     Color? surfaceTint,
     Color? shimmer,
-    Color? activatedFilterButtonColor,
-    Color? inActivatedFilterButtonColor,
-    Color? activatedThemeButtonColor,
-    Color? inActivatedThemeButtonColor,
-    Color? sectionBackgroundColor,
-    Color? settingsBackgroundColor,
     Color? approval,
   }) {
     return AppColorScheme._(
@@ -260,18 +249,6 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
       inversePrimary: inversePrimary ?? this.inversePrimary,
       surfaceTint: surfaceTint ?? this.surfaceTint,
       shimmer: shimmer ?? this.shimmer,
-      activatedFilterButtonColor:
-          activatedFilterButtonColor ?? this.activatedFilterButtonColor,
-      inActivatedFilterButtonColor:
-          inActivatedFilterButtonColor ?? this.inActivatedFilterButtonColor,
-      activatedThemeButtonColor:
-          activatedThemeButtonColor ?? this.activatedThemeButtonColor,
-      inActivatedThemeButtonColor:
-          inActivatedThemeButtonColor ?? this.inActivatedThemeButtonColor,
-      sectionBackgroundColor:
-          sectionBackgroundColor ?? this.sectionBackgroundColor,
-      settingsBackgroundColor:
-          settingsBackgroundColor ?? this.settingsBackgroundColor,
       approval: approval ?? this.approval,
     );
   }
@@ -377,36 +354,6 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
       inversePrimary: Color.lerp(inversePrimary, other.inversePrimary, t)!,
       surfaceTint: Color.lerp(surfaceTint, other.surfaceTint, t)!,
       shimmer: Color.lerp(shimmer, other.shimmer, t)!,
-      activatedFilterButtonColor: Color.lerp(
-        activatedFilterButtonColor,
-        other.activatedFilterButtonColor,
-        t,
-      )!,
-      inActivatedFilterButtonColor: Color.lerp(
-        inActivatedFilterButtonColor,
-        other.inActivatedFilterButtonColor,
-        t,
-      )!,
-      activatedThemeButtonColor: Color.lerp(
-        activatedThemeButtonColor,
-        other.activatedThemeButtonColor,
-        t,
-      )!,
-      inActivatedThemeButtonColor: Color.lerp(
-        inActivatedThemeButtonColor,
-        other.inActivatedThemeButtonColor,
-        t,
-      )!,
-      sectionBackgroundColor: Color.lerp(
-        sectionBackgroundColor,
-        other.sectionBackgroundColor,
-        t,
-      )!,
-      settingsBackgroundColor: Color.lerp(
-        settingsBackgroundColor,
-        other.settingsBackgroundColor,
-        t,
-      )!,
       approval: Color.lerp(approval, other.approval, t)!,
     );
   }

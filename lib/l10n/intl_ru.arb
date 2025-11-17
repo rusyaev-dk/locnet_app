@@ -19,6 +19,7 @@
      "themeModeSystem": "Системная",
     "themeModeLight": "Светлая",
     "themeModeDark": "Тёмная",
+    "retry": "Попробовать снова",
     "appException": "Произошла ошибка приложения",
     "apiUnauthorizedException": "Ошибка авторизации, пожалуйста, войдите снова",
     "apiServerException": "Ошибка сервера, попробуйте позже",

@@ -17,6 +17,19 @@ final class InMemoryUserRepo implements IUserRepo {
   final Random _random;
 
   @override
+  Future<User> me() async {
+    try {
+      final UserDTO? adminDto = _usersById['usr-adm'];
+      if (adminDto == null) {
+        throw StateError('Admin user not found: usr-adm');
+      }
+      return User.fromDTO(adminDto);
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  @override
   Future<User> getUserById({required String userId}) async {
     try {
       final UserDTO? dto = _usersById[userId];

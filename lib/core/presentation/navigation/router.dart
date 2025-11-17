@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/auth/presentation/presentation.dart';
 import 'package:locnet_app/features/conversations/presentation/presentation.dart';
-import 'package:locnet_app/features/panel/presentation/presentation.dart';
+import 'package:locnet_app/features/home/presentation/presentation.dart';
 import 'package:locnet_app/features/root/root_screen.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
 import 'package:locnet_app/features/splash/splash_screen.dart';
@@ -30,45 +30,35 @@ class AppRouter {
         final AuthFlowStatus status = authListenable.status;
         final String location = state.uri.path;
 
-        // Loading state
         if (status == AuthFlowStatus.loading) {
           return location == '/' ? null : '/';
         }
 
-        // Unauthenticated user
         if (status == AuthFlowStatus.unauthenticated) {
           final bool isAuthRoute =
               location == AppRoutes.login || location == AppRoutes.registration;
-
-          // Allow switching between login and registration
           if (isAuthRoute) {
             return null;
           }
-
-          // Redirect everything else to login
           return AppRoutes.login;
         }
 
-        // Authenticated user
         if (status == AuthFlowStatus.authenticated) {
-          // If authenticated, do not allow visiting login/registration/root
           if (location == '/' ||
               location == AppRoutes.login ||
               location == AppRoutes.registration) {
-            return AppRoutes.welcome;
+            return AppRoutes.home;
           }
 
-          // If route is inside /panel → allow
-          final bool isPanelRoute = location.startsWith(AppRoutes.panel);
-          if (isPanelRoute) {
+          final bool isHomeRoute = location.startsWith('/home');
+          if (isHomeRoute) {
             return null;
           }
 
-          // Any other route → redirect to welcome
-          return AppRoutes.welcome;
+          return AppRoutes.home;
+
         }
 
-        // Unknown state
         return null;
       },
       routes: <RouteBase>[
@@ -96,7 +86,7 @@ class AppRouter {
             BuildContext context,
             GoRouterState state,
           ) {
-            return const LoginScreenWrapper(child: LoginScreen());
+            return const LogInScreenWrapper(child: LogInScreen());
           }),
         ),
         ShellRoute(
@@ -109,62 +99,66 @@ class AppRouter {
           }),
           routes: <RouteBase>[
             GoRoute(
-              path: '/panel/welcome',
-              name: 'panelWelcome',
+              path: '/home',
+              name: 'home',
               pageBuilder: buildPageTransition((
                 BuildContext context,
                 GoRouterState state,
               ) {
-                return const PanelWelcomeScreen();
+                return const HomeWelcomeScreen();
               }),
-            ),
-            GoRoute(
-              path: '/panel/conversations',
-              name: 'conversations',
-              pageBuilder: buildPageTransition((
-                BuildContext context,
-                GoRouterState state,
-              ) {
-                return const ConversationsScreenWrapper(
-                  child: ConversationsScreen(selectedConversationId: null),
-                );
-              }),
-            ),
-            GoRoute(
-              path: '/panel/conversations/:conversationId',
-              name: 'conversationDetails',
-              pageBuilder: buildPageTransition((
-                BuildContext context,
-                GoRouterState state,
-              ) {
-                final String conversationId =
-                    state.pathParameters['conversationId']!;
-                return ConversationsScreenWrapper(
-                  child: ConversationsScreen(
-                    selectedConversationId: conversationId,
-                  ),
-                );
-              }),
-            ),
-            GoRoute(
-              path: '/panel/storage',
-              name: 'storage',
-              pageBuilder: buildPageTransition((
-                BuildContext context,
-                GoRouterState state,
-              ) {
-                return const StorageScreen();
-              }),
-            ),
-            GoRoute(
-              path: '/panel/settings',
-              name: 'settings',
-              pageBuilder: buildPageTransition((
-                BuildContext context,
-                GoRouterState state,
-              ) {
-                return const SettingsScreen();
-              }),
+              routes: <RouteBase>[
+                GoRoute(
+                  path: 'conversations',
+                  name: 'conversations',
+                  pageBuilder: buildPageTransition((
+                    BuildContext context,
+                    GoRouterState state,
+                  ) {
+                    return const ConversationsScreenWrapper(
+                      child: ConversationsScreen(selectedConversationId: null),
+                    );
+                  }),
+                  routes: [
+                    GoRoute(
+                      path: ':conversationId',
+                      name: 'conversationDetails',
+                      pageBuilder: buildPageTransition((
+                        BuildContext context,
+                        GoRouterState state,
+                      ) {
+                        final String conversationId =
+                            state.pathParameters['conversationId']!;
+                        return ConversationsScreenWrapper(
+                          child: ConversationsScreen(
+                            selectedConversationId: conversationId,
+                          ),
+                        );
+                      }),
+                    ),
+                  ],
+                ),
+                GoRoute(
+                  path: 'storage',
+                  name: 'storage',
+                  pageBuilder: buildPageTransition((
+                    BuildContext context,
+                    GoRouterState state,
+                  ) {
+                    return const StorageScreen();
+                  }),
+                ),
+                GoRoute(
+                  path: 'settings',
+                  name: 'settings',
+                  pageBuilder: buildPageTransition((
+                    BuildContext context,
+                    GoRouterState state,
+                  ) {
+                    return const SettingsScreen();
+                  }),
+                ),
+              ],
             ),
           ],
         ),

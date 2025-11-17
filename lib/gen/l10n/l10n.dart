@@ -154,6 +154,11 @@ class S {
     return Intl.message('Тёмная', name: 'themeModeDark', desc: '', args: []);
   }
 
+  /// `Попробовать снова`
+  String get retry {
+    return Intl.message('Попробовать снова', name: 'retry', desc: '', args: []);
+  }
+
   /// `Произошла ошибка приложения`
   String get appException {
     return Intl.message(
@@ -601,6 +606,7 @@ class AppLocalizationDelegate extends LocalizationsDelegate<S> {
   List<Locale> get supportedLocales {
     return const <Locale>[
       Locale.fromSubtags(languageCode: 'ru'),
+      Locale.fromSubtags(languageCode: 'en'),
       Locale.fromSubtags(languageCode: 'uz'),
     ];
   }

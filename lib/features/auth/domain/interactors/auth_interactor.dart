@@ -50,11 +50,7 @@ final class AuthInteractor {
         ..exception(e, st)
         ..log('Trying to fetch user from remote...');
 
-      final session = await getSession();
-      final userId = session.userId;
-      // TODO:implement with ME endpoint !!!
-      final user = await _userRepo.getUserById(userId: userId);
-
+      final user = await _userRepo.me();
       final bool saveSuccess = await _userCacheRepo.saveUser(user: user);
 
       if (!saveSuccess) {
