@@ -43,7 +43,7 @@ final class InMemoryUserRepo implements IUserRepo {
     }
   }
 
-  /// Expects [updatedUser] to be a JSON string compatible with [UserDTO.fromJson].
+  /// Expects [updatedUser] to be a JSON string compatible with [UserDTO.fromJSON].
   /// Returns true if the user existed and was updated, false otherwise.
   @override
   Future<bool> updateUser({required String updatedUser}) async {
@@ -52,7 +52,7 @@ final class InMemoryUserRepo implements IUserRepo {
       if (raw is! Map<String, dynamic>) {
         return false;
       }
-      final UserDTO incoming = UserDTO.fromJson(raw);
+      final UserDTO incoming = UserDTO.fromJSON(raw);
 
       final UserDTO? existing = _usersById[incoming.userId];
       if (existing == null) {

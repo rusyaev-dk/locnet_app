@@ -1,15 +1,16 @@
-import 'package:locnet_app/features/conversation/data/data.dart';
-import 'package:locnet_app/features/conversation/domain/domain.dart';
+import 'package:locnet_app/features/conversations/data/data.dart';
+import 'package:locnet_app/features/conversations/domain/domain.dart';
 
 final class ConversationsListInteractor {
-  ConversationsListInteractor({required IConversationRepo conversationRepo})
-    : _conversationRepo = conversationRepo;
+  ConversationsListInteractor({
+    required IConversationsListRepo conversationsListRepo,
+  }) : _conversationsListRepo = conversationsListRepo;
 
-  final IConversationRepo _conversationRepo;
+  final IConversationsListRepo _conversationsListRepo;
 
-  Future<List<Conversation>> loadConversations({int page = 1}) async {
-    final List<Conversation> conversations = await _conversationRepo
-        .loadConversations(page: page);
+  Future<List<ConversationTile>> loadConversations({int page = 1}) async {
+    final List<ConversationTile> conversations = await _conversationsListRepo
+        .loadConversationsList(page: page);
     return conversations;
   }
 }

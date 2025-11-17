@@ -31,7 +31,7 @@ class MessageDTO extends Equatable {
   final DateTime createdAt; // timestamp
   final DateTime updatedAt; // timestamp
 
-  factory MessageDTO.fromJson(Map<String, dynamic> json) {
+  factory MessageDTO.fromJSON(Map<String, dynamic> json) {
     DateTime? parseNullable(dynamic v) {
       if (v == null) return null;
       if (v is DateTime) return v;
@@ -61,7 +61,7 @@ class MessageDTO extends Equatable {
     );
   }
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
+  Map<String, dynamic> toJSON() => <String, dynamic>{
     'messageId': messageId,
     'conversationId': conversationId,
     'senderId': senderId,

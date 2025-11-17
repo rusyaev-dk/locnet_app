@@ -6,6 +6,7 @@ import 'package:locnet_app/features/auth/data/data.dart';
 import 'package:locnet_app/features/auth/domain/domain.dart';
 import 'package:locnet_app/features/auth/presentation/presentation.dart';
 import 'package:locnet_app/features/conversation/data/data.dart';
+import 'package:locnet_app/features/conversations/data/data.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
 import 'package:locnet_app/features/settings/domain/domain.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
@@ -42,8 +43,14 @@ class AppProvidersWrapper extends StatelessWidget {
             create: (context) => const MockAuthRepo(),
           ),
           RepositoryProvider<IConversationRepo>(
-            create: (context) => WebSocketConversationRepo(
-              webSocketClient: context.read<IWebSocketClient>(),
+            create: (context) => MockWebSocketConversationRepo(
+              // webSocketClient: context.read<IWebSocketClient>(),
+              logger: appScope.logger,
+            ),
+          ),
+          RepositoryProvider<IConversationsListRepo>(
+            create: (context) => MockWebSocketConversationsListRepo(
+              // webSocketClient: context.read<IWebSocketClient>(),
               logger: appScope.logger,
             ),
           ),

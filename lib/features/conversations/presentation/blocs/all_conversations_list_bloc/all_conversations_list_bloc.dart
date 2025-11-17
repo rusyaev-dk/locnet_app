@@ -4,8 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/conversation/data/data.dart';
-import 'package:locnet_app/features/conversation/domain/domain.dart';
+import 'package:locnet_app/features/conversations/data/data.dart';
 import 'package:locnet_app/features/conversations/domain/domain.dart';
 
 part 'all_conversations_list_event.dart';
@@ -16,10 +15,10 @@ class AllConversationsListBloc
   AllConversationsListBloc({
     required ConversationsListInteractor conversationsListInteractor,
     required ILogger logger,
-    required IConversationRepo conversationRepo,
+    required IConversationsListRepo conversationsListRepo,
   }) : _conversationsListInteractor = conversationsListInteractor,
        _logger = logger,
-       _conversationRepo = conversationRepo,
+       _conversationsListRepo = conversationsListRepo,
        super(const AllConversationsListInitial()) {
     on<AllConversationsListLoadEvent>(_onLoad);
     on<AllConversationsListLoadMoreEvent>(_onLoadMore);
@@ -27,16 +26,15 @@ class AllConversationsListBloc
     on<AllConversationsListConversationUpdatedEvent>(_onConversationUpdated);
     on<AllConversationsListConversationDeletedEvent>(_onConversationDeleted);
 
-    _conversationsUpdatesSub = _conversationRepo.conversationsUpdates.listen(
-      _onIncomingChange,
-    );
+    _conversationsUpdatesSub = _conversationsListRepo.conversationsUpdates
+        .listen(_onIncomingChange);
   }
 
   final ConversationsListInteractor _conversationsListInteractor;
   final ILogger _logger;
-  final IConversationRepo _conversationRepo;
+  final IConversationsListRepo _conversationsListRepo;
 
-  late final StreamSubscription<ConversationsUpdateRec>
+  late final StreamSubscription<ConversationsListUpdateRec>
   _conversationsUpdatesSub;
 
   Future<void> _safeLoadConversations({
@@ -54,7 +52,7 @@ class AllConversationsListBloc
         }
       }
 
-      final List<Conversation> loadedConversations =
+      final List<ConversationTile> loadedConversations =
           await _conversationsListInteractor.loadConversations(page: page);
 
       final AllConversationsListState currentState = state;
@@ -62,7 +60,7 @@ class AllConversationsListBloc
       if (!isLoadMore || currentState is! AllConversationsListLoadedState) {
         emit(
           AllConversationsListLoadedState(
-            conversations: loadedConversations,
+            conversationTiles: loadedConversations,
             page: page,
           ),
         );
@@ -75,8 +73,8 @@ class AllConversationsListBloc
         loadedState.copyWith(
           page: page,
           isLoadingMore: false,
-          conversations: <Conversation>[
-            ...loadedState.conversations,
+          conversationTiles: <ConversationTile>[
+            ...loadedState.conversationTiles,
             ...loadedConversations,
           ],
         ),
@@ -126,26 +124,26 @@ class AllConversationsListBloc
     await _safeLoadConversations(page: nextPage, emit: emit, isLoadMore: true);
   }
 
-  void _onIncomingChange(ConversationsUpdateRec update) {
+  void _onIncomingChange(ConversationsListUpdateRec update) {
     switch (update.kind) {
-      case ConversationUpdateType.created:
+      case ConversationTileUpdateType.created:
         add(
           AllConversationsListConversationCreatedEvent(
-            conversation: update.conversation,
+            conversationTile: update.conversationTile,
           ),
         );
         break;
-      case ConversationUpdateType.updated:
+      case ConversationTileUpdateType.updated:
         add(
           AllConversationsListConversationUpdatedEvent(
-            conversation: update.conversation,
+            conversationTile: update.conversationTile,
           ),
         );
         break;
-      case ConversationUpdateType.deleted:
+      case ConversationTileUpdateType.deleted:
         add(
           AllConversationsListConversationDeletedEvent(
-            conversationId: update.conversation.id,
+            conversationId: update.conversationTile.conversation.id,
           ),
         );
         break;
@@ -162,12 +160,12 @@ class AllConversationsListBloc
       return;
     }
 
-    final List<Conversation> updatedConversations = <Conversation>[
-      event.conversation,
-      ...currentState.conversations,
+    final List<ConversationTile> updatedConversations = <ConversationTile>[
+      event.conversationTile,
+      ...currentState.conversationTiles,
     ];
 
-    emit(currentState.copyWith(conversations: updatedConversations));
+    emit(currentState.copyWith(conversationTiles: updatedConversations));
   }
 
   Future<void> _onConversationUpdated(
@@ -180,16 +178,17 @@ class AllConversationsListBloc
       return;
     }
 
-    final List<Conversation> updatedConversations = currentState.conversations
-        .map((Conversation conversation) {
-          if (conversation.id == event.conversation.id) {
-            return event.conversation;
+    final List<ConversationTile> updatedConversations = currentState
+        .conversationTiles
+        .map((ConversationTile tile) {
+          if (tile.conversation.id == event.conversationTile.conversation.id) {
+            return event.conversationTile;
           }
-          return conversation;
+          return tile;
         })
         .toList();
 
-    emit(currentState.copyWith(conversations: updatedConversations));
+    emit(currentState.copyWith(conversationTiles: updatedConversations));
   }
 
   Future<void> _onConversationDeleted(
@@ -202,17 +201,16 @@ class AllConversationsListBloc
       return;
     }
 
-    final List<Conversation> updatedConversations = currentState.conversations
+    final List<ConversationTile> updatedConversations = currentState
+        .conversationTiles
         .where(
-          (Conversation conversation) =>
-              conversation.id != event.conversationId,
+          (ConversationTile tile) =>
+              tile.conversation.id != event.conversationId,
         )
         .toList();
 
-    emit(currentState.copyWith(conversations: updatedConversations));
+    emit(currentState.copyWith(conversationTiles: updatedConversations));
   }
-
-  // _safeLoad, _onLoad, _onLoadMore остаются
 
   @override
   Future<void> close() async {

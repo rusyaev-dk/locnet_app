@@ -51,23 +51,6 @@ class Conversation extends Equatable {
     );
   }
 
-  /// Convert domain back to DTO. Note: type is mapped to wire string.
-  ConversationDTO toDTO() {
-    return ConversationDTO(
-      conversationId: id,
-      createdBy: createdByUserId,
-      type: type.toString(),
-      title: title,
-      description: description,
-      avatarFileId: avatarFileId,
-      isDeleted: isDeleted,
-      deletedAt: deletedAt,
-      deletedBy: deletedByUserId,
-      createdAt: createdAt,
-      updatedAt: updatedAt,
-    );
-  }
-
   Conversation copyWith({
     String? id,
     String? createdByUserId,

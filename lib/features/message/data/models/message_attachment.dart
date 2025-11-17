@@ -19,7 +19,7 @@ class MessageAttachmentDTO extends Equatable {
   final DateTime createdAt; // timestamp
   final DateTime updatedAt; // timestamp
 
-  factory MessageAttachmentDTO.fromJson(Map<String, dynamic> json) {
+  factory MessageAttachmentDTO.fromJSON(Map<String, dynamic> json) {
     DateTime parseNonNull(dynamic v) {
       if (v is DateTime) return v;
       if (v is int) return DateTime.fromMillisecondsSinceEpoch(v);
@@ -38,7 +38,7 @@ class MessageAttachmentDTO extends Equatable {
     );
   }
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
+  Map<String, dynamic> toJSON() => <String, dynamic>{
     'attachmentId': attachmentId,
     'messageId': messageId,
     'fileId': fileId,

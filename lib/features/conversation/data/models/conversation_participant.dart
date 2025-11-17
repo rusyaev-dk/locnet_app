@@ -23,7 +23,7 @@ class ConversationParticipantDTO extends Equatable {
   final DateTime createdAt; // timestamp
   final DateTime updatedAt; // timestamp
 
-  factory ConversationParticipantDTO.fromJson(Map<String, dynamic> json) {
+  factory ConversationParticipantDTO.fromJSON(Map<String, dynamic> json) {
     DateTime parse(dynamic v) {
       if (v is DateTime) return v;
       if (v is int) return DateTime.fromMillisecondsSinceEpoch(v);
@@ -42,7 +42,7 @@ class ConversationParticipantDTO extends Equatable {
     );
   }
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
+  Map<String, dynamic> toJSON() => <String, dynamic>{
     'id': id,
     'conversationId': conversationId,
     'userId': userId,

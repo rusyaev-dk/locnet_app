@@ -18,15 +18,7 @@ class PanelScreen extends StatelessWidget {
       body: Row(
         children: [
           PanelSidebar(currentLocation: location),
-          Expanded(
-            child: ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(24),
-                bottomLeft: Radius.circular(24),
-              ),
-              child: child,
-            ),
-          ),
+          Expanded(child: child),
         ],
       ),
     );

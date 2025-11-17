@@ -35,7 +35,7 @@ final class WebSocketConversationRepo implements IConversationRepo {
       );
 
   @override
-  Future<List<Conversation>> loadConversations({int page = 1}) async {
+  Future<List<Conversation>> loadConversationsList({int page = 1}) async {
     try {
       await _ensureConnected();
 
@@ -67,7 +67,7 @@ final class WebSocketConversationRepo implements IConversationRepo {
       final List<ConversationDTO> dtoItems = rawItems
           .map(
             (dynamic raw) =>
-                ConversationDTO.fromJson(raw as Map<String, dynamic>),
+                ConversationDTO.fromJSON(raw as Map<String, dynamic>),
           )
           .toList();
 
@@ -131,7 +131,7 @@ final class WebSocketConversationRepo implements IConversationRepo {
           final Map<String, dynamic> payload =
               decoded['payload'] as Map<String, dynamic>;
 
-          final ConversationDTO dto = ConversationDTO.fromJson(payload);
+          final ConversationDTO dto = ConversationDTO.fromJSON(payload);
 
           _changesController.add((kind: kind, dto: dto));
         } catch (error, stackTrace) {

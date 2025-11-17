@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
@@ -184,7 +183,7 @@ class _SettingsCloseButton extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: () {
-          GoRouter.of(context).pop();
+          Navigator.of(context).pop();
         },
         borderRadius: BorderRadius.circular(999),
         child: Container(

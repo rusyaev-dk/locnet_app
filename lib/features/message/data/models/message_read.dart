@@ -15,7 +15,7 @@ class MessageReadDTO extends Equatable {
   final String userId; // uuid
   final DateTime readAt; // timestamp
 
-  factory MessageReadDTO.fromJson(Map<String, dynamic> json) {
+  factory MessageReadDTO.fromJSON(Map<String, dynamic> json) {
     DateTime parseNonNull(dynamic v) {
       if (v is DateTime) return v;
       if (v is int) return DateTime.fromMillisecondsSinceEpoch(v);
@@ -30,7 +30,7 @@ class MessageReadDTO extends Equatable {
     );
   }
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
+  Map<String, dynamic> toJSON() => <String, dynamic>{
     'messageReadId': messageReadId,
     'messageId': messageId,
     'userId': userId,

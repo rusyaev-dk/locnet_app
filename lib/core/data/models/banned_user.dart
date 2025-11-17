@@ -21,7 +21,7 @@ class BannedUserDTO extends Equatable {
   final String? reason; // text?
   final DateTime createdAt; // timestamp
 
-  factory BannedUserDTO.fromJson(Map<String, dynamic> json) {
+  factory BannedUserDTO.fromJSON(Map<String, dynamic> json) {
     DateTime parse(dynamic v) {
       if (v is DateTime) return v;
       if (v is int) return DateTime.fromMillisecondsSinceEpoch(v);
@@ -39,7 +39,7 @@ class BannedUserDTO extends Equatable {
     );
   }
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
+  Map<String, dynamic> toJSON() => <String, dynamic>{
     'id': id,
     'userId': userId,
     'scope': scope,

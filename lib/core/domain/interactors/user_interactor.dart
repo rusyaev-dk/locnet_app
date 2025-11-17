@@ -7,4 +7,9 @@ final class UserInteractor {
 
   final IUserRepo _userRepo;
   final ILogger _logger;
+
+  Future<User> getUserById({required String userId}) async {
+    _logger.log("Retrieving user with id: $userId");
+    return await _userRepo.getUserById(userId: userId);
+  }
 }

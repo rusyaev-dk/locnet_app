@@ -40,7 +40,7 @@ final class SessionDTO extends Equatable {
 
   /// Creates a [SessionDTO] from a JSON map.
   /// Accepts multiple date formats and field naming variants.
-  factory SessionDTO.fromJson(Map<String, dynamic> json) {
+  factory SessionDTO.fromJSON(Map<String, dynamic> json) {
     return SessionDTO(
       sessionId: json['sessionId'] as String,
       userId: json['userId'] as String,
@@ -63,7 +63,7 @@ final class SessionDTO extends Equatable {
   }
 
   /// Converts this DTO to a JSON-compatible map.
-  Map<String, dynamic> toJson() => <String, dynamic>{
+  Map<String, dynamic> toJSON() => <String, dynamic>{
     'sessionId': sessionId,
     'userId': userId,
     'refreshToken': refreshToken,

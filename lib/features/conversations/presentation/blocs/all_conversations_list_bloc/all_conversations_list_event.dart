@@ -27,25 +27,25 @@ final class AllConversationsListLoadMoreEvent
 final class AllConversationsListConversationCreatedEvent
     extends AllConversationsListEvent {
   const AllConversationsListConversationCreatedEvent({
-    required this.conversation,
+    required this.conversationTile,
   });
 
-  final Conversation conversation;
+  final ConversationTile conversationTile;
 
   @override
-  List<Object?> get props => <Object?>[conversation];
+  List<Object?> get props => <Object?>[conversationTile];
 }
 
 final class AllConversationsListConversationUpdatedEvent
     extends AllConversationsListEvent {
   const AllConversationsListConversationUpdatedEvent({
-    required this.conversation,
+    required this.conversationTile,
   });
 
-  final Conversation conversation;
+  final ConversationTile conversationTile;
 
   @override
-  List<Object?> get props => <Object?>[conversation];
+  List<Object?> get props => <Object?>[conversationTile];
 }
 
 final class AllConversationsListConversationDeletedEvent

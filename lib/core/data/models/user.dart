@@ -30,7 +30,7 @@ class UserDTO extends Equatable {
   final DateTime updatedAt; // timestamp
 
   // ignore: sort_constructors_first
-  factory UserDTO.fromJson(Map<String, dynamic> json) {
+  factory UserDTO.fromJSON(Map<String, dynamic> json) {
     DateTime parseDate(dynamic v) => v is DateTime
         ? v
         : v is int
@@ -53,7 +53,7 @@ class UserDTO extends Equatable {
     );
   }
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
+  Map<String, dynamic> toJSON() => <String, dynamic>{
     'userId': userId,
     'username': username,
     'password': password,
