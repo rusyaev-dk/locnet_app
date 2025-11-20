@@ -16,7 +16,7 @@ final class MockAuthRepo implements IAuthRepo {
     // Create mock DTO as if returned by backend
     final SessionDTO dto = SessionDTO(
       sessionId: 'session_001',
-      userId: 'usr-admin',
+      userId: 'usr-adm',
       refreshToken: 'mock_refresh_token_456',
       accessToken: 'mock_access_token_123',
       expiresAt: DateTime.now().add(const Duration(hours: 1)),
@@ -41,7 +41,7 @@ final class MockAuthRepo implements IAuthRepo {
 
     final SessionDTO dto = SessionDTO(
       sessionId: 'session_001',
-      userId: 'usr-admin',
+      userId: 'usr-adm',
       refreshToken: refreshToken,
       accessToken: 'mock_access_token_refreshed',
       expiresAt: DateTime.now().add(const Duration(hours: 1)),

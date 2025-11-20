@@ -30,7 +30,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   late final TextEditingController _firstNameController;
   late final TextEditingController _lastNameController;
   late final TextEditingController _jobPositionController;
-  late final TextEditingController _loginController;
+  late final TextEditingController _usernameController;
   late final TextEditingController _passwordController;
   late final TextEditingController _repeatPasswordController;
 
@@ -40,7 +40,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     _firstNameController = TextEditingController();
     _lastNameController = TextEditingController();
     _jobPositionController = TextEditingController();
-    _loginController = TextEditingController();
+    _usernameController = TextEditingController();
     _passwordController = TextEditingController();
     _repeatPasswordController = TextEditingController();
   }
@@ -50,40 +50,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     _firstNameController.dispose();
     _lastNameController.dispose();
     _jobPositionController.dispose();
-    _loginController.dispose();
+    _usernameController.dispose();
     _passwordController.dispose();
     _repeatPasswordController.dispose();
     super.dispose();
-  }
-
-  Future<void> _onSubmit() async {
-    final String firstName = _firstNameController.text.trim();
-    final String lastName = _lastNameController.text.trim();
-    final String jobPosition = _jobPositionController.text.trim();
-    final String login = _loginController.text.trim();
-    final String password = _passwordController.text.trim();
-    final String repeatPassword = _repeatPasswordController.text.trim();
-
-    if (firstName.isEmpty ||
-        lastName.isEmpty ||
-        jobPosition.isEmpty ||
-        login.isEmpty ||
-        password.isEmpty ||
-        repeatPassword.isEmpty) {
-      return;
-    }
-
-    if (password != repeatPassword) {
-      return;
-    }
-
-    await context.read<AuthCubit>().register(
-      firstName: firstName,
-      lastName: lastName,
-      jobPosition: jobPosition,
-      login: login,
-      password: password,
-    );
   }
 
   @override
@@ -93,51 +63,37 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     return Scaffold(
       backgroundColor: colorScheme.primaryContainer,
       body: SafeArea(
-        child: ToastListener<AuthCubit, AuthState, AuthFailureState>(
-          bloc: context.read<AuthCubit>(),
-          messageOf: (BuildContext context, AuthFailureState state) =>
-              AppExceptionsTranslator.translate(context, state.failure),
-          child: BlocBuilder<AuthCubit, AuthState>(
-            builder: (BuildContext context, AuthState state) {
-              switch (state) {
-                case AuthLoadingState():
-                  return const Center(child: CircularProgressIndicator());
-                case AuthInitialState():
-                  return _RegistrationScrollableForm(
-                    firstNameController: _firstNameController,
-                    lastNameController: _lastNameController,
-                    jobPositionController: _jobPositionController,
-                    loginController: _loginController,
-                    passwordController: _passwordController,
-                    repeatPasswordController: _repeatPasswordController,
-                    onSubmit: _onSubmit,
-                  );
-                case AuthUnauthenticatedState():
-                  return _RegistrationScrollableForm(
-                    firstNameController: _firstNameController,
-                    lastNameController: _lastNameController,
-                    jobPositionController: _jobPositionController,
-                    loginController: _loginController,
-                    passwordController: _passwordController,
-                    repeatPasswordController: _repeatPasswordController,
-                    onSubmit: _onSubmit,
-                  );
-                case AuthFailureState():
-                  return _RegistrationScrollableForm(
-                    firstNameController: _firstNameController,
-                    lastNameController: _lastNameController,
-                    jobPositionController: _jobPositionController,
-                    loginController: _loginController,
-                    passwordController: _passwordController,
-                    repeatPasswordController: _repeatPasswordController,
-                    onSubmit: _onSubmit,
-                  );
-                case AuthAuthenticatedState():
-                  return const SizedBox.shrink();
-              }
-            },
-          ),
-        ),
+        child:
+            ToastListener<
+              RegistrationCubit,
+              RegistrationState,
+              RegistrationState
+            >(
+              bloc: context.read<RegistrationCubit>(),
+              messageOf: (context, RegistrationState state) =>
+                  AppExceptionsTranslator.translate(context, state.failure),
+              child: BlocBuilder<AuthCubit, AuthState>(
+                builder: (BuildContext context, AuthState state) {
+                  switch (state) {
+                    case AuthLoadingState():
+                      return const Center(child: CircularProgressIndicator());
+                    case AuthInitialState():
+                    case AuthUnauthenticatedState():
+                    case AuthFailureState():
+                      return _RegistrationScrollableForm(
+                        firstNameController: _firstNameController,
+                        lastNameController: _lastNameController,
+                        jobPositionController: _jobPositionController,
+                        loginController: _usernameController,
+                        passwordController: _passwordController,
+                        repeatPasswordController: _repeatPasswordController,
+                      );
+                    case AuthAuthenticatedState():
+                      return const SizedBox.shrink();
+                  }
+                },
+              ),
+            ),
       ),
     );
   }
@@ -151,7 +107,6 @@ class _RegistrationScrollableForm extends StatelessWidget {
     required this.loginController,
     required this.passwordController,
     required this.repeatPasswordController,
-    required this.onSubmit,
   });
 
   final TextEditingController firstNameController;
@@ -160,7 +115,6 @@ class _RegistrationScrollableForm extends StatelessWidget {
   final TextEditingController loginController;
   final TextEditingController passwordController;
   final TextEditingController repeatPasswordController;
-  final Future<void> Function() onSubmit;
 
   @override
   Widget build(BuildContext context) {
@@ -199,11 +153,10 @@ class _RegistrationScrollableForm extends StatelessWidget {
                                   firstNameController: firstNameController,
                                   lastNameController: lastNameController,
                                   jobPositionController: jobPositionController,
-                                  loginController: loginController,
+                                  usernameController: loginController,
                                   passwordController: passwordController,
                                   repeatPasswordController:
                                       repeatPasswordController,
-                                  onSubmit: onSubmit,
                                 ),
                               ],
                             ),
@@ -225,10 +178,9 @@ class _RegistrationScrollableForm extends StatelessWidget {
                             firstNameController: firstNameController,
                             lastNameController: lastNameController,
                             jobPositionController: jobPositionController,
-                            loginController: loginController,
+                            usernameController: loginController,
                             passwordController: passwordController,
                             repeatPasswordController: repeatPasswordController,
-                            onSubmit: onSubmit,
                           ),
                         ],
                       ),

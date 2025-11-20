@@ -22,6 +22,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+    "accountStatus": MessageLookupByLibrary.simpleMessage("Hisob holati"),
     "alreadyRegisteredQuestion": MessageLookupByLibrary.simpleMessage(
       "Ro‘yxatdan o‘tganmisiz?",
     ),
@@ -78,6 +79,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "conversations": MessageLookupByLibrary.simpleMessage("Muloqotlar"),
     "currentSession": MessageLookupByLibrary.simpleMessage("Joriy sessiya"),
     "delete": MessageLookupByLibrary.simpleMessage("O‘chirish"),
+    "description": MessageLookupByLibrary.simpleMessage("Описание"),
     "deviceThemeMode": MessageLookupByLibrary.simpleMessage(
       "Qurilma sozlamalariga mos",
     ),
@@ -93,16 +95,56 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "homePage": MessageLookupByLibrary.simpleMessage("Bosh sahifa"),
     "jobPosition": MessageLookupByLibrary.simpleMessage("Lavozim"),
+    "jobPositionInvalidCharactersException":
+        MessageLookupByLibrary.simpleMessage(
+          "Lavozim nomida ruxsat etilmagan belgilar mavjud",
+        ),
+    "joinedAt": MessageLookupByLibrary.simpleMessage("Qo\'shilgan sanasi"),
     "language": MessageLookupByLibrary.simpleMessage("Til"),
+    "lastUpdated": MessageLookupByLibrary.simpleMessage(
+      "Oxirgi yangilanish sanasi",
+    ),
     "login": MessageLookupByLibrary.simpleMessage("Login"),
+    "meta": MessageLookupByLibrary.simpleMessage("Meta"),
+    "nameInvalidCharactersException": MessageLookupByLibrary.simpleMessage(
+      "Ismda ruxsat etilmagan belgilar mavjud",
+    ),
     "next": MessageLookupByLibrary.simpleMessage("Keyingi"),
     "noLabel": MessageLookupByLibrary.simpleMessage("Yoʻq"),
+    "notSpecified": MessageLookupByLibrary.simpleMessage("Ko\'rsatilmagan"),
     "ok": MessageLookupByLibrary.simpleMessage("OK"),
     "password": MessageLookupByLibrary.simpleMessage("Parol"),
+    "passwordInvalidCharactersException": MessageLookupByLibrary.simpleMessage(
+      "Parolda ruxsat etilmagan belgilar mavjud",
+    ),
+    "passwordNoDigitException": MessageLookupByLibrary.simpleMessage(
+      "Parolda kamida bitta raqam bo‘lishi kerak",
+    ),
+    "passwordNoLowerCaseException": MessageLookupByLibrary.simpleMessage(
+      "Parolda kamida bitta kichik harf bo‘lishi kerak",
+    ),
+    "passwordNoUpperCaseException": MessageLookupByLibrary.simpleMessage(
+      "Parolda kamida bitta bosh harf bo‘lishi kerak",
+    ),
+    "passwordTooShortException": MessageLookupByLibrary.simpleMessage(
+      "Parol kamida 14 ta belgidan iborat bo‘lishi kerak",
+    ),
     "passwordsMatchException": MessageLookupByLibrary.simpleMessage(
       "Parollar mos emas",
     ),
+    "personalInformation": MessageLookupByLibrary.simpleMessage(
+      "Shaxsiy ma\'lumotlar",
+    ),
+    "profile": MessageLookupByLibrary.simpleMessage("Profil"),
+    "profileEdition": MessageLookupByLibrary.simpleMessage(
+      "Редактирование профиля",
+    ),
     "registration": MessageLookupByLibrary.simpleMessage("Ro‘yxatdan o‘tish"),
+    "registrationEmptyFieldException": MessageLookupByLibrary.simpleMessage(
+      "Поле обязательно для заполнения",
+    ),
+    "registrationPasswordsDontMatchException":
+        MessageLookupByLibrary.simpleMessage("Parollar mos kelmayapti"),
     "registrationQuestion": MessageLookupByLibrary.simpleMessage(
       "Ro‘yxatdan o‘tmagansiz?",
     ),
@@ -209,6 +251,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "userFavouritesUnknownException": MessageLookupByLibrary.simpleMessage(
       "Sevimlilar bilan ishlashda noma’lum xato yuz berdi",
+    ),
+    "username": MessageLookupByLibrary.simpleMessage("Юзернейм"),
+    "usernameInvalidCharactersException": MessageLookupByLibrary.simpleMessage(
+      "Foydalanuvchi nomida ruxsat etilmagan belgilar mavjud",
     ),
     "yesLabel": MessageLookupByLibrary.simpleMessage("Ha"),
   };

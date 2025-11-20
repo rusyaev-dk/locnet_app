@@ -31,12 +31,13 @@ final class AppExceptionsTranslator {
     StorageWriteException: (s) => s.storageWriteException,
     StorageDeleteException: (s) => s.storageDeleteException,
 
-    // Auth exceptions
+    // Auth, LogIn and Registration exceptions
     AuthUnauthorizedException: (s) => s.authUnauthorizedException,
     AuthInvalidCredentialsException: (s) => s.authInvalidCredentialsException,
     AuthExpiredSessionException: (s) => s.authExpiredSessionException,
     AppAuthException: (s) => s.authUnknownException,
-
+    RegistrationPasswordsDontMatchException: (s) => s.registrationPasswordsDontMatchException,
+    RegistrationEmptyFieldException: (s) => s.registrationEmptyFieldException,
     // Settings exceptions
     SettingsLocaleChangeException: (s) => s.settingsLocaleChangeException,
     SettingsThemeModeChangeException: (s) => s.settingsThemeModeChangeException,
@@ -45,6 +46,18 @@ final class AppExceptionsTranslator {
         s.settingsRestoreThemeModeException,
     AppSettingsException: (s) => s.settingsUnknownException,
 
+    // Profile / validation exceptions
+    NameInvalidCharactersException: (s) => s.nameInvalidCharactersException,
+    UsernameInvalidCharactersException: (s) =>
+        s.usernameInvalidCharactersException,
+    JobPositionInvalidCharactersException: (s) =>
+        s.jobPositionInvalidCharactersException,
+    PasswordTooShortException: (s) => s.passwordTooShortException,
+    PasswordNoUpperCaseException: (s) => s.passwordNoUpperCaseException,
+    PasswordNoLowerCaseException: (s) => s.passwordNoLowerCaseException,
+    PasswordNoDigitException: (s) => s.passwordNoDigitException,
+    PasswordInvalidCharactersException: (s) =>
+        s.passwordInvalidCharactersException,
 
     // Optional base-class fallbacks
     AppApiException: (s) => s.apiUnknownException,

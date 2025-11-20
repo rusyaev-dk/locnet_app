@@ -359,6 +359,26 @@ class S {
     );
   }
 
+  /// `Пароли не совпадают`
+  String get registrationPasswordsDontMatchException {
+    return Intl.message(
+      'Пароли не совпадают',
+      name: 'registrationPasswordsDontMatchException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Поле обязательно для заполнения`
+  String get registrationEmptyFieldException {
+    return Intl.message(
+      'Поле обязательно для заполнения',
+      name: 'registrationEmptyFieldException',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Не удалось сохранить сортировку`
   String get sortingSaveException {
     return Intl.message(
@@ -514,6 +534,86 @@ class S {
     return Intl.message(
       'Неизвестная ошибка при работе с избранным',
       name: 'userFavouritesUnknownException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Имя содержит недопустимые символы`
+  String get nameInvalidCharactersException {
+    return Intl.message(
+      'Имя содержит недопустимые символы',
+      name: 'nameInvalidCharactersException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Имя пользователя содержит недопустимые символы`
+  String get usernameInvalidCharactersException {
+    return Intl.message(
+      'Имя пользователя содержит недопустимые символы',
+      name: 'usernameInvalidCharactersException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Название должности содержит недопустимые символы`
+  String get jobPositionInvalidCharactersException {
+    return Intl.message(
+      'Название должности содержит недопустимые символы',
+      name: 'jobPositionInvalidCharactersException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Пароль должен содержать не менее 14 символов`
+  String get passwordTooShortException {
+    return Intl.message(
+      'Пароль должен содержать не менее 14 символов',
+      name: 'passwordTooShortException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Пароль должен содержать хотя бы одну заглавную букву`
+  String get passwordNoUpperCaseException {
+    return Intl.message(
+      'Пароль должен содержать хотя бы одну заглавную букву',
+      name: 'passwordNoUpperCaseException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Пароль должен содержать хотя бы одну строчную букву`
+  String get passwordNoLowerCaseException {
+    return Intl.message(
+      'Пароль должен содержать хотя бы одну строчную букву',
+      name: 'passwordNoLowerCaseException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Пароль должен содержать хотя бы одну цифру`
+  String get passwordNoDigitException {
+    return Intl.message(
+      'Пароль должен содержать хотя бы одну цифру',
+      name: 'passwordNoDigitException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Пароль содержит недопустимые символы`
+  String get passwordInvalidCharactersException {
+    return Intl.message(
+      'Пароль содержит недопустимые символы',
+      name: 'passwordInvalidCharactersException',
       desc: '',
       args: [],
     );
@@ -839,6 +939,81 @@ class S {
     return Intl.message(
       'Домашняя страница',
       name: 'homePage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Личная информация`
+  String get personalInformation {
+    return Intl.message(
+      'Личная информация',
+      name: 'personalInformation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Не задано`
+  String get notSpecified {
+    return Intl.message('Не задано', name: 'notSpecified', desc: '', args: []);
+  }
+
+  /// `Статус аккаунта`
+  String get accountStatus {
+    return Intl.message(
+      'Статус аккаунта',
+      name: 'accountStatus',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Мета`
+  String get meta {
+    return Intl.message('Мета', name: 'meta', desc: '', args: []);
+  }
+
+  /// `Дата присоединения`
+  String get joinedAt {
+    return Intl.message(
+      'Дата присоединения',
+      name: 'joinedAt',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Дата последнего обновления`
+  String get lastUpdated {
+    return Intl.message(
+      'Дата последнего обновления',
+      name: 'lastUpdated',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Профиль`
+  String get profile {
+    return Intl.message('Профиль', name: 'profile', desc: '', args: []);
+  }
+
+  /// `Описание`
+  String get description {
+    return Intl.message('Описание', name: 'description', desc: '', args: []);
+  }
+
+  /// `Юзернейм`
+  String get username {
+    return Intl.message('Юзернейм', name: 'username', desc: '', args: []);
+  }
+
+  /// `Редактирование профиля`
+  String get profileEdition {
+    return Intl.message(
+      'Редактирование профиля',
+      name: 'profileEdition',
       desc: '',
       args: [],
     );

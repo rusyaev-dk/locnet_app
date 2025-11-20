@@ -22,6 +22,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+    "accountStatus": MessageLookupByLibrary.simpleMessage("Account status"),
     "alreadyRegisteredQuestion": MessageLookupByLibrary.simpleMessage(
       "Already registered?",
     ),
@@ -78,6 +79,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "conversations": MessageLookupByLibrary.simpleMessage("Conversations"),
     "currentSession": MessageLookupByLibrary.simpleMessage("Current session"),
     "delete": MessageLookupByLibrary.simpleMessage("Delete"),
+    "description": MessageLookupByLibrary.simpleMessage("Description"),
     "deviceThemeMode": MessageLookupByLibrary.simpleMessage(
       "Same as on device",
     ),
@@ -93,16 +95,52 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "homePage": MessageLookupByLibrary.simpleMessage("Home page"),
     "jobPosition": MessageLookupByLibrary.simpleMessage("Job position"),
+    "jobPositionInvalidCharactersException":
+        MessageLookupByLibrary.simpleMessage(
+          "Job position contains invalid characters",
+        ),
+    "joinedAt": MessageLookupByLibrary.simpleMessage("Joined at"),
     "language": MessageLookupByLibrary.simpleMessage("Language"),
+    "lastUpdated": MessageLookupByLibrary.simpleMessage("Last updated"),
     "login": MessageLookupByLibrary.simpleMessage("Login"),
+    "meta": MessageLookupByLibrary.simpleMessage("Meta"),
+    "nameInvalidCharactersException": MessageLookupByLibrary.simpleMessage(
+      "Name contains invalid characters",
+    ),
     "next": MessageLookupByLibrary.simpleMessage("Next"),
     "noLabel": MessageLookupByLibrary.simpleMessage("No"),
+    "notSpecified": MessageLookupByLibrary.simpleMessage("Not specified"),
     "ok": MessageLookupByLibrary.simpleMessage("OK"),
     "password": MessageLookupByLibrary.simpleMessage("Password"),
+    "passwordInvalidCharactersException": MessageLookupByLibrary.simpleMessage(
+      "Password contains invalid characters",
+    ),
+    "passwordNoDigitException": MessageLookupByLibrary.simpleMessage(
+      "Password must contain a digit",
+    ),
+    "passwordNoLowerCaseException": MessageLookupByLibrary.simpleMessage(
+      "Password must contain a lowercase letter",
+    ),
+    "passwordNoUpperCaseException": MessageLookupByLibrary.simpleMessage(
+      "Password must contain an uppercase letter",
+    ),
+    "passwordTooShortException": MessageLookupByLibrary.simpleMessage(
+      "Password must be at least 14 characters long",
+    ),
     "passwordsMatchException": MessageLookupByLibrary.simpleMessage(
       "Passwords do not match",
     ),
+    "personalInformation": MessageLookupByLibrary.simpleMessage(
+      "Personal information",
+    ),
+    "profile": MessageLookupByLibrary.simpleMessage("Profile"),
+    "profileEdition": MessageLookupByLibrary.simpleMessage("Edit profile"),
     "registration": MessageLookupByLibrary.simpleMessage("Registration"),
+    "registrationEmptyFieldException": MessageLookupByLibrary.simpleMessage(
+      "Поле обязательно для заполнения",
+    ),
+    "registrationPasswordsDontMatchException":
+        MessageLookupByLibrary.simpleMessage("Passwords do not match"),
     "registrationQuestion": MessageLookupByLibrary.simpleMessage(
       "Not registered yet?",
     ),
@@ -201,6 +239,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "userFavouritesUnknownException": MessageLookupByLibrary.simpleMessage(
       "Unknown error occurred while accessing favorites",
+    ),
+    "username": MessageLookupByLibrary.simpleMessage("Username"),
+    "usernameInvalidCharactersException": MessageLookupByLibrary.simpleMessage(
+      "Username contains invalid characters",
     ),
     "yesLabel": MessageLookupByLibrary.simpleMessage("Yes"),
   };

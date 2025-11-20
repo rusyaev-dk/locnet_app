@@ -12,7 +12,7 @@ class LogInScreenWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => LoginCubit(logger: context.read<ILogger>()),
+      create: (context) => LogInCubit(logger: context.read<ILogger>()),
       child: child,
     );
   }
@@ -26,32 +26,21 @@ class LogInScreen extends StatefulWidget {
 }
 
 class _LogInScreenState extends State<LogInScreen> {
-  late final TextEditingController _loginController;
+  late final TextEditingController _usernameController;
   late final TextEditingController _passwordController;
 
   @override
   void initState() {
     super.initState();
-    _loginController = TextEditingController();
+    _usernameController = TextEditingController();
     _passwordController = TextEditingController();
   }
 
   @override
   void dispose() {
-    _loginController.dispose();
+    _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
-  }
-
-  Future<void> _onSubmit() async {
-    final String login = _loginController.text.trim();
-    final String password = _passwordController.text.trim();
-
-    if (login.isEmpty || password.isEmpty) {
-      return;
-    }
-
-    await context.read<AuthCubit>().login(login: login, password: password);
   }
 
   @override
@@ -61,9 +50,9 @@ class _LogInScreenState extends State<LogInScreen> {
     return Scaffold(
       backgroundColor: colorScheme.primaryContainer,
       body: SafeArea(
-        child: ToastListener<AuthCubit, AuthState, AuthFailureState>(
-          bloc: context.read<AuthCubit>(),
-          messageOf: (context, AuthFailureState state) =>
+        child: ToastListener<LogInCubit, LogInState, LogInState>(
+          bloc: context.read<LogInCubit>(),
+          messageOf: (context, LogInState state) =>
               AppExceptionsTranslator.translate(context, state.failure),
           child: BlocBuilder<AuthCubit, AuthState>(
             builder: (BuildContext context, AuthState state) {
@@ -72,24 +61,11 @@ class _LogInScreenState extends State<LogInScreen> {
                   return const Center(child: CircularProgressIndicator());
 
                 case AuthInitialState():
-                  return _AuthScrollableForm(
-                    loginController: _loginController,
-                    passwordController: _passwordController,
-                    onSubmit: _onSubmit,
-                  );
-
                 case AuthUnauthenticatedState():
-                  return _AuthScrollableForm(
-                    loginController: _loginController,
-                    passwordController: _passwordController,
-                    onSubmit: _onSubmit,
-                  );
-
                 case AuthFailureState():
                   return _AuthScrollableForm(
-                    loginController: _loginController,
+                    loginController: _usernameController,
                     passwordController: _passwordController,
-                    onSubmit: _onSubmit,
                   );
 
                 case AuthAuthenticatedState():
@@ -107,12 +83,10 @@ class _AuthScrollableForm extends StatelessWidget {
   const _AuthScrollableForm({
     required this.loginController,
     required this.passwordController,
-    required this.onSubmit,
   });
 
   final TextEditingController loginController;
   final TextEditingController passwordController;
-  final Future<void> Function() onSubmit;
 
   @override
   Widget build(BuildContext context) {
@@ -148,9 +122,8 @@ class _AuthScrollableForm extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 24),
                                 LogInCard(
-                                  loginController: loginController,
+                                  usernameController: loginController,
                                   passwordController: passwordController,
-                                  onSubmit: onSubmit,
                                 ),
                               ],
                             ),
@@ -169,9 +142,8 @@ class _AuthScrollableForm extends StatelessWidget {
                           const LocNetBranding(),
                           const SizedBox(height: 32),
                           LogInCard(
-                            loginController: loginController,
+                            usernameController: loginController,
                             passwordController: passwordController,
-                            onSubmit: onSubmit,
                           ),
                         ],
                       ),

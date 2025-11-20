@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/home/presentation/presentation.dart';
+import 'package:locnet_app/features/profile/presentation/presentation.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
 class PanelSidebar extends StatefulWidget {
@@ -158,11 +159,31 @@ class _PanelSidebarState extends State<PanelSidebar> {
                   ),
                 ),
               ),
-              SidebarProfileSection(
-                isCollapsed: isCollapsedLayout,
-                horizontalPadding: horizontalPadding,
+              Padding(
+                padding: EdgeInsets.fromLTRB(
+                  horizontalPadding,
+                  0,
+                  horizontalPadding,
+                  12,
+                ),
+                child: SidebarItem(
+                  label: l10n.profile,
+                  icon: Icons.person_outline,
+                  isSelected: _isSelected(AppRoutes.profile),
+                  isCollapsed: isCollapsedLayout,
+                  onTap: () {
+                    showGeneralDialog(
+                      routeSettings: const RouteSettings(
+                        name: AppRoutes.profile,
+                      ),
+                      context: context,
+                      pageBuilder: (context, _, _) {
+                        return const ProfileModalCard();
+                      },
+                    );
+                  },
+                ),
               ),
-              const SizedBox(height: 12),
             ],
           );
         },

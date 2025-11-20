@@ -22,6 +22,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+    "accountStatus": MessageLookupByLibrary.simpleMessage("Статус аккаунта"),
     "alreadyRegisteredQuestion": MessageLookupByLibrary.simpleMessage(
       "Уже зарегистрированы?",
     ),
@@ -78,6 +79,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "conversations": MessageLookupByLibrary.simpleMessage("Переписки"),
     "currentSession": MessageLookupByLibrary.simpleMessage("Текущая сессия"),
     "delete": MessageLookupByLibrary.simpleMessage("Удалить"),
+    "description": MessageLookupByLibrary.simpleMessage("Описание"),
     "deviceThemeMode": MessageLookupByLibrary.simpleMessage(
       "Как на устройстве",
     ),
@@ -94,17 +96,57 @@ class MessageLookup extends MessageLookupByLibrary {
     "firstName": MessageLookupByLibrary.simpleMessage("Имя"),
     "homePage": MessageLookupByLibrary.simpleMessage("Домашняя страница"),
     "jobPosition": MessageLookupByLibrary.simpleMessage("Должность"),
+    "jobPositionInvalidCharactersException":
+        MessageLookupByLibrary.simpleMessage(
+          "Название должности содержит недопустимые символы",
+        ),
+    "joinedAt": MessageLookupByLibrary.simpleMessage("Дата присоединения"),
     "language": MessageLookupByLibrary.simpleMessage("Язык"),
     "lastName": MessageLookupByLibrary.simpleMessage("Фамилия"),
+    "lastUpdated": MessageLookupByLibrary.simpleMessage(
+      "Дата последнего обновления",
+    ),
     "login": MessageLookupByLibrary.simpleMessage("Логин"),
+    "meta": MessageLookupByLibrary.simpleMessage("Мета"),
+    "nameInvalidCharactersException": MessageLookupByLibrary.simpleMessage(
+      "Имя содержит недопустимые символы",
+    ),
     "next": MessageLookupByLibrary.simpleMessage("Далее"),
     "noLabel": MessageLookupByLibrary.simpleMessage("Нет"),
+    "notSpecified": MessageLookupByLibrary.simpleMessage("Не задано"),
     "ok": MessageLookupByLibrary.simpleMessage("ОК"),
     "password": MessageLookupByLibrary.simpleMessage("Пароль"),
+    "passwordInvalidCharactersException": MessageLookupByLibrary.simpleMessage(
+      "Пароль содержит недопустимые символы",
+    ),
+    "passwordNoDigitException": MessageLookupByLibrary.simpleMessage(
+      "Пароль должен содержать хотя бы одну цифру",
+    ),
+    "passwordNoLowerCaseException": MessageLookupByLibrary.simpleMessage(
+      "Пароль должен содержать хотя бы одну строчную букву",
+    ),
+    "passwordNoUpperCaseException": MessageLookupByLibrary.simpleMessage(
+      "Пароль должен содержать хотя бы одну заглавную букву",
+    ),
+    "passwordTooShortException": MessageLookupByLibrary.simpleMessage(
+      "Пароль должен содержать не менее 14 символов",
+    ),
     "passwordsMatchException": MessageLookupByLibrary.simpleMessage(
       "Пароли не сопадают",
     ),
+    "personalInformation": MessageLookupByLibrary.simpleMessage(
+      "Личная информация",
+    ),
+    "profile": MessageLookupByLibrary.simpleMessage("Профиль"),
+    "profileEdition": MessageLookupByLibrary.simpleMessage(
+      "Редактирование профиля",
+    ),
     "registration": MessageLookupByLibrary.simpleMessage("Регистрация"),
+    "registrationEmptyFieldException": MessageLookupByLibrary.simpleMessage(
+      "Поле обязательно для заполнения",
+    ),
+    "registrationPasswordsDontMatchException":
+        MessageLookupByLibrary.simpleMessage("Пароли не совпадают"),
     "registrationQuestion": MessageLookupByLibrary.simpleMessage(
       "Не зарегистрированы?",
     ),
@@ -199,6 +241,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "userFavouritesUnknownException": MessageLookupByLibrary.simpleMessage(
       "Неизвестная ошибка при работе с избранным",
+    ),
+    "username": MessageLookupByLibrary.simpleMessage("Юзернейм"),
+    "usernameInvalidCharactersException": MessageLookupByLibrary.simpleMessage(
+      "Имя пользователя содержит недопустимые символы",
     ),
     "yesLabel": MessageLookupByLibrary.simpleMessage("Да"),
   };

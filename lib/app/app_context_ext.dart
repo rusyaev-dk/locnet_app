@@ -12,5 +12,6 @@ extension AppContextExt on BuildContext {
   AppColorScheme get colorScheme => AppColorScheme.of(this);
   AppTextScheme get textScheme => AppTextScheme.of(this);
 
+  String get languageCode => Localizations.localeOf(this).languageCode;
   S get l10n => S.of(this);
 }

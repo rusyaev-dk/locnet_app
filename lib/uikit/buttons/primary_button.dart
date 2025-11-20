@@ -13,7 +13,7 @@ class AppPrimaryButton extends StatelessWidget {
     this.borderRadius,
     this.padding,
     this.width,
-    this.height = 56,
+    this.height = 46,
   });
 
   final String text;
@@ -81,4 +81,3 @@ class AppPrimaryButton extends StatelessWidget {
     );
   }
 }
-

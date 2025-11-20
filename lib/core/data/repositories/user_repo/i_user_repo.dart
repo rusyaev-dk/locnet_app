@@ -1,7 +1,7 @@
 import 'package:locnet_app/core/core.dart';
 
 abstract interface class IUserRepo {
-  Future<bool> updateUser({required String updatedUser});
+  Future<bool> updateUser({required User updatedUser});
   Future<User> me();
   Future<User> getUserById({required String userId});
 }

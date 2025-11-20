@@ -8,12 +8,12 @@ class User extends Equatable {
     required this.userId,
     required this.username,
     required this.firstName,
+    required this.lastName,
     required this.languageCode,
     required this.isDeleted,
     required this.isBanned,
     required this.createdAt,
     required this.updatedAt,
-    this.lastName,
     this.description,
     this.avatarId,
   });
@@ -21,8 +21,8 @@ class User extends Equatable {
   final String userId;
   final String username;
   final String firstName;
+  final String lastName;
   final String languageCode; // ISO language code, e.g. 'en', 'ru'
-  final String? lastName;
   final String? description;
   final String? avatarId;
   final bool isDeleted;
@@ -31,7 +31,7 @@ class User extends Equatable {
   final DateTime updatedAt;
 
   String get fullName =>
-      [firstName, if ((lastName ?? '').isNotEmpty) lastName!].join(' ');
+      [firstName,  lastName].join(' ');
 
   bool get isActive => !isDeleted && !isBanned;
 
@@ -57,7 +57,7 @@ class User extends Equatable {
       username: json['username'] as String,
       firstName: json['firstName'] as String,
       languageCode: json['languageCode'] as String,
-      lastName: json['lastName'] as String?,
+      lastName: json['lastName'] as String,
       description: json['description'] as String?,
       avatarId: json['avatarId'] as String?,
       isDeleted: json['isDeleted'] as bool,

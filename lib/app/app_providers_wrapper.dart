@@ -37,7 +37,7 @@ class AppProvidersWrapper extends StatelessWidget {
       child: MultiRepositoryProvider(
         providers: [
           RepositoryProvider<IUserRepo>(
-            create: (context) => InMemoryUserRepo(),
+            create: (context) => MockMemoryUserRepo(),
           ),
           RepositoryProvider<IAuthRepo>(
             create: (context) => const MockAuthRepo(),

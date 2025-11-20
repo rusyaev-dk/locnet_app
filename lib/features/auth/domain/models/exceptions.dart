@@ -28,16 +28,16 @@ final class AuthExpiredSessionException extends AppAuthException {
   });
 }
 
-final class RegistrationInvalidNameException extends AppAuthException {
-  RegistrationInvalidNameException({
+final class RegistrationPasswordsDontMatchException extends AppAuthException {
+  RegistrationPasswordsDontMatchException({
     required super.message,
     super.error,
     super.stackTrace,
   });
 }
 
-final class RegistrationInvalidPhoneException extends AppAuthException {
-  RegistrationInvalidPhoneException({
+final class RegistrationEmptyFieldException extends AppAuthException {
+  RegistrationEmptyFieldException({
     required super.message,
     super.error,
     super.stackTrace,

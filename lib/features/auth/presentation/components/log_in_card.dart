@@ -9,15 +9,13 @@ import 'package:locnet_app/uikit/uikit.dart';
 
 class LogInCard extends StatelessWidget {
   const LogInCard({
-    required this.loginController,
+    required this.usernameController,
     required this.passwordController,
-    required this.onSubmit,
     super.key,
   });
 
-  final TextEditingController loginController;
+  final TextEditingController usernameController;
   final TextEditingController passwordController;
-  final Future<void> Function() onSubmit;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +23,8 @@ class LogInCard extends StatelessWidget {
     final textScheme = context.textScheme;
     final l10n = context.l10n;
 
-    final loginCubit = context.read<LoginCubit>();
+    final logInCubit = context.read<LogInCubit>();
+    final isLoading = context.watch<AuthCubit>().state is AuthLoadingState;
 
     return Container(
       constraints: const BoxConstraints(maxWidth: 420),
@@ -47,44 +46,64 @@ class LogInCard extends StatelessWidget {
         children: [
           Text(l10n.authorization, style: textScheme.display),
           const SizedBox(height: 32),
-          TextField(
-            controller: loginController,
+          AppTextField(
+            isActive: !isLoading,
+            controller: usernameController,
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.next,
-            onChanged: (String value) {
-              loginCubit.updateLogin(newLogin: value);
+            labelText: l10n.login,
+            onSubmitted: (String? value) {
+              logInCubit.updateUsername(updatedUsername: value);
             },
-            decoration: InputDecoration(
-              labelText: l10n.login,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-            ),
+            onChanged: (String? value) {
+              logInCubit.updateUsername(updatedUsername: value);
+            },
+            onFocusChange: (String? value) {
+              logInCubit.updateUsername(updatedUsername: value);
+            },
+            errorText: logInCubit.state.usernameException != null
+                ? AppExceptionsTranslator.translate(
+                    context,
+                    logInCubit.state.usernameException,
+                  )
+                : null,
           ),
           const SizedBox(height: 16),
-          TextField(
+          AppTextField(
+            isActive: !isLoading,
             controller: passwordController,
             obscureText: true,
             textInputAction: TextInputAction.done,
-            onSubmitted: (_) {
-              onSubmit();
+            labelText: l10n.password,
+            onSubmitted: (String? value) {
+              logInCubit.updatePassword(updatedPassword: value);
             },
-            onChanged: (String value) {
-              loginCubit.updatePassword(newPassword: value);
+            onChanged: (String? value) {
+              logInCubit.updatePassword(updatedPassword: value);
             },
-            decoration: InputDecoration(
-              labelText: l10n.password,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-            ),
+            onFocusChange: (String? value) {
+              logInCubit.updatePassword(updatedPassword: value);
+            },
+            errorText: logInCubit.state.passwordException != null
+                ? AppExceptionsTranslator.translate(
+                    context,
+                    logInCubit.state.passwordException,
+                  )
+                : null,
           ),
           const SizedBox(height: 24),
           AppPrimaryButton(
             text: l10n.signIn,
-            onPressed: onSubmit,
-            isLoading: context.read<AuthCubit>().state is AuthLoadingState,
-            isActive: context.watch<LoginCubit>().canLogIn(),
+            onPressed: () {
+              final logInState = context.read<LogInCubit>().state;
+
+              context.read<AuthCubit>().logIn(
+                username: logInState.username!,
+                password: logInState.password!,
+              );
+            },
+            isLoading: isLoading,
+            isActive: context.watch<LogInCubit>().canLogIn(),
           ),
           const SizedBox(height: 32),
           RichText(

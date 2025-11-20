@@ -12,20 +12,18 @@ class RegistrationCard extends StatelessWidget {
     required this.firstNameController,
     required this.lastNameController,
     required this.jobPositionController,
-    required this.loginController,
+    required this.usernameController,
     required this.passwordController,
     required this.repeatPasswordController,
-    required this.onSubmit,
     super.key,
   });
 
   final TextEditingController firstNameController;
   final TextEditingController lastNameController;
   final TextEditingController jobPositionController;
-  final TextEditingController loginController;
+  final TextEditingController usernameController;
   final TextEditingController passwordController;
   final TextEditingController repeatPasswordController;
-  final Future<void> Function() onSubmit;
 
   @override
   Widget build(BuildContext context) {
@@ -33,12 +31,12 @@ class RegistrationCard extends StatelessWidget {
     final textScheme = context.textScheme;
     final l10n = context.l10n;
 
+    final isLoading = context.read<AuthCubit>().state is AuthLoadingState;
+
     return BlocBuilder<RegistrationCubit, RegistrationState>(
       builder: (BuildContext context, RegistrationState state) {
         final RegistrationCubit registrationCubit = context
             .read<RegistrationCubit>();
-
-        final bool isActive = registrationCubit.canRegister();
 
         return Container(
           constraints: const BoxConstraints(maxWidth: 420),
@@ -60,103 +58,143 @@ class RegistrationCard extends StatelessWidget {
             children: <Widget>[
               Text(l10n.registration, style: textScheme.display),
               const SizedBox(height: 32),
-              TextField(
+              AppTextField(
+                 isActive: !isLoading,
                 controller: firstNameController,
+                labelText: l10n.firstName,
                 textInputAction: TextInputAction.next,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   registrationCubit.updateFirstName(newFirstName: value);
                 },
-                decoration: InputDecoration(
-                  labelText: l10n.firstName,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
+                onFocusChange: (String? value) {
+                  registrationCubit.updateFirstName(newFirstName: value);
+                },
+                errorText: registrationCubit.state.firstNameException != null
+                    ? AppExceptionsTranslator.translate(
+                        context,
+                        registrationCubit.state.firstNameException,
+                      )
+                    : null,
               ),
               const SizedBox(height: 16),
-              TextField(
+              AppTextField(
+                 isActive: !isLoading,
                 controller: lastNameController,
+                labelText: l10n.lastName,
                 textInputAction: TextInputAction.next,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   registrationCubit.updateLastName(newLastName: value);
                 },
-                decoration: InputDecoration(
-                  labelText: l10n.lastName,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
+                onFocusChange: (String? value) {
+                  registrationCubit.updateLastName(newLastName: value);
+                },
+                errorText: registrationCubit.state.lastNameException != null
+                    ? AppExceptionsTranslator.translate(
+                        context,
+                        registrationCubit.state.lastNameException,
+                      )
+                    : null,
               ),
               const SizedBox(height: 16),
-              TextField(
+              AppTextField(
+                 isActive: !isLoading,
                 controller: jobPositionController,
+                labelText: l10n.jobPosition,
                 textInputAction: TextInputAction.next,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   registrationCubit.updateJobPosition(newJobPosition: value);
                 },
-                decoration: InputDecoration(
-                  labelText: l10n.jobPosition,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
+                onFocusChange: (String? value) {
+                  registrationCubit.updateJobPosition(newJobPosition: value);
+                },
+                errorText: registrationCubit.state.jobPositionException != null
+                    ? AppExceptionsTranslator.translate(
+                        context,
+                        registrationCubit.state.jobPositionException,
+                      )
+                    : null,
               ),
               const SizedBox(height: 16),
-              TextField(
-                controller: loginController,
+              AppTextField(
+                 isActive: !isLoading,
+                controller: usernameController,
+                labelText: l10n.login,
                 keyboardType: TextInputType.emailAddress,
                 textInputAction: TextInputAction.next,
-                onChanged: (String value) {
-                  registrationCubit.updateLogin(newLogin: value);
+                onChanged: (String? value) {
+                  registrationCubit.updateUsername(newUsername: value);
                 },
-                decoration: InputDecoration(
-                  labelText: l10n.login,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
+                onFocusChange: (String? value) {
+                  registrationCubit.updateUsername(newUsername: value);
+                },
+                errorText: registrationCubit.state.usernameException != null
+                    ? AppExceptionsTranslator.translate(
+                        context,
+                        registrationCubit.state.usernameException,
+                      )
+                    : null,
               ),
               const SizedBox(height: 16),
-              TextField(
+              AppTextField(
+                 isActive: !isLoading,
                 controller: passwordController,
+                labelText: l10n.password,
                 obscureText: true,
                 textInputAction: TextInputAction.next,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   registrationCubit.updatePassword(newPassword: value);
                 },
-                decoration: InputDecoration(
-                  labelText: l10n.password,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
+                onFocusChange: (String? value) {
+                  registrationCubit.updatePassword(newPassword: value);
+                },
+                errorText: registrationCubit.state.passwordException != null
+                    ? AppExceptionsTranslator.translate(
+                        context,
+                        registrationCubit.state.passwordException,
+                      )
+                    : null,
               ),
               const SizedBox(height: 16),
-              TextField(
+              AppTextField(
+                 isActive: !isLoading,
                 controller: repeatPasswordController,
+                labelText: l10n.repeatPassword,
                 obscureText: true,
                 textInputAction: TextInputAction.done,
-                onSubmitted: (_) {
-                  onSubmit();
-                },
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   registrationCubit.updateRepeatPassword(
                     newRepeatPassword: value,
                   );
                 },
-                decoration: InputDecoration(
-                  labelText: l10n.repeatPassword,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
+                onFocusChange: (String? value) {
+                  registrationCubit.updateRepeatPassword(
+                    newRepeatPassword: value,
+                  );
+                },
+                errorText:
+                    registrationCubit.state.repeatPasswordException != null
+                    ? AppExceptionsTranslator.translate(
+                        context,
+                        registrationCubit.state.repeatPasswordException,
+                      )
+                    : null,
               ),
               const SizedBox(height: 24),
               AppPrimaryButton(
                 text: l10n.registration,
-                onPressed: onSubmit,
-                isLoading: context.read<AuthCubit>().state is AuthLoadingState,
-                isActive: isActive,
+                onPressed: () {
+                  final regState = context.read<RegistrationCubit>().state;
+
+                  context.read<AuthCubit>().register(
+                    firstName: regState.firstName!,
+                    lastName: regState.lastName!,
+                    jobPosition: regState.jobPosition!,
+                    username: regState.username!,
+                    password: regState.password!,
+                  );
+                },
+                isLoading: isLoading,
+                isActive: context.watch<RegistrationCubit>().canRegister(),
               ),
               const SizedBox(height: 32),
               RichText(
