@@ -10,6 +10,7 @@ import 'package:locnet_app/features/conversations/data/data.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
 import 'package:locnet_app/features/settings/domain/domain.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
+import 'package:locnet_app/mock/mock_backend_storage.dart';
 import 'package:provider/provider.dart';
 
 class AppProvidersWrapper extends StatelessWidget {
@@ -24,6 +25,8 @@ class AppProvidersWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final backendStorage = MockBackendStorage();
+
     return MultiProvider(
       providers: [
         Provider<AppScope>(create: (context) => appScope),
@@ -37,13 +40,15 @@ class AppProvidersWrapper extends StatelessWidget {
       child: MultiRepositoryProvider(
         providers: [
           RepositoryProvider<IUserRepo>(
-            create: (context) => MockMemoryUserRepo(),
+            create: (context) =>
+                MockMemoryUserRepo(backendStorage: backendStorage),
           ),
           RepositoryProvider<IAuthRepo>(
             create: (context) => const MockAuthRepo(),
           ),
           RepositoryProvider<IConversationRepo>(
             create: (context) => MockWebSocketConversationRepo(
+              backendStorage: backendStorage,
               // webSocketClient: context.read<IWebSocketClient>(),
               logger: appScope.logger,
             ),
@@ -51,6 +56,7 @@ class AppProvidersWrapper extends StatelessWidget {
           RepositoryProvider<IConversationsListRepo>(
             create: (context) => MockWebSocketConversationsListRepo(
               // webSocketClient: context.read<IWebSocketClient>(),
+              backendStorage: backendStorage,
               logger: appScope.logger,
             ),
           ),

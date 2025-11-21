@@ -1,64 +1,51 @@
 import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/mock/mock_backend_storage.dart';
 import 'package:locnet_app/mock/mock_users.dart';
 
-/// In-memory implementation of IUserRepo with seeded data from [MockUsers].
+/// In-memory implementation of IUserRepo backed by [MockBackendStorage].
 final class MockMemoryUserRepo implements IUserRepo {
-  MockMemoryUserRepo() : _usersById = <String, UserDTO>{} {
-    _seedFromMockUsers();
-  }
+  MockMemoryUserRepo({required MockBackendStorage backendStorage})
+    : _backendStorage = backendStorage;
 
-  final Map<String, UserDTO> _usersById;
+  final MockBackendStorage _backendStorage;
 
   @override
   Future<User> me() async {
-    try {
-      final UserDTO? adminDto = _usersById[MockUsers.adminUser.userId];
-      if (adminDto == null) {
-        throw StateError('Admin user not found: ${MockUsers.adminUser.userId}');
-      }
-      return User.fromDTO(adminDto);
-    } catch (error) {
-      rethrow;
+    final UserDTO? adminDto = _backendStorage.getUserById(
+      MockUsers.adminUser.userId,
+    );
+    if (adminDto == null) {
+      throw StateError('Admin user not found: ${MockUsers.adminUser.userId}');
     }
+    return User.fromDTO(adminDto);
   }
 
   @override
   Future<User> getUserById({required String userId}) async {
-    try {
-      final UserDTO? dto = _usersById[userId];
-      if (dto == null) {
-        throw StateError('User not found: $userId');
-      }
-      return User.fromDTO(dto);
-    } catch (error) {
-      rethrow;
+    final UserDTO? dto = _backendStorage.getUserById(userId);
+    if (dto == null) {
+      throw StateError('User not found: $userId');
     }
+    return User.fromDTO(dto);
   }
 
-  /// Expects [updatedUser] to be a JSON string compatible with [UserDTO.fromJSON].
-  /// Returns true if the user existed and was updated, false otherwise.
   @override
   Future<bool> updateUser({required User updatedUser}) async {
-    return true;
-  }
+    final UserDTO dto = UserDTO(
+      userId: updatedUser.userId,
+      username: updatedUser.username,
+      languageCode: updatedUser.languageCode,
+      password: 'hash_${updatedUser.username}_pw',
+      firstName: updatedUser.firstName,
+      lastName: updatedUser.lastName,
+      description: updatedUser.description,
+      avatarId: updatedUser.avatarId,
+      isDeleted: updatedUser.isDeleted,
+      isBanned: updatedUser.isBanned,
+      createdAt: updatedUser.createdAt,
+      updatedAt: updatedUser.updatedAt,
+    );
 
-  void _seedFromMockUsers() {
-    for (final User user in MockUsers.allUsers) {
-      final UserDTO dto = UserDTO(
-        userId: user.userId,
-        username: user.username,
-        languageCode: user.languageCode,
-        password: 'hash_${user.username}_pw',
-        firstName: user.firstName,
-        lastName: user.lastName,
-        description: user.description,
-        avatarId: user.avatarId,
-        isDeleted: user.isDeleted,
-        isBanned: user.isBanned,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-      );
-      _usersById[user.userId] = dto;
-    }
+    return _backendStorage.updateUser(dto);
   }
 }

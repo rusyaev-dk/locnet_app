@@ -3,34 +3,29 @@ import 'dart:async';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/conversation/data/data.dart';
 import 'package:locnet_app/features/conversation/domain/domain.dart';
+import 'package:locnet_app/mock/mock_backend_storage.dart';
 
 final class MockWebSocketConversationRepo implements IConversationRepo {
   MockWebSocketConversationRepo({
     required ILogger logger,
-    List<Conversation>? initialConversations,
+    required MockBackendStorage backendStorage,
     Duration? artificialDelay,
     int? mockConversationsCount,
+    List<Conversation>? initialConversations,
   }) : _logger = logger,
+       _backendStorage = backendStorage,
        _artificialDelay = artificialDelay ?? const Duration(milliseconds: 200),
-       _conversations = List<Conversation>.from(
-         initialConversations ??
-             _createDefaultMockConversations(
-               mockConversationsCount: mockConversationsCount,
-             ),
-       ),
        _updatesController =
-           StreamController<ConversationsUpdateRec>.broadcast();
+           StreamController<ConversationsUpdateRec>.broadcast() {
+    _seedInitialConversations(initialConversations: initialConversations);
+  }
 
   final ILogger _logger;
+  final MockBackendStorage _backendStorage;
   final Duration _artificialDelay;
-  final List<Conversation> _conversations;
   final StreamController<ConversationsUpdateRec> _updatesController;
 
   static const int _defaultLimit = 20;
-
-  static const int _minDefaultMockConversationsCount = 10;
-  static const int _maxDefaultMockConversationsCount = 20;
-  static const int _defaultMockConversationsCount = 15;
 
   @override
   Stream<ConversationsUpdateRec> get conversationsUpdates =>
@@ -42,18 +37,16 @@ final class MockWebSocketConversationRepo implements IConversationRepo {
       await Future<void>.delayed(_artificialDelay);
 
       final int safePage = page <= 0 ? 1 : page;
-      final int startIndex = (safePage - 1) * _defaultLimit;
 
-      if (startIndex >= _conversations.length) {
-        return <Conversation>[];
-      }
-
-      final int endIndex = (startIndex + _defaultLimit).clamp(
-        0,
-        _conversations.length,
+      final List<ConversationDTO> dtos = _backendStorage.getConversationsPage(
+        page: safePage,
+        limit: _defaultLimit,
       );
 
-      return _conversations.sublist(startIndex, endIndex);
+      return dtos
+          .where((ConversationDTO dto) => !dto.isDeleted)
+          .map(Conversation.fromDTO)
+          .toList(growable: false);
     } catch (e, st) {
       _logger.exception(e, st);
       rethrow;
@@ -70,7 +63,9 @@ final class MockWebSocketConversationRepo implements IConversationRepo {
   }
 
   void pushCreated(Conversation conversation) {
-    _conversations.insert(0, conversation);
+    final ConversationDTO dto = _mapDomainToDto(conversation);
+    _backendStorage.upsertConversation(dto);
+
     _updatesController.add((
       kind: ConversationUpdateType.created,
       conversation: conversation,
@@ -78,15 +73,8 @@ final class MockWebSocketConversationRepo implements IConversationRepo {
   }
 
   void pushUpdated(Conversation conversation) {
-    final int existingIndex = _conversations.indexWhere(
-      (Conversation existing) => existing.id == conversation.id,
-    );
-
-    if (existingIndex >= 0) {
-      _conversations[existingIndex] = conversation;
-    } else {
-      _conversations.insert(0, conversation);
-    }
+    final ConversationDTO dto = _mapDomainToDto(conversation);
+    _backendStorage.upsertConversation(dto);
 
     _updatesController.add((
       kind: ConversationUpdateType.updated,
@@ -95,17 +83,15 @@ final class MockWebSocketConversationRepo implements IConversationRepo {
   }
 
   void pushDeleted(String conversationId) {
-    final int existingIndex = _conversations.indexWhere(
-      (Conversation conversation) => conversation.id == conversationId,
+    final ConversationDTO? removedDto = _backendStorage.removeConversationById(
+      conversationId,
     );
 
-    if (existingIndex < 0) {
+    if (removedDto == null) {
       return;
     }
 
-    final Conversation removedConversation = _conversations.removeAt(
-      existingIndex,
-    );
+    final Conversation removedConversation = Conversation.fromDTO(removedDto);
 
     _updatesController.add((
       kind: ConversationUpdateType.deleted,
@@ -117,59 +103,32 @@ final class MockWebSocketConversationRepo implements IConversationRepo {
     await _updatesController.close();
   }
 
-  static List<Conversation> _createDefaultMockConversations({
-    int? mockConversationsCount,
+  void _seedInitialConversations({
+    required List<Conversation>? initialConversations,
   }) {
-    final int requestedCount =
-        mockConversationsCount ?? _defaultMockConversationsCount;
-
-    final int effectiveCount = requestedCount.clamp(
-      _minDefaultMockConversationsCount,
-      _maxDefaultMockConversationsCount,
-    );
-
-    final DateTime now = DateTime.now();
-
-    final List<Conversation> result = <Conversation>[];
-
-    for (int index = 0; index < effectiveCount; index++) {
-      final int humanIndex = index + 1;
-
-      final ConversationType type;
-      switch (index % 3) {
-        case 0:
-          type = ConversationType.private;
-          break;
-        case 1:
-          type = ConversationType.group;
-          break;
-        default:
-          type = ConversationType.channel;
-          break;
-      }
-
-      final DateTime createdAt = now.subtract(Duration(days: humanIndex));
-      final DateTime updatedAt = createdAt.add(
-        Duration(minutes: humanIndex * 5),
-      );
-
-      final Conversation conversation = Conversation(
-        id: 'mock-conversation-$humanIndex',
-        createdByUserId: 'mock-user-${(index % 4) + 1}',
-        type: type,
-        title: 'Mock conversation #$humanIndex',
-        description: index.isEven
-            ? 'Mock description for conversation #$humanIndex'
-            : null,
-        avatarFileId: index.isOdd ? 'mock-avatar-file-$humanIndex' : null,
-        isDeleted: false,
-        createdAt: createdAt,
-        updatedAt: updatedAt,
-      );
-
-      result.add(conversation);
+    if (initialConversations == null || initialConversations.isEmpty) {
+      return;
     }
 
-    return result;
+    for (final Conversation conversation in initialConversations) {
+      final ConversationDTO dto = _mapDomainToDto(conversation);
+      _backendStorage.upsertConversation(dto);
+    }
+  }
+
+  ConversationDTO _mapDomainToDto(Conversation conversation) {
+    return ConversationDTO(
+      conversationId: conversation.id,
+      createdBy: conversation.createdByUserId,
+      type: conversation.type.value,
+      title: conversation.title,
+      description: conversation.description,
+      avatarFileId: conversation.avatarFileId,
+      isDeleted: conversation.isDeleted,
+      deletedAt: conversation.deletedAt,
+      deletedBy: conversation.deletedByUserId,
+      createdAt: conversation.createdAt,
+      updatedAt: conversation.updatedAt,
+    );
   }
 }

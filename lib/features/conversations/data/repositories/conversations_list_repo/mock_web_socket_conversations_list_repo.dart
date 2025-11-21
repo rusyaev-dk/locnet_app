@@ -3,40 +3,37 @@
 import 'dart:async';
 
 import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/features/conversation/data/data.dart';
 import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversations/data/data.dart';
 import 'package:locnet_app/features/conversations/domain/domain.dart';
 import 'package:locnet_app/features/message/data/data.dart';
 import 'package:locnet_app/features/message/domain/domain.dart';
+import 'package:locnet_app/mock/mock_backend_storage.dart';
 
 final class MockWebSocketConversationsListRepo
     implements IConversationsListRepo {
   MockWebSocketConversationsListRepo({
     required ILogger logger,
+    required MockBackendStorage backendStorage,
     List<ConversationTile>? initialTiles,
     Duration? artificialDelay,
     int? mockConversationsCount,
   }) : _logger = logger,
+       _backendStorage = backendStorage,
        _artificialDelay = artificialDelay ?? const Duration(milliseconds: 200),
-       _tiles = List<ConversationTile>.from(
-         initialTiles ??
-             _createDefaultMockTiles(
-               mockConversationsCount: mockConversationsCount,
-             ),
-       ),
        _updatesController =
-           StreamController<ConversationsListUpdateRec>.broadcast();
+           StreamController<ConversationsListUpdateRec>.broadcast() {
+    _seedInitialTiles(initialTiles: initialTiles);
+    // mockConversationsCount intentionally not used here, данные уже сидятся в storage.
+  }
 
   final ILogger _logger;
+  final MockBackendStorage _backendStorage;
   final Duration _artificialDelay;
-  final List<ConversationTile> _tiles;
   final StreamController<ConversationsListUpdateRec> _updatesController;
 
   static const int _defaultLimit = 20;
-
-  static const int _minMockCount = 30;
-  static const int _maxMockCount = 35;
-  static const int _defaultMockCount = 32;
 
   @override
   Stream<ConversationsListUpdateRec> get conversationsUpdates =>
@@ -48,15 +45,31 @@ final class MockWebSocketConversationsListRepo
       await Future<void>.delayed(_artificialDelay);
 
       final int safePage = page <= 0 ? 1 : page;
-      final int startIndex = (safePage - 1) * _defaultLimit;
 
-      if (startIndex >= _tiles.length) {
-        return <ConversationTile>[];
+      final List<ConversationDTO> conversationDtos = _backendStorage
+          .getConversationsPage(page: safePage, limit: _defaultLimit);
+
+      final List<ConversationTile> result = <ConversationTile>[];
+
+      for (final ConversationDTO dto in conversationDtos) {
+        if (dto.isDeleted) {
+          continue;
+        }
+
+        final Conversation conversation = Conversation.fromDTO(dto);
+        final Message? lastMessage = _getLastMessageForConversation(
+          dto.conversationId,
+        );
+
+        result.add(
+          ConversationTile(
+            conversation: conversation,
+            lastMessage: lastMessage,
+          ),
+        );
       }
 
-      final int endIndex = (startIndex + _defaultLimit).clamp(0, _tiles.length);
-
-      return _tiles.sublist(startIndex, endIndex);
+      return result;
     } catch (e, st) {
       _logger.exception(e, st);
       rethrow;
@@ -73,7 +86,34 @@ final class MockWebSocketConversationsListRepo
   }
 
   void pushCreated(ConversationTile conversationTile) {
-    _tiles.insert(0, conversationTile);
+    final Conversation conversation = conversationTile.conversation;
+    final ConversationDTO conversationDto = _mapConversationToDto(conversation);
+
+    final ConversationDTO? existing = _backendStorage.getConversationById(
+      conversation.id,
+    );
+
+    if (existing == null) {
+      _backendStorage.addConversation(conversationDto);
+    } else {
+      _backendStorage.updateConversation(conversationDto);
+    }
+
+    final Message? lastMessage = conversationTile.lastMessage;
+    if (lastMessage != null) {
+      final MessageDTO messageDto = _mapMessageToDto(lastMessage);
+
+      final MessageDTO? existingMessage = _backendStorage.getMessageById(
+        lastMessage.id,
+      );
+
+      if (existingMessage == null) {
+        _backendStorage.addMessage(messageDto);
+      } else {
+        _backendStorage.updateMessage(messageDto);
+      }
+    }
+
     _updatesController.add((
       kind: ConversationTileUpdateType.created,
       conversationTile: conversationTile,
@@ -81,15 +121,32 @@ final class MockWebSocketConversationsListRepo
   }
 
   void pushUpdated(ConversationTile conversationTile) {
-    final int existingIndex = _tiles.indexWhere(
-      (ConversationTile existing) =>
-          existing.conversation.id == conversationTile.conversation.id,
+    final Conversation conversation = conversationTile.conversation;
+    final ConversationDTO conversationDto = _mapConversationToDto(conversation);
+
+    final ConversationDTO? existing = _backendStorage.getConversationById(
+      conversation.id,
     );
 
-    if (existingIndex >= 0) {
-      _tiles[existingIndex] = conversationTile;
+    if (existing == null) {
+      _backendStorage.addConversation(conversationDto);
     } else {
-      _tiles.insert(0, conversationTile);
+      _backendStorage.updateConversation(conversationDto);
+    }
+
+    final Message? lastMessage = conversationTile.lastMessage;
+    if (lastMessage != null) {
+      final MessageDTO messageDto = _mapMessageToDto(lastMessage);
+
+      final MessageDTO? existingMessage = _backendStorage.getMessageById(
+        lastMessage.id,
+      );
+
+      if (existingMessage == null) {
+        _backendStorage.addMessage(messageDto);
+      } else {
+        _backendStorage.updateMessage(messageDto);
+      }
     }
 
     _updatesController.add((
@@ -99,15 +156,24 @@ final class MockWebSocketConversationsListRepo
   }
 
   void pushDeleted(String conversationId) {
-    final int existingIndex = _tiles.indexWhere(
-      (ConversationTile tile) => tile.conversation.id == conversationId,
+    final ConversationDTO? updatedDto = _backendStorage.markConversationDeleted(
+      conversationId: conversationId,
+      deletedByUserId: 'mock-system',
     );
 
-    if (existingIndex < 0) {
+    if (updatedDto == null) {
       return;
     }
 
-    final ConversationTile removedTile = _tiles.removeAt(existingIndex);
+    final Conversation conversation = Conversation.fromDTO(updatedDto);
+    final Message? lastMessage = _getLastMessageForConversation(
+      updatedDto.conversationId,
+    );
+
+    final ConversationTile removedTile = ConversationTile(
+      conversation: conversation,
+      lastMessage: lastMessage,
+    );
 
     _updatesController.add((
       kind: ConversationTileUpdateType.deleted,
@@ -119,128 +185,89 @@ final class MockWebSocketConversationsListRepo
     await _updatesController.close();
   }
 
-  static List<ConversationTile> _createDefaultMockTiles({
-    int? mockConversationsCount,
-  }) {
-    final int requestedCount = mockConversationsCount ?? _defaultMockCount;
+  void _seedInitialTiles({required List<ConversationTile>? initialTiles}) {
+    if (initialTiles == null || initialTiles.isEmpty) {
+      return;
+    }
 
-    final int effectiveCount = requestedCount.clamp(
-      _minMockCount,
-      _maxMockCount,
-    );
+    for (final ConversationTile tile in initialTiles) {
+      final Conversation conversation = tile.conversation;
+      final ConversationDTO conversationDto = _mapConversationToDto(
+        conversation,
+      );
 
-    final DateTime now = DateTime.now();
+      final ConversationDTO? existingConversation = _backendStorage
+          .getConversationById(conversation.id);
 
-    final List<ConversationTile> result = <ConversationTile>[];
-
-    final int lastMessageThreshold = (effectiveCount * 0.9)
-        .round(); // about 90%
-
-    for (int index = 0; index < effectiveCount; index++) {
-      final int humanIndex = index + 1;
-
-      final ConversationType type;
-      switch (index % 3) {
-        case 0:
-          type = ConversationType.private;
-          break;
-        case 1:
-          type = ConversationType.group;
-          break;
-        default:
-          type = ConversationType.channel;
-          break;
+      if (existingConversation == null) {
+        _backendStorage.addConversation(conversationDto);
+      } else {
+        _backendStorage.updateConversation(conversationDto);
       }
 
-      final DateTime createdAt = now.subtract(Duration(days: humanIndex));
-      final DateTime updatedAt = createdAt.add(
-        Duration(minutes: humanIndex * 3),
-      );
+      final Message? lastMessage = tile.lastMessage;
+      if (lastMessage != null) {
+        final MessageDTO messageDto = _mapMessageToDto(lastMessage);
 
-      final Conversation conversation = Conversation(
-        id: 'mock-conversation-$humanIndex',
-        createdByUserId: 'mock-user-${(index % 5) + 1}',
-        type: type,
-        title: _buildMockTitle(type: type, index: humanIndex),
-        description: index.isEven
-            ? 'Mock conversation description #$humanIndex'
-            : null,
-        avatarFileId: index.isOdd ? 'mock-avatar-file-$humanIndex' : null,
-        isDeleted: false,
-        createdAt: createdAt,
-        updatedAt: updatedAt,
-      );
+        final MessageDTO? existingMessage = _backendStorage.getMessageById(
+          lastMessage.id,
+        );
 
-      final bool hasLastMessage = humanIndex <= lastMessageThreshold;
-
-      final Message? lastMessage = hasLastMessage
-          ? _buildMockMessage(conversation, index, now)
-          : null;
-
-      final ConversationTile tile = ConversationTile(
-        conversation: conversation,
-        lastMessage: lastMessage,
-      );
-
-      result.add(tile);
-    }
-
-    return result;
-  }
-
-  static String _buildMockTitle({
-    required ConversationType type,
-    required int index,
-  }) {
-    switch (type) {
-      case ConversationType.private:
-        return 'Direct chat #$index';
-      case ConversationType.group:
-        return 'Project group chat #$index';
-      case ConversationType.channel:
-        return 'News channel #$index';
+        if (existingMessage == null) {
+          _backendStorage.addMessage(messageDto);
+        } else {
+          _backendStorage.updateMessage(messageDto);
+        }
+      }
     }
   }
 
-  static Message _buildMockMessage(
-    Conversation conversation,
-    int index,
-    DateTime now,
-  ) {
-    final int humanIndex = index + 1;
+  Message? _getLastMessageForConversation(String conversationId) {
+    final List<MessageDTO> messageDtos = _backendStorage
+        .getMessagesForConversation(
+          conversationId: conversationId,
+          page: 1,
+          limit: 1000000,
+        );
 
-    final String text;
-    switch (index % 3) {
-      case 0:
-        text = 'Hello, this is mock message #$humanIndex';
-        break;
-      case 1:
-        text = 'Пример тестового сообщения №$humanIndex для списка диалогов';
-        break;
-      default:
-        text = 'Salom, bu sinov xabari #$humanIndex';
-        break;
+    if (messageDtos.isEmpty) {
+      return null;
     }
 
-    final DateTime createdAt = now.subtract(Duration(minutes: humanIndex * 7));
-    final DateTime updatedAt = createdAt.add(const Duration(minutes: 1));
+    final MessageDTO lastDto = messageDtos.last;
+    return Message.fromDTO(lastDto);
+  }
 
-    final bool hasAttachments = humanIndex % 5 == 0;
-
-    final MessageDTO dto = MessageDTO(
-      messageId: 'mock-message-$humanIndex',
+  ConversationDTO _mapConversationToDto(Conversation conversation) {
+    return ConversationDTO(
       conversationId: conversation.id,
-      senderId: 'mock-sender-${(index % 4) + 1}',
-      message: text,
-      hasAttachments: hasAttachments,
-      isPinned: humanIndex % 8 == 0 ? true : null,
-      editedAt: humanIndex % 6 == 0
-          ? createdAt.add(const Duration(minutes: 2))
-          : null,
-      createdAt: createdAt,
-      updatedAt: updatedAt,
+      createdBy: conversation.createdByUserId,
+      type: conversation.type.value,
+      title: conversation.title,
+      description: conversation.description,
+      avatarFileId: conversation.avatarFileId,
+      isDeleted: conversation.isDeleted,
+      deletedAt: conversation.deletedAt,
+      deletedBy: conversation.deletedByUserId,
+      createdAt: conversation.createdAt,
+      updatedAt: conversation.updatedAt,
     );
+  }
 
-    return Message.fromDTO(dto);
+  MessageDTO _mapMessageToDto(Message message) {
+    return MessageDTO(
+      messageId: message.id,
+      conversationId: message.conversationId,
+      senderId: message.senderId,
+      message: message.text,
+      hasAttachments: message.hasAttachments,
+      replyToMessageId: message.replyToMessageId,
+      isPinned: message.isPinned ? true : null,
+      editedAt: message.editedAt,
+      isDeleted: message.isDeleted ? true : null,
+      deletedAt: message.deletedAt,
+      createdAt: message.createdAt,
+      updatedAt: message.updatedAt,
+    );
   }
 }
