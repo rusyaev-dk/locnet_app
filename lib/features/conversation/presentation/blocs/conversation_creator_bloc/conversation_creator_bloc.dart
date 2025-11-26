@@ -52,13 +52,15 @@ class ConversationCreatorBloc
   ) async {
     try {
       if (event.title == null || event.title!.isEmpty) {
-        return emit(state.copyWith(failure: ConversationEmptyFieldException()));
+        return emit(
+          state.copyWith(titleException: ConversationEmptyFieldException()),
+        );
       }
 
       try {
         ConversationDataFormatter.validateTitle(event.title!);
       } catch (e) {
-        return emit(state.copyWith(failure: e));
+        return emit(state.copyWith(titleException: e));
       }
 
       emit(state.copyWith(title: event.title, titleException: null));
@@ -86,10 +88,12 @@ class ConversationCreatorBloc
       try {
         ConversationDataFormatter.validateDescription(event.description!);
       } catch (e) {
-        return emit(state.copyWith(failure: e));
+        return emit(state.copyWith(descriptionException: e));
       }
 
-      emit(state.copyWith(title: event.description, descriptionException: null));
+      emit(
+        state.copyWith(title: event.description, descriptionException: null),
+      );
     } catch (e, st) {
       _logger.exception(e, st);
       emit(

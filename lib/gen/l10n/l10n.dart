@@ -619,6 +619,36 @@ class S {
     );
   }
 
+  /// `Поле не может быть пустым`
+  String get conversationEmptyFieldException {
+    return Intl.message(
+      'Поле не может быть пустым',
+      name: 'conversationEmptyFieldException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Введённые данные слишком длинные`
+  String get conversationDataTooLongException {
+    return Intl.message(
+      'Введённые данные слишком длинные',
+      name: 'conversationDataTooLongException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Не удалось создать беседу`
+  String get conversationCreateException {
+    return Intl.message(
+      'Не удалось создать беседу',
+      name: 'conversationCreateException',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Авторизация`
   String get authorization {
     return Intl.message(

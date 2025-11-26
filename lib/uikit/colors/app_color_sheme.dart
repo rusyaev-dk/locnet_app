@@ -90,7 +90,7 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
 
   const AppColorScheme.dark()
     : primary = const Color(0xFF60A5FA), // blue-400
-      onPrimary = const Color(0xFF0B1120),
+      onPrimary = const Color.fromARGB(255, 226, 230, 239),
       primaryContainer = const Color(0xFF1D4ED8), // blue-700
       onPrimaryContainer = const Color(0xFFDBEAFE), // blue-100
 

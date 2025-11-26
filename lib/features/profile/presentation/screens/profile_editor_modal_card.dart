@@ -8,17 +8,22 @@ import 'package:locnet_app/features/profile/presentation/presentation.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
 class ProfileEditorModalWrapper extends StatelessWidget {
-  const ProfileEditorModalWrapper({required this.child, super.key});
+  const ProfileEditorModalWrapper({
+    required this.child,
+    required this.profileInteractor,
+    super.key,
+  });
 
   final Widget child;
+  final ProfileInteractor profileInteractor;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<ProfileEditorCubit>(
       create: (context) => ProfileEditorCubit(
-        profileInteractor: context.read<ProfileInteractor>(),
+        profileInteractor: profileInteractor,
         logger: context.read<ILogger>(),
-      ),
+      )..loadUserData(),
       child: child,
     );
   }
@@ -78,12 +83,11 @@ class _ProfileEditorModalCardState extends State<ProfileEditorModalCard> {
     final colorScheme = context.colorScheme;
 
     return BlocListener<ProfileEditorCubit, ProfileEditorState>(
-     listener: (context, state) {
-          if (state is ProfileEditorSuccessState) {
-            context.read<ProfileCubit>().loadUserData();
-            Navigator.of(context).pop();
-          }
-        },
+      listener: (context, state) {
+        if (state is ProfileEditorSuccessState) {
+          Navigator.of(context).pop(true);
+        }
+      },
       child: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -103,13 +107,10 @@ class _ProfileEditorModalCardState extends State<ProfileEditorModalCard> {
                   child: BlocBuilder<ProfileEditorCubit, ProfileEditorState>(
                     builder: (BuildContext context, ProfileEditorState state) {
                       if (state is ProfileEditorFailureState) {
-                        return Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: InfoWidget(
-                            icon: Icons.error,
-                            text: state.failure.toString(),
-                            iconAnimationEffect: const ShakeEffect(),
-                          ),
+                        return InfoWidget(
+                          icon: Icons.error,
+                          text: state.failure.toString(),
+                          iconAnimationEffect: const ShakeEffect(),
                         );
                       }
 
@@ -197,78 +198,81 @@ class _ProfileEditorView extends StatelessWidget {
           ),
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AppTextField(
-                  isActive: !isBusy,
-                  controller: firstNameController,
-                  labelText: l10n.firstName,
-                  textInputAction: TextInputAction.next,
-                  onChanged: (String? value) {
-                    editorCubit.updateFirstName(newFirstName: value);
-                  },
-                  onFocusChange: (String? value) {
-                    editorCubit.updateFirstName(newFirstName: value);
-                  },
-                  onSubmitted: (String? value) {
-                    editorCubit.updateFirstName(newFirstName: value);
-                  },
-                  errorText: firstNameException != null
-                      ? AppExceptionsTranslator.translate(
-                          context,
-                          firstNameException,
-                        )
-                      : null,
-                ),
-                const SizedBox(height: 15),
-                AppTextField(
-                  isActive: !isBusy,
-                  controller: lastNameController,
-                  labelText: l10n.lastName,
-                  textInputAction: TextInputAction.next,
-                  onChanged: (String? value) {
-                    editorCubit.updateLastName(newLastName: value);
-                  },
-                  onFocusChange: (String? value) {
-                    editorCubit.updateLastName(newLastName: value);
-                  },
-                  onSubmitted: (String? value) {
-                    editorCubit.updateLastName(newLastName: value);
-                  },
-                  errorText: lastNameException != null
-                      ? AppExceptionsTranslator.translate(
-                          context,
-                          lastNameException,
-                        )
-                      : null,
-                ),
-                const SizedBox(height: 15),
-                AppTextField(
-                  isActive: !isBusy,
-                  controller: usernameController,
-                  labelText: l10n.username,
-                  textInputAction: TextInputAction.done,
-                  onChanged: (String? value) {
-                    editorCubit.updateUsername(newUsername: value);
-                  },
-                  onFocusChange: (String? value) {
-                    editorCubit.updateUsername(newUsername: value);
-                  },
-                  onSubmitted: (String? value) {
-                    editorCubit.updateUsername(newUsername: value);
-                  },
-                  errorText: usernameException != null
-                      ? AppExceptionsTranslator.translate(
-                          context,
-                          usernameException,
-                        )
-                      : null,
-                ),
-                const SizedBox(height: 15),
-                _ProfileEditorApplyButton(isPending: isSubmitting),
-              ],
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 15),
+                  AppTextField(
+                    isActive: !isBusy,
+                    controller: firstNameController,
+                    labelText: l10n.firstName,
+                    textInputAction: TextInputAction.next,
+                    onChanged: (String? value) {
+                      editorCubit.updateFirstName(newFirstName: value);
+                    },
+                    onFocusChange: (String? value) {
+                      editorCubit.updateFirstName(newFirstName: value);
+                    },
+                    onSubmitted: (String? value) {
+                      editorCubit.updateFirstName(newFirstName: value);
+                    },
+                    errorText: firstNameException != null
+                        ? AppExceptionsTranslator.translate(
+                            context,
+                            firstNameException,
+                          )
+                        : null,
+                  ),
+                  const SizedBox(height: 15),
+                  AppTextField(
+                    isActive: !isBusy,
+                    controller: lastNameController,
+                    labelText: l10n.lastName,
+                    textInputAction: TextInputAction.next,
+                    onChanged: (String? value) {
+                      editorCubit.updateLastName(newLastName: value);
+                    },
+                    onFocusChange: (String? value) {
+                      editorCubit.updateLastName(newLastName: value);
+                    },
+                    onSubmitted: (String? value) {
+                      editorCubit.updateLastName(newLastName: value);
+                    },
+                    errorText: lastNameException != null
+                        ? AppExceptionsTranslator.translate(
+                            context,
+                            lastNameException,
+                          )
+                        : null,
+                  ),
+                  const SizedBox(height: 15),
+                  AppTextField(
+                    isActive: !isBusy,
+                    controller: usernameController,
+                    labelText: l10n.username,
+                    textInputAction: TextInputAction.done,
+                    onChanged: (String? value) {
+                      editorCubit.updateUsername(newUsername: value);
+                    },
+                    onFocusChange: (String? value) {
+                      editorCubit.updateUsername(newUsername: value);
+                    },
+                    onSubmitted: (String? value) {
+                      editorCubit.updateUsername(newUsername: value);
+                    },
+                    errorText: usernameException != null
+                        ? AppExceptionsTranslator.translate(
+                            context,
+                            usernameException,
+                          )
+                        : null,
+                  ),
+                  const SizedBox(height: 15),
+                  _ProfileEditorApplyButton(isPending: isSubmitting),
+                ],
+              ),
             ),
           ),
         ),

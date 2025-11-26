@@ -39,14 +39,16 @@ class ConversationTypeSelector extends StatelessWidget {
             final bool isSelected = type == selectedConversationType;
 
             return ChoiceChip(
+              backgroundColor: colorScheme.surface,
               label: Text(
                 _resolveLocalizedTypeLabel(l10n, type),
                 style: textScheme.label.copyWith(
                   color: isSelected
-                      ? colorScheme.onPrimary
+                      ? colorScheme.onSurface
                       : colorScheme.onSurfaceVariant,
                 ),
               ),
+              selectedColor: colorScheme.surfaceBright,
               selected: isSelected,
               onSelected: (bool selected) {
                 if (!selected) {

@@ -76,10 +76,19 @@ class MessageLookup extends MessageLookupByLibrary {
     "clear": MessageLookupByLibrary.simpleMessage("Clear"),
     "close": MessageLookupByLibrary.simpleMessage("Close"),
     "confirm": MessageLookupByLibrary.simpleMessage("Confirm"),
+    "conversationCreateException": MessageLookupByLibrary.simpleMessage(
+      "Failed to create conversation",
+    ),
     "conversationCreating": MessageLookupByLibrary.simpleMessage(
       "Создание переписки",
     ),
+    "conversationDataTooLongException": MessageLookupByLibrary.simpleMessage(
+      "Provided data is too long",
+    ),
     "conversationDescription": MessageLookupByLibrary.simpleMessage("Описание"),
+    "conversationEmptyFieldException": MessageLookupByLibrary.simpleMessage(
+      "This field cannot be empty",
+    ),
     "conversationTitle": MessageLookupByLibrary.simpleMessage("Название"),
     "conversationType": MessageLookupByLibrary.simpleMessage("Тип"),
     "conversationTypeChannel": MessageLookupByLibrary.simpleMessage("Канал"),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/auth/domain/domain.dart';
+import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/settings/domain/domain.dart';
 import 'package:locnet_app/gen/l10n/l10n.dart';
 
@@ -36,7 +37,8 @@ final class AppExceptionsTranslator {
     AuthInvalidCredentialsException: (s) => s.authInvalidCredentialsException,
     AuthExpiredSessionException: (s) => s.authExpiredSessionException,
     AppAuthException: (s) => s.authUnknownException,
-    RegistrationPasswordsDontMatchException: (s) => s.registrationPasswordsDontMatchException,
+    RegistrationPasswordsDontMatchException: (s) =>
+        s.registrationPasswordsDontMatchException,
     RegistrationEmptyFieldException: (s) => s.registrationEmptyFieldException,
     // Settings exceptions
     SettingsLocaleChangeException: (s) => s.settingsLocaleChangeException,
@@ -58,6 +60,11 @@ final class AppExceptionsTranslator {
     PasswordNoDigitException: (s) => s.passwordNoDigitException,
     PasswordInvalidCharactersException: (s) =>
         s.passwordInvalidCharactersException,
+
+    // Conversation Creator exceptions
+    ConversationEmptyFieldException: (s) => s.conversationEmptyFieldException,
+    ConversationDataTooLongException: (s) => s.conversationDataTooLongException,
+    ConversationCreateException: (s) => s.conversationCreateException,
 
     // Optional base-class fallbacks
     AppApiException: (s) => s.apiUnknownException,

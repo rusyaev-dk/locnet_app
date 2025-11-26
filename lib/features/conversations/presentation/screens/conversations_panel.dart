@@ -8,8 +8,8 @@ import 'package:locnet_app/features/conversations/domain/domain.dart';
 import 'package:locnet_app/features/conversations/presentation/presentation.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
-class ConversationsScreenWrapper extends StatelessWidget {
-  const ConversationsScreenWrapper({required this.child, super.key});
+class ConversationsPanelWrapper extends StatelessWidget {
+  const ConversationsPanelWrapper({required this.child, super.key});
 
   final Widget child;
 
@@ -36,8 +36,8 @@ class ConversationsScreenWrapper extends StatelessWidget {
   }
 }
 
-class ConversationsScreen extends StatelessWidget {
-  const ConversationsScreen({required this.selectedConversationId, super.key});
+class ConversationsPanel extends StatelessWidget {
+  const ConversationsPanel({required this.selectedConversationId, super.key});
 
   final String? selectedConversationId;
 
@@ -86,13 +86,13 @@ class _ConversationsListPanel extends StatelessWidget {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const _ConversationsFiltersBar(),
-                const SizedBox(height: 8),
+                const _ChipsBar(),
                 Expanded(
                   child: ListView.separated(
                     itemCount: tiles.length,
-                    itemBuilder: (context, index) => const SizedBox(height: 5),
-                    separatorBuilder: (BuildContext context, int index) {
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 5),
+                    itemBuilder: (BuildContext context, int index) {
                       final ConversationTile tile = tiles[index];
 
                       return Padding(
@@ -115,51 +115,54 @@ class _ConversationsListPanel extends StatelessWidget {
   }
 }
 
-class _ConversationsFiltersBar extends StatelessWidget {
-  const _ConversationsFiltersBar();
+class _ChipsBar extends StatelessWidget {
+  const _ChipsBar();
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
 
     return SizedBox(
-      height: 40,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Row(
-          children: [
-            ChipButton(
-              icon: Icons.add,
-              label: l10n.create,
-              onPressed: () {
-                showGeneralDialog(
-                  context: context,
-                  pageBuilder: (_, _, _) {
-                    return const ConversationCreatorModalWrapper(
-                      child: ConversationCreatorModalCard(),
-                    );
-                  },
-                );
-              },
-            ),
-            const SizedBox(width: 8),
-            ChipButton(
-              icon: Icons.search,
-              label: l10n.search,
-              onPressed: () {},
-            ),
-            const SizedBox(width: 8),
-            ChipButton(label: 'Mock', onPressed: () {}),
-            const SizedBox(width: 8),
-            ChipButton(label: 'Mock', onPressed: () {}),
-            const SizedBox(width: 8),
-            ChipButton(label: 'Mock', onPressed: () {}),
-            const SizedBox(width: 8),
-            ChipButton(label: 'Mock', onPressed: () {}),
-            const SizedBox(width: 8),
-            ChipButton(label: 'Mock', onPressed: () {}),
-          ],
+
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 5),
+          child: Row(
+            children: [
+              const SizedBox(width: 8),
+              ChipButton(
+                icon: Icons.add,
+                label: l10n.create,
+                onPressed: () {
+                  showGeneralDialog(
+                    context: context,
+                    pageBuilder: (_, _, _) {
+                      return const ConversationCreatorModalWrapper(
+                        child: ConversationCreatorModalCard(),
+                      );
+                    },
+                  );
+                },
+              ),
+              const SizedBox(width: 8),
+              ChipButton(
+                icon: Icons.search,
+                label: l10n.search,
+                onPressed: () {},
+              ),
+              const SizedBox(width: 8),
+              ChipButton(label: 'Mock', onPressed: () {}),
+              const SizedBox(width: 8),
+              ChipButton(label: 'Mock', onPressed: () {}),
+              const SizedBox(width: 8),
+              ChipButton(label: 'Mock', onPressed: () {}),
+              const SizedBox(width: 8),
+              ChipButton(label: 'Mock', onPressed: () {}),
+              const SizedBox(width: 8),
+              ChipButton(label: 'Mock', onPressed: () {}),
+            ],
+          ),
         ),
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
+import 'package:locnet_app/uikit/uikit.dart';
 
 class ConversationCreatorHeader extends StatelessWidget {
   const ConversationCreatorHeader({super.key});
@@ -10,22 +11,28 @@ class ConversationCreatorHeader extends StatelessWidget {
     final textScheme = context.textScheme;
     final l10n = context.l10n;
 
-    return Container(
+    return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      color: colorScheme.surface,
       child: Row(
         children: [
           Expanded(
+            flex: 5,
             child: Text(
               l10n.conversationCreating,
-              style: textScheme.headline.copyWith(color: colorScheme.onSurface),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+              style: textScheme.display.copyWith(
+                color: colorScheme.onSurface,
+                fontSize: 24,
+              ),
             ),
           ),
-          IconButton(
-            onPressed: () {
-              Navigator.of(context).maybePop();
-            },
-            icon: Icon(Icons.close, color: colorScheme.onSurfaceVariant),
+          const Spacer(),
+          AppIconButton(
+            buttonSize: 35,
+            iconSize: 18.5,
+            onPressed: () => Navigator.of(context).pop(),
+            icon: Icons.close,
           ),
         ],
       ),

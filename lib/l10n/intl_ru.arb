@@ -66,6 +66,9 @@
     "passwordNoLowerCaseException": "Пароль должен содержать хотя бы одну строчную букву",
     "passwordNoDigitException": "Пароль должен содержать хотя бы одну цифру",
     "passwordInvalidCharactersException": "Пароль содержит недопустимые символы",
+    "conversationEmptyFieldException": "Поле не может быть пустым",
+    "conversationDataTooLongException": "Введённые данные слишком длинные",
+    "conversationCreateException": "Не удалось создать беседу",
     "authorization": "Авторизация",
     "signIn": "Войти",
     "login": "Логин",
@@ -120,7 +123,7 @@
     "conversationType": "Тип",
     "create": "Создать",
     "conversationCreating": "Создание переписки",
-       "conversationTypePrivate": "Личная",
+    "conversationTypePrivate": "Личная",
     "conversationTypeGroup": "Группа",
     "conversationTypeChannel": "Канал",
     "search": "Поиск"

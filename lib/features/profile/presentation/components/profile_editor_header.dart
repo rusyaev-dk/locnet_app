@@ -17,13 +17,16 @@ class ProfileEditorHeader extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          Text(
-            l10n.profileEditing,
-            overflow: TextOverflow.ellipsis,
-            maxLines: 2,
-            style: textScheme.display.copyWith(
-              color: colorScheme.onSurface,
-              fontSize: 24,
+          Expanded(
+            flex: 5,
+            child: Text(
+              l10n.profileEditing,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+              style: textScheme.display.copyWith(
+                color: colorScheme.onSurface,
+                fontSize: 24,
+              ),
             ),
           ),
           const Spacer(),

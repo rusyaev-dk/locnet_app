@@ -61,7 +61,7 @@ class ProfileModalCard extends StatelessWidget {
                         case ProfileInitialState():
                         case ProfileLoadingState():
                           return Padding(
-                            padding: const EdgeInsets.all(24),
+                            padding: const EdgeInsets.all(16),
                             child: Center(
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
@@ -79,13 +79,10 @@ class ProfileModalCard extends StatelessWidget {
                             ),
                           );
                         case ProfileFailureState():
-                          return Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: InfoWidget(
-                              icon: Icons.error,
-                              text: state.failure.toString(),
-                              iconAnimationEffect: const ShakeEffect(),
-                            ),
+                          return InfoWidget(
+                            icon: Icons.error,
+                            text: state.failure.toString(),
+                            iconAnimationEffect: const ShakeEffect(),
                           );
                         case ProfileLoadedState():
                           return _ProfileView(profileState: state);

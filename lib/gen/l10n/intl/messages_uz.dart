@@ -76,10 +76,19 @@ class MessageLookup extends MessageLookupByLibrary {
     "clear": MessageLookupByLibrary.simpleMessage("Tozalash"),
     "close": MessageLookupByLibrary.simpleMessage("Yopish"),
     "confirm": MessageLookupByLibrary.simpleMessage("Tasdiqlash"),
+    "conversationCreateException": MessageLookupByLibrary.simpleMessage(
+      "Suhbatni yaratib bo‘lmadi",
+    ),
     "conversationCreating": MessageLookupByLibrary.simpleMessage(
       "Создание переписки",
     ),
+    "conversationDataTooLongException": MessageLookupByLibrary.simpleMessage(
+      "Kiritilgan ma\'lumotlar juda uzun",
+    ),
     "conversationDescription": MessageLookupByLibrary.simpleMessage("Описание"),
+    "conversationEmptyFieldException": MessageLookupByLibrary.simpleMessage(
+      "Maydon bo\'sh bo\'lishi mumkin emas",
+    ),
     "conversationTitle": MessageLookupByLibrary.simpleMessage("Название"),
     "conversationType": MessageLookupByLibrary.simpleMessage("Тип"),
     "conversationTypeChannel": MessageLookupByLibrary.simpleMessage("Канал"),

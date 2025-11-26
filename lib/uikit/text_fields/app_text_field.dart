@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:locnet_app/app/app.dart';
 
 class AppTextField extends StatelessWidget {
@@ -29,6 +30,7 @@ class AppTextField extends StatelessWidget {
     this.hintStyle,
     this.maxLines = 1,
     this.minLines,
+    this.maxSymbols,
   });
 
   final TextEditingController controller;
@@ -65,6 +67,7 @@ class AppTextField extends StatelessWidget {
 
   final int maxLines;
   final int? minLines;
+  final int? maxSymbols;
 
   @override
   Widget build(BuildContext context) {
@@ -86,6 +89,10 @@ class AppTextField extends StatelessWidget {
         contentPadding ??
         const EdgeInsets.symmetric(horizontal: 16, vertical: 14);
 
+    final List<TextInputFormatter> inputFormatters = maxSymbols != null
+        ? <TextInputFormatter>[LengthLimitingTextInputFormatter(maxSymbols)]
+        : const <TextInputFormatter>[];
+
     final TextField textField = TextField(
       controller: controller,
       enabled: enabled,
@@ -93,8 +100,31 @@ class AppTextField extends StatelessWidget {
       obscureText: obscureText,
       keyboardType: keyboardType,
       textInputAction: textInputAction,
+      inputFormatters: inputFormatters,
       maxLines: obscureText ? 1 : maxLines,
       minLines: obscureText ? 1 : minLines,
+      maxLength: maxSymbols,
+      maxLengthEnforcement: MaxLengthEnforcement.enforced,
+      buildCounter: maxSymbols != null
+          ? (
+              BuildContext buildContext, {
+              required int currentLength,
+              required bool isFocused,
+              required int? maxLength,
+            }) {
+              final bool isLimitExceeded = currentLength > maxSymbols!;
+              final TextStyle counterTextStyle = textScheme.label.copyWith(
+                color: isLimitExceeded
+                    ? colorScheme.error
+                    : colorScheme.onSurfaceVariant.withAlpha(179),
+              );
+
+              return Text(
+                '$currentLength/$maxSymbols',
+                style: counterTextStyle,
+              );
+            }
+          : null,
       onChanged: isActive
           ? (String value) {
               if (onChanged == null) {

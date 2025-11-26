@@ -66,6 +66,9 @@
   "passwordNoLowerCaseException": "Parolda kamida bitta kichik harf bo‘lishi kerak",
   "passwordNoDigitException": "Parolda kamida bitta raqam bo‘lishi kerak",
   "passwordInvalidCharactersException": "Parolda ruxsat etilmagan belgilar mavjud",
+  "conversationEmptyFieldException": "Maydon bo'sh bo'lishi mumkin emas",
+  "conversationDataTooLongException": "Kiritilgan ma'lumotlar juda uzun",
+  "conversationCreateException": "Suhbatni yaratib bo‘lmadi",
   "authorization": "Avtorizatsiya",
   "signIn": "Kirish",
   "login": "Login",
@@ -116,13 +119,12 @@
   "username": "Юзернейм",
   "profileEditing": "Редактирование профиля",
   "conversationTitle": "Название",
-    "conversationDescription": "Описание",
-    "conversationType": "Тип",
-    "create": "Создать",
-    "conversationCreating": "Создание переписки",
-    "conversationTypePrivate": "Личная",
-    "conversationTypeGroup": "Группа",
-    "conversationTypeChannel": "Канал",
-    "search": "Поиск"
-
+  "conversationDescription": "Описание",
+  "conversationType": "Тип",
+  "create": "Создать",
+  "conversationCreating": "Создание переписки",
+  "conversationTypePrivate": "Личная",
+  "conversationTypeGroup": "Группа",
+  "conversationTypeChannel": "Канал",
+  "search": "Поиск"
 }

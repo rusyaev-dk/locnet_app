@@ -114,8 +114,8 @@ class AppRouter {
                     BuildContext context,
                     GoRouterState state,
                   ) {
-                    return const ConversationsScreenWrapper(
-                      child: ConversationsScreen(selectedConversationId: null),
+                    return const ConversationsPanelWrapper(
+                      child: ConversationsPanel(selectedConversationId: null),
                     );
                   }),
                   routes: [
@@ -128,8 +128,8 @@ class AppRouter {
                       ) {
                         final String conversationId =
                             state.pathParameters['conversationId']!;
-                        return ConversationsScreenWrapper(
-                          child: ConversationsScreen(
+                        return ConversationsPanelWrapper(
+                          child: ConversationsPanel(
                             selectedConversationId: conversationId,
                           ),
                         );

@@ -131,24 +131,20 @@ class _ConversationCreatorModalCardState
                                   ConversationCreatorState state,
                                 ) {
                                   final Object? failure = state.failure;
-    
+
                                   if (failure != null &&
                                       !state.success &&
                                       !state.isPending) {
-                                    return Padding(
-                                      padding: const EdgeInsets.all(24),
-                                      child: InfoWidget(
-                                        icon: Icons.error,
-                                        text: AppExceptionsTranslator.translate(
-                                          context,
-                                          failure,
-                                        ),
-                                        iconAnimationEffect:
-                                            const ShakeEffect(),
+                                    return InfoWidget(
+                                      icon: Icons.error,
+                                      text: AppExceptionsTranslator.translate(
+                                        context,
+                                        failure,
                                       ),
+                                      iconAnimationEffect: const ShakeEffect(),
                                     );
                                   }
-    
+
                                   return _ConversationCreatorView(
                                     titleController: _titleController,
                                     descriptionController:
@@ -195,19 +191,21 @@ class _ConversationCreatorView extends StatelessWidget {
         Divider(height: 1, color: colorScheme.outlineVariant),
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(height: 15),
                 ConversationTypeSelector(
                   selectedConversationType: state.selectedConversationType,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 15),
                 AppTextField(
                   isActive: !isPending,
                   controller: titleController,
                   labelText: l10n.conversationTitle,
                   textInputAction: TextInputAction.next,
+                  maxSymbols: 40,
                   onChanged: (String? value) {
                     bloc.add(UpdateConversationTitleEvent(title: value));
                   },
@@ -231,6 +229,7 @@ class _ConversationCreatorView extends StatelessWidget {
                   labelText: l10n.conversationDescription,
                   textInputAction: TextInputAction.newline,
                   maxLines: 4,
+                  maxSymbols: 2000,
                   onChanged: (String? value) {
                     bloc.add(
                       UpdateConversationDescriptionEvent(description: value),
