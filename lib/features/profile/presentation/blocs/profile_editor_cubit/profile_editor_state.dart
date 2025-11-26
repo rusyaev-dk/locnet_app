@@ -29,6 +29,7 @@ final class ProfileEditorLoadedState extends ProfileEditorState {
     this.lastNameException,
     this.newUsername,
     this.usernameException,
+    this.isSubmitting = false,
     super.failure,
   });
 
@@ -45,6 +46,8 @@ final class ProfileEditorLoadedState extends ProfileEditorState {
   final String? newUsername;
   final Object? usernameException;
 
+  final bool isSubmitting;
+
   ProfileEditorLoadedState copyWith({
     User? initialUser,
     String? newFirstName,
@@ -53,6 +56,7 @@ final class ProfileEditorLoadedState extends ProfileEditorState {
     Object? lastNameException = _noChange,
     String? newUsername,
     Object? usernameException = _noChange,
+    bool? isSubmitting,
     Object? failure = _noChange,
   }) {
     return ProfileEditorLoadedState(
@@ -69,6 +73,7 @@ final class ProfileEditorLoadedState extends ProfileEditorState {
       usernameException: identical(usernameException, _noChange)
           ? this.usernameException
           : usernameException,
+      isSubmitting: isSubmitting ?? this.isSubmitting,
       failure: identical(failure, _noChange) ? this.failure : failure,
     );
   }
@@ -82,16 +87,12 @@ final class ProfileEditorLoadedState extends ProfileEditorState {
         lastNameException,
         newUsername,
         usernameException,
+        isSubmitting,
         failure,
       ];
 }
 
-final class ProfileEditorPendingState extends ProfileEditorState {
-  const ProfileEditorPendingState({super.failure});
 
-  @override
-  List<Object?> get props => <Object?>[failure];
-}
 
 final class ProfileEditorSuccessState extends ProfileEditorState {
   const ProfileEditorSuccessState({super.failure});

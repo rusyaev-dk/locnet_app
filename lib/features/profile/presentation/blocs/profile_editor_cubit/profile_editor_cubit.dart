@@ -11,9 +11,9 @@ class ProfileEditorCubit extends Cubit<ProfileEditorState> {
   ProfileEditorCubit({
     required ProfileInteractor profileInteractor,
     required ILogger logger,
-  })  : _profileInteractor = profileInteractor,
-        _logger = logger,
-        super(const ProfileEditorInitialState());
+  }) : _profileInteractor = profileInteractor,
+       _logger = logger,
+       super(const ProfileEditorInitialState());
 
   final ProfileInteractor _profileInteractor;
   final ILogger _logger;
@@ -43,10 +43,7 @@ class ProfileEditorCubit extends Cubit<ProfileEditorState> {
         ProfileDataFormatter.validateName(newFirstName);
       } catch (e) {
         emit(
-          prevState.copyWith(
-            newFirstName: newFirstName,
-            firstNameException: e,
-          ),
+          prevState.copyWith(newFirstName: newFirstName, firstNameException: e),
         );
         return;
       }
@@ -64,10 +61,7 @@ class ProfileEditorCubit extends Cubit<ProfileEditorState> {
         ProfileEditorFailureState(
           failure: e is AppException
               ? e
-              : AppUnknownException(
-                  message: e.toString(),
-                  stackTrace: st,
-                ),
+              : AppUnknownException(message: e.toString(), stackTrace: st),
         ),
       );
     }
@@ -98,19 +92,13 @@ class ProfileEditorCubit extends Cubit<ProfileEditorState> {
         ProfileDataFormatter.validateName(newLastName);
       } catch (e) {
         emit(
-          prevState.copyWith(
-            newLastName: newLastName,
-            lastNameException: e,
-          ),
+          prevState.copyWith(newLastName: newLastName, lastNameException: e),
         );
         return;
       }
 
       emit(
-        prevState.copyWith(
-          newLastName: newLastName,
-          lastNameException: null,
-        ),
+        prevState.copyWith(newLastName: newLastName, lastNameException: null),
       );
     } catch (e, st) {
       _logger.exception(e, st);
@@ -119,10 +107,7 @@ class ProfileEditorCubit extends Cubit<ProfileEditorState> {
         ProfileEditorFailureState(
           failure: e is AppException
               ? e
-              : AppUnknownException(
-                  message: e.toString(),
-                  stackTrace: st,
-                ),
+              : AppUnknownException(message: e.toString(), stackTrace: st),
         ),
       );
     }
@@ -153,18 +138,45 @@ class ProfileEditorCubit extends Cubit<ProfileEditorState> {
         ProfileDataFormatter.validateUsername(newUsername);
       } catch (e) {
         emit(
-          prevState.copyWith(
-            newUsername: newUsername,
-            usernameException: e,
-          ),
+          prevState.copyWith(newUsername: newUsername, usernameException: e),
         );
         return;
       }
 
       emit(
+        prevState.copyWith(newUsername: newUsername, usernameException: null),
+      );
+    } catch (e, st) {
+      _logger.exception(e, st);
+
+      emit(
+        ProfileEditorFailureState(
+          failure: e is AppException
+              ? e
+              : AppUnknownException(message: e.toString(), stackTrace: st),
+        ),
+      );
+    }
+  }
+
+  Future<void> resetUpdates() async {
+    try {
+      if (state is! ProfileEditorLoadedState) {
+        return;
+      }
+
+      final ProfileEditorLoadedState prevState =
+          state as ProfileEditorLoadedState;
+
+      emit(
         prevState.copyWith(
-          newUsername: newUsername,
+          newFirstName: null,
+          firstNameException: null,
+          newLastName: null,
+          lastNameException: null,
+          newUsername: null,
           usernameException: null,
+          failure: null,
         ),
       );
     } catch (e, st) {
@@ -174,51 +186,11 @@ class ProfileEditorCubit extends Cubit<ProfileEditorState> {
         ProfileEditorFailureState(
           failure: e is AppException
               ? e
-              : AppUnknownException(
-                  message: e.toString(),
-                  stackTrace: st,
-                ),
+              : AppUnknownException(message: e.toString(), stackTrace: st),
         ),
       );
     }
   }
-
-  Future<void> resetUpdates() async {
-  try {
-    if (state is! ProfileEditorLoadedState) {
-      return;
-    }
-
-    final ProfileEditorLoadedState prevState =
-        state as ProfileEditorLoadedState;
-
-    emit(
-      prevState.copyWith(
-        newFirstName: null,
-        firstNameException: null,
-        newLastName: null,
-        lastNameException: null,
-        newUsername: null,
-        usernameException: null,
-        failure: null,
-      ),
-    );
-  } catch (e, st) {
-    _logger.exception(e, st);
-
-    emit(
-      ProfileEditorFailureState(
-        failure: e is AppException
-            ? e
-            : AppUnknownException(
-                message: e.toString(),
-                stackTrace: st,
-              ),
-      ),
-    );
-  }
-}
-
 
   bool canApplyUpdates() {
     if (state is! ProfileEditorLoadedState) {
@@ -261,10 +233,10 @@ class ProfileEditorCubit extends Cubit<ProfileEditorState> {
         return;
       }
 
-      emit(const ProfileEditorPendingState());
+      emit(prevState.copyWith(isSubmitting: true));
 
       // TODO: remove the delay
-      await Future<void>.delayed(const Duration(milliseconds: 4000));
+      await Future<void>.delayed(const Duration(seconds: 1));
 
       final User updatedUser = prevState.initialUser.copyWith(
         firstName: prevState.newFirstName ?? prevState.initialUser.firstName,
@@ -274,6 +246,7 @@ class ProfileEditorCubit extends Cubit<ProfileEditorState> {
 
       await _profileInteractor.udpateUserData(updatedUser: updatedUser);
 
+      emit(prevState.copyWith(isSubmitting: false));
       emit(const ProfileEditorSuccessState());
       emit(const ProfileEditorInitialState());
     } catch (e, st) {
@@ -283,10 +256,7 @@ class ProfileEditorCubit extends Cubit<ProfileEditorState> {
         ProfileEditorFailureState(
           failure: e is AppException
               ? e
-              : AppUnknownException(
-                  message: e.toString(),
-                  stackTrace: st,
-                ),
+              : AppUnknownException(message: e.toString(), stackTrace: st),
         ),
       );
     }
@@ -308,10 +278,7 @@ class ProfileEditorCubit extends Cubit<ProfileEditorState> {
         ProfileEditorFailureState(
           failure: e is AppException
               ? e
-              : AppUnknownException(
-                  message: e.toString(),
-                  stackTrace: st,
-                ),
+              : AppUnknownException(message: e.toString(), stackTrace: st),
         ),
       );
     }

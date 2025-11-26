@@ -31,7 +31,7 @@ class ProfileModalWrapper extends StatelessWidget {
             create: (context) => ProfileEditorCubit(
               profileInteractor: context.read<ProfileInteractor>(),
               logger: context.read<ILogger>(),
-            )..loadUserData(),
+            ),
           ),
         ],
         child: child,

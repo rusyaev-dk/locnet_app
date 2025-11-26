@@ -79,7 +79,6 @@ class _ProfileEditorModalCardState extends State<ProfileEditorModalCard> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
-    final textScheme = context.textScheme;
 
     return ProfileEditorModalWrapper(
       profileEditorCubit: widget.profileEditorCubit,
@@ -101,63 +100,32 @@ class _ProfileEditorModalCardState extends State<ProfileEditorModalCard> {
                   ),
                   child: BlocBuilder<ProfileEditorCubit, ProfileEditorState>(
                     builder: (BuildContext context, ProfileEditorState state) {
-                      switch (state) {
-                        case ProfileEditorInitialState():
-                        case ProfileEditorLoadingState():
-                          return Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: Center(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const CircularProgressIndicator(),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    'Loading profile...',
-                                    style: textScheme.headline.copyWith(
-                                      color: colorScheme.onSurface,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        case ProfileEditorFailureState():
-                          return Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: InfoWidget(
-                              icon: Icons.error,
-                              text: state.failure.toString(),
-                              iconAnimationEffect: const ShakeEffect(),
-                            ),
-                          );
-                        case ProfileEditorLoadedState():
-                          return _ProfileEditorLoadedView(
-                            firstNameController: _firstNameController,
-                            lastNameController: _lastNameController,
-                            usernameController: _usernameController,
-                            isPending: false,
-                          );
-                        case ProfileEditorPendingState():
-                          return _ProfileEditorLoadedView(
-                            firstNameController: _firstNameController,
-                            lastNameController: _lastNameController,
-                            usernameController: _usernameController,
-                            isPending: true,
-                          );
-                        case ProfileEditorSuccessState():
-                          return Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: Center(
-                              child: Text(
-                                'Profile update state...',
-                                style: textScheme.headline.copyWith(
-                                  color: colorScheme.onSurface,
-                                ),
-                              ),
-                            ),
-                          );
+                      if (state is ProfileEditorFailureState) {
+                        return Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: InfoWidget(
+                            icon: Icons.error,
+                            text: state.failure.toString(),
+                            iconAnimationEffect: const ShakeEffect(),
+                          ),
+                        );
                       }
+
+                      final bool isLoading =
+                          state is ProfileEditorInitialState ||
+                          state is ProfileEditorLoadingState;
+
+                      print(state.runtimeType);
+                      final ProfileEditorLoadedState? loadedState =
+                          state is ProfileEditorLoadedState ? state : null;
+
+                      return _ProfileEditorView(
+                        firstNameController: _firstNameController,
+                        lastNameController: _lastNameController,
+                        usernameController: _usernameController,
+                        isLoading: isLoading,
+                        loadedState: loadedState,
+                      );
                     },
                   ),
                 ),
@@ -170,33 +138,62 @@ class _ProfileEditorModalCardState extends State<ProfileEditorModalCard> {
   }
 }
 
-class _ProfileEditorLoadedView extends StatelessWidget {
-  const _ProfileEditorLoadedView({
+class _ProfileEditorView extends StatelessWidget {
+  const _ProfileEditorView({
     required this.firstNameController,
     required this.lastNameController,
     required this.usernameController,
-    required this.isPending,
+    required this.isLoading,
+    required this.loadedState,
   });
 
   final TextEditingController firstNameController;
   final TextEditingController lastNameController;
   final TextEditingController usernameController;
-  final bool isPending;
+  final bool isLoading;
+  final ProfileEditorLoadedState? loadedState;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
+    final textScheme = context.textScheme;
     final l10n = context.l10n;
 
     final ProfileEditorCubit editorCubit = context.read<ProfileEditorCubit>();
 
-    final state = editorCubit.state as ProfileEditorLoadedState;
+    final bool isSubmitting = loadedState?.isSubmitting ?? false;
+    final bool isBusy = isLoading || isSubmitting;
+
+    final Object? firstNameException = loadedState?.firstNameException;
+    final Object? lastNameException = loadedState?.lastNameException;
+    final Object? usernameException = loadedState?.usernameException;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const ProfileEditorHeader(),
         Divider(height: 1, color: colorScheme.outlineVariant),
+        if (isLoading)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Loading profile...',
+                  style: textScheme.label.copyWith(
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+              ],
+            ),
+          ),
         Expanded(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -204,7 +201,7 @@ class _ProfileEditorLoadedView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AppTextField(
-                  isActive: !isPending,
+                  isActive: !isBusy,
                   controller: firstNameController,
                   labelText: l10n.firstName,
                   textInputAction: TextInputAction.next,
@@ -217,19 +214,19 @@ class _ProfileEditorLoadedView extends StatelessWidget {
                   onSubmitted: (String? value) {
                     editorCubit.updateFirstName(newFirstName: value);
                   },
-                  errorText: state.firstNameException != null
+                  errorText: firstNameException != null
                       ? AppExceptionsTranslator.translate(
                           context,
-                          state.firstNameException,
+                          firstNameException,
                         )
                       : null,
                 ),
                 const SizedBox(height: 15),
                 AppTextField(
-                  isActive: !isPending,
+                  isActive: !isBusy,
                   controller: lastNameController,
                   labelText: l10n.lastName,
-                  textInputAction: TextInputAction.done,
+                  textInputAction: TextInputAction.next,
                   onChanged: (String? value) {
                     editorCubit.updateLastName(newLastName: value);
                   },
@@ -239,16 +236,16 @@ class _ProfileEditorLoadedView extends StatelessWidget {
                   onSubmitted: (String? value) {
                     editorCubit.updateLastName(newLastName: value);
                   },
-                  errorText: state.lastNameException != null
+                  errorText: lastNameException != null
                       ? AppExceptionsTranslator.translate(
                           context,
-                          state.lastNameException,
+                          lastNameException,
                         )
                       : null,
                 ),
                 const SizedBox(height: 15),
                 AppTextField(
-                  isActive: !isPending,
+                  isActive: !isBusy,
                   controller: usernameController,
                   labelText: l10n.username,
                   textInputAction: TextInputAction.done,
@@ -261,27 +258,47 @@ class _ProfileEditorLoadedView extends StatelessWidget {
                   onSubmitted: (String? value) {
                     editorCubit.updateUsername(newUsername: value);
                   },
-                  errorText: state.usernameException != null
+                  errorText: usernameException != null
                       ? AppExceptionsTranslator.translate(
                           context,
-                          state.usernameException,
+                          usernameException,
                         )
                       : null,
                 ),
                 const SizedBox(height: 15),
-                AppPrimaryButton(
-                  width: double.infinity,
-                  text: l10n.apply,
-                  onPressed: () =>
-                      context.read<ProfileEditorCubit>().applyUpdates(),
-                  isActive: context.watch<ProfileEditorCubit>().canApplyUpdates(),
-                  isLoading: isPending,
-                ),
+                _ProfileEditorApplyButton(isPending: isSubmitting),
               ],
             ),
           ),
         ),
       ],
+    );
+  }
+}
+
+class _ProfileEditorApplyButton extends StatelessWidget {
+  const _ProfileEditorApplyButton({required this.isPending});
+
+  final bool isPending;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
+    return BlocSelector<ProfileEditorCubit, ProfileEditorState, bool>(
+      selector: (ProfileEditorState state) {
+        final ProfileEditorCubit cubit = context.read<ProfileEditorCubit>();
+        return cubit.canApplyUpdates();
+      },
+      builder: (BuildContext context, bool canApplyUpdates) {
+        return AppPrimaryButton(
+          width: double.infinity,
+          text: l10n.apply,
+          onPressed: () => context.read<ProfileEditorCubit>().applyUpdates(),
+          isActive: canApplyUpdates && !isPending,
+          isLoading: isPending,
+        );
+      },
     );
   }
 }

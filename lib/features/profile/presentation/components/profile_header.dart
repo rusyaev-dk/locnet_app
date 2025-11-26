@@ -39,6 +39,7 @@ class ProfileHeader extends StatelessWidget {
               showGeneralDialog(
                 context: context,
                 pageBuilder: (context, _, _) {
+                  profileEditorCubit.loadUserData();
                   return ProfileEditorModalCard(
                     initialUser: user,
                     profileEditorCubit: profileEditorCubit,
