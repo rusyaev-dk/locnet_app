@@ -3,34 +3,31 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/features/profile/domain/domain.dart';
 import 'package:locnet_app/features/profile/presentation/presentation.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
 class ProfileEditorModalWrapper extends StatelessWidget {
-  const ProfileEditorModalWrapper({
-    required this.child,
-    required this.profileEditorCubit,
-    super.key,
-  });
+  const ProfileEditorModalWrapper({required this.child, super.key});
 
   final Widget child;
-  final ProfileEditorCubit profileEditorCubit;
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(value: profileEditorCubit, child: child);
+    return BlocProvider<ProfileEditorCubit>(
+      create: (context) => ProfileEditorCubit(
+        profileInteractor: context.read<ProfileInteractor>(),
+        logger: context.read<ILogger>(),
+      ),
+      child: child,
+    );
   }
 }
 
 class ProfileEditorModalCard extends StatefulWidget {
-  const ProfileEditorModalCard({
-    required this.initialUser,
-    required this.profileEditorCubit,
-    super.key,
-  });
+  const ProfileEditorModalCard({required this.initialUser, super.key});
 
   final User initialUser;
-  final ProfileEditorCubit profileEditorCubit;
 
   @override
   State<ProfileEditorModalCard> createState() => _ProfileEditorModalCardState();
@@ -80,8 +77,13 @@ class _ProfileEditorModalCardState extends State<ProfileEditorModalCard> {
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
 
-    return ProfileEditorModalWrapper(
-      profileEditorCubit: widget.profileEditorCubit,
+    return BlocListener<ProfileEditorCubit, ProfileEditorState>(
+     listener: (context, state) {
+          if (state is ProfileEditorSuccessState) {
+            context.read<ProfileCubit>().loadUserData();
+            Navigator.of(context).pop();
+          }
+        },
       child: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -115,7 +117,6 @@ class _ProfileEditorModalCardState extends State<ProfileEditorModalCard> {
                           state is ProfileEditorInitialState ||
                           state is ProfileEditorLoadingState;
 
-                      print(state.runtimeType);
                       final ProfileEditorLoadedState? loadedState =
                           state is ProfileEditorLoadedState ? state : null;
 

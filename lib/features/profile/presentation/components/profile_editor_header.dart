@@ -18,7 +18,7 @@ class ProfileEditorHeader extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            l10n.profileEdition,
+            l10n.profileEditing,
             overflow: TextOverflow.ellipsis,
             maxLines: 2,
             style: textScheme.display.copyWith(

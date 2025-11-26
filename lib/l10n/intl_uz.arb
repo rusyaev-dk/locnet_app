@@ -114,5 +114,15 @@
   "profile": "Profil",
   "description": "Описание",
   "username": "Юзернейм",
-  "profileEdition": "Редактирование профиля"
+  "profileEditing": "Редактирование профиля",
+  "conversationTitle": "Название",
+    "conversationDescription": "Описание",
+    "conversationType": "Тип",
+    "create": "Создать",
+    "conversationCreating": "Создание переписки",
+    "conversationTypePrivate": "Личная",
+    "conversationTypeGroup": "Группа",
+    "conversationTypeChannel": "Канал",
+    "search": "Поиск"
+
 }

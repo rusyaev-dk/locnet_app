@@ -1,6 +1,5 @@
 // profile_header.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/profile/presentation/presentation.dart';
@@ -16,7 +15,6 @@ class ProfileHeader extends StatelessWidget {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
     final l10n = context.l10n;
-    final profileEditorCubit = context.read<ProfileEditorCubit>();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -39,10 +37,8 @@ class ProfileHeader extends StatelessWidget {
               showGeneralDialog(
                 context: context,
                 pageBuilder: (context, _, _) {
-                  profileEditorCubit.loadUserData();
-                  return ProfileEditorModalCard(
-                    initialUser: user,
-                    profileEditorCubit: profileEditorCubit,
+                  return ProfileEditorModalWrapper(
+                    child: ProfileEditorModalCard(initialUser: user),
                   );
                 },
               );

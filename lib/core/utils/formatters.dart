@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/features/conversation/domain/domain.dart';
 
 final class DateTimeFormatter {
   static DateTime parse(Object? raw) {
@@ -21,14 +22,10 @@ final class DateTimeFormatter {
   }
 
   static String formatLocalized(DateTime dateTime, {String? locale}) {
-    final DateFormat formatter = DateFormat(
-      'dd MMM yyyy, HH:mm',
-      locale,
-    );
+    final DateFormat formatter = DateFormat('dd MMM yyyy, HH:mm', locale);
     return formatter.format(dateTime);
   }
 }
-
 
 final class ProfileDataFormatter {
   static void validateName(String name) {
@@ -75,3 +72,28 @@ final class ProfileDataFormatter {
   }
 }
 
+final class ConversationDataFormatter {
+  static void validateTitle(String title) {
+    final String trimmedTitle = title.trim();
+
+    if (trimmedTitle.isEmpty) {
+      throw ConversationEmptyFieldException();
+    }
+
+    if (trimmedTitle.length > 120) {
+      throw ConversationDataTooLongException();
+    }
+  }
+
+  static void validateDescription(String description) {
+    final String trimmedDescription = description.trim();
+
+    if (trimmedDescription.isEmpty) {
+      throw ConversationEmptyFieldException();
+    }
+
+    if (trimmedDescription.length > 1000) {
+      throw ConversationDataTooLongException();
+    }
+  }
+}

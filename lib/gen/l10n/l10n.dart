@@ -1010,13 +1010,88 @@ class S {
   }
 
   /// `Редактирование профиля`
-  String get profileEdition {
+  String get profileEditing {
     return Intl.message(
       'Редактирование профиля',
-      name: 'profileEdition',
+      name: 'profileEditing',
       desc: '',
       args: [],
     );
+  }
+
+  /// `Название`
+  String get conversationTitle {
+    return Intl.message(
+      'Название',
+      name: 'conversationTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Описание`
+  String get conversationDescription {
+    return Intl.message(
+      'Описание',
+      name: 'conversationDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Тип`
+  String get conversationType {
+    return Intl.message('Тип', name: 'conversationType', desc: '', args: []);
+  }
+
+  /// `Создать`
+  String get create {
+    return Intl.message('Создать', name: 'create', desc: '', args: []);
+  }
+
+  /// `Создание переписки`
+  String get conversationCreating {
+    return Intl.message(
+      'Создание переписки',
+      name: 'conversationCreating',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Личная`
+  String get conversationTypePrivate {
+    return Intl.message(
+      'Личная',
+      name: 'conversationTypePrivate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Группа`
+  String get conversationTypeGroup {
+    return Intl.message(
+      'Группа',
+      name: 'conversationTypeGroup',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Канал`
+  String get conversationTypeChannel {
+    return Intl.message(
+      'Канал',
+      name: 'conversationTypeChannel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Поиск`
+  String get search {
+    return Intl.message('Поиск', name: 'search', desc: '', args: []);
   }
 }
 

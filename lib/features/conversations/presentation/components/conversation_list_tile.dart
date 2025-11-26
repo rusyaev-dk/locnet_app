@@ -58,62 +58,59 @@ class ConversationListTile extends StatelessWidget {
       }
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      child: Material(
-        color: colorScheme.surfaceContainer.withAlpha(60),
+    return Material(
+      color: colorScheme.surfaceContainer.withAlpha(60),
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: () {
-            GoRouter.of(
-              context,
-            ).go('/home/conversations/${conversationTile.conversation.id}');
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _ConversationAvatar(
-                  backgroundColor: colorScheme.onSurface.withAlpha(0x14),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+        onTap: () {
+          GoRouter.of(
+            context,
+          ).go('/home/conversations/${conversationTile.conversation.id}');
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _ConversationAvatar(
+                backgroundColor: colorScheme.onSurface.withAlpha(0x14),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      titleText,
+                      style: textScheme.headline.copyWith(fontSize: 16.5),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (subtitleText != null) ...[
+                      const SizedBox(height: 4),
                       Text(
-                        titleText,
-                        style: textScheme.headline.copyWith(fontSize: 16.5),
+                        subtitleText,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                      ),
-                      if (subtitleText != null) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          subtitleText,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: textScheme.label.copyWith(
-                            color: colorScheme.onSurface.withAlpha(0x99),
-                          ),
+                        style: textScheme.label.copyWith(
+                          color: colorScheme.onSurface.withAlpha(0x99),
                         ),
-                      ],
+                      ),
                     ],
+                  ],
+                ),
+              ),
+              if (timeText != null) ...[
+                const SizedBox(width: 8),
+                Text(
+                  timeText,
+                  style: textScheme.label.copyWith(
+                    color: colorScheme.onSurface.withAlpha(0x99),
                   ),
                 ),
-                if (timeText != null) ...[
-                  const SizedBox(width: 8),
-                  Text(
-                    timeText,
-                    style: textScheme.label.copyWith(
-                      color: colorScheme.onSurface.withAlpha(0x99),
-                    ),
-                  ),
-                ],
               ],
-            ),
+            ],
           ),
         ),
       ),

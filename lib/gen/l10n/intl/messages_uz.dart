@@ -76,7 +76,17 @@ class MessageLookup extends MessageLookupByLibrary {
     "clear": MessageLookupByLibrary.simpleMessage("Tozalash"),
     "close": MessageLookupByLibrary.simpleMessage("Yopish"),
     "confirm": MessageLookupByLibrary.simpleMessage("Tasdiqlash"),
+    "conversationCreating": MessageLookupByLibrary.simpleMessage(
+      "Создание переписки",
+    ),
+    "conversationDescription": MessageLookupByLibrary.simpleMessage("Описание"),
+    "conversationTitle": MessageLookupByLibrary.simpleMessage("Название"),
+    "conversationType": MessageLookupByLibrary.simpleMessage("Тип"),
+    "conversationTypeChannel": MessageLookupByLibrary.simpleMessage("Канал"),
+    "conversationTypeGroup": MessageLookupByLibrary.simpleMessage("Группа"),
+    "conversationTypePrivate": MessageLookupByLibrary.simpleMessage("Личная"),
     "conversations": MessageLookupByLibrary.simpleMessage("Muloqotlar"),
+    "create": MessageLookupByLibrary.simpleMessage("Создать"),
     "currentSession": MessageLookupByLibrary.simpleMessage("Joriy sessiya"),
     "delete": MessageLookupByLibrary.simpleMessage("O‘chirish"),
     "description": MessageLookupByLibrary.simpleMessage("Описание"),
@@ -136,7 +146,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Shaxsiy ma\'lumotlar",
     ),
     "profile": MessageLookupByLibrary.simpleMessage("Profil"),
-    "profileEdition": MessageLookupByLibrary.simpleMessage(
+    "profileEditing": MessageLookupByLibrary.simpleMessage(
       "Редактирование профиля",
     ),
     "registration": MessageLookupByLibrary.simpleMessage("Ro‘yxatdan o‘tish"),
@@ -154,6 +164,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "reset": MessageLookupByLibrary.simpleMessage("Tiklash"),
     "retry": MessageLookupByLibrary.simpleMessage("Qayta urinib ko‘ring"),
     "save": MessageLookupByLibrary.simpleMessage("Saqlash"),
+    "search": MessageLookupByLibrary.simpleMessage("Поиск"),
     "searchUnknownException": MessageLookupByLibrary.simpleMessage(
       "Qidiruvda noma’lum xato yuz berdi",
     ),

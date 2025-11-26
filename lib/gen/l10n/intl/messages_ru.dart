@@ -76,7 +76,17 @@ class MessageLookup extends MessageLookupByLibrary {
     "clear": MessageLookupByLibrary.simpleMessage("Очистить"),
     "close": MessageLookupByLibrary.simpleMessage("Закрыть"),
     "confirm": MessageLookupByLibrary.simpleMessage("Подтвердить"),
+    "conversationCreating": MessageLookupByLibrary.simpleMessage(
+      "Создание переписки",
+    ),
+    "conversationDescription": MessageLookupByLibrary.simpleMessage("Описание"),
+    "conversationTitle": MessageLookupByLibrary.simpleMessage("Название"),
+    "conversationType": MessageLookupByLibrary.simpleMessage("Тип"),
+    "conversationTypeChannel": MessageLookupByLibrary.simpleMessage("Канал"),
+    "conversationTypeGroup": MessageLookupByLibrary.simpleMessage("Группа"),
+    "conversationTypePrivate": MessageLookupByLibrary.simpleMessage("Личная"),
     "conversations": MessageLookupByLibrary.simpleMessage("Переписки"),
+    "create": MessageLookupByLibrary.simpleMessage("Создать"),
     "currentSession": MessageLookupByLibrary.simpleMessage("Текущая сессия"),
     "delete": MessageLookupByLibrary.simpleMessage("Удалить"),
     "description": MessageLookupByLibrary.simpleMessage("Описание"),
@@ -138,7 +148,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Личная информация",
     ),
     "profile": MessageLookupByLibrary.simpleMessage("Профиль"),
-    "profileEdition": MessageLookupByLibrary.simpleMessage(
+    "profileEditing": MessageLookupByLibrary.simpleMessage(
       "Редактирование профиля",
     ),
     "registration": MessageLookupByLibrary.simpleMessage("Регистрация"),
@@ -154,6 +164,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "reset": MessageLookupByLibrary.simpleMessage("Сбросить"),
     "retry": MessageLookupByLibrary.simpleMessage("Попробовать снова"),
     "save": MessageLookupByLibrary.simpleMessage("Сохранить"),
+    "search": MessageLookupByLibrary.simpleMessage("Поиск"),
     "searchUnknownException": MessageLookupByLibrary.simpleMessage(
       "Неизвестная ошибка при поиске",
     ),

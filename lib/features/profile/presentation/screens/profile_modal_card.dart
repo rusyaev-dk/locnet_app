@@ -1,4 +1,4 @@
-// profile_modal.dart
+// profile_modal_card.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,21 +19,11 @@ class ProfileModalWrapper extends StatelessWidget {
         userRepo: context.read<IUserRepo>(),
         logger: context.read<ILogger>(),
       ),
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider<ProfileCubit>(
-            create: (context) => ProfileCubit(
-              profileInteractor: context.read<ProfileInteractor>(),
-              logger: context.read<ILogger>(),
-            )..loadUserData(),
-          ),
-          BlocProvider<ProfileEditorCubit>(
-            create: (context) => ProfileEditorCubit(
-              profileInteractor: context.read<ProfileInteractor>(),
-              logger: context.read<ILogger>(),
-            ),
-          ),
-        ],
+      child: BlocProvider<ProfileCubit>(
+        create: (context) => ProfileCubit(
+          profileInteractor: context.read<ProfileInteractor>(),
+          logger: context.read<ILogger>(),
+        )..loadUserData(),
         child: child,
       ),
     );
@@ -49,66 +39,58 @@ class ProfileModalCard extends StatelessWidget {
     final textScheme = context.textScheme;
 
     return ProfileModalWrapper(
-      child: BlocListener<ProfileEditorCubit, ProfileEditorState>(
-        listener: (context, state) {
-          if (state is ProfileEditorSuccessState) {
-            context.read<ProfileCubit>().loadUserData();
-            Navigator.of(context).pop();
-          }
-        },
-        child: SafeArea(
-          child: Center(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: 420,
-                maxHeight: MediaQuery.of(context).size.height - 48,
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(24),
-                child: Material(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: colorScheme.secondary,
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: colorScheme.outlineVariant),
-                    ),
-                    child: BlocBuilder<ProfileCubit, ProfileState>(
-                      builder: (BuildContext context, ProfileState state) {
-                        switch (state) {
-                          case ProfileInitialState():
-                          case ProfileLoadingState():
-                            return Padding(
-                              padding: const EdgeInsets.all(24),
-                              child: Center(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const CircularProgressIndicator(),
-                                    const SizedBox(height: 16),
-                                    Text(
-                                      'Loading profile...',
-                                      style: textScheme.headline.copyWith(
-                                        color: colorScheme.onSurface,
-                                      ),
+      child: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: 420,
+              maxHeight: MediaQuery.of(context).size.height - 48,
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: Material(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: colorScheme.secondary,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: colorScheme.outlineVariant),
+                  ),
+                  child: BlocBuilder<ProfileCubit, ProfileState>(
+                    builder: (BuildContext context, ProfileState state) {
+                      switch (state) {
+                        case ProfileInitialState():
+                        case ProfileLoadingState():
+                          return Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const CircularProgressIndicator(),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'Loading profile...',
+                                    style: textScheme.headline.copyWith(
+                                      color: colorScheme.onSurface,
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            );
-                          case ProfileFailureState():
-                            return Padding(
-                              padding: const EdgeInsets.all(24),
-                              child: InfoWidget(
-                                icon: Icons.error,
-                                text: state.failure.toString(),
-                                iconAnimationEffect: const ShakeEffect(),
-                              ),
-                            );
-                          case ProfileLoadedState():
-                            return _ProfileLoadedView(profileState: state);
-                        }
-                      },
-                    ),
+                            ),
+                          );
+                        case ProfileFailureState():
+                          return Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: InfoWidget(
+                              icon: Icons.error,
+                              text: state.failure.toString(),
+                              iconAnimationEffect: const ShakeEffect(),
+                            ),
+                          );
+                        case ProfileLoadedState():
+                          return _ProfileView(profileState: state);
+                      }
+                    },
                   ),
                 ),
               ),
@@ -120,17 +102,24 @@ class ProfileModalCard extends StatelessWidget {
   }
 }
 
-class _ProfileLoadedView extends StatelessWidget {
-  const _ProfileLoadedView({required this.profileState});
+class _ProfileView extends StatelessWidget {
+  const _ProfileView({required this.profileState});
 
   final ProfileLoadedState profileState;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
+    final textScheme = context.textScheme;
     final l10n = context.l10n;
 
     final User user = profileState.user;
+
+    final TextStyle sectionTitleStyle = textScheme.label.copyWith(
+      color: colorScheme.primary,
+      fontWeight: FontWeight.w600,
+      letterSpacing: 0.2,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -145,7 +134,7 @@ class _ProfileLoadedView extends StatelessWidget {
               children: [
                 ProfileMainInfo(user: user),
                 const SizedBox(height: 24),
-                _ProfileSectionTitle(title: l10n.accountStatus),
+                Text(l10n.accountStatus, style: sectionTitleStyle),
                 const SizedBox(height: 8),
                 Text(
                   '${l10n.language}: ${user.languageCode}',
@@ -153,35 +142,11 @@ class _ProfileLoadedView extends StatelessWidget {
                     color: colorScheme.onSurfaceVariant,
                   ),
                 ),
-                const SizedBox(height: 24),
-                _ProfileSectionTitle(title: l10n.meta),
-                const SizedBox(height: 8),
               ],
             ),
           ),
         ),
       ],
-    );
-  }
-}
-
-class _ProfileSectionTitle extends StatelessWidget {
-  const _ProfileSectionTitle({required this.title});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = context.colorScheme;
-    final textScheme = context.textScheme;
-
-    return Text(
-      title,
-      style: textScheme.label.copyWith(
-        color: colorScheme.primary,
-        fontWeight: FontWeight.w600,
-        letterSpacing: 0.2,
-      ),
     );
   }
 }
