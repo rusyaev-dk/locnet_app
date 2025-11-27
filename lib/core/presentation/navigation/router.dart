@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/auth/presentation/presentation.dart';
+import 'package:locnet_app/features/conversations/domain/domain.dart';
 import 'package:locnet_app/features/conversations/presentation/presentation.dart';
 import 'package:locnet_app/features/home/presentation/presentation.dart';
 import 'package:locnet_app/features/root/root_screen.dart';
@@ -115,7 +116,7 @@ class AppRouter {
                     GoRouterState state,
                   ) {
                     return const ConversationsPanelWrapper(
-                      child: ConversationsPanel(selectedConversationId: null),
+                      child: ConversationsPanel(),
                     );
                   }),
                   routes: [
@@ -126,17 +127,17 @@ class AppRouter {
                         BuildContext context,
                         GoRouterState state,
                       ) {
-                        final String conversationId =
-                            state.pathParameters['conversationId']!;
+                        final ConversationTile? selectedTile =
+                            state.extra as ConversationTile?;
+
                         return ConversationsPanelWrapper(
-                          child: ConversationsPanel(
-                            selectedConversationId: conversationId,
-                          ),
+                          child: ConversationsPanel(selectedTile: selectedTile),
                         );
                       }),
                     ),
                   ],
                 ),
+
                 GoRoute(
                   path: 'storage',
                   name: 'storage',

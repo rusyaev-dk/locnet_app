@@ -1,1 +1,1 @@
-export 'conversations_panel.dart';
+export 'conversations_list_panel.dart';

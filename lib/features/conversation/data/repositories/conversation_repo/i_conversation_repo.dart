@@ -10,6 +10,8 @@ typedef ConversationsUpdateRec = ({
 abstract interface class IConversationRepo {
   Future<List<Conversation>> loadConversationsList({int page = 1});
 
+  Future<Conversation> getConversationById({required String conversationId});
+
   Future<bool> toggleNotifications({
     required String conversationId,
     required bool newNotificationsStatus,

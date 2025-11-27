@@ -8,4 +8,6 @@ abstract class AppRoutes {
   static const String profile = '/home/profile';
 
   static String somePageWithArg(String arg) => "/home/somepage/$arg";
+  static String conversation(String conversationId) =>
+      "/home/conversations/$conversationId";
 }

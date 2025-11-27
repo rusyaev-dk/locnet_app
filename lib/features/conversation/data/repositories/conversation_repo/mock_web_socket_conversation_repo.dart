@@ -54,6 +54,14 @@ final class MockWebSocketConversationRepo implements IConversationRepo {
   }
 
   @override
+  Future<Conversation> getConversationById({
+    required String conversationId,
+  }) async {
+    final dto = _backendStorage.getConversationById(conversationId);
+    return Conversation.fromDTO(dto!);
+  }
+
+  @override
   Future<bool> toggleNotifications({
     required String conversationId,
     required bool newNotificationsStatus,

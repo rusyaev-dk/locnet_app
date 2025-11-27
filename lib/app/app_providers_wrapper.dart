@@ -39,6 +39,10 @@ class AppProvidersWrapper extends StatelessWidget {
       ],
       child: MultiRepositoryProvider(
         providers: [
+          // TODO: remove for prod
+          RepositoryProvider<MockBackendStorage>(
+            create: (context) => backendStorage,
+          ),
           RepositoryProvider<IUserRepo>(
             create: (context) =>
                 MockMemoryUserRepo(backendStorage: backendStorage),
@@ -54,7 +58,7 @@ class AppProvidersWrapper extends StatelessWidget {
             ),
           ),
           RepositoryProvider<IConversationsListRepo>(
-            create: (context) => MockWebSocketConversationsListRepo(
+            create: (context) => MockConversationsListRepo(
               // webSocketClient: context.read<IWebSocketClient>(),
               backendStorage: backendStorage,
               logger: appScope.logger,

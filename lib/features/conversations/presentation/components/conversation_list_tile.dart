@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/features/conversation/domain/domain.dart';
@@ -7,9 +6,14 @@ import 'package:locnet_app/features/conversations/domain/domain.dart';
 import 'package:locnet_app/features/message/domain/domain.dart';
 
 class ConversationListTile extends StatelessWidget {
-  const ConversationListTile({required this.conversationTile, super.key});
+  const ConversationListTile({
+    required this.conversationTile,
+    required this.onTap,
+    super.key,
+  });
 
   final ConversationTile conversationTile;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -63,11 +67,7 @@ class ConversationListTile extends StatelessWidget {
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onTap: () {
-          GoRouter.of(
-            context,
-          ).go('/home/conversations/${conversationTile.conversation.id}');
-        },
+        onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           child: Row(

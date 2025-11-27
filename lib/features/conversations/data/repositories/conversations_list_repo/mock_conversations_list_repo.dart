@@ -11,9 +11,8 @@ import 'package:locnet_app/features/message/data/data.dart';
 import 'package:locnet_app/features/message/domain/domain.dart';
 import 'package:locnet_app/mock/mock_backend_storage.dart';
 
-final class MockWebSocketConversationsListRepo
-    implements IConversationsListRepo {
-  MockWebSocketConversationsListRepo({
+final class MockConversationsListRepo implements IConversationsListRepo {
+  MockConversationsListRepo({
     required ILogger logger,
     required MockBackendStorage backendStorage,
     List<ConversationTile>? initialTiles,
@@ -25,7 +24,7 @@ final class MockWebSocketConversationsListRepo
        _updatesController =
            StreamController<ConversationsListUpdateRec>.broadcast() {
     _seedInitialTiles(initialTiles: initialTiles);
-    // mockConversationsCount intentionally not used here, данные уже сидятся в storage.
+    // mockConversationsCount intentionally not used here, data is already seeded in storage.
   }
 
   final ILogger _logger;
@@ -57,14 +56,15 @@ final class MockWebSocketConversationsListRepo
         }
 
         final Conversation conversation = Conversation.fromDTO(dto);
-        final Message? lastMessage = _getLastMessageForConversation(
-          dto.conversationId,
-        );
+
+        final ({Message? lastMessage, String? companionId}) lastMessageData =
+            _getLastMessageAndCompanionForConversation(conversation);
 
         result.add(
           ConversationTile(
             conversation: conversation,
-            lastMessage: lastMessage,
+            lastMessage: lastMessageData.lastMessage,
+            companionId: lastMessageData.companionId,
           ),
         );
       }
@@ -166,13 +166,14 @@ final class MockWebSocketConversationsListRepo
     }
 
     final Conversation conversation = Conversation.fromDTO(updatedDto);
-    final Message? lastMessage = _getLastMessageForConversation(
-      updatedDto.conversationId,
-    );
+
+    final ({Message? lastMessage, String? companionId}) lastMessageData =
+        _getLastMessageAndCompanionForConversation(conversation);
 
     final ConversationTile removedTile = ConversationTile(
       conversation: conversation,
-      lastMessage: lastMessage,
+      lastMessage: lastMessageData.lastMessage,
+      companionId: lastMessageData.companionId,
     );
 
     _updatesController.add((
@@ -222,20 +223,51 @@ final class MockWebSocketConversationsListRepo
     }
   }
 
-  Message? _getLastMessageForConversation(String conversationId) {
+  ({Message? lastMessage, String? companionId})
+  _getLastMessageAndCompanionForConversation(Conversation conversation) {
     final List<MessageDTO> messageDtos = _backendStorage
         .getMessagesForConversation(
-          conversationId: conversationId,
+          conversationId: conversation.id,
           page: 1,
           limit: 1000000,
         );
 
     if (messageDtos.isEmpty) {
-      return null;
+      return (lastMessage: null, companionId: null);
     }
 
-    final MessageDTO lastDto = messageDtos.last;
-    return Message.fromDTO(lastDto);
+    if (conversation.type != ConversationType.private) {
+      final MessageDTO lastDto = messageDtos.last;
+      return (lastMessage: Message.fromDTO(lastDto), companionId: null);
+    }
+
+    final Set<String> senderIds = <String>{};
+    for (final MessageDTO dto in messageDtos) {
+      senderIds.add(dto.senderId);
+    }
+
+    if (senderIds.isEmpty) {
+      final MessageDTO lastDto = messageDtos.last;
+      return (lastMessage: Message.fromDTO(lastDto), companionId: null);
+    }
+
+    final String companionId = senderIds.first;
+
+    MessageDTO? lastCompanionMessageDto;
+    for (final MessageDTO dto in messageDtos.reversed) {
+      if (dto.senderId == companionId) {
+        lastCompanionMessageDto = dto;
+        break;
+      }
+    }
+
+    final MessageDTO effectiveLastDto =
+        lastCompanionMessageDto ?? messageDtos.last;
+
+    return (
+      lastMessage: Message.fromDTO(effectiveLastDto),
+      companionId: companionId,
+    );
   }
 
   ConversationDTO _mapConversationToDto(Conversation conversation) {
