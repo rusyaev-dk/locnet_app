@@ -8,16 +8,12 @@ sealed class PrivateConversationEvent extends Equatable {
 }
 
 final class PrivateConversationStartedEvent extends PrivateConversationEvent {
-  const PrivateConversationStartedEvent({
-    required this.conversationId,
-    required this.companionId,
-  });
+  const PrivateConversationStartedEvent({required this.conversationId});
 
   final String conversationId;
-  final String companionId;
 
   @override
-  List<Object> get props => [conversationId, companionId];
+  List<Object> get props => [conversationId];
 }
 
 final class PrivateConversationMessageUpdateReceivedEvent

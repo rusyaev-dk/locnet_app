@@ -1,3 +1,4 @@
+import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/conversation/data/data.dart';
 import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/data/data.dart';
@@ -45,6 +46,12 @@ final class PrivateConversationInteractor {
       companionId: companionId,
       blockedByUserId: blockedByUserId,
       reason: reason,
+    );
+  }
+
+  Future<User> getCompanion({required String conversationId}) async {
+    return await _privateConversationRepo.getCompanion(
+      conversationId: conversationId,
     );
   }
 

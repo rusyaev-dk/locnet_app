@@ -44,11 +44,15 @@ class PrivateConversationBloc
       final conversation = await _privateConversationInteractor
           .getConversationById(conversationId: event.conversationId);
 
+      final companion = await _privateConversationInteractor.getCompanion(
+        conversationId: event.conversationId,
+      );
+
       emit(
         PrivateConversationLoadedState(
           messages: messages,
           conversation: conversation,
-          companionId: event.companionId,
+          companionId: companion.userId,
         ),
       );
 

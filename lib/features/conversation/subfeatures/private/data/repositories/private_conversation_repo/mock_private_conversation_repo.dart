@@ -56,6 +56,65 @@ final class MockPrivateConversationRepo implements IPrivateConversationRepo {
   }
 
   @override
+  Future<User> getCompanion({required String conversationId}) async {
+    try {
+      await Future<void>.delayed(_artificialDelay);
+
+      final ConversationDTO? conversation = _backendStorage.getConversationById(
+        conversationId,
+      );
+
+      if (conversation == null) {
+        throw StateError('Conversation $conversationId not found');
+      }
+
+      final List<MessageDTO> messageDtos = _backendStorage
+          .getMessagesForConversation(
+            conversationId: conversationId,
+            page: 1,
+            limit: _maxLimit,
+          );
+
+      final Set<String> participantIds = <String>{};
+
+      for (final MessageDTO dto in messageDtos) {
+        participantIds.add(dto.senderId);
+      }
+
+      final String createdByUserId = conversation.createdBy;
+
+      String companionId;
+
+      if (participantIds.isEmpty) {
+        companionId = createdByUserId;
+      } else if (participantIds.length == 1) {
+        companionId = participantIds.first;
+      } else {
+        if (participantIds.contains(createdByUserId)) {
+          companionId = participantIds.firstWhere(
+            (String id) => id != createdByUserId,
+          );
+        } else {
+          companionId = participantIds.first;
+        }
+      }
+
+      final UserDTO? userDto = _backendStorage.getUserById(companionId);
+
+      if (userDto == null) {
+        throw StateError('User $companionId not found in storage');
+      }
+
+      final User companion = User.fromDTO(userDto);
+
+      return companion;
+    } catch (e, st) {
+      _logger.exception(e, st);
+      rethrow;
+    }
+  }
+
+  @override
   Future<bool> deleteConversation({
     required String conversationId,
     required bool deleteAtRecipient,

@@ -15,13 +15,11 @@ class PrivateConversationScreenWrapper extends StatelessWidget {
   const PrivateConversationScreenWrapper({
     required this.child,
     required this.conversationId,
-    required this.companionId,
     super.key,
   });
 
   final Widget child;
   final String conversationId;
-  final String companionId;
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +49,6 @@ class PrivateConversationScreenWrapper extends StatelessWidget {
                 )..add(
                   PrivateConversationStartedEvent(
                     conversationId: conversationId,
-                    companionId: companionId,
                   ),
                 ),
           ),
@@ -63,14 +60,9 @@ class PrivateConversationScreenWrapper extends StatelessWidget {
 }
 
 class PrivateConversationScreen extends StatelessWidget {
-  const PrivateConversationScreen({
-    required this.conversationId,
-    required this.companionId,
-    super.key,
-  });
+  const PrivateConversationScreen({required this.conversationId, super.key});
 
   final String conversationId;
-  final String companionId;
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +93,6 @@ class PrivateConversationScreen extends StatelessWidget {
                         context.read<PrivateConversationBloc>().add(
                           PrivateConversationStartedEvent(
                             conversationId: conversationId,
-                            companionId: companionId,
                           ),
                         ),
                     iconAnimationEffect: const ShakeEffect(),

@@ -42,9 +42,9 @@ class ConversationsPanelWrapper extends StatelessWidget {
 }
 
 class ConversationsPanel extends StatelessWidget {
-  const ConversationsPanel({super.key, this.selectedTile});
+  const ConversationsPanel({super.key, this.selectedConversationId});
 
-  final ConversationTile? selectedTile;
+  final String? selectedConversationId;
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +59,7 @@ class ConversationsPanel extends StatelessWidget {
           color: colorScheme.surfaceContainer.withAlpha(100),
         ),
         Expanded(
-          child: selectedTile == null
+          child: selectedConversationId == null
               ? Center(
                   child: Text(
                     'Select a conversation to start chatting',
@@ -68,11 +68,9 @@ class ConversationsPanel extends StatelessWidget {
                   ),
                 )
               : PrivateConversationScreenWrapper(
-                  conversationId: selectedTile!.conversation.id,
-                  companionId: selectedTile!.companionId ?? '',
+                  conversationId: selectedConversationId!,
                   child: PrivateConversationScreen(
-                    conversationId: selectedTile!.conversation.id,
-                    companionId: selectedTile!.companionId ?? '',
+                    conversationId: selectedConversationId!,
                   ),
                 ),
         ),
@@ -123,10 +121,9 @@ class _ConversationsListPanel extends StatelessWidget {
                         child: ConversationListTile(
                           conversationTile: tile,
                           onTap: () {
-                            GoRouter.of(context).go(
-                              AppRoutes.conversation(tile.conversation.id),
-                              extra: tile,
-                            );
+                            GoRouter.of(
+                              context,
+                            ).go(AppRoutes.conversation(tile.conversation.id));
                           },
                         ),
                       );
