@@ -204,7 +204,7 @@ class _ProfileEditorView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 15),
-                  AppTextField(
+                  CustomTextField(
                     isActive: !isBusy,
                     controller: firstNameController,
                     labelText: l10n.firstName,
@@ -226,7 +226,7 @@ class _ProfileEditorView extends StatelessWidget {
                         : null,
                   ),
                   const SizedBox(height: 15),
-                  AppTextField(
+                  CustomTextField(
                     isActive: !isBusy,
                     controller: lastNameController,
                     labelText: l10n.lastName,
@@ -248,7 +248,7 @@ class _ProfileEditorView extends StatelessWidget {
                         : null,
                   ),
                   const SizedBox(height: 15),
-                  AppTextField(
+                  CustomTextField(
                     isActive: !isBusy,
                     controller: usernameController,
                     labelText: l10n.username,

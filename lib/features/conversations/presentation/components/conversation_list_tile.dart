@@ -8,17 +8,38 @@ import 'package:locnet_app/features/message/domain/domain.dart';
 class ConversationListTile extends StatelessWidget {
   const ConversationListTile({
     required this.conversationTile,
+    required this.isCompact,
     required this.onTap,
     super.key,
   });
 
   final ConversationTile conversationTile;
+  final bool isCompact;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
+
+    if (isCompact) {
+      return Center(
+        child: Material(
+          color: Colors.transparent,
+          shape: const CircleBorder(),
+          child: InkWell(
+            customBorder: const CircleBorder(),
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.all(4),
+              child: _ConversationAvatar(
+                backgroundColor: colorScheme.onSurface.withAlpha(0x14),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
 
     final Message? lastMessage = conversationTile.lastMessage;
     final String? lastMessageText = lastMessage?.text;
@@ -63,7 +84,7 @@ class ConversationListTile extends StatelessWidget {
     }
 
     return Material(
-      color: colorScheme.surfaceContainer.withAlpha(60),
+      color: colorScheme.surfaceBright,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
@@ -119,7 +140,9 @@ class ConversationListTile extends StatelessWidget {
 }
 
 class _ConversationAvatar extends StatelessWidget {
-  const _ConversationAvatar({required this.backgroundColor});
+  const _ConversationAvatar({
+    required this.backgroundColor,
+  });
 
   final Color backgroundColor;
 
@@ -128,7 +151,10 @@ class _ConversationAvatar extends StatelessWidget {
     return Container(
       width: 36,
       height: 36,
-      decoration: BoxDecoration(color: backgroundColor, shape: BoxShape.circle),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        shape: BoxShape.circle,
+      ),
     );
   }
 }

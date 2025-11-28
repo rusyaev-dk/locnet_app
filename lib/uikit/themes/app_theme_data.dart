@@ -5,6 +5,19 @@ abstract class AppThemeData {
   static final lightTheme = ThemeData(
     extensions: [_lightColorScheme, _textScheme],
     brightness: Brightness.light,
+    scrollbarTheme: ScrollbarThemeData(
+      thickness: WidgetStateProperty.all(0.5),
+      radius: const Radius.circular(8),
+      thumbColor: WidgetStateProperty.resolveWith<Color?>((
+        Set<WidgetState> states,
+      ) {
+        if (states.contains(WidgetState.dragged)) {
+          return _lightColorScheme.primary.withAlpha(200);
+        }
+        return _lightColorScheme.onSurfaceVariant.withAlpha(140);
+      }),
+    ),
+
     colorScheme: ColorScheme(
       brightness: Brightness.light,
       primary: _lightColorScheme.primary,
@@ -63,6 +76,22 @@ abstract class AppThemeData {
       surface: _darkColorScheme.surface,
       surfaceContainer: _darkColorScheme.surfaceContainer,
       onSurface: _darkColorScheme.onSurface,
+    ),
+    scrollbarTheme: ScrollbarThemeData(
+      thickness: WidgetStateProperty.resolveWith<double>((
+        Set<WidgetState> states,
+      ) {
+        return 3;
+      }),
+      radius: const Radius.circular(1),
+      trackVisibility: WidgetStateProperty.all(true),
+      trackColor: WidgetStateProperty.all(_darkColorScheme.approval),
+minThumbLength: 50,
+      thumbColor: WidgetStateProperty.resolveWith<Color?>((
+        Set<WidgetState> states,
+      ) {
+        return _darkColorScheme.onSurfaceVariant.withAlpha(140);
+      }),
     ),
     scaffoldBackgroundColor: _darkColorScheme.surface,
     appBarTheme: AppBarTheme(

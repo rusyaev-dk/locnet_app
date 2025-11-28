@@ -122,6 +122,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "language": MessageLookupByLibrary.simpleMessage("Language"),
     "lastUpdated": MessageLookupByLibrary.simpleMessage("Last updated"),
     "login": MessageLookupByLibrary.simpleMessage("Login"),
+    "message": MessageLookupByLibrary.simpleMessage("Сообщение"),
     "meta": MessageLookupByLibrary.simpleMessage("Meta"),
     "nameInvalidCharactersException": MessageLookupByLibrary.simpleMessage(
       "Name contains invalid characters",

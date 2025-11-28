@@ -171,7 +171,7 @@ class _SettingsHeader extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          AppIconButton(
+          RoundedIconButton(
             onPressed: () => Navigator.of(context).pop(),
             icon: Icons.close,
           ),

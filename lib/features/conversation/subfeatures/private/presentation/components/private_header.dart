@@ -12,7 +12,7 @@ class PrivateHeader extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      color: colorScheme.surface,
+      color: colorScheme.surfaceBright,
       child: Row(
         children: [
           CircleAvatar(

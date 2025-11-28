@@ -126,6 +126,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Дата последнего обновления",
     ),
     "login": MessageLookupByLibrary.simpleMessage("Логин"),
+    "message": MessageLookupByLibrary.simpleMessage("Сообщение"),
     "meta": MessageLookupByLibrary.simpleMessage("Мета"),
     "nameInvalidCharactersException": MessageLookupByLibrary.simpleMessage(
       "Имя содержит недопустимые символы",

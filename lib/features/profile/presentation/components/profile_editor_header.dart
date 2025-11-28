@@ -30,7 +30,7 @@ class ProfileEditorHeader extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          AppIconButton(
+          RoundedIconButton(
             buttonSize: 35,
             iconSize: 18.5,
             icon: Icons.close,

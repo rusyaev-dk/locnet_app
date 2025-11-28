@@ -8,6 +8,7 @@ class ChipsBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
     final l10n = context.l10n;
 
     return SizedBox(
@@ -22,6 +23,7 @@ class ChipsBar extends StatelessWidget {
               ChipButton(
                 icon: Icons.add,
                 label: l10n.create,
+                backgroundColor: colorScheme.surfaceBright,
                 onPressed: () {
                   showGeneralDialog(
                     context: context,
@@ -37,18 +39,39 @@ class ChipsBar extends StatelessWidget {
               ChipButton(
                 icon: Icons.search,
                 label: l10n.search,
+                backgroundColor: colorScheme.surfaceBright,
                 onPressed: () {},
               ),
               const SizedBox(width: 8),
-              ChipButton(label: 'Mock', onPressed: () {}),
+              ChipButton(
+                label: 'Mock',
+                backgroundColor: colorScheme.surfaceBright,
+                onPressed: () {},
+              ),
               const SizedBox(width: 8),
-              ChipButton(label: 'Mock', onPressed: () {}),
+              ChipButton(
+                label: 'Mock',
+                backgroundColor: colorScheme.surfaceBright,
+                onPressed: () {},
+              ),
               const SizedBox(width: 8),
-              ChipButton(label: 'Mock', onPressed: () {}),
+              ChipButton(
+                label: 'Mock',
+                backgroundColor: colorScheme.surfaceBright,
+                onPressed: () {},
+              ),
               const SizedBox(width: 8),
-              ChipButton(label: 'Mock', onPressed: () {}),
+              ChipButton(
+                label: 'Mock',
+                backgroundColor: colorScheme.surfaceBright,
+                onPressed: () {},
+              ),
               const SizedBox(width: 8),
-              ChipButton(label: 'Mock', onPressed: () {}),
+              ChipButton(
+                label: 'Mock',
+                backgroundColor: colorScheme.surfaceBright,
+                onPressed: () {},
+              ),
             ],
           ),
         ),

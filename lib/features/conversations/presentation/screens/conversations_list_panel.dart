@@ -1,3 +1,5 @@
+// conversations_list_panel.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -41,38 +43,109 @@ class ConversationsPanelWrapper extends StatelessWidget {
   }
 }
 
-class ConversationsPanel extends StatelessWidget {
+class ConversationsPanel extends StatefulWidget {
   const ConversationsPanel({super.key, this.selectedConversationId});
 
   final String? selectedConversationId;
+
+  @override
+  State<ConversationsPanel> createState() => _ConversationsPanelState();
+}
+
+class _ConversationsPanelState extends State<ConversationsPanel> {
+  static const double _panelMaxWidth = 420;
+  static const double _panelMinWidth = 64;
+  static const double _panelCompactBreakpoint = 300;
+
+  double _panelWidth = _panelCompactBreakpoint;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
 
+    final bool isCompact = _panelWidth <= _panelMinWidth;
+
     return Row(
       children: [
-        const SizedBox(width: 320, child: _ConversationsListPanel()),
-        VerticalDivider(
-          width: 0.45,
-          color: colorScheme.surfaceContainer.withAlpha(100),
+        SizedBox(
+          width: _panelWidth,
+          child: _ConversationsListPanel(isCompact: isCompact),
+        ),
+        SizedBox(
+          width: 2,
+          child: MouseRegion(
+            cursor: SystemMouseCursors.resizeLeftRight,
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onHorizontalDragUpdate: (DragUpdateDetails details) {
+                setState(() {
+                  // if (details.globalPosition.dx > 600) {
+
+                  // }
+                  // TODO: переделать
+                  final double proposedWidth = _panelWidth + details.delta.dx;
+
+                  final bool isCurrentlyCompact = _panelWidth <= _panelMinWidth;
+
+                  if (!isCurrentlyCompact) {
+                    if (proposedWidth <= _panelCompactBreakpoint) {
+                      if (details.globalPosition.dx > 490) {
+                        return;
+                      }
+                      _panelWidth = _panelMinWidth;
+                    } else {
+                      _panelWidth = proposedWidth.clamp(
+                        _panelMinWidth,
+                        _panelMaxWidth,
+                      );
+                    }
+                  } else {
+                    if (details.delta.dx > 0) {
+                      final double nextWidth =
+                          _panelWidth == _panelMinWidth &&
+                              proposedWidth > _panelMinWidth
+                          ? _panelCompactBreakpoint
+                          : proposedWidth;
+
+                      _panelWidth = nextWidth.clamp(
+                        _panelMinWidth,
+                        _panelMaxWidth,
+                      );
+                    } else {
+                      _panelWidth = _panelMinWidth;
+                    }
+                  }
+                });
+              },
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: VerticalDivider(
+                  width: 0.45,
+                  color: colorScheme.surfaceContainer.withAlpha(100),
+                ),
+              ),
+            ),
+          ),
         ),
         Expanded(
-          child: selectedConversationId == null
-              ? Center(
-                  child: Text(
-                    'Select a conversation to start chatting',
-                    style: textScheme.label,
-                    textAlign: TextAlign.center,
+          child: Container(
+            color: colorScheme.surface,
+            child: widget.selectedConversationId == null
+                ? Center(
+                    child: Text(
+                      'Select a conversation to start chatting',
+                      style: textScheme.label,
+                      textAlign: TextAlign.center,
+                    ),
+                  )
+                : PrivateConversationScreenWrapper(
+                    conversationId: widget.selectedConversationId!,
+                    child: PrivateConversationScreen(
+                      conversationId: widget.selectedConversationId!,
+                    ),
                   ),
-                )
-              : PrivateConversationScreenWrapper(
-                  conversationId: selectedConversationId!,
-                  child: PrivateConversationScreen(
-                    conversationId: selectedConversationId!,
-                  ),
-                ),
+          ),
         ),
       ],
     );
@@ -80,7 +153,9 @@ class ConversationsPanel extends StatelessWidget {
 }
 
 class _ConversationsListPanel extends StatelessWidget {
-  const _ConversationsListPanel();
+  const _ConversationsListPanel({required this.isCompact});
+
+  final bool isCompact;
 
   @override
   Widget build(BuildContext context) {
@@ -89,12 +164,14 @@ class _ConversationsListPanel extends StatelessWidget {
         switch (state) {
           case AllConversationsListLoadingState():
             return const Center(child: CircularProgressIndicator());
+
           case AllConversationsListFailureState():
             return InfoWidget(
               icon: Icons.error,
               text: state.failure.toString(),
               iconAnimationEffect: const ShakeEffect(),
             );
+
           case AllConversationsListLoadedState():
             final List<ConversationTile> tiles = state.conversationTiles;
 
@@ -105,7 +182,7 @@ class _ConversationsListPanel extends StatelessWidget {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const ChipsBar(),
+                if (!isCompact) const ChipsBar(),
                 Expanded(
                   child: ListView.separated(
                     itemCount: tiles.length,
@@ -115,11 +192,12 @@ class _ConversationsListPanel extends StatelessWidget {
                       final ConversationTile tile = tiles[index];
 
                       return Padding(
-                        padding: const EdgeInsetsGeometry.symmetric(
-                          horizontal: 7,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isCompact ? 4 : 7,
                         ),
                         child: ConversationListTile(
                           conversationTile: tile,
+                          isCompact: isCompact,
                           onTap: () {
                             GoRouter.of(
                               context,

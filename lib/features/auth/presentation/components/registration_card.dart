@@ -58,8 +58,8 @@ class RegistrationCard extends StatelessWidget {
             children: <Widget>[
               Text(l10n.registration, style: textScheme.display),
               const SizedBox(height: 32),
-              AppTextField(
-                 isActive: !isLoading,
+              CustomTextField(
+                isActive: !isLoading,
                 controller: firstNameController,
                 labelText: l10n.firstName,
                 textInputAction: TextInputAction.next,
@@ -77,8 +77,8 @@ class RegistrationCard extends StatelessWidget {
                     : null,
               ),
               const SizedBox(height: 16),
-              AppTextField(
-                 isActive: !isLoading,
+              CustomTextField(
+                isActive: !isLoading,
                 controller: lastNameController,
                 labelText: l10n.lastName,
                 textInputAction: TextInputAction.next,
@@ -96,8 +96,8 @@ class RegistrationCard extends StatelessWidget {
                     : null,
               ),
               const SizedBox(height: 16),
-              AppTextField(
-                 isActive: !isLoading,
+              CustomTextField(
+                isActive: !isLoading,
                 controller: jobPositionController,
                 labelText: l10n.jobPosition,
                 textInputAction: TextInputAction.next,
@@ -115,8 +115,8 @@ class RegistrationCard extends StatelessWidget {
                     : null,
               ),
               const SizedBox(height: 16),
-              AppTextField(
-                 isActive: !isLoading,
+              CustomTextField(
+                isActive: !isLoading,
                 controller: usernameController,
                 labelText: l10n.login,
                 keyboardType: TextInputType.emailAddress,
@@ -135,8 +135,8 @@ class RegistrationCard extends StatelessWidget {
                     : null,
               ),
               const SizedBox(height: 16),
-              AppTextField(
-                 isActive: !isLoading,
+              CustomTextField(
+                isActive: !isLoading,
                 controller: passwordController,
                 labelText: l10n.password,
                 obscureText: true,
@@ -155,8 +155,8 @@ class RegistrationCard extends StatelessWidget {
                     : null,
               ),
               const SizedBox(height: 16),
-              AppTextField(
-                 isActive: !isLoading,
+              CustomTextField(
+                isActive: !isLoading,
                 controller: repeatPasswordController,
                 labelText: l10n.repeatPassword,
                 obscureText: true,

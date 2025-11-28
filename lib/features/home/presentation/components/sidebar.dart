@@ -96,7 +96,7 @@ class _PanelSidebarState extends State<PanelSidebar> {
                       ),
                     ],
                     const Spacer(),
-                    AppIconButton(
+                    RoundedIconButton(
                       buttonSize: isCollapsedLayout ? 28 : 36,
                       icon: _isCollapsed
                           ? Icons.chevron_right

@@ -200,7 +200,7 @@ class _ConversationCreatorView extends StatelessWidget {
                   selectedConversationType: state.selectedConversationType,
                 ),
                 const SizedBox(height: 15),
-                AppTextField(
+                CustomTextField(
                   isActive: !isPending,
                   controller: titleController,
                   labelText: l10n.conversationTitle,
@@ -223,7 +223,7 @@ class _ConversationCreatorView extends StatelessWidget {
                       : null,
                 ),
                 const SizedBox(height: 15),
-                AppTextField(
+                CustomTextField(
                   isActive: !isPending,
                   controller: descriptionController,
                   labelText: l10n.conversationDescription,

@@ -28,7 +28,7 @@ class ConversationCreatorHeader extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          AppIconButton(
+          RoundedIconButton(
             buttonSize: 35,
             iconSize: 18.5,
             onPressed: () => Navigator.of(context).pop(),

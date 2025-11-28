@@ -1,6 +1,7 @@
 // panel_screen.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/features/home/presentation/presentation.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
 
@@ -11,9 +12,11 @@ class PanelScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
     final String location = GoRouterState.of(context).uri.path;
 
     return Scaffold(
+      backgroundColor: colorScheme.surfaceBright,
       drawer: const SettingsDrawer(),
       body: Row(
         children: [

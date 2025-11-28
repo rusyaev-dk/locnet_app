@@ -46,7 +46,7 @@ class LogInCard extends StatelessWidget {
         children: [
           Text(l10n.authorization, style: textScheme.display),
           const SizedBox(height: 32),
-          AppTextField(
+          CustomTextField(
             isActive: !isLoading,
             controller: usernameController,
             keyboardType: TextInputType.emailAddress,
@@ -69,7 +69,7 @@ class LogInCard extends StatelessWidget {
                 : null,
           ),
           const SizedBox(height: 16),
-          AppTextField(
+          CustomTextField(
             isActive: !isLoading,
             controller: passwordController,
             obscureText: true,

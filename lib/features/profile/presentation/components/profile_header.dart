@@ -35,7 +35,7 @@ class ProfileHeader extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          AppIconButton(
+          RoundedIconButton(
             buttonSize: 35,
             iconSize: 18.5,
             onPressed: () async {
@@ -59,7 +59,7 @@ class ProfileHeader extends StatelessWidget {
             icon: Icons.edit,
           ),
           const SizedBox(width: 10),
-          AppIconButton(
+          RoundedIconButton(
             buttonSize: 35,
             iconSize: 18.5,
             onPressed: () => Navigator.of(context).pop(),

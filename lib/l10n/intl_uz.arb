@@ -126,5 +126,6 @@
   "conversationTypePrivate": "Личная",
   "conversationTypeGroup": "Группа",
   "conversationTypeChannel": "Канал",
-  "search": "Поиск"
+  "search": "Поиск",
+  "message": "Сообщение"
 }

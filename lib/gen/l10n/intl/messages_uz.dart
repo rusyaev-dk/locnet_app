@@ -124,6 +124,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Oxirgi yangilanish sanasi",
     ),
     "login": MessageLookupByLibrary.simpleMessage("Login"),
+    "message": MessageLookupByLibrary.simpleMessage("Сообщение"),
     "meta": MessageLookupByLibrary.simpleMessage("Meta"),
     "nameInvalidCharactersException": MessageLookupByLibrary.simpleMessage(
       "Ismda ruxsat etilmagan belgilar mavjud",

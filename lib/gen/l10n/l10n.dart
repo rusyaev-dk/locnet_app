@@ -1123,6 +1123,11 @@ class S {
   String get search {
     return Intl.message('Поиск', name: 'search', desc: '', args: []);
   }
+
+  /// `Сообщение`
+  String get message {
+    return Intl.message('Сообщение', name: 'message', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

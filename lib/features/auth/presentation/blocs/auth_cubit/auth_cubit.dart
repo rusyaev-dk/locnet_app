@@ -74,7 +74,7 @@ final class AuthCubit extends Cubit<AuthState> {
       _logger.info("Trying to restore auth session...");
 
       // TODO: remove the delay
-      await Future.delayed(const Duration(seconds: 3));
+      await Future.delayed(const Duration(seconds: 1));
 
       // final Session _ = await _authInteractor.logIn();
       // final User user = await _authInteractor.getUser();

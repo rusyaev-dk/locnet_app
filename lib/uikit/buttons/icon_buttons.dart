@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
 
-class AppIconButton extends StatelessWidget {
-  const AppIconButton({
+class RoundedIconButton extends StatelessWidget {
+  const RoundedIconButton({
     required this.icon,
     required this.onPressed,
     super.key,

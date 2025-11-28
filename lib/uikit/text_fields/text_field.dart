@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:locnet_app/app/app.dart';
 
-class AppTextField extends StatelessWidget {
-  const AppTextField({
+class CustomTextField extends StatelessWidget {
+  const CustomTextField({
     required this.controller,
     super.key,
     this.labelText,
@@ -31,6 +31,8 @@ class AppTextField extends StatelessWidget {
     this.maxLines = 1,
     this.minLines,
     this.maxSymbols,
+    this.height,
+    this.expandable = false,
   });
 
   final TextEditingController controller;
@@ -69,6 +71,9 @@ class AppTextField extends StatelessWidget {
   final int? minLines;
   final int? maxSymbols;
 
+  final double? height;
+  final bool expandable;
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
@@ -93,6 +98,8 @@ class AppTextField extends StatelessWidget {
         ? <TextInputFormatter>[LengthLimitingTextInputFormatter(maxSymbols)]
         : const <TextInputFormatter>[];
 
+    final bool isExpandable = expandable && !obscureText;
+
     final TextField textField = TextField(
       controller: controller,
       enabled: enabled,
@@ -101,8 +108,12 @@ class AppTextField extends StatelessWidget {
       keyboardType: keyboardType,
       textInputAction: textInputAction,
       inputFormatters: inputFormatters,
-      maxLines: obscureText ? 1 : maxLines,
-      minLines: obscureText ? 1 : minLines,
+      maxLines: obscureText
+          ? 1
+          : (isExpandable ? null : maxLines),
+      minLines: obscureText
+          ? 1
+          : (isExpandable ? (minLines ?? 1) : minLines),
       maxLength: maxSymbols,
       maxLengthEnforcement: MaxLengthEnforcement.enforced,
       buildCounter: maxSymbols != null
@@ -193,8 +204,24 @@ class AppTextField extends StatelessWidget {
       ),
     );
 
+    Widget child = textField;
+
+    if (height != null) {
+      if (isExpandable) {
+        child = ConstrainedBox(
+          constraints: BoxConstraints(minHeight: height!),
+          child: textField,
+        );
+      } else {
+        child = SizedBox(
+          height: height,
+          child: textField,
+        );
+      }
+    }
+
     if (onFocusChange == null) {
-      return textField;
+      return child;
     }
 
     return Focus(
@@ -204,7 +231,7 @@ class AppTextField extends StatelessWidget {
         }
       },
       skipTraversal: true,
-      child: textField,
+      child: child,
     );
   }
 }
