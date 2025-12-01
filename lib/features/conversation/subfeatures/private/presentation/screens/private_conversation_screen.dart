@@ -4,11 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/conversation/data/data.dart';
-import 'package:locnet_app/features/conversation/presentation/presentation.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/presentation/presentation.dart';
 import 'package:locnet_app/features/message/domain/domain.dart';
+import 'package:locnet_app/features/message/subfeatures/message_input/presentation/presentation.dart';
 import 'package:locnet_app/mock/mock.dart';
 
 class PrivateConversationScreenWrapper extends StatelessWidget {
@@ -52,6 +52,9 @@ class PrivateConversationScreenWrapper extends StatelessWidget {
                   ),
                 ),
           ),
+          BlocProvider(
+            create: (context) => MessageAttachmentsCubit(),
+          )
         ],
         child: child,
       ),
@@ -113,7 +116,7 @@ class PrivateConversationScreen extends StatelessWidget {
             },
           ),
         ),
-        const ConversationInputBar(),
+        const MessageInputBar(),
       ],
     );
   }

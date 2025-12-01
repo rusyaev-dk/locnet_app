@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/features/conversation/domain/domain.dart';
-import 'package:locnet_app/features/conversation/presentation/presentation.dart';
+import 'package:locnet_app/features/conversation/subfeatures/conversation_creator/presentation/presentation.dart';
 import 'package:locnet_app/gen/l10n/l10n.dart';
 
 class ConversationTypeSelector extends StatelessWidget {

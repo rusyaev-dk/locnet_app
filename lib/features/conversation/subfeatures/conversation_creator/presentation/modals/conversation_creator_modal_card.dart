@@ -5,7 +5,7 @@ import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/conversation/data/data.dart';
 import 'package:locnet_app/features/conversation/domain/domain.dart';
-import 'package:locnet_app/features/conversation/presentation/presentation.dart';
+import 'package:locnet_app/features/conversation/subfeatures/conversation_creator/presentation/presentation.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
 class ConversationCreatorModalWrapper extends StatelessWidget {
