@@ -42,14 +42,17 @@ class PrivateMessageBubble extends StatelessWidget {
         : colorScheme.surfaceContainerHigh;
 
     final TextStyle messageTextStyle = isMine
-        ? textScheme.label.copyWith(color: colorScheme.onPrimary)
-        : textScheme.label;
+        ? textScheme.label.copyWith(
+            color: colorScheme.onPrimary,
+            fontSize: 14.5,
+          )
+        : textScheme.label.copyWith(fontSize: 14.5);
 
     final TextStyle metaTextStyle = messageTextStyle.copyWith(
-      fontSize: (messageTextStyle.fontSize ?? 14) * 0.9,
+      fontSize: (messageTextStyle.fontSize!) * 0.75,
       color: isMine
-          ? colorScheme.onPrimary.withAlpha(220)
-          : (messageTextStyle.color ?? colorScheme.onSurface).withAlpha(220),
+          ? colorScheme.onPrimary.withAlpha(150)
+          : (messageTextStyle.color ?? colorScheme.onSurface).withAlpha(150),
     );
 
     final BorderRadius borderRadius = _buildBorderRadius(isMine: isMine);
@@ -76,7 +79,7 @@ class PrivateMessageBubble extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (messageText.isNotEmpty)
-                Text(messageText, style: messageTextStyle),
+                SelectableText(messageText, style: messageTextStyle, selectionColor: isMine ? colorScheme.onPrimary.withAlpha(150) : colorScheme.onSurface.withAlpha(150)),
               const SizedBox(height: 4),
               Row(
                 mainAxisSize: MainAxisSize.min,
@@ -98,7 +101,7 @@ class PrivateMessageBubble extends StatelessWidget {
   }
 
   BorderRadius _buildBorderRadius({required bool isMine}) {
-    if (!isLast) {
+    if (isLast) {
       return BorderRadius.circular(16);
     }
 
@@ -106,16 +109,16 @@ class PrivateMessageBubble extends StatelessWidget {
       return const BorderRadius.only(
         topLeft: Radius.circular(16),
         topRight: Radius.circular(16),
-        bottomLeft: Radius.circular(16),
-        bottomRight: Radius.circular(4),
+        bottomLeft: Radius.circular(16), // внутренняя грань
+        bottomRight: Radius.circular(4), // внешняя грань
       );
     }
 
     return const BorderRadius.only(
       topLeft: Radius.circular(16),
       topRight: Radius.circular(16),
-      bottomLeft: Radius.circular(4),
-      bottomRight: Radius.circular(16),
+      bottomLeft: Radius.circular(4), // внешняя грань
+      bottomRight: Radius.circular(16), // внутренняя грань
     );
   }
 }

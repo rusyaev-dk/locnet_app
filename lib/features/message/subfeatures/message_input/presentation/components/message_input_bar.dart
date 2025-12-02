@@ -74,15 +74,17 @@ class _MessageInputBarState extends State<MessageInputBar> {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (state.files.isNotEmpty)
-  MessageAttachmentsPreview(
-    files: state.files,
-    onRemovePressed: (UploadableFile file) {
-      context.read<MessageAttachmentsCubit>().removeFile(file);
-    },
-    onOrderChanged: (List<UploadableFile> newOrder) {
-      context.read<MessageAttachmentsCubit>().applyNewOrder(newOrder);
-    },
-  ),
+              MessageAttachmentsPreview(
+                files: state.files,
+                onRemovePressed: (UploadableFile file) {
+                  context.read<MessageAttachmentsCubit>().removeFile(file);
+                },
+                onOrderChanged: (List<UploadableFile> newOrder) {
+                  context.read<MessageAttachmentsCubit>().applyNewOrder(
+                    newOrder,
+                  );
+                },
+              ),
 
             SafeArea(
               top: false,
@@ -129,7 +131,7 @@ class _MessageInputBarState extends State<MessageInputBar> {
                       backgroundColor: colorScheme.surfaceBright,
                       onPressed: _handleSendPressed,
                       buttonSize: 35,
-                      iconSize: 25,
+                      iconSize: 23,
                     ),
                   ],
                 ),

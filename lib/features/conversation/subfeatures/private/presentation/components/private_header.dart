@@ -34,7 +34,7 @@ class _PrivateHeaderState extends State<PrivateHeader> {
       child: Row(
         children: [
           CircleAvatar(
-            radius: 18,
+            radius: 19,
             backgroundColor: colorScheme.primary.withAlpha(40),
             child: Text(
               conversationId.isNotEmpty ? conversationId[0].toUpperCase() : '?',
@@ -48,7 +48,7 @@ class _PrivateHeaderState extends State<PrivateHeader> {
               children: [
                 Text(
                   'Conversation $conversationId',
-                  style: textScheme.headline,
+                  style: textScheme.headline.copyWith(fontSize: 18),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
