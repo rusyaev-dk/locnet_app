@@ -127,5 +127,9 @@
   "conversationTypeGroup": "Группа",
   "conversationTypeChannel": "Канал",
   "search": "Поиск",
-  "message": "Сообщение"
+  "message": "Сообщение",
+  "blockCompanion": "Заблокировать",
+    "deleteConversation": "Удалить переписку",
+    "toggleNotificationsOn": "Включить уведомления",
+    "toggleNotificationsOff": "Выключить уведомления"
 }

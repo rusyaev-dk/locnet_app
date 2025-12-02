@@ -69,6 +69,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "authorization": MessageLookupByLibrary.simpleMessage("Avtorizatsiya"),
     "back": MessageLookupByLibrary.simpleMessage("Orqaga"),
+    "blockCompanion": MessageLookupByLibrary.simpleMessage("Заблокировать"),
     "cancel": MessageLookupByLibrary.simpleMessage("Bekor qilish"),
     "chooseHowTheAppLooks": MessageLookupByLibrary.simpleMessage(
       "Ilovaning ko\'rinishini tanlang",
@@ -98,6 +99,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "create": MessageLookupByLibrary.simpleMessage("Создать"),
     "currentSession": MessageLookupByLibrary.simpleMessage("Joriy sessiya"),
     "delete": MessageLookupByLibrary.simpleMessage("O‘chirish"),
+    "deleteConversation": MessageLookupByLibrary.simpleMessage(
+      "Удалить переписку",
+    ),
     "description": MessageLookupByLibrary.simpleMessage("Описание"),
     "deviceThemeMode": MessageLookupByLibrary.simpleMessage(
       "Qurilma sozlamalariga mos",
@@ -260,6 +264,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "themeModeDark": MessageLookupByLibrary.simpleMessage("Qorong‘i"),
     "themeModeLight": MessageLookupByLibrary.simpleMessage("Yorug‘"),
     "themeModeSystem": MessageLookupByLibrary.simpleMessage("Tizimiy"),
+    "toggleNotificationsOff": MessageLookupByLibrary.simpleMessage(
+      "Выключить уведомления",
+    ),
+    "toggleNotificationsOn": MessageLookupByLibrary.simpleMessage(
+      "Включить уведомления",
+    ),
     "unknownValue": MessageLookupByLibrary.simpleMessage("Nomaʼlum"),
     "userFavouritesAddException": MessageLookupByLibrary.simpleMessage(
       "Sevimlilarga qo‘shib bo‘lmadi",

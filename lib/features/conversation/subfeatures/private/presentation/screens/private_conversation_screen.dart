@@ -52,9 +52,15 @@ class PrivateConversationScreenWrapper extends StatelessWidget {
                   ),
                 ),
           ),
+          BlocProvider(create: (context) => MessageAttachmentsCubit()),
           BlocProvider(
-            create: (context) => MessageAttachmentsCubit(),
-          )
+            create: (context) => PrivateConversationOptionsCubit(
+              conversationId: conversationId,
+              privateConversationInteractor: context
+                  .read<PrivateConversationInteractor>(),
+              logger: context.read<ILogger>(),
+            ),
+          ),
         ],
         child: child,
       ),

@@ -69,6 +69,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "authorization": MessageLookupByLibrary.simpleMessage("Authorization"),
     "back": MessageLookupByLibrary.simpleMessage("Back"),
+    "blockCompanion": MessageLookupByLibrary.simpleMessage("Заблокировать"),
     "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
     "chooseHowTheAppLooks": MessageLookupByLibrary.simpleMessage(
       "Choose how the app looks",
@@ -98,6 +99,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "create": MessageLookupByLibrary.simpleMessage("Create"),
     "currentSession": MessageLookupByLibrary.simpleMessage("Current session"),
     "delete": MessageLookupByLibrary.simpleMessage("Delete"),
+    "deleteConversation": MessageLookupByLibrary.simpleMessage(
+      "Удалить переписку",
+    ),
     "description": MessageLookupByLibrary.simpleMessage("Description"),
     "deviceThemeMode": MessageLookupByLibrary.simpleMessage(
       "Same as on device",
@@ -248,6 +252,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "themeModeDark": MessageLookupByLibrary.simpleMessage("Dark"),
     "themeModeLight": MessageLookupByLibrary.simpleMessage("Light"),
     "themeModeSystem": MessageLookupByLibrary.simpleMessage("System"),
+    "toggleNotificationsOff": MessageLookupByLibrary.simpleMessage(
+      "Выключить уведомления",
+    ),
+    "toggleNotificationsOn": MessageLookupByLibrary.simpleMessage(
+      "Включить уведомления",
+    ),
     "unknownValue": MessageLookupByLibrary.simpleMessage("Unknown"),
     "userFavouritesAddException": MessageLookupByLibrary.simpleMessage(
       "Failed to add to favorites",

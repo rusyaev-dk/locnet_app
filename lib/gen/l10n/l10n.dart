@@ -1128,6 +1128,46 @@ class S {
   String get message {
     return Intl.message('Сообщение', name: 'message', desc: '', args: []);
   }
+
+  /// `Заблокировать`
+  String get blockCompanion {
+    return Intl.message(
+      'Заблокировать',
+      name: 'blockCompanion',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Удалить переписку`
+  String get deleteConversation {
+    return Intl.message(
+      'Удалить переписку',
+      name: 'deleteConversation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Включить уведомления`
+  String get toggleNotificationsOn {
+    return Intl.message(
+      'Включить уведомления',
+      name: 'toggleNotificationsOn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Выключить уведомления`
+  String get toggleNotificationsOff {
+    return Intl.message(
+      'Выключить уведомления',
+      name: 'toggleNotificationsOff',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
