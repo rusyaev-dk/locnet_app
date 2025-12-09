@@ -138,7 +138,6 @@ class AppRouter {
                     ),
                   ],
                 ),
-
                 GoRoute(
                   path: 'storage',
                   name: 'storage',
