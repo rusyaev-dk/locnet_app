@@ -125,7 +125,7 @@ class AllConversationsListBloc
   }
 
   void _onIncomingChange(ConversationsListUpdateRec update) {
-    switch (update.kind) {
+    switch (update.updateType) {
       case ConversationTileUpdateType.created:
         add(
           AllConversationsListConversationCreatedEvent(

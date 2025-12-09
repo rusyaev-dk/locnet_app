@@ -5,7 +5,7 @@ import 'package:locnet_app/features/message/data/data.dart';
 
 class Message extends Equatable {
   const Message({
-    required this.id,
+    required this.messageId,
     required this.conversationId,
     required this.senderId,
     required this.hasAttachments,
@@ -19,7 +19,7 @@ class Message extends Equatable {
     this.deletedAt,
   });
 
-  final String id;
+  final String messageId;
   final String conversationId;
   final String senderId;
   final String? text;
@@ -37,12 +37,12 @@ class Message extends Equatable {
   bool get isActive => !isDeleted;
 
   /// Convert from DTO.
-  factory Message.fromDTO(MessageDTO dto) {
+  factory Message.fromDto(MessageDto dto) {
     return Message(
-      id: dto.messageId,
+      messageId: dto.messageId,
       conversationId: dto.conversationId,
       senderId: dto.senderId,
-      text: dto.message,
+      text: dto.text,
       hasAttachments: dto.hasAttachments,
       replyToMessageId: dto.replyToMessageId,
       isPinned: dto.isPinned ?? false,
@@ -55,12 +55,12 @@ class Message extends Equatable {
   }
 
   /// Convert back to DTO.
-  MessageDTO toDTO() {
-    return MessageDTO(
-      messageId: id,
+  MessageDto toDto() {
+    return MessageDto(
+      messageId: messageId,
       conversationId: conversationId,
       senderId: senderId,
-      message: text,
+      text: text,
       hasAttachments: hasAttachments,
       replyToMessageId: replyToMessageId,
       isPinned: isPinned,
@@ -73,7 +73,7 @@ class Message extends Equatable {
   }
 
   Message copyWith({
-    String? id,
+    String? messageId,
     String? conversationId,
     String? senderId,
     String? text,
@@ -87,7 +87,7 @@ class Message extends Equatable {
     DateTime? updatedAt,
   }) {
     return Message(
-      id: id ?? this.id,
+      messageId: messageId ?? this.messageId,
       conversationId: conversationId ?? this.conversationId,
       senderId: senderId ?? this.senderId,
       text: text ?? this.text,
@@ -104,7 +104,7 @@ class Message extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-    id,
+    messageId,
     conversationId,
     senderId,
     text,

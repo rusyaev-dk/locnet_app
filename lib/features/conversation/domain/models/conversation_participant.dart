@@ -31,7 +31,7 @@ class ConversationParticipant extends Equatable {
       role.toLowerCase().contains('moderator');
 
   /// Convert from DTO.
-  factory ConversationParticipant.fromDTO(ConversationParticipantDTO dto) {
+  factory ConversationParticipant.fromDto(ConversationParticipantDto dto) {
     return ConversationParticipant(
       id: dto.id,
       conversationId: dto.conversationId,
@@ -45,8 +45,8 @@ class ConversationParticipant extends Equatable {
   }
 
   /// Convert back to DTO.
-  ConversationParticipantDTO toDTO() {
-    return ConversationParticipantDTO(
+  ConversationParticipantDto toDto() {
+    return ConversationParticipantDto(
       id: id,
       conversationId: conversationId,
       userId: userId,

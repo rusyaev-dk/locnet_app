@@ -2,8 +2,8 @@
 
 import 'package:equatable/equatable.dart';
 
-class MessageAttachmentDTO extends Equatable {
-  const MessageAttachmentDTO({
+class MessageAttachmentDto extends Equatable {
+  const MessageAttachmentDto({
     required this.attachmentId,
     required this.messageId,
     required this.createdAt,
@@ -19,14 +19,14 @@ class MessageAttachmentDTO extends Equatable {
   final DateTime createdAt; // timestamp
   final DateTime updatedAt; // timestamp
 
-  factory MessageAttachmentDTO.fromJSON(Map<String, dynamic> json) {
+  factory MessageAttachmentDto.fromJson(Map<String, dynamic> json) {
     DateTime parseNonNull(dynamic v) {
       if (v is DateTime) return v;
       if (v is int) return DateTime.fromMillisecondsSinceEpoch(v);
       return DateTime.parse(v as String);
     }
 
-    return MessageAttachmentDTO(
+    return MessageAttachmentDto(
       attachmentId: json['attachmentId'] as String,
       messageId: json['messageId'] as String,
       fileId: json['fileId'] as String?,
@@ -38,7 +38,7 @@ class MessageAttachmentDTO extends Equatable {
     );
   }
 
-  Map<String, dynamic> toJSON() => <String, dynamic>{
+  Map<String, dynamic> toJson() => <String, dynamic>{
     'attachmentId': attachmentId,
     'messageId': messageId,
     'fileId': fileId,
@@ -47,7 +47,7 @@ class MessageAttachmentDTO extends Equatable {
     'updatedAt': updatedAt.toIso8601String(),
   };
 
-  MessageAttachmentDTO copyWith({
+  MessageAttachmentDto copyWith({
     String? attachmentId,
     String? messageId,
     String? fileId,
@@ -55,7 +55,7 @@ class MessageAttachmentDTO extends Equatable {
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
-    return MessageAttachmentDTO(
+    return MessageAttachmentDto(
       attachmentId: attachmentId ?? this.attachmentId,
       messageId: messageId ?? this.messageId,
       fileId: fileId ?? this.fileId,

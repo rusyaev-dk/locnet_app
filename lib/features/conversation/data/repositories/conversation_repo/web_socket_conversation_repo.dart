@@ -31,7 +31,7 @@
 //   Stream<ConversationsUpdateRec> get conversationsUpdates =>
 //       _changesController.stream.map(
 //         (({ConversationUpdateType kind, ConversationDTO dto}) event) =>
-//             (kind: event.kind, conversation: Conversation.fromDTO(event.dto)),
+//             (kind: event.kind, conversation: Conversation.fromDto(event.dto)),
 //       );
 
 //   @override
@@ -67,12 +67,12 @@
 //       final List<ConversationDTO> dtoItems = rawItems
 //           .map(
 //             (dynamic raw) =>
-//                 ConversationDTO.fromJSON(raw as Map<String, dynamic>),
+//                 ConversationDTO.fromJson(raw as Map<String, dynamic>),
 //           )
 //           .toList();
 
 //       final List<Conversation> conversations = dtoItems
-//           .map((ConversationDTO dto) => Conversation.fromDTO(dto))
+//           .map((ConversationDTO dto) => Conversation.fromDto(dto))
 //           .toList();
 
 //       return conversations;
@@ -131,7 +131,7 @@
 //           final Map<String, dynamic> payload =
 //               decoded['payload'] as Map<String, dynamic>;
 
-//           final ConversationDTO dto = ConversationDTO.fromJSON(payload);
+//           final ConversationDTO dto = ConversationDTO.fromJson(payload);
 
 //           _changesController.add((kind: kind, dto: dto));
 //         } catch (error, stackTrace) {

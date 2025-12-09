@@ -28,7 +28,7 @@ class BannedUser extends Equatable {
   bool get isConversation => scope == BanScope.conversation;
 
   /// Convert from DTO to domain.
-  factory BannedUser.fromDTO(BannedUserDTO dto) {
+  factory BannedUser.fromDto(BannedUserDto dto) {
     return BannedUser(
       id: dto.id,
       userId: dto.userId,
@@ -41,8 +41,8 @@ class BannedUser extends Equatable {
   }
 
   /// Convert domain back to DTO.
-  BannedUserDTO toDTO() {
-    return BannedUserDTO(
+  BannedUserDto toDto() {
+    return BannedUserDto(
       id: id,
       userId: userId,
       scope: scope.value,

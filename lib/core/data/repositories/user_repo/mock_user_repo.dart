@@ -1,51 +1,25 @@
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/mock/mock_backend_storage.dart';
-import 'package:locnet_app/mock/mock_users.dart';
+import 'package:locnet_app/mock/mock.dart';
 
-/// In-memory implementation of IUserRepo backed by [MockBackendStorage].
-final class MockMemoryUserRepo implements IUserRepo {
-  MockMemoryUserRepo({required MockBackendStorage backendStorage})
+final class MockUserRepo implements IUserRepo {
+  MockUserRepo({required MockInMemoryBackend backendStorage})
     : _backendStorage = backendStorage;
 
-  final MockBackendStorage _backendStorage;
+  final MockInMemoryBackend _backendStorage;
 
   @override
   Future<User> me() async {
-    final UserDTO? adminDto = _backendStorage.getUserById(
-      MockUsers.adminUser.userId,
-    );
-    if (adminDto == null) {
-      throw StateError('Admin user not found: ${MockUsers.adminUser.userId}');
-    }
-    return User.fromDTO(adminDto);
+    return User.fromDto(MockUsers.adminUser);
   }
 
   @override
   Future<User> getUserById({required String userId}) async {
-    final UserDTO? dto = _backendStorage.getUserById(userId);
-    if (dto == null) {
-      throw StateError('User not found: $userId');
-    }
-    return User.fromDTO(dto);
+    final UserDto dto = _backendStorage.getUserById(userId: userId);
+    return User.fromDto(dto);
   }
 
   @override
   Future<bool> updateUser({required User updatedUser}) async {
-    final UserDTO dto = UserDTO(
-      userId: updatedUser.userId,
-      username: updatedUser.username,
-      languageCode: updatedUser.languageCode,
-      password: 'hash_${updatedUser.username}_pw',
-      firstName: updatedUser.firstName,
-      lastName: updatedUser.lastName,
-      description: updatedUser.description,
-      avatarId: updatedUser.avatarId,
-      isDeleted: updatedUser.isDeleted,
-      isBanned: updatedUser.isBanned,
-      createdAt: updatedUser.createdAt,
-      updatedAt: updatedUser.updatedAt,
-    );
-
-    return _backendStorage.updateUser(dto);
+    return _backendStorage.updateUser(updatedUser);
   }
 }

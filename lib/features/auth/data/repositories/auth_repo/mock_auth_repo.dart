@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:locnet_app/features/auth/domain/domain.dart';
 import 'package:locnet_app/features/auth/data/data.dart';
+import 'package:locnet_app/features/auth/domain/domain.dart';
 
 /// Mock implementation of IAuthRepo for development and testing.
 /// Does not perform real network calls.
@@ -14,7 +14,7 @@ final class MockAuthRepo implements IAuthRepo {
     await Future<void>.delayed(const Duration(milliseconds: 250));
 
     // Create mock DTO as if returned by backend
-    final SessionDTO dto = SessionDTO(
+    final SessionDto dto = SessionDto(
       sessionId: 'session_001',
       userId: 'usr-adm',
       refreshToken: 'mock_refresh_token_456',
@@ -32,14 +32,14 @@ final class MockAuthRepo implements IAuthRepo {
     );
 
     // Convert DTO → domain
-    return Session.fromDTO(dto);
+    return Session.fromDto(dto);
   }
 
   @override
   Future<Session> refresh({required String refreshToken}) async {
     await Future<void>.delayed(const Duration(milliseconds: 150));
 
-    final SessionDTO dto = SessionDTO(
+    final SessionDto dto = SessionDto(
       sessionId: 'session_001',
       userId: 'usr-adm',
       refreshToken: refreshToken,
@@ -56,7 +56,7 @@ final class MockAuthRepo implements IAuthRepo {
       updatedAt: DateTime.now(),
     );
 
-    return Session.fromDTO(dto);
+    return Session.fromDto(dto);
   }
 
   @override

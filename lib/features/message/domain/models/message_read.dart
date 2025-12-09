@@ -17,7 +17,7 @@ class MessageRead extends Equatable {
   final DateTime readAt;
 
   /// Convert from DTO to domain.
-  factory MessageRead.fromDTO(MessageReadDTO dto) {
+  factory MessageRead.fromDto(MessageReadDto dto) {
     return MessageRead(
       id: dto.messageReadId,
       messageId: dto.messageId,
@@ -27,8 +27,8 @@ class MessageRead extends Equatable {
   }
 
   /// Convert domain back to DTO.
-  MessageReadDTO toDTO() {
-    return MessageReadDTO(
+  MessageReadDto toDto() {
+    return MessageReadDto(
       messageReadId: id,
       messageId: messageId,
       userId: userId,

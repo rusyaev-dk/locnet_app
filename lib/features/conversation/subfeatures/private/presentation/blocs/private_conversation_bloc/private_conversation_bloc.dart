@@ -98,22 +98,22 @@ class PrivateConversationBloc
         loadedState.messages,
       );
 
-      switch (event.update.kind) {
+      switch (event.update.updateType) {
         case PrivateConversationMessageUpdateType.created:
           updatedMessages.removeWhere(
-            (Message message) => message.id == updatedMessage.id,
+            (Message message) => message.messageId == updatedMessage.messageId,
           );
           updatedMessages.add(updatedMessage);
         case PrivateConversationMessageUpdateType.updated:
           final int index = updatedMessages.indexWhere(
-            (Message message) => message.id == updatedMessage.id,
+            (Message message) => message.messageId == updatedMessage.messageId,
           );
           if (index != -1) {
             updatedMessages[index] = updatedMessage;
           }
         case PrivateConversationMessageUpdateType.deleted:
           updatedMessages.removeWhere(
-            (Message message) => message.id == updatedMessage.id,
+            (Message message) => message.messageId == updatedMessage.messageId,
           );
       }
 

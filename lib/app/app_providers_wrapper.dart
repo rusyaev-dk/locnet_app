@@ -10,7 +10,7 @@ import 'package:locnet_app/features/conversations/data/data.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
 import 'package:locnet_app/features/settings/domain/domain.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
-import 'package:locnet_app/mock/mock_backend_storage.dart';
+import 'package:locnet_app/mock/mock.dart';
 import 'package:provider/provider.dart';
 
 class AppProvidersWrapper extends StatelessWidget {
@@ -25,7 +25,7 @@ class AppProvidersWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final backendStorage = MockBackendStorage();
+    final backendStorage = MockInMemoryBackend();
 
     return MultiProvider(
       providers: [
@@ -40,28 +40,25 @@ class AppProvidersWrapper extends StatelessWidget {
       child: MultiRepositoryProvider(
         providers: [
           // TODO: remove for prod
-          RepositoryProvider<MockBackendStorage>(
+          RepositoryProvider<MockInMemoryBackend>(
             create: (context) => backendStorage,
           ),
           RepositoryProvider<IUserRepo>(
-            create: (context) =>
-                MockMemoryUserRepo(backendStorage: backendStorage),
+            create: (context) => MockUserRepo(backendStorage: backendStorage),
           ),
           RepositoryProvider<IAuthRepo>(
             create: (context) => const MockAuthRepo(),
           ),
           RepositoryProvider<IConversationRepo>(
-            create: (context) => MockWebSocketConversationRepo(
+            create: (context) => MockConversationRepo(
               backendStorage: backendStorage,
               // webSocketClient: context.read<IWebSocketClient>(),
-              logger: appScope.logger,
             ),
           ),
           RepositoryProvider<IConversationsListRepo>(
             create: (context) => MockConversationsListRepo(
               // webSocketClient: context.read<IWebSocketClient>(),
               backendStorage: backendStorage,
-              logger: appScope.logger,
             ),
           ),
 

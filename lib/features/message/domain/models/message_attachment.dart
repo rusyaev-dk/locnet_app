@@ -24,7 +24,7 @@ class MessageAttachment extends Equatable {
   bool get hasFile => fileId != null && fileId!.isNotEmpty;
 
   /// Convert from DTO to domain.
-  factory MessageAttachment.fromDTO(MessageAttachmentDTO dto) {
+  factory MessageAttachment.fromDto(MessageAttachmentDto dto) {
     return MessageAttachment(
       id: dto.attachmentId,
       messageId: dto.messageId,
@@ -36,8 +36,8 @@ class MessageAttachment extends Equatable {
   }
 
   /// Convert from domain back to DTO.
-  MessageAttachmentDTO toDTO() {
-    return MessageAttachmentDTO(
+  MessageAttachmentDto toDto() {
+    return MessageAttachmentDto(
       attachmentId: id,
       messageId: messageId,
       fileId: fileId,

@@ -4,7 +4,7 @@ import 'package:locnet_app/features/message/domain/domain.dart';
 enum PrivateConversationMessageUpdateType { created, updated, deleted }
 
 typedef PrivateConversationMessageUpdateRec = ({
-  PrivateConversationMessageUpdateType kind,
+  PrivateConversationMessageUpdateType updateType,
   Message message,
 });
 
@@ -29,18 +29,14 @@ abstract interface class IPrivateConversationRepo {
 
   Future<Message> sendMessage({
     required String conversationId,
-    required String senderId,
     required Message message,
     String? replyToMessageId,
   });
 
-  Future<Message?> editMessage({
-    required String messageId,
-    required Message newMessage,
-  });
+  Future<Message> editMessage({required Message updatedMessage});
 
   Future<bool> deleteMessage({
-    required String messageId,
+    required Message message,
     required bool deleteAtRecipient,
   });
 

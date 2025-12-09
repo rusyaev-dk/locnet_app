@@ -39,7 +39,7 @@ class Session extends Equatable {
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  factory Session.fromDTO(SessionDTO dto) {
+  factory Session.fromDto(SessionDto dto) {
     return Session(
       sessionId: dto.sessionId,
       userId: dto.userId,
@@ -62,7 +62,7 @@ class Session extends Equatable {
   /// Creates a domain model from JSON using DateTimeFormatter.parse
   /// for all date-time fields to support DateTime, ISO-8601 strings,
   /// and Unix epoch integers (seconds or milliseconds).
-  factory Session.fromJSON(Map<String, dynamic> json) {
+  factory Session.fromJson(Map<String, dynamic> json) {
     return Session(
       sessionId: json['sessionId'] as String,
       userId: json['userId'] as String,
@@ -86,7 +86,7 @@ class Session extends Equatable {
 
   /// Serializes the domain model to JSON using the same field names
   /// as the constructor parameters (for local storage).
-  Map<String, dynamic> toJSON() => <String, dynamic>{
+  Map<String, dynamic> toJson() => <String, dynamic>{
     'sessionId': sessionId,
     'userId': userId,
     'refreshToken': refreshToken,

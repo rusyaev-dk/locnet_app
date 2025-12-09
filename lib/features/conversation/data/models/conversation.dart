@@ -2,11 +2,11 @@
 
 import 'package:equatable/equatable.dart';
 
-class ConversationDTO extends Equatable {
-  const ConversationDTO({
+class ConversationDto extends Equatable {
+  const ConversationDto({
     required this.conversationId,
-    required this.createdBy,
-    required this.type, // string value: "private", "group", "channel"
+    required this.initiatorId,
+    required this.type,
     required this.title,
     required this.isDeleted,
     required this.createdAt,
@@ -17,19 +17,19 @@ class ConversationDTO extends Equatable {
     this.deletedBy,
   });
 
-  final String conversationId; // uuid
-  final String createdBy; // uuid
-  final String type; // varchar
-  final String title; // varchar
-  final String? description; // varchar?
-  final String? avatarFileId; // uuid?
-  final bool isDeleted; // boolean
-  final DateTime? deletedAt; // timestamp?
-  final String? deletedBy; // uuid?
-  final DateTime createdAt; // timestamp
-  final DateTime updatedAt; // timestamp
+  final String conversationId;
+  final String initiatorId;
+  final String type;
+  final String title;
+  final String? description;
+  final String? avatarFileId;
+  final bool isDeleted;
+  final DateTime? deletedAt;
+  final String? deletedBy;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
-  factory ConversationDTO.fromJSON(Map<String, dynamic> json) {
+  factory ConversationDto.fromJson(Map<String, dynamic> json) {
     DateTime? parseNullable(dynamic v) {
       if (v == null) return null;
       if (v is DateTime) return v;
@@ -43,9 +43,9 @@ class ConversationDTO extends Equatable {
       return DateTime.parse(v as String);
     }
 
-    return ConversationDTO(
+    return ConversationDto(
       conversationId: json['conversationId'] as String,
-      createdBy: json['createdBy'] as String,
+      initiatorId: json['initiatorId'] as String,
       type: json['type'] as String,
       title: json['title'] as String,
       description: json['description'] as String?,
@@ -58,9 +58,9 @@ class ConversationDTO extends Equatable {
     );
   }
 
-  Map<String, dynamic> toJSON() => <String, dynamic>{
+  Map<String, dynamic> toJson() => <String, dynamic>{
     'conversationId': conversationId,
-    'createdBy': createdBy,
+    'initiatorId': initiatorId,
     'type': type,
     'title': title,
     'description': description,
@@ -72,9 +72,9 @@ class ConversationDTO extends Equatable {
     'updatedAt': updatedAt.toIso8601String(),
   };
 
-  ConversationDTO copyWith({
+  ConversationDto copyWith({
     String? conversationId,
-    String? createdBy,
+    String? initiatorId,
     String? type,
     String? title,
     String? description,
@@ -85,9 +85,9 @@ class ConversationDTO extends Equatable {
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
-    return ConversationDTO(
+    return ConversationDto(
       conversationId: conversationId ?? this.conversationId,
-      createdBy: createdBy ?? this.createdBy,
+      initiatorId: initiatorId ?? this.initiatorId,
       type: type ?? this.type,
       title: title ?? this.title,
       description: description ?? this.description,
@@ -103,7 +103,7 @@ class ConversationDTO extends Equatable {
   @override
   List<Object?> get props => <Object?>[
     conversationId,
-    createdBy,
+    initiatorId,
     type,
     title,
     description,

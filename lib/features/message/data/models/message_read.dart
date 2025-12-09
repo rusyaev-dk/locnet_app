@@ -2,8 +2,8 @@
 
 import 'package:equatable/equatable.dart';
 
-class MessageReadDTO extends Equatable {
-  const MessageReadDTO({
+class MessageReadDto extends Equatable {
+  const MessageReadDto({
     required this.messageReadId,
     required this.messageId,
     required this.userId,
@@ -15,14 +15,14 @@ class MessageReadDTO extends Equatable {
   final String userId; // uuid
   final DateTime readAt; // timestamp
 
-  factory MessageReadDTO.fromJSON(Map<String, dynamic> json) {
+  factory MessageReadDto.fromJson(Map<String, dynamic> json) {
     DateTime parseNonNull(dynamic v) {
       if (v is DateTime) return v;
       if (v is int) return DateTime.fromMillisecondsSinceEpoch(v);
       return DateTime.parse(v as String);
     }
 
-    return MessageReadDTO(
+    return MessageReadDto(
       messageReadId: json['messageReadId'] as String,
       messageId: json['messageId'] as String,
       userId: json['userId'] as String,
@@ -30,20 +30,20 @@ class MessageReadDTO extends Equatable {
     );
   }
 
-  Map<String, dynamic> toJSON() => <String, dynamic>{
+  Map<String, dynamic> toJson() => <String, dynamic>{
     'messageReadId': messageReadId,
     'messageId': messageId,
     'userId': userId,
     'readAt': readAt.toIso8601String(),
   };
 
-  MessageReadDTO copyWith({
+  MessageReadDto copyWith({
     String? messageReadId,
     String? messageId,
     String? userId,
     DateTime? readAt,
   }) {
-    return MessageReadDTO(
+    return MessageReadDto(
       messageReadId: messageReadId ?? this.messageReadId,
       messageId: messageId ?? this.messageId,
       userId: userId ?? this.userId,

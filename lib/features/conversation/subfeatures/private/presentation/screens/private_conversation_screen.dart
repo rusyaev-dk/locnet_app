@@ -27,8 +27,7 @@ class PrivateConversationScreenWrapper extends StatelessWidget {
       providers: [
         RepositoryProvider<IPrivateConversationRepo>(
           create: (BuildContext context) => MockPrivateConversationRepo(
-            backendStorage: context.read<MockBackendStorage>(),
-            logger: context.read<ILogger>(),
+            backendStorage: context.read<MockInMemoryBackend>(),
           ),
         ),
         RepositoryProvider<PrivateConversationInteractor>(

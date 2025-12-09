@@ -16,11 +16,11 @@ class ConversationTile extends Equatable {
   final String? companionId;
   final Message? lastMessage;
 
-  factory ConversationTile.fromDTO(ConversationTileDTO dto) {
+  factory ConversationTile.fromDto(ConversationTileDto dto) {
     return ConversationTile(
-      conversation: Conversation.fromDTO(dto.conversation),
+      conversation: Conversation.fromDto(dto.conversation),
       lastMessage: dto.lastMessage != null
-          ? Message.fromDTO(dto.lastMessage!)
+          ? Message.fromDto(dto.lastMessage!)
           : null,
       companionId: dto.companionId,
     );

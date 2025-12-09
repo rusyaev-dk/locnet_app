@@ -75,34 +75,28 @@ final class PrivateConversationInteractor {
 
   Future<Message> sendMessage({
     required String conversationId,
-    required String senderId,
     required Message message,
     String? replyToMessageId,
   }) async {
     return await _privateConversationRepo.sendMessage(
       conversationId: conversationId,
-      senderId: senderId,
       message: message,
       replyToMessageId: replyToMessageId,
     );
   }
 
-  Future<Message?> editMessage({
-    required String messageId,
-    required Message newMessage,
-  }) async {
+  Future<Message> editMessage({required Message newMessage}) async {
     return await _privateConversationRepo.editMessage(
-      messageId: messageId,
-      newMessage: newMessage,
+      updatedMessage: newMessage,
     );
   }
 
   Future<bool> deleteMessage({
-    required String messageId,
+    required Message message,
     required bool deleteAtRecipient,
   }) async {
     return await _privateConversationRepo.deleteMessage(
-      messageId: messageId,
+      message: message,
       deleteAtRecipient: deleteAtRecipient,
     );
   }

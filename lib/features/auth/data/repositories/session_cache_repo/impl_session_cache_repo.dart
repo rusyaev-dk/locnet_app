@@ -13,7 +13,7 @@ final class SessionCacheRepo implements ISessionCacheRepo {
   @override
   Future<bool> saveSession({required Session session}) async {
     try {
-      final String jsonString = jsonEncode(session.toJSON());
+      final String jsonString = jsonEncode(session.toJson());
       final bool isSaved = await _storage.save<String>(
         key: _sessionKey,
         value: jsonString,
@@ -55,7 +55,7 @@ final class SessionCacheRepo implements ISessionCacheRepo {
 
       final Map<String, dynamic> jsonMap =
           jsonDecode(rawJson) as Map<String, dynamic>;
-      return Session.fromJSON(jsonMap);
+      return Session.fromJson(jsonMap);
     } on FormatException catch (e, st) {
       throw StorageReadException(
         message: 'Corrupted cached session JSON: ${e.message}',

@@ -1,44 +1,44 @@
 // ignore_for_file: sort_constructors_first
 
 import 'package:equatable/equatable.dart';
-import 'package:locnet_app/features/message/data/data.dart';
 import 'package:locnet_app/features/conversation/data/data.dart';
+import 'package:locnet_app/features/message/data/data.dart';
 
-class ConversationTileDTO extends Equatable {
-  const ConversationTileDTO({
+class ConversationTileDto extends Equatable {
+  const ConversationTileDto({
     required this.conversation,
     this.lastMessage,
     this.companionId,
   });
 
-  final ConversationDTO conversation;
+  final ConversationDto conversation;
   final String? companionId;
-  final MessageDTO? lastMessage;
+  final MessageDto? lastMessage;
 
-  factory ConversationTileDTO.fromJSON(Map<String, dynamic> json) {
-    return ConversationTileDTO(
-      conversation: ConversationDTO.fromJSON(
+  factory ConversationTileDto.fromJson(Map<String, dynamic> json) {
+    return ConversationTileDto(
+      conversation: ConversationDto.fromJson(
         json['conversation'] as Map<String, dynamic>,
       ),
       lastMessage: json['lastMsg'] != null
-          ? MessageDTO.fromJSON(json['lastMsg'] as Map<String, dynamic>)
+          ? MessageDto.fromJson(json['lastMsg'] as Map<String, dynamic>)
           : null,
       companionId: json['companionId'] as String?,
     );
   }
 
-  Map<String, dynamic> toJSON() => <String, dynamic>{
-    'conversation': conversation.toJSON(),
-    'lastMsg': lastMessage?.toJSON(),
+  Map<String, dynamic> toJson() => <String, dynamic>{
+    'conversation': conversation.toJson(),
+    'lastMsg': lastMessage?.toJson(),
     'companionId': companionId,
   };
 
-  ConversationTileDTO copyWith({
-    ConversationDTO? conversation,
-    MessageDTO? lastMessage,
+  ConversationTileDto copyWith({
+    ConversationDto? conversation,
+    MessageDto? lastMessage,
     String? companionId,
   }) {
-    return ConversationTileDTO(
+    return ConversationTileDto(
       conversation: conversation ?? this.conversation,
       lastMessage: lastMessage ?? this.lastMessage,
       companionId: companionId ?? this.companionId,

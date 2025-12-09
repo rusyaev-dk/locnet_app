@@ -3,8 +3,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:locnet_app/core/core.dart';
 
-final class SessionDTO extends Equatable {
-  const SessionDTO({
+final class SessionDto extends Equatable {
+  const SessionDto({
     required this.sessionId,
     required this.userId,
     required this.refreshToken,
@@ -38,10 +38,10 @@ final class SessionDTO extends Equatable {
   final DateTime createdAt; // timestamp
   final DateTime updatedAt; // timestamp
 
-  /// Creates a [SessionDTO] from a JSON map.
+  /// Creates a [SessionDto] from a JSON map.
   /// Accepts multiple date formats and field naming variants.
-  factory SessionDTO.fromJSON(Map<String, dynamic> json) {
-    return SessionDTO(
+  factory SessionDto.fromJson(Map<String, dynamic> json) {
+    return SessionDto(
       sessionId: json['sessionId'] as String,
       userId: json['userId'] as String,
       refreshToken: json['refreshToken'] as String,
@@ -63,7 +63,7 @@ final class SessionDTO extends Equatable {
   }
 
   /// Converts this DTO to a JSON-compatible map.
-  Map<String, dynamic> toJSON() => <String, dynamic>{
+  Map<String, dynamic> toJson() => <String, dynamic>{
     'sessionId': sessionId,
     'userId': userId,
     'refreshToken': refreshToken,
@@ -81,8 +81,8 @@ final class SessionDTO extends Equatable {
     'updatedAt': updatedAt.toIso8601String(),
   };
 
-  /// Returns a new [SessionDTO] with updated fields.
-  SessionDTO copyWith({
+  /// Returns a new [SessionDto] with updated fields.
+  SessionDto copyWith({
     String? sessionId,
     String? userId,
     String? refreshToken,
@@ -99,7 +99,7 @@ final class SessionDTO extends Equatable {
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
-    return SessionDTO(
+    return SessionDto(
       sessionId: sessionId ?? this.sessionId,
       userId: userId ?? this.userId,
       refreshToken: refreshToken ?? this.refreshToken,

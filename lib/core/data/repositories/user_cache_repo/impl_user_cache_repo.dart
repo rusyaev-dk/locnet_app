@@ -11,7 +11,7 @@ final class UserCacheRepo implements IUserCacheRepo {
   @override
   Future<bool> saveUser({required User user}) async {
     try {
-      final String jsonString = jsonEncode(user.toJSON());
+      final String jsonString = jsonEncode(user.toJson());
       final bool isSaved = await _storage.save<String>(
         key: _userKey,
         value: jsonString,
@@ -53,7 +53,7 @@ final class UserCacheRepo implements IUserCacheRepo {
 
       final Map<String, dynamic> jsonMap =
           jsonDecode(jsonString) as Map<String, dynamic>;
-      return User.fromJSON(jsonMap);
+      return User.fromJson(jsonMap);
     } on FormatException catch (e, st) {
       throw StorageReadException(
         message: 'Corrupted cached user JSON: ${e.message}',

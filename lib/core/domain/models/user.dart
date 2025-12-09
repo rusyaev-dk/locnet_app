@@ -8,6 +8,7 @@ class User extends Equatable {
     required this.userId,
     required this.username,
     required this.firstName,
+    required this.patronymic,
     required this.lastName,
     required this.languageCode,
     required this.isDeleted,
@@ -21,8 +22,9 @@ class User extends Equatable {
   final String userId;
   final String username;
   final String firstName;
+  final String patronymic;
   final String lastName;
-  final String languageCode; // ISO language code, e.g. 'en', 'ru'
+  final String languageCode;
   final String? description;
   final String? avatarId;
   final bool isDeleted;
@@ -30,18 +32,18 @@ class User extends Equatable {
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  String get fullName =>
-      [firstName,  lastName].join(' ');
+  String get fullName => [firstName, patronymic, lastName].join(' ');
 
   bool get isActive => !isDeleted && !isBanned;
 
-  factory User.fromDTO(UserDTO dto) {
+  factory User.fromDto(UserDto dto) {
     return User(
       userId: dto.userId,
       username: dto.username,
       firstName: dto.firstName,
-      languageCode: dto.languageCode,
+      patronymic: dto.patronymic,
       lastName: dto.lastName,
+      languageCode: dto.languageCode,
       description: dto.description,
       avatarId: dto.avatarId,
       isDeleted: dto.isDeleted,
@@ -51,13 +53,14 @@ class User extends Equatable {
     );
   }
 
-  factory User.fromJSON(Map<String, dynamic> json) {
+  factory User.fromJson(Map<String, dynamic> json) {
     return User(
       userId: json['userId'] as String,
       username: json['username'] as String,
       firstName: json['firstName'] as String,
-      languageCode: json['languageCode'] as String,
+      patronymic: json['patronymic'] as String,
       lastName: json['lastName'] as String,
+      languageCode: json['languageCode'] as String,
       description: json['description'] as String?,
       avatarId: json['avatarId'] as String?,
       isDeleted: json['isDeleted'] as bool,
@@ -67,24 +70,26 @@ class User extends Equatable {
     );
   }
 
-  Map<String, dynamic> toJSON() => <String, dynamic>{
-        'userId': userId,
-        'username': username,
-        'firstName': firstName,
-        'languageCode': languageCode,
-        'lastName': lastName,
-        'description': description,
-        'avatarId': avatarId,
-        'isDeleted': isDeleted,
-        'isBanned': isBanned,
-        'createdAt': createdAt.toIso8601String(),
-        'updatedAt': updatedAt.toIso8601String(),
-      };
+  Map<String, dynamic> toJson() => <String, dynamic>{
+    'userId': userId,
+    'username': username,
+    'firstName': firstName,
+    'patronymic': patronymic,
+    'languageCode': languageCode,
+    'lastName': lastName,
+    'description': description,
+    'avatarId': avatarId,
+    'isDeleted': isDeleted,
+    'isBanned': isBanned,
+    'createdAt': createdAt.toIso8601String(),
+    'updatedAt': updatedAt.toIso8601String(),
+  };
 
   User copyWith({
     String? userId,
     String? username,
     String? firstName,
+    String? patronymic,
     String? languageCode,
     String? lastName,
     String? description,
@@ -98,6 +103,7 @@ class User extends Equatable {
       userId: userId ?? this.userId,
       username: username ?? this.username,
       firstName: firstName ?? this.firstName,
+      patronymic: patronymic ?? this.patronymic,
       languageCode: languageCode ?? this.languageCode,
       lastName: lastName ?? this.lastName,
       description: description ?? this.description,
@@ -111,16 +117,17 @@ class User extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        userId,
-        username,
-        firstName,
-        languageCode,
-        lastName,
-        description,
-        avatarId,
-        isDeleted,
-        isBanned,
-        createdAt,
-        updatedAt,
-      ];
+    userId,
+    username,
+    firstName,
+    patronymic,
+    lastName,
+    languageCode,
+    description,
+    avatarId,
+    isDeleted,
+    isBanned,
+    createdAt,
+    updatedAt,
+  ];
 }

@@ -2,8 +2,8 @@
 
 import 'package:equatable/equatable.dart';
 
-class BannedUserDTO extends Equatable {
-  const BannedUserDTO({
+class BannedUserDto extends Equatable {
+  const BannedUserDto({
     required this.id,
     required this.userId,
     required this.scope, // "global" | "conversation"
@@ -21,14 +21,14 @@ class BannedUserDTO extends Equatable {
   final String? reason; // text?
   final DateTime createdAt; // timestamp
 
-  factory BannedUserDTO.fromJSON(Map<String, dynamic> json) {
+  factory BannedUserDto.fromJson(Map<String, dynamic> json) {
     DateTime parse(dynamic v) {
       if (v is DateTime) return v;
       if (v is int) return DateTime.fromMillisecondsSinceEpoch(v);
       return DateTime.parse(v as String);
     }
 
-    return BannedUserDTO(
+    return BannedUserDto(
       id: json['id'] as String,
       userId: json['userId'] as String,
       scope: json['scope'] as String,
@@ -39,7 +39,7 @@ class BannedUserDTO extends Equatable {
     );
   }
 
-  Map<String, dynamic> toJSON() => <String, dynamic>{
+  Map<String, dynamic> toJson() => <String, dynamic>{
     'id': id,
     'userId': userId,
     'scope': scope,
@@ -49,7 +49,7 @@ class BannedUserDTO extends Equatable {
     'createdAt': createdAt.toIso8601String(),
   };
 
-  BannedUserDTO copyWith({
+  BannedUserDto copyWith({
     String? id,
     String? userId,
     String? scope,
@@ -58,7 +58,7 @@ class BannedUserDTO extends Equatable {
     String? reason,
     DateTime? createdAt,
   }) {
-    return BannedUserDTO(
+    return BannedUserDto(
       id: id ?? this.id,
       userId: userId ?? this.userId,
       scope: scope ?? this.scope,

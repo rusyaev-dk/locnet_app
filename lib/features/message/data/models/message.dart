@@ -2,15 +2,15 @@
 
 import 'package:equatable/equatable.dart';
 
-class MessageDTO extends Equatable {
-  const MessageDTO({
+class MessageDto extends Equatable {
+  const MessageDto({
     required this.messageId,
     required this.conversationId,
     required this.senderId,
     required this.hasAttachments,
     required this.createdAt,
     required this.updatedAt,
-    this.message,
+    this.text,
     this.replyToMessageId,
     this.isPinned,
     this.editedAt,
@@ -18,20 +18,20 @@ class MessageDTO extends Equatable {
     this.deletedAt,
   });
 
-  final String messageId; // uuid
-  final String conversationId; // uuid
-  final String senderId; // uuid
-  final String? message; // text?
-  final bool hasAttachments; // boolean
-  final String? replyToMessageId; // uuid?
-  final bool? isPinned; // boolean?
-  final DateTime? editedAt; // timestamp?
-  final bool? isDeleted; // boolean?
-  final DateTime? deletedAt; // timestamp?
-  final DateTime createdAt; // timestamp
-  final DateTime updatedAt; // timestamp
+  final String messageId;
+  final String conversationId;
+  final String senderId;
+  final String? text;
+  final bool hasAttachments;
+  final String? replyToMessageId;
+  final bool? isPinned;
+  final DateTime? editedAt;
+  final bool? isDeleted;
+  final DateTime? deletedAt;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
-  factory MessageDTO.fromJSON(Map<String, dynamic> json) {
+  factory MessageDto.fromJson(Map<String, dynamic> json) {
     DateTime? parseNullable(dynamic v) {
       if (v == null) return null;
       if (v is DateTime) return v;
@@ -45,11 +45,11 @@ class MessageDTO extends Equatable {
       return DateTime.parse(v as String);
     }
 
-    return MessageDTO(
+    return MessageDto(
       messageId: json['messageId'] as String,
       conversationId: json['conversationId'] as String,
       senderId: json['senderId'] as String,
-      message: json['message'] as String?,
+      text: json['text'] as String?,
       hasAttachments: json['hasAttachments'] as bool,
       replyToMessageId: json['replyToMessageId'] as String?,
       isPinned: json['isPinned'] as bool?,
@@ -61,11 +61,11 @@ class MessageDTO extends Equatable {
     );
   }
 
-  Map<String, dynamic> toJSON() => <String, dynamic>{
+  Map<String, dynamic> toJson() => <String, dynamic>{
     'messageId': messageId,
     'conversationId': conversationId,
     'senderId': senderId,
-    'message': message,
+    'message': text,
     'hasAttachments': hasAttachments,
     'replyToMessageId': replyToMessageId,
     'isPinned': isPinned,
@@ -76,7 +76,7 @@ class MessageDTO extends Equatable {
     'updatedAt': updatedAt.toIso8601String(),
   };
 
-  MessageDTO copyWith({
+  MessageDto copyWith({
     String? messageId,
     String? conversationId,
     String? senderId,
@@ -90,11 +90,11 @@ class MessageDTO extends Equatable {
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
-    return MessageDTO(
+    return MessageDto(
       messageId: messageId ?? this.messageId,
       conversationId: conversationId ?? this.conversationId,
       senderId: senderId ?? this.senderId,
-      message: message ?? this.message,
+      text: message ?? text,
       hasAttachments: hasAttachments ?? this.hasAttachments,
       replyToMessageId: replyToMessageId ?? this.replyToMessageId,
       isPinned: isPinned ?? this.isPinned,
@@ -111,7 +111,7 @@ class MessageDTO extends Equatable {
     messageId,
     conversationId,
     senderId,
-    message,
+    text,
     hasAttachments,
     replyToMessageId,
     isPinned,

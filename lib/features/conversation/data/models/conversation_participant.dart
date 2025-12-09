@@ -2,8 +2,8 @@
 
 import 'package:equatable/equatable.dart';
 
-class ConversationParticipantDTO extends Equatable {
-  const ConversationParticipantDTO({
+class ConversationParticipantDto extends Equatable {
+  const ConversationParticipantDto({
     required this.id,
     required this.conversationId,
     required this.userId,
@@ -23,14 +23,14 @@ class ConversationParticipantDTO extends Equatable {
   final DateTime createdAt; // timestamp
   final DateTime updatedAt; // timestamp
 
-  factory ConversationParticipantDTO.fromJSON(Map<String, dynamic> json) {
+  factory ConversationParticipantDto.fromJson(Map<String, dynamic> json) {
     DateTime parse(dynamic v) {
       if (v is DateTime) return v;
       if (v is int) return DateTime.fromMillisecondsSinceEpoch(v);
       return DateTime.parse(v as String);
     }
 
-    return ConversationParticipantDTO(
+    return ConversationParticipantDto(
       id: json['id'] as String,
       conversationId: json['conversationId'] as String,
       userId: json['userId'] as String,
@@ -42,7 +42,7 @@ class ConversationParticipantDTO extends Equatable {
     );
   }
 
-  Map<String, dynamic> toJSON() => <String, dynamic>{
+  Map<String, dynamic> toJson() => <String, dynamic>{
     'id': id,
     'conversationId': conversationId,
     'userId': userId,
@@ -53,7 +53,7 @@ class ConversationParticipantDTO extends Equatable {
     'updatedAt': updatedAt.toIso8601String(),
   };
 
-  ConversationParticipantDTO copyWith({
+  ConversationParticipantDto copyWith({
     String? id,
     String? conversationId,
     String? userId,
@@ -63,7 +63,7 @@ class ConversationParticipantDTO extends Equatable {
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
-    return ConversationParticipantDTO(
+    return ConversationParticipantDto(
       id: id ?? this.id,
       conversationId: conversationId ?? this.conversationId,
       userId: userId ?? this.userId,

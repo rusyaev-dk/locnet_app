@@ -1,12 +1,14 @@
+// ignore_for_file: sort_constructors_first
+
 import 'package:equatable/equatable.dart';
 
-class UserDTO extends Equatable {
-  const UserDTO({
+class UserDto extends Equatable {
+  const UserDto({
     required this.userId,
     required this.username,
-    required this.password,
     required this.firstName,
     required this.lastName,
+    required this.patronymic,
     required this.languageCode,
     required this.isDeleted,
     required this.isBanned,
@@ -16,33 +18,32 @@ class UserDTO extends Equatable {
     this.avatarId,
   });
 
-  final String userId; // uuid
-  final String username; // varchar
-  final String password; // text (hash)
-  final String firstName; // varchar
+  final String userId;
+  final String username;
+  final String firstName;
   final String lastName;
-  final String languageCode; // varchar (e.g. 'en', 'ru')
-  final String? description; // varchar?
-  final String? avatarId; // uuid?
-  final bool isDeleted; // boolean
-  final bool isBanned; // boolean
-  final DateTime createdAt; // timestamp
-  final DateTime updatedAt; // timestamp
+  final String patronymic;
+  final String languageCode;
+  final String? description;
+  final String? avatarId;
+  final bool isDeleted;
+  final bool isBanned;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
-  // ignore: sort_constructors_first
-  factory UserDTO.fromJSON(Map<String, dynamic> json) {
-    DateTime parseDate(dynamic v) => v is DateTime
-        ? v
-        : v is int
-        ? DateTime.fromMillisecondsSinceEpoch(v)
-        : DateTime.parse(v as String);
+  factory UserDto.fromJson(Map<String, dynamic> json) {
+    DateTime parseDate(dynamic value) => value is DateTime
+        ? value
+        : value is int
+        ? DateTime.fromMillisecondsSinceEpoch(value)
+        : DateTime.parse(value as String);
 
-    return UserDTO(
+    return UserDto(
       userId: json['userId'] as String,
       username: json['username'] as String,
-      password: json['password'] as String,
       firstName: json['firstName'] as String,
       lastName: json['lastName'] as String,
+      patronymic: json['patronymic'] as String,
       languageCode: json['languageCode'] as String,
       description: json['description'] as String?,
       avatarId: json['avatarId'] as String?,
@@ -53,13 +54,13 @@ class UserDTO extends Equatable {
     );
   }
 
-  Map<String, dynamic> toJSON() => <String, dynamic>{
+  Map<String, dynamic> toJson() => <String, dynamic>{
     'userId': userId,
     'username': username,
-    'password': password,
     'firstName': firstName,
-    'languageCode': languageCode,
     'lastName': lastName,
+    'patronym': patronymic,
+    'languageCode': languageCode,
     'description': description,
     'avatarId': avatarId,
     'isDeleted': isDeleted,
@@ -68,13 +69,13 @@ class UserDTO extends Equatable {
     'updatedAt': updatedAt.toIso8601String(),
   };
 
-  UserDTO copyWith({
+  UserDto copyWith({
     String? userId,
     String? username,
-    String? password,
     String? firstName,
-    String? languageCode,
     String? lastName,
+    String? patronymic,
+    String? languageCode,
     String? description,
     String? avatarId,
     bool? isDeleted,
@@ -82,12 +83,12 @@ class UserDTO extends Equatable {
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
-    return UserDTO(
+    return UserDto(
       userId: userId ?? this.userId,
       username: username ?? this.username,
-      password: password ?? this.password,
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
+      patronymic: patronymic ?? this.patronymic,
       languageCode: languageCode ?? this.languageCode,
       description: description ?? this.description,
       avatarId: avatarId ?? this.avatarId,
@@ -102,9 +103,9 @@ class UserDTO extends Equatable {
   List<Object?> get props => <Object?>[
     userId,
     username,
-    password,
     firstName,
     lastName,
+    patronymic,
     languageCode,
     description,
     avatarId,
