@@ -70,7 +70,10 @@ class _ConversationsPanelState extends State<ConversationsPanel> {
       children: [
         SizedBox(
           width: _panelWidth,
-          child: _ConversationsListPanel(isCompact: isCompact),
+          child: _ConversationsListPanel(
+            isCompact: isCompact,
+            selectedConversationId: widget.selectedConversationId,
+          ),
         ),
         SizedBox(
           width: 2,
@@ -80,15 +83,19 @@ class _ConversationsPanelState extends State<ConversationsPanel> {
               behavior: HitTestBehavior.translucent,
               onHorizontalDragUpdate: (DragUpdateDetails details) {
                 setState(() {
-                  // if (details.globalPosition.dx > 600) {
-
-                  // }
-                  // TODO: переделать
                   final double proposedWidth = _panelWidth + details.delta.dx;
 
                   final bool isCurrentlyCompact = _panelWidth <= _panelMinWidth;
 
                   if (!isCurrentlyCompact) {
+                    final bool isAtCompactBreakpoint =
+                        _panelWidth == _panelCompactBreakpoint;
+
+                    if (isAtCompactBreakpoint &&
+                        details.globalPosition.distance < 600) {
+                      return;
+                    }
+
                     if (proposedWidth <= _panelCompactBreakpoint) {
                       if (details.globalPosition.dx > 490) {
                         return;
@@ -100,24 +107,17 @@ class _ConversationsPanelState extends State<ConversationsPanel> {
                         _panelMaxWidth,
                       );
                     }
-                  } else {
-                    if (details.delta.dx > 0) {
-                      final double nextWidth =
-                          _panelWidth == _panelMinWidth &&
-                              proposedWidth > _panelMinWidth
-                          ? _panelCompactBreakpoint
-                          : proposedWidth;
 
-                      _panelWidth = nextWidth.clamp(
-                        _panelMinWidth,
-                        _panelMaxWidth,
-                      );
-                    } else {
-                      _panelWidth = _panelMinWidth;
-                    }
+                    return;
+                  }
+
+                  // currently compact
+                  if (details.delta.dx > 0) {
+                    _panelWidth = _panelCompactBreakpoint;
                   }
                 });
               },
+
               child: Align(
                 alignment: Alignment.centerRight,
                 child: VerticalDivider(
@@ -140,6 +140,7 @@ class _ConversationsPanelState extends State<ConversationsPanel> {
                     ),
                   )
                 : PrivateConversationScreenWrapper(
+                    key: ValueKey<String>(widget.selectedConversationId!),
                     conversationId: widget.selectedConversationId!,
                     child: PrivateConversationScreen(
                       conversationId: widget.selectedConversationId!,
@@ -153,9 +154,13 @@ class _ConversationsPanelState extends State<ConversationsPanel> {
 }
 
 class _ConversationsListPanel extends StatelessWidget {
-  const _ConversationsListPanel({required this.isCompact});
+  const _ConversationsListPanel({
+    required this.isCompact,
+    this.selectedConversationId,
+  });
 
   final bool isCompact;
+  final String? selectedConversationId;
 
   @override
   Widget build(BuildContext context) {
@@ -197,11 +202,16 @@ class _ConversationsListPanel extends StatelessWidget {
                         ),
                         child: ConversationListTile(
                           conversationTile: tile,
+                          isSelected:
+                              tile.conversation.conversationId ==
+                              selectedConversationId,
                           isCompact: isCompact,
                           onTap: () {
-                            GoRouter.of(
-                              context,
-                            ).go(AppRoutes.conversation(tile.conversation.id));
+                            GoRouter.of(context).go(
+                              AppRoutes.conversation(
+                                tile.conversation.conversationId,
+                              ),
+                            );
                           },
                         ),
                       );

@@ -100,13 +100,14 @@ final class MockInMemoryBackend {
   }
 
   bool updateConversation(Conversation updatedConversation) {
-    final ConversationDto? existingDto = _conversations[updatedConversation.id];
+    final ConversationDto? existingDto =
+        _conversations[updatedConversation.conversationId];
     if (existingDto == null) {
       return false;
     }
 
     final ConversationDto updatedDto = existingDto.copyWith(
-      conversationId: updatedConversation.id,
+      conversationId: updatedConversation.conversationId,
       initiatorId: updatedConversation.initiatorId,
       type: updatedConversation.type.value,
       title: updatedConversation.title,
@@ -119,7 +120,7 @@ final class MockInMemoryBackend {
       updatedAt: updatedConversation.updatedAt,
     );
 
-    _conversations[updatedConversation.id] = updatedDto;
+    _conversations[updatedConversation.conversationId] = updatedDto;
     return true;
   }
 

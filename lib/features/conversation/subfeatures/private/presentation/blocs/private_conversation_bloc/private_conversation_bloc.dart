@@ -90,7 +90,8 @@ class PrivateConversationBloc
 
       final Message updatedMessage = event.update.message;
 
-      if (updatedMessage.conversationId != loadedState.conversation.id) {
+      if (updatedMessage.conversationId !=
+          loadedState.conversation.conversationId) {
         return;
       }
 

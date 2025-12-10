@@ -131,6 +131,6 @@
     "blockCompanion": "Заблокировать",
     "deleteConversation": "Удалить переписку",
     "toggleNotificationsOn": "Включить уведомления",
-    "toggleNotificationsOff": "Выключить уведомления"
-
+    "toggleNotificationsOff": "Выключить уведомления",
+    "filters": "Фильтры"
 }

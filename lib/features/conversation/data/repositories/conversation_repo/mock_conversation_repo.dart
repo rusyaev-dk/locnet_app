@@ -15,9 +15,6 @@ final class MockConversationRepo implements IConversationRepo {
     required String conversationId,
   }) async {
     final dto = _backendStorage.getConversationById(conversationId);
-    if (dto == null) {
-      throw StateError("conversation with provided id not found");
-    }
     return Conversation.fromDto(dto);
   }
 

@@ -23,9 +23,6 @@ class NoGlowClampingBehavior extends ScrollBehavior {
     Widget child,
     ScrollableDetails details,
   ) {
-    return Scrollbar(
-      controller: details.controller,
-      child: child,
-    );
+    return Scrollbar(controller: details.controller, child: child);
   }
 }

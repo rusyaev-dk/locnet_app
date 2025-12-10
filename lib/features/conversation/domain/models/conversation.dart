@@ -6,7 +6,7 @@ import 'package:locnet_app/features/conversation/domain/domain.dart';
 
 class Conversation extends Equatable {
   const Conversation({
-    required this.id,
+    required this.conversationId,
     required this.initiatorId,
     required this.type,
     required this.title,
@@ -19,7 +19,7 @@ class Conversation extends Equatable {
     this.deletedByUserId,
   });
 
-  final String id;
+  final String conversationId;
   final String initiatorId;
   final ConversationType type;
   final String title;
@@ -37,7 +37,7 @@ class Conversation extends Equatable {
   /// Convert from DTO to domain.
   factory Conversation.fromDto(ConversationDto dto) {
     return Conversation(
-      id: dto.conversationId,
+      conversationId: dto.conversationId,
       initiatorId: dto.initiatorId,
       type: ConversationType.fromString(dto.type),
       title: dto.title,
@@ -52,7 +52,7 @@ class Conversation extends Equatable {
   }
 
   Conversation copyWith({
-    String? id,
+    String? conversationId,
     String? createdByUserId,
     ConversationType? type,
     String? title,
@@ -65,7 +65,7 @@ class Conversation extends Equatable {
     DateTime? updatedAt,
   }) {
     return Conversation(
-      id: id ?? this.id,
+      conversationId: conversationId ?? this.conversationId,
       initiatorId: createdByUserId ?? initiatorId,
       type: type ?? this.type,
       title: title ?? this.title,
@@ -81,7 +81,7 @@ class Conversation extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-    id,
+    conversationId,
     initiatorId,
     type,
     title,

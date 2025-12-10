@@ -116,6 +116,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "filteringUpdateException": MessageLookupByLibrary.simpleMessage(
       "Filtrlarni yangilab bo‘lmadi",
     ),
+    "filters": MessageLookupByLibrary.simpleMessage("Фильтры"),
     "homePage": MessageLookupByLibrary.simpleMessage("Bosh sahifa"),
     "jobPosition": MessageLookupByLibrary.simpleMessage("Lavozim"),
     "jobPositionInvalidCharactersException":

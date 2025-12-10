@@ -143,7 +143,7 @@ class AllConversationsListBloc
       case ConversationTileUpdateType.deleted:
         add(
           AllConversationsListConversationDeletedEvent(
-            conversationId: update.conversationTile.conversation.id,
+            conversationId: update.conversationTile.conversation.conversationId,
           ),
         );
         break;
@@ -181,7 +181,8 @@ class AllConversationsListBloc
     final List<ConversationTile> updatedConversations = currentState
         .conversationTiles
         .map((ConversationTile tile) {
-          if (tile.conversation.id == event.conversationTile.conversation.id) {
+          if (tile.conversation.conversationId ==
+              event.conversationTile.conversation.conversationId) {
             return event.conversationTile;
           }
           return tile;
@@ -205,7 +206,7 @@ class AllConversationsListBloc
         .conversationTiles
         .where(
           (ConversationTile tile) =>
-              tile.conversation.id != event.conversationId,
+              tile.conversation.conversationId != event.conversationId,
         )
         .toList();
 

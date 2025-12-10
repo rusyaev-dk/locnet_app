@@ -10,11 +10,13 @@ class ConversationListTile extends StatelessWidget {
     required this.conversationTile,
     required this.isCompact,
     required this.onTap,
+    this.isSelected = false,
     super.key,
   });
 
   final ConversationTile conversationTile;
   final bool isCompact;
+  final bool isSelected;
   final VoidCallback onTap;
 
   @override
@@ -84,7 +86,9 @@ class ConversationListTile extends StatelessWidget {
     }
 
     return Material(
-      color: colorScheme.surfaceBright,
+      color: isSelected
+          ? colorScheme.surfaceContainer
+          : colorScheme.surfaceBright,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
@@ -140,9 +144,7 @@ class ConversationListTile extends StatelessWidget {
 }
 
 class _ConversationAvatar extends StatelessWidget {
-  const _ConversationAvatar({
-    required this.backgroundColor,
-  });
+  const _ConversationAvatar({required this.backgroundColor});
 
   final Color backgroundColor;
 
@@ -151,10 +153,7 @@ class _ConversationAvatar extends StatelessWidget {
     return Container(
       width: 36,
       height: 36,
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        shape: BoxShape.circle,
-      ),
+      decoration: BoxDecoration(color: backgroundColor, shape: BoxShape.circle),
     );
   }
 }

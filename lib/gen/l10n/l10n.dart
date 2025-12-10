@@ -1168,6 +1168,11 @@ class S {
       args: [],
     );
   }
+
+  /// `Фильтры`
+  String get filters {
+    return Intl.message('Фильтры', name: 'filters', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

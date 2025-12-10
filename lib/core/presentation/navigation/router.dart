@@ -107,37 +107,52 @@ class AppRouter {
                 return const HomePageScreen();
               }),
               routes: <RouteBase>[
-                GoRoute(
-                  path: 'conversations',
-                  name: 'conversations',
-                  pageBuilder: buildPageTransition((
-                    BuildContext context,
-                    GoRouterState state,
-                  ) {
-                    return const ConversationsPanelWrapper(
-                      child: ConversationsPanel(),
-                    );
-                  }),
-                  routes: [
+                // Shell для ветки conversations: здесь живёт ConversationsPanelWrapper
+                ShellRoute(
+                  builder:
+                      (
+                        BuildContext context,
+                        GoRouterState state,
+                        Widget child,
+                      ) {
+                        return ConversationsPanelWrapper(child: child);
+                      },
+                  routes: <RouteBase>[
                     GoRoute(
-                      path: ':conversationId',
-                      name: 'conversationDetails',
+                      path: 'conversations',
+                      name: 'conversations',
                       pageBuilder: buildPageTransition((
                         BuildContext context,
                         GoRouterState state,
                       ) {
                         final String? selectedConversationId =
-                            state.pathParameters["conversationId"];
+                            state.pathParameters['conversationId'];
 
-                        return ConversationsPanelWrapper(
-                          child: ConversationsPanel(
-                            selectedConversationId: selectedConversationId,
-                          ),
+                        return ConversationsPanel(
+                          selectedConversationId: selectedConversationId,
                         );
                       }),
+                      routes: <RouteBase>[
+                        GoRoute(
+                          path: ':conversationId',
+                          name: 'conversationDetails',
+                          pageBuilder: buildPageTransition((
+                            BuildContext context,
+                            GoRouterState state,
+                          ) {
+                            final String? selectedConversationId =
+                                state.pathParameters['conversationId'];
+
+                            return ConversationsPanel(
+                              selectedConversationId: selectedConversationId,
+                            );
+                          }),
+                        ),
+                      ],
                     ),
                   ],
                 ),
+
                 GoRoute(
                   path: 'storage',
                   name: 'storage',

@@ -116,6 +116,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "filteringUpdateException": MessageLookupByLibrary.simpleMessage(
       "Не удалось обновить фильтры",
     ),
+    "filters": MessageLookupByLibrary.simpleMessage("Фильтры"),
     "firstName": MessageLookupByLibrary.simpleMessage("Имя"),
     "homePage": MessageLookupByLibrary.simpleMessage("Домашняя страница"),
     "jobPosition": MessageLookupByLibrary.simpleMessage("Должность"),
