@@ -90,7 +90,7 @@ class PrivateConversationScreen extends StatelessWidget {
             builder: (BuildContext context, PrivateConversationState state) {
               switch (state) {
                 case PrivateConversationLoadingState():
-                  return const Center(child: CircularProgressIndicator());
+                  return const PrivateConversationLoadingShimmer();
 
                 case PrivateConversationFailureState():
                   return InfoWidget(

@@ -19,6 +19,7 @@ class PrivateMessageBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
+    final l10n = context.l10n;
 
     final bool isMine = message.senderId != companionId;
 
@@ -49,76 +50,65 @@ class PrivateMessageBubble extends StatelessWidget {
         : textScheme.label.copyWith(fontSize: 14.5);
 
     final TextStyle metaTextStyle = messageTextStyle.copyWith(
-      fontSize: (messageTextStyle.fontSize!) * 0.75,
+      fontSize: (messageTextStyle.fontSize!) * 0.8,
       color: isMine
           ? colorScheme.onPrimary.withAlpha(150)
           : (messageTextStyle.color ?? colorScheme.onSurface).withAlpha(150),
     );
 
-    final BorderRadius borderRadius = _buildBorderRadius(isMine: isMine);
+    final borderRadius = BorderRadius.only(
+      topLeft: const Radius.circular(16),
+      topRight: const Radius.circular(16),
+      bottomLeft: Radius.circular(isMine ? 16 : 4), // внутренняя грань
+      bottomRight: Radius.circular(isMine ? 4 : 16), // внешняя грань
+    );
 
     final String messageText = message.text ?? '';
     final String timeText = DateFormat.Hm().format(message.createdAt);
-    final bool isEdited = message.isEdited;
 
     return Align(
       alignment: alignment,
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.7,
-        ),
-        child: Container(
-          margin: margin,
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: bubbleColor,
-            borderRadius: borderRadius,
+      child: IntrinsicWidth(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.7,
           ),
-          child: Column(
-            crossAxisAlignment: crossAxisAlignment,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (messageText.isNotEmpty)
-                SelectableText(messageText, style: messageTextStyle, selectionColor: isMine ? colorScheme.onPrimary.withAlpha(150) : colorScheme.onSurface.withAlpha(150)),
-              const SizedBox(height: 4),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  if (isEdited)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 4),
-                      child: Text('Изменено', style: metaTextStyle),
-                    ),
-                  Text(timeText, style: metaTextStyle),
-                ],
-              ),
-            ],
+          child: Container(
+            margin: margin,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: bubbleColor,
+              borderRadius: borderRadius,
+            ),
+            child: Column(
+              crossAxisAlignment: crossAxisAlignment,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (messageText.isNotEmpty)
+                  SelectableText(
+                    messageText,
+                    style: messageTextStyle,
+                    selectionColor: isMine
+                        ? colorScheme.onPrimary.withAlpha(150)
+                        : colorScheme.onSurface.withAlpha(150),
+                  ),
+                const SizedBox(height: 4),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    if (message.isEdited)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 4),
+                        child: Text(l10n.edited, style: metaTextStyle),
+                      ),
+                    Text(timeText, style: metaTextStyle),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
-    );
-  }
-
-  BorderRadius _buildBorderRadius({required bool isMine}) {
-    if (isLast) {
-      return BorderRadius.circular(16);
-    }
-
-    if (isMine) {
-      return const BorderRadius.only(
-        topLeft: Radius.circular(16),
-        topRight: Radius.circular(16),
-        bottomLeft: Radius.circular(16), // внутренняя грань
-        bottomRight: Radius.circular(4), // внешняя грань
-      );
-    }
-
-    return const BorderRadius.only(
-      topLeft: Radius.circular(16),
-      topRight: Radius.circular(16),
-      bottomLeft: Radius.circular(4), // внешняя грань
-      bottomRight: Radius.circular(16), // внутренняя грань
     );
   }
 }

@@ -132,5 +132,6 @@
   "deleteConversation": "Удалить переписку",
   "toggleNotificationsOn": "Включить уведомления",
   "toggleNotificationsOff": "Выключить уведомления",
-  "filters": "Фильтры"
+  "filters": "Фильтры",
+  "edited": "Изменено"
 }

@@ -107,6 +107,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Как на устройстве",
     ),
     "edit": MessageLookupByLibrary.simpleMessage("Редактировать"),
+    "edited": MessageLookupByLibrary.simpleMessage("Изменено"),
     "filteringClearException": MessageLookupByLibrary.simpleMessage(
       "Не удалось сбросить фильтры",
     ),

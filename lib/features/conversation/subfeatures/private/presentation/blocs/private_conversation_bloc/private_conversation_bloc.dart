@@ -38,6 +38,9 @@ class PrivateConversationBloc
 
       emit(const PrivateConversationLoadingState());
 
+      // TODO: remove the delay
+      await Future.delayed(const Duration(milliseconds: 200));
+
       final List<Message> messages = await _privateConversationInteractor
           .loadMessagesPage(conversationId: event.conversationId);
 

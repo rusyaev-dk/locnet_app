@@ -26,12 +26,37 @@ final class MockMessages {
 
     DateTime currentTime = conversationStart;
 
+    String? lastSenderId;
+    int remainingChainMessages = 0;
+
     for (int index = 0; index < messagesCount; index += 1) {
       final _MockMessageTemplate template = script[index % script.length];
 
-      final String senderId = template.senderIndex == 0
-          ? firstCompanionId
-          : secondCompanionId;
+      String senderId;
+
+      if (remainingChainMessages > 0 && lastSenderId != null) {
+        senderId = lastSenderId;
+        remainingChainMessages -= 1;
+      } else {
+        senderId = template.senderIndex == 0
+            ? firstCompanionId
+            : secondCompanionId;
+
+        final bool canStartChain = messagesCount - index >= 3;
+        final bool shouldStartChain =
+            canStartChain && _random.nextDouble() < 0.3;
+
+        if (shouldStartChain) {
+          int desiredChainLength = 3 + _random.nextInt(3);
+          final int maxPossibleLength = messagesCount - index;
+
+          if (desiredChainLength > maxPossibleLength) {
+            desiredChainLength = maxPossibleLength;
+          }
+
+          remainingChainMessages = desiredChainLength - 1;
+        }
+      }
 
       final DateTime createdAt = currentTime;
       final DateTime updatedAt = createdAt;
@@ -47,6 +72,12 @@ final class MockMessages {
         replyToMessageId = target.messageId;
       }
 
+      DateTime? editedAt;
+      if (_random.nextDouble() < 0.10) {
+        final int editDeltaMinutes = 1 + _random.nextInt(15);
+        editedAt = createdAt.add(Duration(minutes: editDeltaMinutes));
+      }
+
       messages.add(
         MessageDto(
           messageId: messageId,
@@ -57,16 +88,24 @@ final class MockMessages {
           replyToMessageId: replyToMessageId,
           isPinned: false,
           isDeleted: false,
+          editedAt: editedAt,
           createdAt: createdAt,
           updatedAt: updatedAt,
         ),
       );
 
-      final int stepMinutes = 1 + _random.nextInt(5);
+      final int stepMinutes;
+      if (senderId == lastSenderId) {
+        stepMinutes = 1 + _random.nextInt(60);
+      } else {
+        stepMinutes = 1 + _random.nextInt(10);
+      }
+
       currentTime = currentTime.add(Duration(minutes: stepMinutes));
+      lastSenderId = senderId;
     }
 
-    return messages;
+    return messages.reversed.toList();
   }
 
   static List<MessageDto> getRandomGroupScript({
@@ -89,11 +128,38 @@ final class MockMessages {
 
     DateTime currentTime = conversationStart;
 
+    String? lastSenderId;
+    int remainingChainMessages = 0;
+
     for (int index = 0; index < messagesCount; index += 1) {
       final _MockMessageTemplate template = script[index % script.length];
 
-      final String senderId =
-          participantIds[template.senderIndex % participantIds.length];
+      String senderId;
+
+      if (remainingChainMessages > 0 && lastSenderId != null) {
+        senderId = lastSenderId;
+        remainingChainMessages -= 1;
+      } else {
+        final String templateSenderId =
+            participantIds[template.senderIndex % participantIds.length];
+
+        senderId = templateSenderId;
+
+        final bool canStartChain = messagesCount - index >= 3;
+        final bool shouldStartChain =
+            canStartChain && _random.nextDouble() < 0.3;
+
+        if (shouldStartChain) {
+          int desiredChainLength = 3 + _random.nextInt(3);
+          final int maxPossibleLength = messagesCount - index;
+
+          if (desiredChainLength > maxPossibleLength) {
+            desiredChainLength = maxPossibleLength;
+          }
+
+          remainingChainMessages = desiredChainLength - 1;
+        }
+      }
 
       final DateTime createdAt = currentTime;
       final DateTime updatedAt = createdAt;
@@ -109,6 +175,12 @@ final class MockMessages {
         replyToMessageId = target.messageId;
       }
 
+      DateTime? editedAt;
+      if (_random.nextDouble() < 0.10) {
+        final int editDeltaMinutes = 1 + _random.nextInt(15);
+        editedAt = createdAt.add(Duration(minutes: editDeltaMinutes));
+      }
+
       messages.add(
         MessageDto(
           messageId: messageId,
@@ -119,16 +191,24 @@ final class MockMessages {
           replyToMessageId: replyToMessageId,
           isPinned: false,
           isDeleted: false,
+          editedAt: editedAt,
           createdAt: createdAt,
           updatedAt: updatedAt,
         ),
       );
 
-      final int stepMinutes = 1 + _random.nextInt(5);
+      final int stepMinutes;
+      if (senderId == lastSenderId) {
+        stepMinutes = 1 + _random.nextInt(60);
+      } else {
+        stepMinutes = 1 + _random.nextInt(10);
+      }
+
       currentTime = currentTime.add(Duration(minutes: stepMinutes));
+      lastSenderId = senderId;
     }
 
-    return messages;
+    return messages.reversed.toList();
   }
 
   static List<MessageDto> getRandomChannelScript({

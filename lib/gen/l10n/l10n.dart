@@ -1173,6 +1173,11 @@ class S {
   String get filters {
     return Intl.message('Фильтры', name: 'filters', desc: '', args: []);
   }
+
+  /// `Изменено`
+  String get edited {
+    return Intl.message('Изменено', name: 'edited', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

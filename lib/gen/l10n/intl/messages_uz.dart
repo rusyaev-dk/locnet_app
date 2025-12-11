@@ -107,6 +107,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Qurilma sozlamalariga mos",
     ),
     "edit": MessageLookupByLibrary.simpleMessage("Tahrirlash"),
+    "edited": MessageLookupByLibrary.simpleMessage("Изменено"),
     "filteringClearException": MessageLookupByLibrary.simpleMessage(
       "Filtrlarni tozalab bo‘lmadi",
     ),
