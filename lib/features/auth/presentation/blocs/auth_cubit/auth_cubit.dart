@@ -7,17 +7,25 @@ import 'package:locnet_app/features/auth/domain/domain.dart';
 part 'auth_state.dart';
 
 final class AuthCubit extends Cubit<AuthState> {
-  AuthCubit({required AuthInteractor authInteractor, required ILogger logger})
-    : _authInteractor = authInteractor,
-      _logger = logger,
-      super(const AuthInitialState()) {
+  AuthCubit({
+    required AuthInteractor authInteractor,
+    required UserInteractor userInteractor,
+    required ILogger logger,
+  }) : _authInteractor = authInteractor,
+       _userInteractor = userInteractor,
+       _logger = logger,
+       super(const AuthInitialState()) {
     _restoreOrFetch();
   }
 
   final AuthInteractor _authInteractor;
+  final UserInteractor _userInteractor;
   final ILogger _logger;
 
-  Future<void> logIn({required String username, required String password}) async {
+  Future<void> logIn({
+    required String username,
+    required String password,
+  }) async {
     try {
       if (state is! AuthLoadingState) {
         emit(const AuthLoadingState());
@@ -25,7 +33,7 @@ final class AuthCubit extends Cubit<AuthState> {
       _logger.info("Trying to login...");
 
       final _ = await _authInteractor.logIn();
-      final user = await _authInteractor.getUser();
+      final user = await _userInteractor.getCurrentUser();
 
       emit(AuthAuthenticatedState(user: user));
     } catch (e, st) {
@@ -72,9 +80,6 @@ final class AuthCubit extends Cubit<AuthState> {
         emit(const AuthLoadingState());
       }
       _logger.info("Trying to restore auth session...");
-
-      // TODO: remove the delay
-      await Future.delayed(const Duration(seconds: 1));
 
       // final Session _ = await _authInteractor.logIn();
       // final User user = await _authInteractor.getUser();

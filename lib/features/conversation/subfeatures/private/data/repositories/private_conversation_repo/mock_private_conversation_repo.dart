@@ -73,10 +73,11 @@ final class MockPrivateConversationRepo implements IPrivateConversationRepo {
 
     final int safePage = page <= 0 ? 1 : page;
 
-    final List<MessageDto> messageDtos = _backendStorage.getAllMessages(
-      conversationId: conversationId,
-      page: safePage,
-    );
+    final List<MessageDto> messageDtos = _backendStorage
+        .getAllMessagesByConversationId(
+          conversationId: conversationId,
+          page: safePage,
+        );
 
     final List<Message> result = <Message>[];
 
@@ -92,9 +93,7 @@ final class MockPrivateConversationRepo implements IPrivateConversationRepo {
 
   @override
   Future<Message> sendMessage({
-    required String conversationId,
     required Message message,
-    String? replyToMessageId,
   }) async {
     await Future<void>.delayed(const Duration(milliseconds: 200));
 

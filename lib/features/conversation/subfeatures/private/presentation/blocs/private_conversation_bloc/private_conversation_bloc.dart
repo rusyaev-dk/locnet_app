@@ -21,6 +21,10 @@ class PrivateConversationBloc
        super(const PrivateConversationLoadingState()) {
     on<PrivateConversationStartedEvent>(_onStarted);
     on<PrivateConversationMessageUpdateReceivedEvent>(_onMessageUpdateReceived);
+
+    _messagesUpdatesSubscription = _privateConversationInteractor
+        .messagesUpdates
+        .listen(_onMessagesUpdatesStreamEvent);
   }
 
   final PrivateConversationInteractor _privateConversationInteractor;
@@ -29,25 +33,26 @@ class PrivateConversationBloc
   StreamSubscription<PrivateConversationMessageUpdateRec>?
   _messagesUpdatesSubscription;
 
+  void _onMessagesUpdatesStreamEvent(
+    PrivateConversationMessageUpdateRec update,
+  ) {
+    add(PrivateConversationMessageUpdateReceivedEvent(update: update));
+  }
+
   Future<void> _onStarted(
     PrivateConversationStartedEvent event,
     Emitter<PrivateConversationState> emit,
   ) async {
     try {
-      await _messagesUpdatesSubscription?.cancel();
-
       emit(const PrivateConversationLoadingState());
-
-      // TODO: remove the delay
-      await Future.delayed(const Duration(milliseconds: 200));
 
       final List<Message> messages = await _privateConversationInteractor
           .loadMessagesPage(conversationId: event.conversationId);
 
-      final conversation = await _privateConversationInteractor
+      final Conversation conversation = await _privateConversationInteractor
           .getConversationById(conversationId: event.conversationId);
 
-      final companion = await _privateConversationInteractor.getCompanion(
+      final User companion = await _privateConversationInteractor.getCompanion(
         conversationId: event.conversationId,
       );
 
@@ -58,12 +63,6 @@ class PrivateConversationBloc
           companionId: companion.userId,
         ),
       );
-
-      _messagesUpdatesSubscription = _privateConversationInteractor
-          .messagesUpdates
-          .listen((PrivateConversationMessageUpdateRec update) {
-            add(PrivateConversationMessageUpdateReceivedEvent(update: update));
-          });
     } catch (e, st) {
       _logger.exception(e, st);
 
@@ -91,9 +90,9 @@ class PrivateConversationBloc
 
       final PrivateConversationLoadedState loadedState = currentState;
 
-      final Message updatedMessage = event.update.message;
+      final Message incomingMessage = event.update.message;
 
-      if (updatedMessage.conversationId !=
+      if (incomingMessage.conversationId !=
           loadedState.conversation.conversationId) {
         return;
       }
@@ -104,22 +103,23 @@ class PrivateConversationBloc
 
       switch (event.update.updateType) {
         case PrivateConversationMessageUpdateType.created:
-          updatedMessages.removeWhere(
-            (Message message) => message.messageId == updatedMessage.messageId,
+          _upsertIncomingMessage(
+            messages: updatedMessages,
+            incomingMessage: incomingMessage,
           );
-          updatedMessages.add(updatedMessage);
         case PrivateConversationMessageUpdateType.updated:
-          final int index = updatedMessages.indexWhere(
-            (Message message) => message.messageId == updatedMessage.messageId,
+          _upsertIncomingMessage(
+            messages: updatedMessages,
+            incomingMessage: incomingMessage,
           );
-          if (index != -1) {
-            updatedMessages[index] = updatedMessage;
-          }
         case PrivateConversationMessageUpdateType.deleted:
-          updatedMessages.removeWhere(
-            (Message message) => message.messageId == updatedMessage.messageId,
+          _removeIncomingMessage(
+            messages: updatedMessages,
+            incomingMessage: incomingMessage,
           );
       }
+
+      _sortMessagesByTime(updatedMessages);
 
       emit(loadedState.copyWith(messages: updatedMessages));
     } catch (e, st) {
@@ -137,6 +137,53 @@ class PrivateConversationBloc
         ),
       );
     }
+  }
+
+  void _upsertIncomingMessage({
+    required List<Message> messages,
+    required Message incomingMessage,
+  }) {
+    final int serverIdIndex = messages.indexWhere(
+      (Message message) => message.messageId == incomingMessage.messageId,
+    );
+
+    if (serverIdIndex != -1) {
+      messages[serverIdIndex] = incomingMessage;
+      return;
+    }
+
+    final int clientIdIndex = messages.indexWhere(
+      (Message message) =>
+          message.clientMessageId == incomingMessage.clientMessageId,
+    );
+
+    if (clientIdIndex != -1) {
+      messages[clientIdIndex] = incomingMessage;
+      return;
+    }
+
+    messages.add(incomingMessage);
+  }
+
+  void _removeIncomingMessage({
+    required List<Message> messages,
+    required Message incomingMessage,
+  }) {
+    messages.removeWhere(
+      (Message message) =>
+          message.messageId == incomingMessage.messageId ||
+          message.clientMessageId == incomingMessage.clientMessageId,
+    );
+  }
+
+  void _sortMessagesByTime(List<Message> messages) {
+    messages.sort((Message first, Message second) {
+      final int createdCompare = second.createdAt.compareTo(first.createdAt);
+      if (createdCompare != 0) {
+        return createdCompare;
+      }
+      return second.updatedAt.compareTo(first.updatedAt);
+    });
   }
 
   @override

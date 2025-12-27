@@ -3,6 +3,7 @@
 import 'dart:math';
 
 import 'package:locnet_app/features/message/data/data.dart';
+import 'package:locnet_app/features/message/domain/domain.dart';
 import 'package:uuid/uuid.dart';
 
 final class MockMessages {
@@ -81,6 +82,8 @@ final class MockMessages {
       messages.add(
         MessageDto(
           messageId: messageId,
+          clientMessageId: const Uuid().v4(),
+          deliveryStatus: MessageDeliveryStatus.sent.toString(),
           conversationId: conversationId,
           senderId: senderId,
           text: template.text,
@@ -184,6 +187,8 @@ final class MockMessages {
       messages.add(
         MessageDto(
           messageId: messageId,
+          clientMessageId: const Uuid().v4(),
+          deliveryStatus: MessageDeliveryStatus.sent.toString(),
           conversationId: conversationId,
           senderId: senderId,
           text: template.text,
@@ -253,6 +258,8 @@ final class MockMessages {
       messages.add(
         MessageDto(
           messageId: messageId,
+          clientMessageId: const Uuid().v4(),
+          deliveryStatus: MessageDeliveryStatus.sent.toString(),
           conversationId: conversationId,
           senderId: senderId,
           text: template.text,

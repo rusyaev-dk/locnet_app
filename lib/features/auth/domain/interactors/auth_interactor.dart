@@ -42,24 +42,7 @@ final class AuthInteractor {
     }
   }
 
-  Future<User> getUser() async {
-    try {
-      return await _userCacheRepo.loadUser();
-    } catch (e, st) {
-      _logger
-        ..exception(e, st)
-        ..log('Trying to fetch user from remote...');
-
-      final user = await _userRepo.me();
-      final bool saveSuccess = await _userCacheRepo.saveUser(user: user);
-
-      if (!saveSuccess) {
-        throw StateError('Failed to cache user');
-      }
-
-      return user;
-    }
-  }
+  
 
   Future<Session> logIn() async {
     final session = await _authRepo.login(initData: 1);

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
+import 'package:locnet_app/features/conversation/subfeatures/private/presentation/presentation.dart';
 import 'package:locnet_app/features/message/subfeatures/message_input/domain/domain.dart';
 import 'package:locnet_app/features/message/subfeatures/message_input/presentation/presentation.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
 class MessageInputBar extends StatefulWidget {
-  const MessageInputBar({super.key});
+  const MessageInputBar({required this.conversationId, super.key});
+
+  final String conversationId;
 
   @override
   State<MessageInputBar> createState() => _MessageInputBarState();
@@ -28,31 +31,6 @@ class _MessageInputBarState extends State<MessageInputBar> {
     super.dispose();
   }
 
-  void _handleSendPressed() {
-    final String text = _textEditingController.text.trim();
-    if (text.isEmpty) {
-      return;
-    }
-
-    final MessageAttachmentsCubit attachmentCubit = context
-        .read<MessageAttachmentsCubit>();
-    final MessageAttachmentsState attachmentState = attachmentCubit.state;
-
-    final List<UploadableFile> attachedFiles = attachmentState.files;
-    // TODO: remove print
-    debugPrint("Attached files: ${attachedFiles.length}");
-    // TODO: dispatch sending event with [text] and [attachedFiles].
-    // context.read<PrivateConversationBloc>().add(
-    //   PrivateConversationSendMessageEvent(
-    //     text: text,
-    //     attachments: attachedFiles,
-    //   ),
-    // );
-
-    _textEditingController.clear();
-    attachmentCubit.clear();
-  }
-
   void _toggleEmojiSelector() {
     setState(() {
       _isEmojiPickerVisible = !_isEmojiPickerVisible;
@@ -69,7 +47,7 @@ class _MessageInputBarState extends State<MessageInputBar> {
     final l10n = context.l10n;
 
     return BlocBuilder<MessageAttachmentsCubit, MessageAttachmentsState>(
-      builder: (BuildContext context, MessageAttachmentsState state) {
+      builder: (context, state) {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -129,7 +107,13 @@ class _MessageInputBarState extends State<MessageInputBar> {
                     RoundedIconButton(
                       icon: Icons.send,
                       backgroundColor: colorScheme.surfaceBright,
-                      onPressed: _handleSendPressed,
+                      onPressed: () {
+                        context.read<PrivateMessageActionsCubit>().sendMessage(
+                          conversationId: widget.conversationId,
+                          text: _textEditingController.text,
+                        );
+                        _textEditingController.clear();
+                      },
                       buttonSize: 35,
                       iconSize: 23,
                     ),

@@ -19,7 +19,7 @@ final class MockUserRepo implements IUserRepo {
   }
 
   @override
-  Future<bool> updateUser({required User updatedUser}) async {
-    return _backendStorage.updateUser(updatedUser);
+  Future<User> updateUser({required User updatedUser}) async {
+    return User.fromDto(_backendStorage.updateUser(updatedUser));
   }
 }

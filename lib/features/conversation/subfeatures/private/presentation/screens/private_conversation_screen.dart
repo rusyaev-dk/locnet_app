@@ -60,6 +60,14 @@ class PrivateConversationScreenWrapper extends StatelessWidget {
               logger: context.read<ILogger>(),
             ),
           ),
+          BlocProvider(
+            create: (context) => PrivateMessageActionsCubit(
+              privateConversationInteractor: context
+                  .read<PrivateConversationInteractor>(),
+              userInteractor: context.read<UserInteractor>(),
+              logger: context.read<ILogger>(),
+            ),
+          ),
         ],
         child: child,
       ),
@@ -121,7 +129,7 @@ class PrivateConversationScreen extends StatelessWidget {
             },
           ),
         ),
-        const MessageInputBar(),
+        MessageInputBar(conversationId: conversationId),
       ],
     );
   }

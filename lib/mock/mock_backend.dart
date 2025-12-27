@@ -6,6 +6,7 @@ import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/message/data/data.dart';
 import 'package:locnet_app/features/message/domain/domain.dart';
 import 'package:locnet_app/mock/mock.dart';
+import 'package:uuid/uuid.dart';
 
 final class MockInMemoryBackend {
   MockInMemoryBackend({
@@ -42,7 +43,8 @@ final class MockInMemoryBackend {
   final Map<String, List<MessageDto>> _conversationsMessages =
       {}; // conversationId: List<MessageDto>[]
 
-  // Users
+  // --------------------- USERS
+
   UserDto getUserById({required String userId}) {
     if (!_users.containsKey(userId)) {
       throw StateError("User $userId not found");
@@ -55,10 +57,12 @@ final class MockInMemoryBackend {
     return _paginateList(items: allUsers, page: page, pageSize: _usersPageSize);
   }
 
-  bool updateUser(User updatedUser) {
+  UserDto updateUser(User updatedUser) {
     final UserDto? existingDto = _users[updatedUser.userId];
     if (existingDto == null) {
-      return false;
+      throw StateError(
+        "Couldn't update user: user with id ${updatedUser.userId} not  found",
+      );
     }
 
     final UserDto updatedDto = existingDto.copyWith(
@@ -77,10 +81,11 @@ final class MockInMemoryBackend {
     );
 
     _users[updatedUser.userId] = updatedDto;
-    return true;
+    return updatedDto;
   }
 
-  // Conversations
+  // --------------------- CONVERSATIONS
+
   ConversationDto getConversationById(String conversationId) {
     if (!_conversations.containsKey(conversationId)) {
       throw StateError("Conversation $conversationId not found");
@@ -99,11 +104,13 @@ final class MockInMemoryBackend {
     );
   }
 
-  bool updateConversation(Conversation updatedConversation) {
+  ConversationDto updateConversation(Conversation updatedConversation) {
     final ConversationDto? existingDto =
         _conversations[updatedConversation.conversationId];
     if (existingDto == null) {
-      return false;
+      throw StateError(
+        "Couldn't update conversation: conversation with id ${updatedConversation.conversationId} not  found",
+      );
     }
 
     final ConversationDto updatedDto = existingDto.copyWith(
@@ -121,7 +128,7 @@ final class MockInMemoryBackend {
     );
 
     _conversations[updatedConversation.conversationId] = updatedDto;
-    return true;
+    return updatedDto;
   }
 
   bool deleteConversation({required String conversationId}) {
@@ -132,17 +139,19 @@ final class MockInMemoryBackend {
     return true;
   }
 
-  // Messages
+  // --------------------- MESSAGES
 
-  bool addMessage({required Message newMessage}) {
-    if (_conversationsMessages[newMessage.conversationId] == null) {
+  MessageDto addMessage({required Message newMessage}) {
+    if (!_conversationsMessages.containsKey(newMessage.conversationId)) {
       throw StateError(
         "Failed to add message: no conversation with id = ${newMessage.conversationId}",
       );
     }
 
     final messageDto = MessageDto(
-      messageId: newMessage.messageId,
+      messageId: const Uuid().v4(),
+      clientMessageId: const Uuid().v4(),
+      deliveryStatus: MessageDeliveryStatus.sent.toString(),
       conversationId: newMessage.conversationId,
       senderId: newMessage.senderId,
       hasAttachments: newMessage.hasAttachments,
@@ -150,7 +159,7 @@ final class MockInMemoryBackend {
       updatedAt: newMessage.updatedAt,
     );
     _conversationsMessages[newMessage.conversationId]!.add(messageDto);
-    return true;
+    return messageDto;
   }
 
   MessageDto updateMessage({required Message updatedMessage}) {
@@ -171,7 +180,7 @@ final class MockInMemoryBackend {
       messageId: updatedMessage.messageId,
       conversationId: updatedMessage.conversationId,
       senderId: updatedMessage.senderId,
-      message: updatedMessage.text,
+      text: updatedMessage.text,
       hasAttachments: updatedMessage.hasAttachments,
       replyToMessageId: updatedMessage.replyToMessageId,
       isPinned: updatedMessage.isPinned,
@@ -202,7 +211,7 @@ final class MockInMemoryBackend {
     return true;
   }
 
-  List<MessageDto> getAllMessages({
+  List<MessageDto> getAllMessagesByConversationId({
     required String conversationId,
     int page = 1,
   }) {
@@ -217,7 +226,7 @@ final class MockInMemoryBackend {
     );
   }
 
-  // Conversation participants
+  // --------------------- Conversation participants
 
   List<ConversationParticipantDto> getAllParticipants({
     required String conversationId,

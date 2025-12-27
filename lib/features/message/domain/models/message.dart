@@ -2,15 +2,18 @@
 
 import 'package:equatable/equatable.dart';
 import 'package:locnet_app/features/message/data/data.dart';
+import 'package:locnet_app/features/message/domain/domain.dart';
 
 class Message extends Equatable {
   const Message({
-    required this.messageId,
+    required this.clientMessageId,
     required this.conversationId,
     required this.senderId,
     required this.hasAttachments,
     required this.createdAt,
     required this.updatedAt,
+    required this.deliveryStatus,
+    this.messageId,
     this.text,
     this.replyToMessageId,
     this.isPinned = false,
@@ -19,9 +22,12 @@ class Message extends Equatable {
     this.deletedAt,
   });
 
-  final String messageId;
+  final String? messageId;
+  final String clientMessageId;
   final String conversationId;
   final String senderId;
+  final MessageDeliveryStatus deliveryStatus;
+
   final String? text;
   final bool hasAttachments;
   final String? replyToMessageId;
@@ -32,14 +38,15 @@ class Message extends Equatable {
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  /// Convenience getters for UI/business logic.
   bool get isEdited => editedAt != null;
   bool get isActive => !isDeleted;
+  bool get isSending => deliveryStatus == MessageDeliveryStatus.sending;
+  bool get isFailed => deliveryStatus == MessageDeliveryStatus.failed;
 
-  /// Convert from DTO.
   factory Message.fromDto(MessageDto dto) {
     return Message(
       messageId: dto.messageId,
+      clientMessageId: dto.clientMessageId,
       conversationId: dto.conversationId,
       senderId: dto.senderId,
       text: dto.text,
@@ -51,31 +58,16 @@ class Message extends Equatable {
       deletedAt: dto.deletedAt,
       createdAt: dto.createdAt,
       updatedAt: dto.updatedAt,
-    );
-  }
-
-  /// Convert back to DTO.
-  MessageDto toDto() {
-    return MessageDto(
-      messageId: messageId,
-      conversationId: conversationId,
-      senderId: senderId,
-      text: text,
-      hasAttachments: hasAttachments,
-      replyToMessageId: replyToMessageId,
-      isPinned: isPinned,
-      editedAt: editedAt,
-      isDeleted: isDeleted,
-      deletedAt: deletedAt,
-      createdAt: createdAt,
-      updatedAt: updatedAt,
+      deliveryStatus: MessageDeliveryStatus.fromString(dto.deliveryStatus),
     );
   }
 
   Message copyWith({
     String? messageId,
+    String? clientMessageId,
     String? conversationId,
     String? senderId,
+    MessageDeliveryStatus? deliveryStatus,
     String? text,
     bool? hasAttachments,
     String? replyToMessageId,
@@ -88,8 +80,10 @@ class Message extends Equatable {
   }) {
     return Message(
       messageId: messageId ?? this.messageId,
+      clientMessageId: clientMessageId ?? this.clientMessageId,
       conversationId: conversationId ?? this.conversationId,
       senderId: senderId ?? this.senderId,
+      deliveryStatus: deliveryStatus ?? this.deliveryStatus,
       text: text ?? this.text,
       hasAttachments: hasAttachments ?? this.hasAttachments,
       replyToMessageId: replyToMessageId ?? this.replyToMessageId,
@@ -105,8 +99,10 @@ class Message extends Equatable {
   @override
   List<Object?> get props => <Object?>[
     messageId,
+    clientMessageId,
     conversationId,
     senderId,
+    deliveryStatus,
     text,
     hasAttachments,
     replyToMessageId,

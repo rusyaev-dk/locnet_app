@@ -152,9 +152,10 @@ final class MockConversationsListRepo implements IConversationsListRepo {
 
   ({Message? lastMessage, String? companionId})
   _getLastMessageAndCompanionForConversation(Conversation conversation) {
-    final List<MessageDto> messageDtos = _backendStorage.getAllMessages(
-      conversationId: conversation.conversationId,
-    );
+    final List<MessageDto> messageDtos = _backendStorage
+        .getAllMessagesByConversationId(
+          conversationId: conversation.conversationId,
+        );
 
     if (messageDtos.isEmpty) {
       return (lastMessage: null, companionId: null);

@@ -74,14 +74,10 @@ final class PrivateConversationInteractor {
   }
 
   Future<Message> sendMessage({
-    required String conversationId,
     required Message message,
-    String? replyToMessageId,
   }) async {
     return await _privateConversationRepo.sendMessage(
-      conversationId: conversationId,
       message: message,
-      replyToMessageId: replyToMessageId,
     );
   }
 

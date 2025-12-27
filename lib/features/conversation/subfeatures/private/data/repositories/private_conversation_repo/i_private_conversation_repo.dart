@@ -28,9 +28,7 @@ abstract interface class IPrivateConversationRepo {
   });
 
   Future<Message> sendMessage({
-    required String conversationId,
     required Message message,
-    String? replyToMessageId,
   });
 
   Future<Message> editMessage({required Message updatedMessage});

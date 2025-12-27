@@ -5,11 +5,13 @@ import 'package:equatable/equatable.dart';
 class MessageDto extends Equatable {
   const MessageDto({
     required this.messageId,
+    required this.clientMessageId,
     required this.conversationId,
     required this.senderId,
     required this.hasAttachments,
     required this.createdAt,
     required this.updatedAt,
+    required this.deliveryStatus,
     this.text,
     this.replyToMessageId,
     this.isPinned,
@@ -19,7 +21,9 @@ class MessageDto extends Equatable {
   });
 
   final String messageId;
+  final String clientMessageId;
   final String conversationId;
+  final String deliveryStatus;
   final String senderId;
   final String? text;
   final bool hasAttachments;
@@ -32,17 +36,21 @@ class MessageDto extends Equatable {
   final DateTime updatedAt;
 
   factory MessageDto.fromJson(Map<String, dynamic> json) {
-    DateTime? parseNullable(dynamic v) {
-      if (v == null) return null;
-      if (v is DateTime) return v;
-      if (v is int) return DateTime.fromMillisecondsSinceEpoch(v);
-      return DateTime.parse(v as String);
+    DateTime? parseNullable(dynamic value) {
+      if (value == null) return null;
+      if (value is DateTime) return value;
+      if (value is int) {
+        return DateTime.fromMillisecondsSinceEpoch(value);
+      }
+      return DateTime.parse(value as String);
     }
 
-    DateTime parseNonNull(dynamic v) {
-      if (v is DateTime) return v;
-      if (v is int) return DateTime.fromMillisecondsSinceEpoch(v);
-      return DateTime.parse(v as String);
+    DateTime parseNonNull(dynamic value) {
+      if (value is DateTime) return value;
+      if (value is int) {
+        return DateTime.fromMillisecondsSinceEpoch(value);
+      }
+      return DateTime.parse(value as String);
     }
 
     return MessageDto(
@@ -58,6 +66,8 @@ class MessageDto extends Equatable {
       deletedAt: parseNullable(json['deletedAt']),
       createdAt: parseNonNull(json['createdAt']),
       updatedAt: parseNonNull(json['updatedAt']),
+      clientMessageId: json['clientMessageId'] as String,
+      deliveryStatus: json['deliveryStatus'] as String,
     );
   }
 
@@ -65,7 +75,7 @@ class MessageDto extends Equatable {
     'messageId': messageId,
     'conversationId': conversationId,
     'senderId': senderId,
-    'message': text,
+    'text': text,
     'hasAttachments': hasAttachments,
     'replyToMessageId': replyToMessageId,
     'isPinned': isPinned,
@@ -74,13 +84,15 @@ class MessageDto extends Equatable {
     'deletedAt': deletedAt?.toIso8601String(),
     'createdAt': createdAt.toIso8601String(),
     'updatedAt': updatedAt.toIso8601String(),
+    'clientMessageId': clientMessageId,
+    'deliveryStatus': deliveryStatus,
   };
 
   MessageDto copyWith({
     String? messageId,
     String? conversationId,
     String? senderId,
-    String? message,
+    String? text,
     bool? hasAttachments,
     String? replyToMessageId,
     bool? isPinned,
@@ -89,12 +101,14 @@ class MessageDto extends Equatable {
     DateTime? deletedAt,
     DateTime? createdAt,
     DateTime? updatedAt,
+    String? clientMessageId,
+    String? deliveryStatus,
   }) {
     return MessageDto(
       messageId: messageId ?? this.messageId,
       conversationId: conversationId ?? this.conversationId,
       senderId: senderId ?? this.senderId,
-      text: message ?? text,
+      text: text ?? this.text,
       hasAttachments: hasAttachments ?? this.hasAttachments,
       replyToMessageId: replyToMessageId ?? this.replyToMessageId,
       isPinned: isPinned ?? this.isPinned,
@@ -103,6 +117,8 @@ class MessageDto extends Equatable {
       deletedAt: deletedAt ?? this.deletedAt,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      clientMessageId: clientMessageId ?? this.clientMessageId,
+      deliveryStatus: deliveryStatus ?? this.deliveryStatus,
     );
   }
 
@@ -120,5 +136,7 @@ class MessageDto extends Equatable {
     deletedAt,
     createdAt,
     updatedAt,
+    clientMessageId,
+    deliveryStatus,
   ];
 }

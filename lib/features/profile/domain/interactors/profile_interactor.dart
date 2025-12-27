@@ -13,7 +13,7 @@ final class ProfileInteractor {
     return await _userRepo.me();
   }
 
-  Future<bool> udpateUserData({required User updatedUser}) async {
+  Future<User> udpateUserData({required User updatedUser}) async {
     return await _userRepo.updateUser(updatedUser: updatedUser);
   }
 }

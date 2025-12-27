@@ -109,6 +109,7 @@ class _InteractorProviders extends StatelessWidget {
         RepositoryProvider<UserInteractor>(
           create: (context) => UserInteractor(
             userRepo: context.read<IUserRepo>(),
+            userCacheRepo: context.read<IUserCacheRepo>(),
             logger: context.read<ILogger>(),
           ),
         ),
@@ -142,6 +143,7 @@ class _BlocProviders extends StatelessWidget {
         BlocProvider(
           create: (context) => AuthCubit(
             authInteractor: context.read<AuthInteractor>(),
+            userInteractor: context.read<UserInteractor>(),
             logger: appScope.logger,
           ),
           lazy: false,
