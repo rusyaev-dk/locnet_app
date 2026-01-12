@@ -139,7 +139,8 @@ class _SettingsLoadedView extends StatelessWidget {
                 const SizedBox(height: 16),
                 _SettingsSectionTitle(title: l10n.currentSession),
                 const SizedBox(height: 8),
-                SessionInfoCard(session: settingsState.session),
+                // TODO: update
+                // SessionInfoCard(session: settingsState),
                 const SizedBox(height: 24),
               ],
             ),

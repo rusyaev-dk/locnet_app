@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/di/di.dart';
 import 'package:locnet_app/features/auth/data/data.dart';
@@ -10,7 +11,8 @@ import 'package:locnet_app/features/conversations/data/data.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
 import 'package:locnet_app/features/settings/domain/domain.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
-import 'package:locnet_app/mock/mock.dart';
+import 'package:locnet_app/features/theme_editor/data/data.dart';
+import 'package:locnet_app/features/theme_editor/domain/domain.dart';
 import 'package:provider/provider.dart';
 
 class AppProvidersWrapper extends StatelessWidget {
@@ -25,7 +27,9 @@ class AppProvidersWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final backendStorage = MockInMemoryBackend();
+    final IAppEnvPreset envPreset = AppEnvPresetsFactory.create(
+      appScope: appScope,
+    );
 
     return MultiProvider(
       providers: [
@@ -36,45 +40,37 @@ class AppProvidersWrapper extends StatelessWidget {
               DioHttpClient(dio: appScope.dio, apiConfig: appScope.apiConfig),
         ),
         Provider<IWebSocketClient>(create: (context) => MockWebSocketClient()),
+        Provider<IAppEnvPreset>(create: (context) => envPreset,)
       ],
       child: MultiRepositoryProvider(
         providers: [
-          // TODO: remove for prod
-          RepositoryProvider<MockInMemoryBackend>(
-            create: (context) => backendStorage,
-          ),
           RepositoryProvider<IUserRepo>(
-            create: (context) => MockUserRepo(backendStorage: backendStorage),
+            create: (context) => envPreset.createUserRepo(),
           ),
           RepositoryProvider<IAuthRepo>(
-            create: (context) => const MockAuthRepo(),
+            create: (context) => envPreset.createAuthRepo(),
           ),
           RepositoryProvider<IConversationRepo>(
-            create: (context) => MockConversationRepo(
-              backendStorage: backendStorage,
-              // webSocketClient: context.read<IWebSocketClient>(),
-            ),
+            create: (context) => envPreset.createConversationRepo(),
           ),
           RepositoryProvider<IConversationsListRepo>(
-            create: (context) => MockConversationsListRepo(
-              // webSocketClient: context.read<IWebSocketClient>(),
-              backendStorage: backendStorage,
-            ),
+            create: (context) => envPreset.createConversationsListRepo(),
           ),
 
           RepositoryProvider<ISettingsRepo>(
-            create: (context) => SettingsRepo(
-              storage: appScope.storageAggregator.sharedPrefsStorage,
-            ),
+            create: (context) => envPreset.createSettingsRepo(),
+          ),
+          RepositoryProvider<IThemeEditorRepo>(
+            create: (context) => envPreset.createThemeEditorRepo(),
           ),
           RepositoryProvider<IUserCacheRepo>(
-            create: (context) => UserCacheRepo(
+            create: (context) => LocalUserCacheRepo(
               storage: appScope.storageAggregator.secureStorage,
             ),
           ),
           RepositoryProvider<ISessionCacheRepo>(
             create: (context) {
-              final cacheRepo = SessionCacheRepo(
+              final cacheRepo = LocalSessionCacheRepo(
                 storage: appScope.storageAggregator.secureStorage,
               );
               appScope.dio.interceptors.add(
@@ -105,6 +101,10 @@ class _InteractorProviders extends StatelessWidget {
         RepositoryProvider<SettingsInteractor>(
           create: (context) =>
               SettingsInteractor(settingsRepo: context.read<ISettingsRepo>()),
+        ),
+        RepositoryProvider<ThemeEditorInteractor>(
+          create: (context) =>
+              ThemeEditorInteractor(themeEditorRepo: context.read<IThemeEditorRepo>()),
         ),
         RepositoryProvider<UserInteractor>(
           create: (context) => UserInteractor(
@@ -145,15 +145,16 @@ class _BlocProviders extends StatelessWidget {
             authInteractor: context.read<AuthInteractor>(),
             userInteractor: context.read<UserInteractor>(),
             logger: appScope.logger,
-          ),
+          )..restoreOrFetch(),
           lazy: false,
         ),
         BlocProvider(
           create: (context) => SettingsCubit(
             settingsInteractor: context.read<SettingsInteractor>(),
             authInteractor: context.read<AuthInteractor>(),
+            themeConstructorInteractor: context.read<ThemeEditorInteractor>(),
             logger: appScope.logger,
-          ),
+          )..restoreSettings(),
         ),
       ],
       child: child,

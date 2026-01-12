@@ -2,7 +2,7 @@ import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/auth/data/data.dart';
 import 'package:locnet_app/features/auth/domain/domain.dart';
 
-final class AuthInteractor {
+class AuthInteractor {
   AuthInteractor({
     required IAuthRepo authRepo,
     required IUserRepo userRepo,

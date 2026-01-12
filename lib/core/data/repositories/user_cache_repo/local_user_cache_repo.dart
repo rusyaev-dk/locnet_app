@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:locnet_app/core/core.dart';
 
-final class UserCacheRepo implements IUserCacheRepo {
-  UserCacheRepo({required IKeyValueStorage storage}) : _storage = storage;
+final class LocalUserCacheRepo implements IUserCacheRepo {
+  LocalUserCacheRepo({required IKeyValueStorage storage}) : _storage = storage;
 
   final IKeyValueStorage _storage;
   final String _userKey = 'user';
@@ -12,7 +12,7 @@ final class UserCacheRepo implements IUserCacheRepo {
   Future<bool> saveUser({required User user}) async {
     try {
       final String jsonString = jsonEncode(user.toJson());
-      final bool isSaved = await _storage.save<String>(
+      final bool isSaved = await _storage.write<String>(
         key: _userKey,
         value: jsonString,
       );
@@ -41,7 +41,7 @@ final class UserCacheRepo implements IUserCacheRepo {
   @override
   Future<User> loadUser() async {
     try {
-      final String? jsonString = await _storage.get<String>(key: _userKey);
+      final String? jsonString = await _storage.read<String>(key: _userKey);
 
       if (jsonString == null || jsonString.isEmpty) {
         throw StorageNotFoundException(

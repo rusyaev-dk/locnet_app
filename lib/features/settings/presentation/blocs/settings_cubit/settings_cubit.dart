@@ -5,6 +5,7 @@ import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/auth/domain/domain.dart';
 import 'package:locnet_app/features/settings/domain/domain.dart';
+import 'package:locnet_app/features/theme_editor/domain/domain.dart';
 
 part 'settings_state.dart';
 
@@ -12,19 +13,20 @@ class SettingsCubit extends Cubit<SettingsState> {
   SettingsCubit({
     required SettingsInteractor settingsInteractor,
     required AuthInteractor authInteractor,
+    required ThemeEditorInteractor themeConstructorInteractor,
     required ILogger logger,
   }) : _settingsInteractor = settingsInteractor,
        _authInteractor = authInteractor,
+       _themeConstructorInteractor = themeConstructorInteractor,
        _logger = logger,
-       super(const SettingsInitialState()) {
-    _restoreSettings();
-  }
+       super(const SettingsInitialState());
 
   final SettingsInteractor _settingsInteractor;
   final AuthInteractor _authInteractor;
+  final ThemeEditorInteractor _themeConstructorInteractor;
   final ILogger _logger;
 
-  Future<void> changeLanguage(Locale newLocale) async {
+  Future<void> changeLanguageCode(Locale newLocale) async {
     try {
       if (state is! SettingsLoadedState) {
         return;
@@ -32,7 +34,7 @@ class SettingsCubit extends Cubit<SettingsState> {
       final prevState = state as SettingsLoadedState;
 
       final bool changeLocaleSuccess = await _settingsInteractor.changeLanguage(
-        languageCode: newLocale.languageCode,
+        newLanguageCode: newLocale.languageCode,
       );
 
       if (!changeLocaleSuccess) {
@@ -68,7 +70,7 @@ class SettingsCubit extends Cubit<SettingsState> {
 
       final String code = _encodeThemeMode(newMode);
       final bool changeThemeSuccess = await _settingsInteractor.changeThemeMode(
-        themeMode: code,
+        newThemeCode: code,
       );
 
       if (!changeThemeSuccess) {
@@ -95,14 +97,14 @@ class SettingsCubit extends Cubit<SettingsState> {
     }
   }
 
-  Future<void> _restoreSettings() async {
+  Future<void> restoreSettings() async {
     try {
       if (state is! SettingsLoadingState) {
         emit(const SettingsLoadingState());
       }
 
       final List<dynamic> results = await Future.wait([
-        _settingsInteractor.getCurrentLanguage(),
+        _settingsInteractor.getCurrentLanguageCode(),
         _settingsInteractor.getCurrentThemeMode(),
       ]);
 
@@ -113,10 +115,14 @@ class SettingsCubit extends Cubit<SettingsState> {
       final ThemeMode restoredTheme = _decodeThemeMode(themeCode);
       final Session restoredSession = await _authInteractor.getSession();
 
+      final AppTheme appTheme = await _themeConstructorInteractor
+          .loadAppTheme();
+
       emit(
         SettingsLoadedState(
           locale: restoredLocale,
           themeMode: restoredTheme,
+          appTheme: appTheme,
           session: restoredSession,
         ),
       );

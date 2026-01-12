@@ -3,12 +3,12 @@ import 'package:locnet_app/core/data/storage/storage.dart';
 class StorageAggregator {
   StorageAggregator({
     required this.secureStorage,
-    required this.sharedPrefsStorage,
+    required this.localKeyValueStorage,
   });
 
   final IKeyValueStorage secureStorage;
-  final IKeyValueStorage sharedPrefsStorage;
+  final IKeyValueStorage localKeyValueStorage;
 
   IKeyValueStorage get secure => secureStorage;
-  IKeyValueStorage get prefs => sharedPrefsStorage;
+  IKeyValueStorage get prefs => localKeyValueStorage;
 }

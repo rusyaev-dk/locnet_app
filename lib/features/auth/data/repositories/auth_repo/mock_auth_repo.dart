@@ -3,8 +3,6 @@ import 'dart:async';
 import 'package:locnet_app/features/auth/data/data.dart';
 import 'package:locnet_app/features/auth/domain/domain.dart';
 
-/// Mock implementation of IAuthRepo for development and testing.
-/// Does not perform real network calls.
 final class MockAuthRepo implements IAuthRepo {
   const MockAuthRepo();
 

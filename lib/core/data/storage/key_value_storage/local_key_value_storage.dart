@@ -1,14 +1,14 @@
 import 'package:locnet_app/core/data/storage/storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SharedPrefsStorage implements IKeyValueStorage {
-  SharedPrefsStorage({required SharedPreferences sharedPreferences})
+class LocalKeyValueStorage implements IKeyValueStorage {
+  LocalKeyValueStorage({required SharedPreferences sharedPreferences})
     : _sharedPreferences = sharedPreferences;
 
   final SharedPreferences _sharedPreferences;
 
   @override
-  Future<bool> save<T>({required String key, required T value}) async {
+  Future<bool> write<T>({required String key, required T value}) async {
     if (value is String) {
       return await _sharedPreferences.setString(key, value);
     } else if (value is int) {
@@ -25,7 +25,7 @@ class SharedPrefsStorage implements IKeyValueStorage {
   }
 
   @override
-  Future<T?> get<T>({required String key}) async {
+  Future<T?> read<T>({required String key}) async {
     final value = _sharedPreferences.get(key);
     if (value is T) {
       return value;

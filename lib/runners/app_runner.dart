@@ -125,13 +125,15 @@ class AppRunner {
     final sharedPrefs = await SharedPreferences.getInstance();
     const flutterSecureStorage = FlutterSecureStorage();
 
-    final secureStorage = SecureStorage(secureStorage: flutterSecureStorage);
-    final sharedPrefsStorage = SharedPrefsStorage(
+    final secureStorage = SecureStorage(
+      flutterSecureStorage: flutterSecureStorage,
+    );
+    final localKeyValueStorage = LocalKeyValueStorage(
       sharedPreferences: sharedPrefs,
     );
     final storageAggregator = StorageAggregator(
       secureStorage: secureStorage,
-      sharedPrefsStorage: sharedPrefsStorage,
+      localKeyValueStorage: localKeyValueStorage,
     );
 
     final apiConfig = ApiConfig(baseUrl: dotenv.env["BASE_URL"]!);

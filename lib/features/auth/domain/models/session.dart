@@ -59,9 +59,6 @@ class Session extends Equatable {
     );
   }
 
-  /// Creates a domain model from JSON using DateTimeFormatter.parse
-  /// for all date-time fields to support DateTime, ISO-8601 strings,
-  /// and Unix epoch integers (seconds or milliseconds).
   factory Session.fromJson(Map<String, dynamic> json) {
     return Session(
       sessionId: json['sessionId'] as String,
@@ -84,8 +81,6 @@ class Session extends Equatable {
     );
   }
 
-  /// Serializes the domain model to JSON using the same field names
-  /// as the constructor parameters (for local storage).
   Map<String, dynamic> toJson() => <String, dynamic>{
     'sessionId': sessionId,
     'userId': userId,

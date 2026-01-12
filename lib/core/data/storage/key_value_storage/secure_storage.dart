@@ -1,14 +1,14 @@
-import 'package:locnet_app/core/data/storage/storage.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:locnet_app/core/data/storage/storage.dart';
 
 class SecureStorage implements IKeyValueStorage {
-  SecureStorage({required FlutterSecureStorage secureStorage})
-    : _secureStorage = secureStorage;
+  SecureStorage({required FlutterSecureStorage flutterSecureStorage})
+    : _secureStorage = flutterSecureStorage;
 
   final FlutterSecureStorage _secureStorage;
 
   @override
-  Future<bool> save<T>({required String key, required T value}) async {
+  Future<bool> write<T>({required String key, required T value}) async {
     if (value is String) {
       await _secureStorage.write(key: key, value: value);
       return true;
@@ -19,7 +19,7 @@ class SecureStorage implements IKeyValueStorage {
   }
 
   @override
-  Future<T?> get<T>({required String key}) async {
+  Future<T?> read<T>({required String key}) async {
     final value = await _secureStorage.read(key: key);
     if (value == null) return null;
 

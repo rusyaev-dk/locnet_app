@@ -9,7 +9,6 @@ import 'package:locnet_app/features/conversation/subfeatures/private/domain/doma
 import 'package:locnet_app/features/conversation/subfeatures/private/presentation/presentation.dart';
 import 'package:locnet_app/features/message/domain/domain.dart';
 import 'package:locnet_app/features/message/subfeatures/message_input/presentation/presentation.dart';
-import 'package:locnet_app/mock/mock.dart';
 
 class PrivateConversationScreenWrapper extends StatelessWidget {
   const PrivateConversationScreenWrapper({
@@ -26,9 +25,8 @@ class PrivateConversationScreenWrapper extends StatelessWidget {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider<IPrivateConversationRepo>(
-          create: (BuildContext context) => MockPrivateConversationRepo(
-            backendStorage: context.read<MockInMemoryBackend>(),
-          ),
+          create: (context) =>
+              context.read<IAppEnvPreset>().createPrivateConversationRepo(),
         ),
         RepositoryProvider<PrivateConversationInteractor>(
           create: (BuildContext context) => PrivateConversationInteractor(

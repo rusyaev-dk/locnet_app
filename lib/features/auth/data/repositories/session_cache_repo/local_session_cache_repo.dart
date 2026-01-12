@@ -4,8 +4,9 @@ import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/auth/data/data.dart';
 import 'package:locnet_app/features/auth/domain/domain.dart';
 
-final class SessionCacheRepo implements ISessionCacheRepo {
-  SessionCacheRepo({required IKeyValueStorage storage}) : _storage = storage;
+final class LocalSessionCacheRepo implements ISessionCacheRepo {
+  LocalSessionCacheRepo({required IKeyValueStorage storage})
+    : _storage = storage;
 
   final IKeyValueStorage _storage;
   final String _sessionKey = 'session';
@@ -14,7 +15,7 @@ final class SessionCacheRepo implements ISessionCacheRepo {
   Future<bool> saveSession({required Session session}) async {
     try {
       final String jsonString = jsonEncode(session.toJson());
-      final bool isSaved = await _storage.save<String>(
+      final bool isSaved = await _storage.write<String>(
         key: _sessionKey,
         value: jsonString,
       );
@@ -43,7 +44,7 @@ final class SessionCacheRepo implements ISessionCacheRepo {
   @override
   Future<Session> loadSession() async {
     try {
-      final String? rawJson = await _storage.get<String>(key: _sessionKey);
+      final String? rawJson = await _storage.read<String>(key: _sessionKey);
 
       if (rawJson == null || rawJson.isEmpty) {
         throw StorageNotFoundException(

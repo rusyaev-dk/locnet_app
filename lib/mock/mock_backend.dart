@@ -11,15 +11,15 @@ import 'package:uuid/uuid.dart';
 final class MockInMemoryBackend {
   MockInMemoryBackend({
     int usersCount = 100,
-    int privateCount = 20,
-    int groupCount = 10,
-    int channelCount = 5,
+    int privatesCount = 20,
+    int groupsCount = 10,
+    int channelsCount = 5,
   }) {
     _seedUsers(usersCount);
     _seedConversations(
-      privateCount: privateCount,
-      groupCount: groupCount,
-      channelCount: channelCount,
+      privateCount: privatesCount,
+      groupCount: groupsCount,
+      channelCount: channelsCount,
     );
     _seedConversationsScripts();
 

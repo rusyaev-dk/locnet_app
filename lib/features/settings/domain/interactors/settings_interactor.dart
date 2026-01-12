@@ -1,20 +1,20 @@
 import 'package:locnet_app/features/settings/data/data.dart';
 
-final class SettingsInteractor {
+class SettingsInteractor {
   SettingsInteractor({required ISettingsRepo settingsRepo})
     : _settingsRepo = settingsRepo;
 
   final ISettingsRepo _settingsRepo;
 
-  Future<bool> changeLanguage({required String languageCode}) async {
-    return await _settingsRepo.changeLanguage(languageCode: languageCode);
+  Future<bool> changeLanguage({required String newLanguageCode}) async {
+    return await _settingsRepo.changeLanguage(newLanguageCode: newLanguageCode);
   }
 
-  Future<bool> changeThemeMode({required String themeMode}) async {
-    return await _settingsRepo.changeThemeMode(themeMode: themeMode);
+  Future<bool> changeThemeMode({required String newThemeCode}) async {
+    return await _settingsRepo.changeThemeMode(newThemeCode: newThemeCode);
   }
 
-  Future<String> getCurrentLanguage() async {
+  Future<String> getCurrentLanguageCode() async {
     return await _settingsRepo.getCurrentLanguageCode();
   }
 

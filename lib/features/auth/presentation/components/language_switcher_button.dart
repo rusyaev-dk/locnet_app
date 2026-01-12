@@ -24,7 +24,7 @@ class LanguageSwitcherButton extends StatelessWidget {
 
     return PopupMenuButton<Locale>(
       onSelected: (Locale locale) async {
-        await context.read<SettingsCubit>().changeLanguage(locale);
+        await context.read<SettingsCubit>().changeLanguageCode(locale);
       },
       itemBuilder: (BuildContext context) {
         return const <PopupMenuEntry<Locale>>[

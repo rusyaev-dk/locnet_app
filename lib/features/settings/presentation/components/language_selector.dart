@@ -50,7 +50,7 @@ class LanguageSelector extends StatelessWidget {
           .toList(),
       onChanged: (Locale? newLocale) {
         if (newLocale != null) {
-          settingsCubit.changeLanguage(newLocale);
+          settingsCubit.changeLanguageCode(newLocale);
         }
       },
       decoration: InputDecoration(

@@ -9,8 +9,10 @@ import 'package:locnet_app/features/auth/presentation/presentation.dart';
 import 'package:locnet_app/features/error/error_screen.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
 import 'package:locnet_app/features/splash/splash_screen.dart';
+import 'package:locnet_app/features/theme_editor/domain/domain.dart';
 import 'package:locnet_app/gen/gen.dart';
 import 'package:locnet_app/uikit/themes/app_theme_data.dart';
+import 'package:locnet_app/uikit/uikit.dart';
 
 class LocnetApp extends StatefulWidget {
   const LocnetApp({required this.initDependencies, super.key});
@@ -91,17 +93,33 @@ class _App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<SettingsCubit, SettingsState, (Locale, ThemeMode)>(
+    return BlocSelector<
+      SettingsCubit,
+      SettingsState,
+      (Locale, ThemeMode, AppTheme)
+    >(
       selector: (state) {
         switch (state) {
           case SettingsLoadedState():
-            return (state.locale, state.themeMode);
+            return (state.locale, state.themeMode, state.appTheme);
           default:
-            return (const Locale('ru'), ThemeMode.system);
+            return (
+              const Locale(AppLanguages.ru),
+              ThemeMode.system,
+              AppTheme.basic(),
+            );
         }
       },
       builder: (context, tuple) {
-        final (locale, themeMode) = tuple;
+        final (locale, themeMode, appTheme) = tuple;
+        final appThemeData = AppThemeData(
+          lightScheme: appTheme.lightPalette.toColorScheme(
+            const AppColorScheme.light(),
+          ),
+          darkScheme: appTheme.darkPalette.toColorScheme(
+            const AppColorScheme.dark(),
+          ),
+        );
 
         return MaterialApp.router(
           scrollBehavior: const NoGlowClampingBehavior(),
@@ -112,9 +130,9 @@ class _App extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           locale: locale,
-          supportedLocales: const [Locale('ru'), Locale('uz'), Locale('en')],
-          theme: AppThemeData.lightTheme,
-          darkTheme: AppThemeData.darkTheme,
+          supportedLocales: AppLanguages.toLocalesList(),
+          theme: appThemeData.getLightTheme(),
+          darkTheme: appThemeData.getDarkTheme(),
           themeMode: themeMode,
           debugShowCheckedModeBanner: false,
           routerConfig: router,

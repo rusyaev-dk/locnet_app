@@ -123,7 +123,7 @@ class SettingsContent extends StatelessWidget {
           },
           onValueChanged: (Locale? locale) {
             if (locale == null) return;
-            context.read<SettingsCubit>().changeLanguage(locale);
+            context.read<SettingsCubit>().changeLanguageCode(locale);
           },
         ),
 
