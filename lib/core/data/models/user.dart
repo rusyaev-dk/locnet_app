@@ -8,12 +8,12 @@ class UserDto extends Equatable {
     required this.username,
     required this.firstName,
     required this.lastName,
-    required this.patronymic,
     required this.languageCode,
     required this.isDeleted,
     required this.isBanned,
     required this.createdAt,
     required this.updatedAt,
+    this.patronymic,
     this.description,
     this.avatarId,
   });
@@ -22,7 +22,7 @@ class UserDto extends Equatable {
   final String username;
   final String firstName;
   final String lastName;
-  final String patronymic;
+  final String? patronymic;
   final String languageCode;
   final String? description;
   final String? avatarId;
@@ -43,7 +43,7 @@ class UserDto extends Equatable {
       username: json['username'] as String,
       firstName: json['firstName'] as String,
       lastName: json['lastName'] as String,
-      patronymic: json['patronymic'] as String,
+      patronymic: json['patronymic'] as String?,
       languageCode: json['languageCode'] as String,
       description: json['description'] as String?,
       avatarId: json['avatarId'] as String?,
@@ -59,7 +59,7 @@ class UserDto extends Equatable {
     'username': username,
     'firstName': firstName,
     'lastName': lastName,
-    'patronym': patronymic,
+    'patronymic': patronymic,
     'languageCode': languageCode,
     'description': description,
     'avatarId': avatarId,

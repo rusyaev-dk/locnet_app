@@ -8,13 +8,13 @@ class User extends Equatable {
     required this.userId,
     required this.username,
     required this.firstName,
-    required this.patronymic,
     required this.lastName,
     required this.languageCode,
     required this.isDeleted,
     required this.isBanned,
     required this.createdAt,
     required this.updatedAt,
+    this.patronymic,
     this.description,
     this.avatarId,
   });
@@ -22,8 +22,8 @@ class User extends Equatable {
   final String userId;
   final String username;
   final String firstName;
-  final String patronymic;
   final String lastName;
+  final String? patronymic;
   final String languageCode;
   final String? description;
   final String? avatarId;
@@ -32,7 +32,8 @@ class User extends Equatable {
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  String get fullName => [firstName, patronymic, lastName].join(' ');
+  String get fullName =>
+      [firstName, patronymic, lastName].whereType<String>().join(' ');
 
   bool get isActive => !isDeleted && !isBanned;
 
@@ -41,8 +42,8 @@ class User extends Equatable {
       userId: dto.userId,
       username: dto.username,
       firstName: dto.firstName,
-      patronymic: dto.patronymic,
       lastName: dto.lastName,
+      patronymic: dto.patronymic,
       languageCode: dto.languageCode,
       description: dto.description,
       avatarId: dto.avatarId,
@@ -58,8 +59,8 @@ class User extends Equatable {
       userId: json['userId'] as String,
       username: json['username'] as String,
       firstName: json['firstName'] as String,
-      patronymic: json['patronymic'] as String,
       lastName: json['lastName'] as String,
+      patronymic: json['patronymic'] as String?,
       languageCode: json['languageCode'] as String,
       description: json['description'] as String?,
       avatarId: json['avatarId'] as String?,
@@ -74,9 +75,9 @@ class User extends Equatable {
     'userId': userId,
     'username': username,
     'firstName': firstName,
+    'lastName': lastName,
     'patronymic': patronymic,
     'languageCode': languageCode,
-    'lastName': lastName,
     'description': description,
     'avatarId': avatarId,
     'isDeleted': isDeleted,
@@ -89,9 +90,9 @@ class User extends Equatable {
     String? userId,
     String? username,
     String? firstName,
+    String? lastName,
     String? patronymic,
     String? languageCode,
-    String? lastName,
     String? description,
     String? avatarId,
     bool? isDeleted,
@@ -103,9 +104,9 @@ class User extends Equatable {
       userId: userId ?? this.userId,
       username: username ?? this.username,
       firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
       patronymic: patronymic ?? this.patronymic,
       languageCode: languageCode ?? this.languageCode,
-      lastName: lastName ?? this.lastName,
       description: description ?? this.description,
       avatarId: avatarId ?? this.avatarId,
       isDeleted: isDeleted ?? this.isDeleted,
@@ -120,8 +121,8 @@ class User extends Equatable {
     userId,
     username,
     firstName,
-    patronymic,
     lastName,
+    patronymic,
     languageCode,
     description,
     avatarId,

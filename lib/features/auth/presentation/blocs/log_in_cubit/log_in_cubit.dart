@@ -2,7 +2,6 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/auth/domain/domain.dart';
 
 part 'log_in_state.dart';
 
@@ -19,7 +18,7 @@ class LogInCubit extends Cubit<LogInState> {
         emit(
           state.copyWith(
             username: updatedUsername,
-            usernameException: RegistrationEmptyFieldException(
+            usernameException: EmptyFieldException(
               message: "Username can not be empty",
             ),
           ),
@@ -46,7 +45,7 @@ class LogInCubit extends Cubit<LogInState> {
         emit(
           state.copyWith(
             password: updatedPassword,
-            passwordException: RegistrationEmptyFieldException(
+            passwordException: EmptyFieldException(
               message: "Password can not be empty",
             ),
           ),

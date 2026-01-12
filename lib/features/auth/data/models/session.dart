@@ -22,24 +22,22 @@ final class SessionDto extends Equatable {
     this.os,
   });
 
-  final String sessionId; // uuid
-  final String userId; // uuid
-  final String refreshToken; // text
-  final String accessToken; // text
-  final DateTime expiresAt; // timestamp
-  final bool isExpired; // boolean
-  final bool? isTerminated; // boolean?
-  final DateTime? terminatedAt; // timestamp?
-  final String? ipAddress; // varchar?
-  final String? macAddress; // varchar?
-  final String? deviceName; // varchar?
-  final String? deviceType; // varchar?
-  final String? os; // varchar?
-  final DateTime createdAt; // timestamp
-  final DateTime updatedAt; // timestamp
+  final String sessionId;
+  final String userId;
+  final String refreshToken;
+  final String accessToken;
+  final DateTime expiresAt;
+  final bool isExpired;
+  final bool? isTerminated;
+  final DateTime? terminatedAt;
+  final String? ipAddress;
+  final String? macAddress;
+  final String? deviceName;
+  final String? deviceType;
+  final String? os;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
-  /// Creates a [SessionDto] from a JSON map.
-  /// Accepts multiple date formats and field naming variants.
   factory SessionDto.fromJson(Map<String, dynamic> json) {
     return SessionDto(
       sessionId: json['sessionId'] as String,
@@ -81,7 +79,6 @@ final class SessionDto extends Equatable {
     'updatedAt': updatedAt.toIso8601String(),
   };
 
-  /// Returns a new [SessionDto] with updated fields.
   SessionDto copyWith({
     String? sessionId,
     String? userId,

@@ -39,7 +39,7 @@ final class AppExceptionsTranslator {
     AppAuthException: (s) => s.authUnknownException,
     RegistrationPasswordsDontMatchException: (s) =>
         s.registrationPasswordsDontMatchException,
-    RegistrationEmptyFieldException: (s) => s.registrationEmptyFieldException,
+
     // Settings exceptions
     SettingsLocaleChangeException: (s) => s.settingsLocaleChangeException,
     SettingsThemeModeChangeException: (s) => s.settingsThemeModeChangeException,
@@ -52,7 +52,7 @@ final class AppExceptionsTranslator {
     NameInvalidCharactersException: (s) => s.nameInvalidCharactersException,
     UsernameInvalidCharactersException: (s) =>
         s.usernameInvalidCharactersException,
-    JobPositionInvalidCharactersException: (s) =>
+    UserDescriptionTooLongException: (s) =>
         s.jobPositionInvalidCharactersException,
     PasswordTooShortException: (s) => s.passwordTooShortException,
     PasswordNoUpperCaseException: (s) => s.passwordNoUpperCaseException,

@@ -42,10 +42,9 @@ final class ProfileDataFormatter {
     }
   }
 
-  static void validateJobPosition(String jobPosition) {
-    final RegExp pattern = RegExp(r'^[A-Za-z ]+$');
-    if (!pattern.hasMatch(jobPosition)) {
-      throw JobPositionInvalidCharactersException();
+  static void validateUserDescription(String description) {
+    if (description.length > 200) {
+      throw UserDescriptionTooLongException();
     }
   }
 

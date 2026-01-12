@@ -7,8 +7,7 @@ final class MockAuthRepo implements IAuthRepo {
   const MockAuthRepo();
 
   @override
-  Future<Session> login({required Object initData}) async {
-    // Simulate network delay
+  Future<Session> logIn({required Object initData}) async {
     await Future<void>.delayed(const Duration(milliseconds: 250));
 
     // Create mock DTO as if returned by backend
@@ -58,7 +57,7 @@ final class MockAuthRepo implements IAuthRepo {
   }
 
   @override
-  Future<void> logout({required Session session}) async {
+  Future<void> logOut({required Session session}) async {
     await Future<void>.delayed(const Duration(milliseconds: 100));
     // Nothing to do in mock — just simulate logout.
   }

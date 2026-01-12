@@ -40,7 +40,7 @@ class AppProvidersWrapper extends StatelessWidget {
               DioHttpClient(dio: appScope.dio, apiConfig: appScope.apiConfig),
         ),
         Provider<IWebSocketClient>(create: (context) => MockWebSocketClient()),
-        Provider<IAppEnvPreset>(create: (context) => envPreset,)
+        Provider<IAppEnvPreset>(create: (context) => envPreset),
       ],
       child: MultiRepositoryProvider(
         providers: [
@@ -103,8 +103,9 @@ class _InteractorProviders extends StatelessWidget {
               SettingsInteractor(settingsRepo: context.read<ISettingsRepo>()),
         ),
         RepositoryProvider<ThemeEditorInteractor>(
-          create: (context) =>
-              ThemeEditorInteractor(themeEditorRepo: context.read<IThemeEditorRepo>()),
+          create: (context) => ThemeEditorInteractor(
+            themeEditorRepo: context.read<IThemeEditorRepo>(),
+          ),
         ),
         RepositoryProvider<UserInteractor>(
           create: (context) => UserInteractor(
@@ -145,7 +146,7 @@ class _BlocProviders extends StatelessWidget {
             authInteractor: context.read<AuthInteractor>(),
             userInteractor: context.read<UserInteractor>(),
             logger: appScope.logger,
-          )..restoreOrFetch(),
+          )..checkSessionValidation(),
           lazy: false,
         ),
         BlocProvider(

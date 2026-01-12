@@ -11,27 +11,24 @@ abstract class NameException extends DomainException {
 
 final class NameInvalidCharactersException extends NameException {
   NameInvalidCharactersException()
-      : super(message: 'Name contains invalid characters');
+    : super(message: 'Name contains invalid characters');
 }
 
-// Username
 abstract class UsernameException extends DomainException {
   UsernameException({required super.message});
 }
 
 final class UsernameInvalidCharactersException extends UsernameException {
   UsernameInvalidCharactersException()
-      : super(message: 'Username contains invalid characters');
+    : super(message: 'Username contains invalid characters');
 }
 
-// Job position
-abstract class JobPositionException extends DomainException {
-  JobPositionException({required super.message});
+abstract class UserDescriptionException extends DomainException {
+  UserDescriptionException({required super.message});
 }
 
-final class JobPositionInvalidCharactersException extends JobPositionException {
-  JobPositionInvalidCharactersException()
-      : super(message: 'Job position contains invalid characters');
+final class UserDescriptionTooLongException extends UserDescriptionException {
+  UserDescriptionTooLongException() : super(message: 'Description is too long');
 }
 
 // Password
@@ -41,25 +38,28 @@ abstract class PasswordException extends DomainException {
 
 final class PasswordTooShortException extends PasswordException {
   PasswordTooShortException()
-      : super(message: 'Password must be at least 14 characters long');
+    : super(message: 'Password must be at least 14 characters long');
 }
 
 final class PasswordNoUpperCaseException extends PasswordException {
   PasswordNoUpperCaseException()
-      : super(message: 'Password must contain an uppercase letter');
+    : super(message: 'Password must contain an uppercase letter');
 }
 
 final class PasswordNoLowerCaseException extends PasswordException {
   PasswordNoLowerCaseException()
-      : super(message: 'Password must contain a lowercase letter');
+    : super(message: 'Password must contain a lowercase letter');
 }
 
 final class PasswordNoDigitException extends PasswordException {
-  PasswordNoDigitException()
-      : super(message: 'Password must contain a digit');
+  PasswordNoDigitException() : super(message: 'Password must contain a digit');
 }
 
 final class PasswordInvalidCharactersException extends PasswordException {
   PasswordInvalidCharactersException()
-      : super(message: 'Password contains invalid characters');
+    : super(message: 'Password contains invalid characters');
+}
+
+final class EmptyFieldException extends DomainException {
+  EmptyFieldException({required super.message});
 }

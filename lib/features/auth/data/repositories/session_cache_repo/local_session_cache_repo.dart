@@ -14,12 +14,12 @@ final class LocalSessionCacheRepo implements ISessionCacheRepo {
   @override
   Future<bool> saveSession({required Session session}) async {
     try {
-      final String jsonString = jsonEncode(session.toJson());
-      final bool isSaved = await _storage.write<String>(
-        key: _sessionKey,
-        value: jsonString,
-      );
-      return isSaved;
+      final Map<String, dynamic> jsonMap = session.toJson();
+      final String jsonString = jsonEncode(jsonMap);
+
+      return await _storage.write<String>(key: _sessionKey, value: jsonString);
+    } on AppStorageException {
+      rethrow;
     } on FormatException catch (e, st) {
       throw StorageSerializationException(
         message: 'Invalid session JSON format: ${e.message}',
@@ -54,11 +54,16 @@ final class LocalSessionCacheRepo implements ISessionCacheRepo {
         );
       }
 
-      final Map<String, dynamic> jsonMap =
-          jsonDecode(rawJson) as Map<String, dynamic>;
+      final dynamic decoded = jsonDecode(rawJson);
+      final Map<String, dynamic> jsonMap = _asJsonObject(decoded);
+
+      _validateSessionJson(jsonMap);
+
       return Session.fromJson(jsonMap);
+    } on AppStorageException {
+      rethrow;
     } on FormatException catch (e, st) {
-      throw StorageReadException(
+      throw StorageSerializationException(
         message: 'Corrupted cached session JSON: ${e.message}',
         error: e,
         stackTrace: st,
@@ -82,6 +87,8 @@ final class LocalSessionCacheRepo implements ISessionCacheRepo {
   Future<bool> clearSession() async {
     try {
       return await _storage.delete(key: _sessionKey);
+    } on AppStorageException {
+      rethrow;
     } on Exception catch (e, st) {
       throw StorageDeleteException(
         message: 'Failed to clear session: $e',
@@ -91,6 +98,120 @@ final class LocalSessionCacheRepo implements ISessionCacheRepo {
     } catch (e, st) {
       throw StorageUnknownException(
         message: 'Unexpected error while clearing session: $e',
+        error: e,
+        stackTrace: st,
+      );
+    }
+  }
+
+  Map<String, dynamic> _asJsonObject(dynamic decoded) {
+    if (decoded is Map<String, dynamic>) {
+      return decoded;
+    }
+
+    throw StorageSerializationException(
+      message: 'Cached session JSON is not an object.',
+      error: decoded.runtimeType,
+      stackTrace: StackTrace.current,
+    );
+  }
+
+  void _validateSessionJson(Map<String, dynamic> json) {
+    final List<String> missingKeys = <String>[
+      if (!_hasNonEmptyString(json, 'sessionId')) 'sessionId',
+      if (!_hasNonEmptyString(json, 'userId')) 'userId',
+      if (!_hasNonEmptyString(json, 'refreshToken')) 'refreshToken',
+      if (!_hasNonEmptyString(json, 'accessToken')) 'accessToken',
+      if (!_hasIsoDateString(json, 'expiresAt')) 'expiresAt',
+      if (!_hasBool(json, 'isExpired')) 'isExpired',
+      if (!_hasIsoDateString(json, 'createdAt')) 'createdAt',
+      if (!_hasIsoDateString(json, 'updatedAt')) 'updatedAt',
+    ];
+
+    if (missingKeys.isNotEmpty) {
+      throw StorageSerializationException(
+        message:
+            'Cached session JSON misses required keys: ${missingKeys.join(', ')}',
+        error: missingKeys,
+        stackTrace: StackTrace.current,
+      );
+    }
+
+    // Optional fields validation (only when present and non-null)
+    _validateOptionalBool(json, 'isTerminated');
+    _validateOptionalIsoDateString(json, 'terminatedAt');
+    _validateOptionalString(json, 'ipAddress');
+    _validateOptionalString(json, 'macAddress');
+    _validateOptionalString(json, 'deviceName');
+    _validateOptionalString(json, 'deviceType');
+    _validateOptionalString(json, 'os');
+
+    // Validate date strings are actually parseable (prevents DateTimeFormatter throwing later)
+    _ensureParseableDate(json['expiresAt'] as String, fieldName: 'expiresAt');
+    _ensureParseableDate(json['createdAt'] as String, fieldName: 'createdAt');
+    _ensureParseableDate(json['updatedAt'] as String, fieldName: 'updatedAt');
+
+    final dynamic terminatedAt = json['terminatedAt'];
+    if (terminatedAt is String) {
+      _ensureParseableDate(terminatedAt, fieldName: 'terminatedAt');
+    }
+  }
+
+  bool _hasNonEmptyString(Map<String, dynamic> json, String key) {
+    final dynamic value = json[key];
+    return value is String && value.isNotEmpty;
+  }
+
+  bool _hasBool(Map<String, dynamic> json, String key) {
+    final dynamic value = json[key];
+    return value is bool;
+  }
+
+  bool _hasIsoDateString(Map<String, dynamic> json, String key) {
+    final dynamic value = json[key];
+    return value is String && value.isNotEmpty;
+  }
+
+  void _validateOptionalString(Map<String, dynamic> json, String key) {
+    final dynamic value = json[key];
+    if (value != null && value is! String) {
+      throw StorageSerializationException(
+        message: 'Cached session JSON has invalid type for $key.',
+        error: value.runtimeType,
+        stackTrace: StackTrace.current,
+      );
+    }
+  }
+
+  void _validateOptionalBool(Map<String, dynamic> json, String key) {
+    final dynamic value = json[key];
+    if (value != null && value is! bool) {
+      throw StorageSerializationException(
+        message: 'Cached session JSON has invalid type for $key.',
+        error: value.runtimeType,
+        stackTrace: StackTrace.current,
+      );
+    }
+  }
+
+  void _validateOptionalIsoDateString(Map<String, dynamic> json, String key) {
+    final dynamic value = json[key];
+    if (value != null && value is! String) {
+      throw StorageSerializationException(
+        message: 'Cached session JSON has invalid type for $key.',
+        error: value.runtimeType,
+        stackTrace: StackTrace.current,
+      );
+    }
+  }
+
+  void _ensureParseableDate(String value, {required String fieldName}) {
+    try {
+      DateTimeFormatter.parse(value);
+    } on Exception catch (e, st) {
+      throw StorageSerializationException(
+        message:
+            'Cached session JSON has invalid datetime for $fieldName: $value',
         error: e,
         stackTrace: st,
       );

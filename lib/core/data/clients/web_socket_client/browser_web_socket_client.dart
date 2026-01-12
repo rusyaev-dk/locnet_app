@@ -3,13 +3,11 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/html.dart';
 import 'package:locnet_app/core/core.dart';
 
-final class WebSocketClient implements IWebSocketClient {
-  WebSocketClient({
-    required Uri uri,
-    List<String>? protocols,
-  })  : _uri = uri,
-        _protocols = protocols,
-        _messagesController = StreamController<String>.broadcast();
+final class BrowserWebSocketClient implements IWebSocketClient {
+  BrowserWebSocketClient({required Uri uri, List<String>? protocols})
+    : _uri = uri,
+      _protocols = protocols,
+      _messagesController = StreamController<String>.broadcast();
 
   final Uri _uri;
   final List<String>? _protocols;

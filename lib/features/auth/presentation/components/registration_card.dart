@@ -11,7 +11,7 @@ class RegistrationCard extends StatelessWidget {
   const RegistrationCard({
     required this.firstNameController,
     required this.lastNameController,
-    required this.jobPositionController,
+    required this.descriptionController,
     required this.usernameController,
     required this.passwordController,
     required this.repeatPasswordController,
@@ -20,7 +20,7 @@ class RegistrationCard extends StatelessWidget {
 
   final TextEditingController firstNameController;
   final TextEditingController lastNameController;
-  final TextEditingController jobPositionController;
+  final TextEditingController descriptionController;
   final TextEditingController usernameController;
   final TextEditingController passwordController;
   final TextEditingController repeatPasswordController;
@@ -98,19 +98,23 @@ class RegistrationCard extends StatelessWidget {
               const SizedBox(height: 16),
               CustomTextField(
                 isActive: !isLoading,
-                controller: jobPositionController,
-                labelText: l10n.jobPosition,
+                controller: descriptionController,
+                labelText: l10n.description,
                 textInputAction: TextInputAction.next,
                 onChanged: (String? value) {
-                  registrationCubit.updateJobPosition(newJobPosition: value);
+                  registrationCubit.updateDescription(
+                    newUserDescription: value,
+                  );
                 },
                 onFocusChange: (String? value) {
-                  registrationCubit.updateJobPosition(newJobPosition: value);
+                  registrationCubit.updateDescription(
+                    newUserDescription: value,
+                  );
                 },
-                errorText: registrationCubit.state.jobPositionException != null
+                errorText: registrationCubit.state.descriptionException != null
                     ? AppExceptionsTranslator.translate(
                         context,
-                        registrationCubit.state.jobPositionException,
+                        registrationCubit.state.descriptionException,
                       )
                     : null,
               ),
@@ -188,9 +192,9 @@ class RegistrationCard extends StatelessWidget {
                   context.read<AuthCubit>().register(
                     firstName: regState.firstName!,
                     lastName: regState.lastName!,
-                    jobPosition: regState.jobPosition!,
                     username: regState.username!,
                     password: regState.password!,
+                    description: regState.description,
                   );
                 },
                 isLoading: isLoading,

@@ -14,8 +14,7 @@ final class AuthCubit extends Cubit<AuthState> {
   }) : _authInteractor = authInteractor,
        _userInteractor = userInteractor,
        _logger = logger,
-       super(const AuthInitialState()) {
-  }
+       super(const AuthInitialState());
 
   final AuthInteractor _authInteractor;
   final UserInteractor _userInteractor;
@@ -31,8 +30,11 @@ final class AuthCubit extends Cubit<AuthState> {
       }
       _logger.info("Trying to login...");
 
-      final _ = await _authInteractor.logIn();
-      final user = await _userInteractor.getCurrentUser();
+      final result = await _authInteractor.logIn(
+        username: username,
+        password: password,
+      );
+      final user = result.$2;
 
       emit(AuthAuthenticatedState(user: user));
     } catch (e, st) {
@@ -50,17 +52,25 @@ final class AuthCubit extends Cubit<AuthState> {
   Future<void> register({
     required String firstName,
     required String lastName,
-    required String jobPosition,
     required String username,
     required String password,
+    String? description,
   }) async {
     try {
       if (state is! AuthLoadingState) {
         emit(const AuthLoadingState());
       }
-      _logger.info("Trying to register...");
+      _logger.info("Trying to register new user...");
 
-      // TODO: implement
+      final res = await _authInteractor.register(
+        username: username,
+        firstName: firstName,
+        lastName: lastName,
+        password: password,
+        description: description,
+      );
+
+      emit(AuthAuthenticatedState(user: res.$2));
     } catch (e, st) {
       _logger.exception(e, st);
       emit(
@@ -73,27 +83,28 @@ final class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  Future<void> restoreOrFetch() async {
+  Future<void> checkSessionValidation() async {
     try {
       if (state is! AuthLoadingState) {
         emit(const AuthLoadingState());
       }
-      _logger.info("Trying to restore auth session...");
+      _logger.info("Checking session validation...");
 
-      // final Session _ = await _authInteractor.logIn();
-      // final User user = await _authInteractor.getUser();
+      final isSessionFresh = await _authInteractor
+          .checkCachedSessionFreshness();
+      if (!isSessionFresh) {
+        emit(const AuthUnauthenticatedState());
+      }
 
-      // emit(AuthAuthenticatedState(user: user));
-      emit(const AuthUnauthenticatedState());
+      final cachedSession = await _authInteractor.getCachedSession();
+      final user = await _userInteractor.getUserById(
+        userId: cachedSession.userId,
+      );
+
+      emit(AuthAuthenticatedState(user: user));
     } catch (e, st) {
       _logger.exception(e, st);
-      emit(
-        AuthFailureState(
-          failure: e is AppException
-              ? e
-              : AppUnknownException(message: e.toString(), stackTrace: st),
-        ),
-      );
+      emit(const AuthUnauthenticatedState());
     }
   }
 

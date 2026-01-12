@@ -75,6 +75,147 @@ void main() {
           ),
         );
       });
+
+      test(
+        'should throw StorageWriteException when plugin throws Exception',
+        () async {
+          // Arrange
+          const String key = 'test_key';
+          const String data = 'value';
+
+          when(
+            () => mockFlutterSecureStorage.write(key: key, value: data),
+          ).thenThrow(Exception('boom'));
+
+          // Act
+          final Future<bool> future = secureStorage.write<String>(
+            key: key,
+            value: data,
+          );
+
+          // Assert
+          await expectLater(future, throwsA(isA<StorageWriteException>()));
+          verify(
+            () => mockFlutterSecureStorage.write(key: key, value: data),
+          ).called(1);
+        },
+      );
+
+      test(
+        'should throw StorageUnknownException when plugin throws non-Exception error',
+        () async {
+          // Arrange
+          const String key = 'test_key';
+          const String data = 'value';
+
+          when(
+            () => mockFlutterSecureStorage.write(key: key, value: data),
+          ).thenThrow(StateError('boom'));
+
+          // Act
+          final Future<bool> future = secureStorage.write<String>(
+            key: key,
+            value: data,
+          );
+
+          // Assert
+          await expectLater(future, throwsA(isA<StorageUnknownException>()));
+          verify(
+            () => mockFlutterSecureStorage.write(key: key, value: data),
+          ).called(1);
+        },
+      );
+
+      test('should write very large String value', () async {
+        // Arrange
+        const String key = 'test_key';
+        final String data = List.filled(50000, 'a').join();
+
+        when(
+          () => mockFlutterSecureStorage.write(key: key, value: data),
+        ).thenAnswer((_) async {});
+
+        // Act
+        final bool result = await secureStorage.write<String>(
+          key: key,
+          value: data,
+        );
+
+        // Assert
+        expect(result, isTrue);
+        verify(
+          () => mockFlutterSecureStorage.write(key: key, value: data),
+        ).called(1);
+      });
+
+      test('should write empty String value', () async {
+        // Arrange
+        const String key = 'test_key';
+        const String data = '';
+
+        when(
+          () => mockFlutterSecureStorage.write(key: key, value: data),
+        ).thenAnswer((_) async {});
+
+        // Act
+        final bool result = await secureStorage.write<String>(
+          key: key,
+          value: data,
+        );
+
+        // Assert
+        expect(result, isTrue);
+        verify(
+          () => mockFlutterSecureStorage.write(key: key, value: data),
+        ).called(1);
+      });
+
+      test('should throw ArgumentError when key is empty', () async {
+        // Arrange
+        const String key = '';
+        const String data = 'value';
+
+        // Act
+        final Future<bool> future = secureStorage.write<String>(
+          key: key,
+          value: data,
+        );
+
+        // Assert
+        await expectLater(future, throwsA(isA<ArgumentError>()));
+
+        verifyNever(
+          () => mockFlutterSecureStorage.write(
+            key: any(named: 'key'),
+            value: any(named: 'value'),
+          ),
+        );
+      });
+
+      test(
+        'should throw ArgumentError when key contains only whitespaces',
+        () async {
+          // Arrange
+          const String key = '   ';
+          const String data = 'value';
+
+          // Act
+          final Future<bool> future = secureStorage.write<String>(
+            key: key,
+            value: data,
+          );
+
+          // Assert
+          await expectLater(future, throwsA(isA<ArgumentError>()));
+
+          verifyNever(
+            () => mockFlutterSecureStorage.write(
+              key: any(named: 'key'),
+              value: any(named: 'value'),
+            ),
+          );
+        },
+      );
     });
     group("read method", () {
       test('should return String when value exists and T is String', () async {
@@ -114,40 +255,40 @@ void main() {
         verify(() => mockFlutterSecureStorage.read(key: key)).called(1);
       });
 
-      test('should return null when T is not String', () async {
+      test('should throw ArgumentError when T is not String', () async {
         // Arrange
         const String key = 'test_key';
-        const String data = '123';
-
-        when(
-          () => mockFlutterSecureStorage.read(key: key),
-        ).thenAnswer((_) async => data);
 
         // Act
-        final int? retrievedData = await secureStorage.read<int>(key: key);
+        final Future<int?> future = secureStorage.read<int>(key: key);
 
         // Assert
-        expect(retrievedData, isNull);
-        verify(() => mockFlutterSecureStorage.read(key: key)).called(1);
-      });
+        await expectLater(future, throwsA(isA<ArgumentError>()));
 
-      test('should return null when plugin throws', () async {
-        // Arrange
-        const String key = 'test_key';
-
-        when(
-          () => mockFlutterSecureStorage.read(key: key),
-        ).thenThrow(Exception('boom'));
-
-        // Act
-        final String? retrievedData = await secureStorage.read<String>(
-          key: key,
+        verifyNever(
+          () => mockFlutterSecureStorage.read(key: any(named: 'key')),
         );
-
-        // Assert
-        expect(retrievedData, isNull);
-        verify(() => mockFlutterSecureStorage.read(key: key)).called(1);
       });
+
+      test(
+        'should throw StorageReadException when plugin throws Exception',
+        () async {
+          // Arrange
+          const String key = 'test_key';
+
+          when(
+            () => mockFlutterSecureStorage.read(key: key),
+          ).thenThrow(Exception('boom'));
+
+          // Act
+          final Future<String?> future = secureStorage.read<String>(key: key);
+
+          // Assert
+          await expectLater(future, throwsA(isA<StorageReadException>()));
+
+          verify(() => mockFlutterSecureStorage.read(key: key)).called(1);
+        },
+      );
     });
     group("delete method", () {
       test('should delete value and return true', () async {

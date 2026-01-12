@@ -1,5 +1,3 @@
-
-
 import 'package:locnet_app/app/app.dart';
 
 abstract class AppApiException extends AppException {
@@ -14,15 +12,6 @@ abstract class AppApiException extends AppException {
 
   @override
   String toString() => 'AppApiException($statusCode): $message';
-}
-
-// Storage-related exceptions
-
-abstract class AppStorageException extends AppException {
-  AppStorageException({required super.message, super.error, super.stackTrace});
-
-  @override
-  String toString() => 'AppStorageException: $message';
 }
 
 // Concrete API exceptions
@@ -101,7 +90,14 @@ class ApiTimeoutException extends AppApiException {
   });
 }
 
-// Example storage exceptions
+// Storage-related exceptions
+
+abstract class AppStorageException extends AppException {
+  AppStorageException({required super.message, super.error, super.stackTrace});
+
+  @override
+  String toString() => 'AppStorageException: $message';
+}
 
 class StorageReadException extends AppStorageException {
   StorageReadException({required super.message, super.error, super.stackTrace});
@@ -146,5 +142,3 @@ class StorageDeleteException extends AppStorageException {
     super.stackTrace,
   });
 }
-
-

@@ -15,11 +15,11 @@ class RegistrationCubit extends Cubit<RegistrationState> {
 
   Future<void> updateFirstName({String? newFirstName}) async {
     try {
-      if (newFirstName == null || newFirstName.isEmpty) {
+      if (newFirstName == null || newFirstName.trim().isEmpty) {
         emit(
           state.copyWith(
             firstName: newFirstName,
-            firstNameException: RegistrationEmptyFieldException(
+            firstNameException: EmptyFieldException(
               message: "First name can not be empty",
             ),
           ),
@@ -50,11 +50,11 @@ class RegistrationCubit extends Cubit<RegistrationState> {
 
   Future<void> updateLastName({String? newLastName}) async {
     try {
-      if (newLastName == null || newLastName.isEmpty) {
+      if (newLastName == null || newLastName.trim().isEmpty) {
         emit(
           state.copyWith(
             lastName: newLastName,
-            lastNameException: RegistrationEmptyFieldException(
+            lastNameException: EmptyFieldException(
               message: "Last name can not be empty",
             ),
           ),
@@ -83,31 +83,28 @@ class RegistrationCubit extends Cubit<RegistrationState> {
     }
   }
 
-  Future<void> updateJobPosition({String? newJobPosition}) async {
+  Future<void> updateDescription({String? newUserDescription}) async {
     try {
-      if (newJobPosition == null || newJobPosition.isEmpty) {
-        emit(
-          state.copyWith(
-            jobPosition: newJobPosition,
-            jobPositionException: RegistrationEmptyFieldException(
-              message: "Job position can not be empty",
-            ),
-          ),
-        );
-        return;
+      if (newUserDescription == null || newUserDescription.trim().isEmpty) {
+        return emit(state.copyWith(descriptionException: null));
       }
 
       try {
-        ProfileDataFormatter.validateJobPosition(newJobPosition);
+        ProfileDataFormatter.validateUserDescription(newUserDescription);
       } catch (e) {
-        emit(
-          state.copyWith(jobPosition: newJobPosition, jobPositionException: e),
+        return emit(
+          state.copyWith(
+            description: newUserDescription,
+            descriptionException: e,
+          ),
         );
-        return;
       }
 
       emit(
-        state.copyWith(jobPosition: newJobPosition, jobPositionException: null),
+        state.copyWith(
+          description: newUserDescription,
+          descriptionException: null,
+        ),
       );
     } catch (e, st) {
       _logger.exception(e, st);
@@ -128,7 +125,7 @@ class RegistrationCubit extends Cubit<RegistrationState> {
         emit(
           state.copyWith(
             username: newUsername,
-            usernameException: RegistrationEmptyFieldException(
+            usernameException: EmptyFieldException(
               message: "Username can not be empty",
             ),
           ),
@@ -159,11 +156,11 @@ class RegistrationCubit extends Cubit<RegistrationState> {
 
   Future<void> updatePassword({String? newPassword}) async {
     try {
-      if (newPassword == null || newPassword.isEmpty) {
+      if (newPassword == null || newPassword.trim().isEmpty) {
         emit(
           state.copyWith(
             password: newPassword,
-            passwordException: RegistrationEmptyFieldException(
+            passwordException: EmptyFieldException(
               message: "Password can not be empty",
             ),
           ),
@@ -225,11 +222,11 @@ class RegistrationCubit extends Cubit<RegistrationState> {
 
   Future<void> updateRepeatPassword({String? newRepeatPassword}) async {
     try {
-      if (newRepeatPassword == null || newRepeatPassword.isEmpty) {
+      if (newRepeatPassword == null || newRepeatPassword.trim().isEmpty) {
         emit(
           state.copyWith(
             repeatPassword: newRepeatPassword,
-            repeatPasswordException: RegistrationEmptyFieldException(
+            repeatPasswordException: EmptyFieldException(
               message: "Repeat password can not be empty",
             ),
           ),
@@ -288,7 +285,7 @@ class RegistrationCubit extends Cubit<RegistrationState> {
   bool canRegister() {
     final String? firstName = state.firstName;
     final String? lastName = state.lastName;
-    final String? jobPosition = state.jobPosition;
+    final String? description = state.description;
     final String? login = state.username;
     final String? password = state.password;
     final String? repeatPassword = state.repeatPassword;
@@ -298,8 +295,8 @@ class RegistrationCubit extends Cubit<RegistrationState> {
         firstName.isNotEmpty &&
         lastName != null &&
         lastName.isNotEmpty &&
-        jobPosition != null &&
-        jobPosition.isNotEmpty &&
+        description != null &&
+        description.isNotEmpty &&
         login != null &&
         login.isNotEmpty &&
         password != null &&
@@ -315,7 +312,7 @@ class RegistrationCubit extends Cubit<RegistrationState> {
     final bool hasNoFieldExceptions =
         state.firstNameException == null &&
         state.lastNameException == null &&
-        state.jobPositionException == null &&
+        state.descriptionException == null &&
         state.usernameException == null &&
         state.passwordException == null &&
         state.repeatPasswordException == null;

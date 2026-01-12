@@ -152,7 +152,7 @@ class _RegistrationScrollableForm extends StatelessWidget {
                                 RegistrationCard(
                                   firstNameController: firstNameController,
                                   lastNameController: lastNameController,
-                                  jobPositionController: jobPositionController,
+                                  descriptionController: jobPositionController,
                                   usernameController: loginController,
                                   passwordController: passwordController,
                                   repeatPasswordController:
@@ -177,7 +177,7 @@ class _RegistrationScrollableForm extends StatelessWidget {
                           RegistrationCard(
                             firstNameController: firstNameController,
                             lastNameController: lastNameController,
-                            jobPositionController: jobPositionController,
+                            descriptionController: jobPositionController,
                             usernameController: loginController,
                             passwordController: passwordController,
                             repeatPasswordController: repeatPasswordController,

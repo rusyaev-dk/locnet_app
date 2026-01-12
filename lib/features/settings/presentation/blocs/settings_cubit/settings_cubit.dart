@@ -113,7 +113,7 @@ class SettingsCubit extends Cubit<SettingsState> {
 
       final Locale restoredLocale = Locale(localeCode);
       final ThemeMode restoredTheme = _decodeThemeMode(themeCode);
-      final Session restoredSession = await _authInteractor.getSession();
+      final Session restoredSession = await _authInteractor.getCachedSession();
 
       final AppTheme appTheme = await _themeConstructorInteractor
           .loadAppTheme();

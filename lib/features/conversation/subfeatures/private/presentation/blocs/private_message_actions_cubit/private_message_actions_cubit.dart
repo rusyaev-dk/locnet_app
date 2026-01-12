@@ -36,7 +36,7 @@ class PrivateMessageActionsCubit extends Cubit<PrivateMessageActionsState> {
     final DateTime now = DateTime.now();
 
     try {
-      final User user = await _userInteractor.getCurrentUser();
+      final User user = await _userInteractor.getCachedUser();
 
       final Message localMessage = Message(
         messageId: clientMessageId,

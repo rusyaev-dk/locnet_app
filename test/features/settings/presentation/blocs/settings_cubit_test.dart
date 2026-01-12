@@ -126,6 +126,7 @@ void main() {
             appTheme: appTheme,
             session: session,
           ),
+          const SettingsLoadingState(),
           SettingsLoadedState(
             locale: const Locale('en'),
             themeMode: ThemeMode.system,

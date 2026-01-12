@@ -18,22 +18,7 @@ final class UserInteractor {
     return await _userRepo.getUserById(userId: userId);
   }
 
-  Future<User> getCurrentUser() async {
-    try {
-      return await _userCacheRepo.loadUser();
-    } catch (e, st) {
-      _logger
-        ..exception(e, st)
-        ..log('Trying to fetch user from remote...');
-
-      final user = await _userRepo.me();
-      final saveSuccess = await _userCacheRepo.saveUser(user: user);
-
-      if (!saveSuccess) {
-        _logger.exception("Failed to cache user");
-      }
-
-      return user;
-    }
+  Future<User> getCachedUser() async {
+    return await _userCacheRepo.loadUser();
   }
 }

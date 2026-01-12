@@ -6,5 +6,8 @@ final class ApiConfig {
 
 abstract class ApiEndpoints {
   static const String users = "/users";
-  static String userProfileById(String id) => "/users/$id/profile";
+  static const String register = "/auth/register";
+  static const String logIn = "/auth/login";
+  static const String refresh = "/auth/refresh";
+  static const String logOut = "/auth/logout";
 }

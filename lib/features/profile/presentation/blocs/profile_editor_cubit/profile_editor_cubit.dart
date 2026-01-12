@@ -2,7 +2,6 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/auth/domain/domain.dart';
 import 'package:locnet_app/features/profile/domain/domain.dart';
 
 part 'profile_editor_state.dart';
@@ -31,7 +30,7 @@ class ProfileEditorCubit extends Cubit<ProfileEditorState> {
         emit(
           prevState.copyWith(
             newFirstName: newFirstName,
-            firstNameException: RegistrationEmptyFieldException(
+            firstNameException: EmptyFieldException(
               message: "First name can not be empty",
             ),
           ),
@@ -80,7 +79,7 @@ class ProfileEditorCubit extends Cubit<ProfileEditorState> {
         emit(
           prevState.copyWith(
             newLastName: newLastName,
-            lastNameException: RegistrationEmptyFieldException(
+            lastNameException: EmptyFieldException(
               message: "Last name can not be empty",
             ),
           ),
@@ -126,7 +125,7 @@ class ProfileEditorCubit extends Cubit<ProfileEditorState> {
         emit(
           prevState.copyWith(
             newUsername: newUsername,
-            usernameException: RegistrationEmptyFieldException(
+            usernameException: EmptyFieldException(
               message: "Username can not be empty",
             ),
           ),
@@ -170,11 +169,8 @@ class ProfileEditorCubit extends Cubit<ProfileEditorState> {
 
       emit(
         prevState.copyWith(
-          newFirstName: null,
           firstNameException: null,
-          newLastName: null,
           lastNameException: null,
-          newUsername: null,
           usernameException: null,
           failure: null,
         ),

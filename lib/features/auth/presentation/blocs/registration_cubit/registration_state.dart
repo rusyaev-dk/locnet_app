@@ -6,8 +6,8 @@ final class RegistrationState extends Equatable {
     this.firstNameException,
     this.lastName,
     this.lastNameException,
-    this.jobPosition,
-    this.jobPositionException,
+    this.description,
+    this.descriptionException,
     this.username,
     this.usernameException,
     this.password,
@@ -25,8 +25,8 @@ final class RegistrationState extends Equatable {
   final String? lastName;
   final Object? lastNameException;
 
-  final String? jobPosition;
-  final Object? jobPositionException;
+  final String? description;
+  final Object? descriptionException;
 
   final String? username;
   final Object? usernameException;
@@ -44,8 +44,8 @@ final class RegistrationState extends Equatable {
     Object? firstNameException = _noChange,
     String? lastName,
     Object? lastNameException = _noChange,
-    String? jobPosition,
-    Object? jobPositionException = _noChange,
+    String? description,
+    Object? descriptionException = _noChange,
     String? username,
     Object? usernameException = _noChange,
     String? password,
@@ -63,10 +63,10 @@ final class RegistrationState extends Equatable {
       lastNameException: identical(lastNameException, _noChange)
           ? this.lastNameException
           : lastNameException,
-      jobPosition: jobPosition ?? this.jobPosition,
-      jobPositionException: identical(jobPositionException, _noChange)
-          ? this.jobPositionException
-          : jobPositionException,
+      description: description ?? this.description,
+      descriptionException: identical(descriptionException, _noChange)
+          ? this.descriptionException
+          : descriptionException,
       username: username ?? this.username,
       usernameException: identical(usernameException, _noChange)
           ? this.usernameException
@@ -85,18 +85,18 @@ final class RegistrationState extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        firstName,
-        firstNameException,
-        lastName,
-        lastNameException,
-        jobPosition,
-        jobPositionException,
-        username,
-        usernameException,
-        password,
-        passwordException,
-        repeatPassword,
-        repeatPasswordException,
-        failure,
-      ];
+    firstName,
+    firstNameException,
+    lastName,
+    lastNameException,
+    description,
+    descriptionException,
+    username,
+    usernameException,
+    password,
+    passwordException,
+    repeatPassword,
+    repeatPasswordException,
+    failure,
+  ];
 }
