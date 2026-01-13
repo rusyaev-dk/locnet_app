@@ -33,7 +33,7 @@ final class MockInMemoryBackend {
   final int _conversationsPageSize = 20;
   final int _conversationParticipantsPageSize = 20;
   final int _conversationMessagesPageSize = 20;
-
+  
   // Storage
 
   final Map<String, UserDto> _users = {};

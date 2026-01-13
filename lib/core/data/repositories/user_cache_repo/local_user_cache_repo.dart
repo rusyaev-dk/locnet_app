@@ -159,4 +159,25 @@ final class LocalUserCacheRepo implements IUserCacheRepo {
       );
     }
   }
+
+  @override
+  Future<bool> clearUser() async {
+    try {
+      return await _storage.delete(key: _userKey);
+    } on AppStorageException {
+      rethrow;
+    } on Exception catch (e, st) {
+      throw StorageDeleteException(
+        message: 'Failed to delete cached user',
+        error: e,
+        stackTrace: st,
+      );
+    } catch (e, st) {
+      throw StorageUnknownException(
+        message: 'Unexpected error while deleting cached user: $e',
+        error: e,
+        stackTrace: st,
+      );
+    }
+  }
 }

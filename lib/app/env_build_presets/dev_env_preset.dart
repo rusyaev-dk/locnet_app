@@ -6,7 +6,6 @@ import 'package:locnet_app/features/conversation/data/repositories/repositories.
 import 'package:locnet_app/features/conversation/subfeatures/channel/data/repositories/channel_repo/i_channel_repo.dart';
 import 'package:locnet_app/features/conversation/subfeatures/group/data/repositories/group_conversation_repo/i_group_conversation_repo.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/data/data.dart';
-import 'package:locnet_app/features/conversation/subfeatures/private/data/repositories/private_conversation_repo/i_private_conversation_repo.dart';
 import 'package:locnet_app/features/conversations/data/data.dart';
 import 'package:locnet_app/features/message/data/repositories/message_repo/i_message_repo.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
@@ -25,7 +24,7 @@ final class DevEnvPreset implements IAppEnvPreset {
 
   @override
   IAuthRepo createAuthRepo() {
-    return const MockAuthRepo();
+    return MockAuthRepo();
   }
 
   @override

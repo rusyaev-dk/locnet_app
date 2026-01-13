@@ -9,15 +9,12 @@ part 'auth_state.dart';
 final class AuthCubit extends Cubit<AuthState> {
   AuthCubit({
     required AuthInteractor authInteractor,
-    required UserInteractor userInteractor,
     required ILogger logger,
   }) : _authInteractor = authInteractor,
-       _userInteractor = userInteractor,
        _logger = logger,
        super(const AuthInitialState());
 
   final AuthInteractor _authInteractor;
-  final UserInteractor _userInteractor;
   final ILogger _logger;
 
   Future<void> logIn({
@@ -83,25 +80,20 @@ final class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  Future<void> checkSessionValidation() async {
+  Future<void> tryRestoreSession() async {
     try {
       if (state is! AuthLoadingState) {
         emit(const AuthLoadingState());
       }
-      _logger.info("Checking session validation...");
 
-      final isSessionFresh = await _authInteractor
-          .checkCachedSessionFreshness();
-      if (!isSessionFresh) {
+      final (Session, User)? restored = await _authInteractor.restoreSession();
+
+      if (restored == null) {
         emit(const AuthUnauthenticatedState());
+        return;
       }
 
-      final cachedSession = await _authInteractor.getCachedSession();
-      final user = await _userInteractor.getUserById(
-        userId: cachedSession.userId,
-      );
-
-      emit(AuthAuthenticatedState(user: user));
+      emit(AuthAuthenticatedState(user: restored.$2));
     } catch (e, st) {
       _logger.exception(e, st);
       emit(const AuthUnauthenticatedState());

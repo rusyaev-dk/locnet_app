@@ -44,9 +44,7 @@ class AuthInteractor {
       );
 
       if (!cacheSessionSuccess) {
-        throw SessionCacheWriteException(
-          message: 'Failed to save session to cache',
-        );
+         _logger.exception("Failed to save session to cache");
       }
 
       final User user = await _userRepo.getUserById(userId: session.userId);
@@ -54,7 +52,7 @@ class AuthInteractor {
       final bool cacheUserSuccess = await _userCacheRepo.saveUser(user: user);
 
       if (!cacheUserSuccess) {
-        throw UserCacheWriteException(message: 'Failed to save user to cache');
+        _logger.exception("Failed to save user to cache");
       }
 
       return (session, user);
@@ -105,9 +103,7 @@ class AuthInteractor {
       );
 
       if (!cacheSessionSuccess) {
-        throw SessionCacheWriteException(
-          message: 'Failed to save session to cache',
-        );
+        _logger.exception("Failed to save session to cache");
       }
 
       final User user = await _userRepo.getUserById(userId: session.userId);
@@ -115,7 +111,7 @@ class AuthInteractor {
       final bool cacheUserSuccess = await _userCacheRepo.saveUser(user: user);
 
       if (!cacheUserSuccess) {
-        throw UserCacheWriteException(message: 'Failed to save user to cache');
+        _logger.exception("Failed to save user to cache");
       }
 
       return (session, user);
@@ -151,21 +147,65 @@ class AuthInteractor {
     }
   }
 
-  Future<bool> checkCachedSessionFreshness() async {
+  Future<(Session, User)?> restoreSession() async {
     try {
-      final session = await getCachedSession();
-      if (session.expiresAt.isAfter(DateTime.now())) {
-        return true;
+      final Session cachedSession = await _sessionCacheRepo.loadSession();
+
+      if (cachedSession.expiresAt.isAfter(DateTime.now())) {
+        final User user = await _userRepo.getUserById(
+          userId: cachedSession.userId,
+        );
+        return (cachedSession, user);
       }
-      return false;
+
+      final Session refreshedSession = await _authRepo.refresh(
+        refreshToken: cachedSession.refreshToken,
+        sessionId: cachedSession.sessionId,
+      );
+
+      final bool cacheSessionSuccess = await _sessionCacheRepo.saveSession(
+        session: refreshedSession,
+      );
+
+      if (!cacheSessionSuccess) {
+        _logger.exception("Failed to save session to cache");
+      }
+
+      final User user = await _userRepo.getUserById(
+        userId: refreshedSession.userId,
+      );
+
+      final bool cacheUserSuccess = await _userCacheRepo.saveUser(user: user);
+
+      if (!cacheUserSuccess) {
+        _logger.exception("Failed to save user to cache");
+      }
+
+      return (refreshedSession, user);
+    } on ApiUnauthorizedException catch (e, st) {
+      _logger.exception(e, st);
+      await logOut();
+      return null;
+    } on ApiForbiddenException catch (e, st) {
+      _logger.exception(e, st);
+      await logOut();
+      return null;
+    } on ApiConnectionException catch (e, st) {
+      _logger.exception(e, st);
+      return null;
+    } on StorageNotFoundException catch (e, st) {
+      _logger.exception(e, st);
+      return null;
     } catch (e, st) {
       _logger.exception(e, st);
-      return false;
+      await logOut();
+      return null;
     }
   }
 
   Future<void> logOut() async {
     await _sessionCacheRepo.clearSession();
+    await _userCacheRepo.clearUser();
   }
 
   Future<Session> getCachedSession() async {
