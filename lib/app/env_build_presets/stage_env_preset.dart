@@ -24,8 +24,7 @@ final class StageEnvPreset implements IAppEnvPreset {
 
   @override
   IAuthRepo createAuthRepo() {
-    _httpClient.hashCode;
-    throw UnimplementedError();
+    return HttpAuthRepo(httpClient: _httpClient);
   }
 
   @override
@@ -37,7 +36,9 @@ final class StageEnvPreset implements IAppEnvPreset {
 
   @override
   IThemeEditorRepo createThemeEditorRepo() {
-    return MockThemeEditorRepo();
+    return LocalThemeEditorRepo(
+      storage: _appScope.storageAggregator.localKeyValueStorage,
+    );
   }
 
   @override
@@ -94,5 +95,10 @@ final class StageEnvPreset implements IAppEnvPreset {
     return LocalUserCacheRepo(
       storage: _appScope.storageAggregator.secureStorage,
     );
+  }
+
+  @override
+  IDeviceInfoRepo createDeviceInfoRepo() {
+    return const DeviceInfoRepo();
   }
 }

@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:locnet_app/app/exceptions.dart';
+import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/core/data/data.dart';
 
 class DioHttpClient implements IHttpClient {
@@ -16,7 +18,7 @@ class DioHttpClient implements IHttpClient {
     String? baseUrl,
     Map<String, dynamic>? parameters,
   }) {
-    final uri = Uri.parse('${baseUrl ?? _apiConfig.baseUrl}$path');
+    final Uri uri = Uri.parse('${baseUrl ?? _apiConfig.baseUrl}$path');
     return parameters != null ? uri.replace(queryParameters: parameters) : uri;
   }
 
@@ -43,14 +45,16 @@ class DioHttpClient implements IHttpClient {
     Map<String, dynamic>? uriParameters,
     Map<String, dynamic>? headers,
     dynamic data,
-  }) async => await _sendRequest(
-    method: 'POST',
-    path: path,
-    baseUrl: baseUrl,
-    uriParameters: uriParameters,
-    headers: headers,
-    data: data,
-  );
+  }) async {
+    return await _sendRequest(
+      method: 'POST',
+      path: path,
+      baseUrl: baseUrl,
+      uriParameters: uriParameters,
+      headers: headers,
+      data: data,
+    );
+  }
 
   @override
   Future<Response> put({
@@ -59,14 +63,16 @@ class DioHttpClient implements IHttpClient {
     Map<String, dynamic>? uriParameters,
     Map<String, dynamic>? headers,
     dynamic data,
-  }) async => await _sendRequest(
-    method: 'PUT',
-    path: path,
-    baseUrl: baseUrl,
-    uriParameters: uriParameters,
-    headers: headers,
-    data: data,
-  );
+  }) async {
+    return await _sendRequest(
+      method: 'PUT',
+      path: path,
+      baseUrl: baseUrl,
+      uriParameters: uriParameters,
+      headers: headers,
+      data: data,
+    );
+  }
 
   @override
   Future<Response> delete({
@@ -74,13 +80,15 @@ class DioHttpClient implements IHttpClient {
     String? baseUrl,
     Map<String, dynamic>? uriParameters,
     Map<String, dynamic>? headers,
-  }) async => await _sendRequest(
-    method: 'DELETE',
-    path: path,
-    baseUrl: baseUrl,
-    uriParameters: uriParameters,
-    headers: headers,
-  );
+  }) async {
+    return await _sendRequest(
+      method: 'DELETE',
+      path: path,
+      baseUrl: baseUrl,
+      uriParameters: uriParameters,
+      headers: headers,
+    );
+  }
 
   Future<Response> _sendRequest({
     required String method,
@@ -90,17 +98,18 @@ class DioHttpClient implements IHttpClient {
     Map<String, dynamic>? headers,
     dynamic data,
   }) async {
-    final uri = _makeUri(
+    final Uri uri = _makeUri(
       path: path,
       baseUrl: baseUrl,
       parameters: uriParameters,
     );
 
     try {
-      final options = Options(
+      final Options options = Options(
         contentType: Headers.jsonContentType,
         headers: headers,
       );
+
       late final Response response;
 
       switch (method) {
@@ -117,18 +126,23 @@ class DioHttpClient implements IHttpClient {
           response = await _dio.deleteUri(uri, options: options);
           break;
         default:
-          throw ApiUnknownException(
+          throw AppException(
             message: 'Unsupported HTTP method: $method',
+            category: AppExceptionCategory.api,
+            code: AppExceptionCode.unknown,
+            details: <String, Object?>{'method': method},
           );
       }
 
       _validateResponse(response);
       return response;
     } on DioException catch (e, st) {
-      throw _mapDioError(e, st);
+      throw _mapDioError(e: e, stackTrace: st);
     } catch (e, st) {
-      throw ApiUnknownException(
-        message: 'Unexpected error',
+      throw AppException(
+        message: 'Unexpected API error',
+        category: AppExceptionCategory.api,
+        code: AppExceptionCode.unknown,
         error: e,
         stackTrace: st,
       );
@@ -136,16 +150,23 @@ class DioHttpClient implements IHttpClient {
   }
 
   void _validateResponse(Response response) {
-    final code = response.statusCode ?? 0;
-    if (code >= 400) throw _mapHttpError(code, response.data);
+    final int code = response.statusCode ?? 0;
+    if (code >= 400) {
+      throw _mapHttpError(statusCode: code, data: response.data);
+    }
   }
 
-  Exception _mapDioError(DioException e, StackTrace st) {
+  AppException _mapDioError({
+    required DioException e,
+    required StackTrace stackTrace,
+  }) {
     if (e.error is SocketException) {
-      return ApiConnectionException(
+      return AppException(
         message: 'No internet',
+        category: AppExceptionCategory.api,
+        code: AppExceptionCode.connection,
         error: e,
-        stackTrace: st,
+        stackTrace: stackTrace,
       );
     }
 
@@ -153,39 +174,80 @@ class DioHttpClient implements IHttpClient {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.receiveTimeout:
       case DioExceptionType.sendTimeout:
-        return ApiTimeoutException(
+        return AppException(
           message: 'Request timed out',
+          category: AppExceptionCategory.api,
+          code: AppExceptionCode.timeout,
           error: e,
-          stackTrace: st,
+          stackTrace: stackTrace,
         );
+
       case DioExceptionType.badResponse:
-        return _mapHttpError(e.response?.statusCode, e.response?.data);
-      default:
-        return ApiUnknownException(
-          message: 'Dio error',
+        return _mapHttpError(
+          statusCode: e.response?.statusCode,
+          data: e.response?.data,
           error: e,
-          stackTrace: st,
+          stackTrace: stackTrace,
+        );
+
+      default:
+        return AppException(
+          message: 'Dio error',
+          category: AppExceptionCategory.api,
+          code: AppExceptionCode.unknown,
+          error: e,
+          stackTrace: stackTrace,
         );
     }
   }
 
-  Exception _mapHttpError(int? code, dynamic data) {
-    final msg = (data is Map && data['msg'] != null)
-        ? data['msg']
-        : 'Unknown error';
-    switch (code) {
-      case 400:
-        return ApiValidationException(message: msg, statusCode: code);
-      case 401:
-        return ApiUnauthorizedException(message: msg, statusCode: code);
-      case 403:
-        return ApiForbiddenException(message: msg, statusCode: code);
-      case 404:
-        return ApiNotFoundException(message: msg, statusCode: code);
-      case 500:
-        return ApiServerException(message: 'Server error', statusCode: code);
-      default:
-        return ApiUnknownException(message: msg, statusCode: code);
+  AppException _mapHttpError({
+    required int? statusCode,
+    required dynamic data,
+    Object? error,
+    StackTrace? stackTrace,
+  }) {
+    final String message = _extractMessage(data) ?? 'Unknown error';
+
+    final AppExceptionCode code = switch (statusCode) {
+      400 => AppExceptionCode.validation,
+      401 => AppExceptionCode.unauthorized,
+      403 => AppExceptionCode.forbidden,
+      404 => AppExceptionCode.notFound,
+      500 => AppExceptionCode.server,
+      _ => AppExceptionCode.unknown,
+    };
+
+    final Map<String, Object?>? details = _extractErrors(data);
+
+    return AppException(
+      message: message,
+      category: AppExceptionCategory.api,
+      code: code,
+      statusCode: statusCode,
+      error: error,
+      stackTrace: stackTrace,
+      details: details,
+    );
+  }
+
+  String? _extractMessage(dynamic data) {
+    if (data is Map && data['msg'] is String) {
+      final String msg = data['msg'] as String;
+      if (msg.isNotEmpty) {
+        return msg;
+      }
     }
+    return null;
+  }
+
+  Map<String, Object?>? _extractErrors(dynamic data) {
+    if (data is Map && data['errors'] is Map) {
+      final Map errors = data['errors'] as Map;
+      return errors.map((dynamic key, dynamic value) {
+        return MapEntry(key.toString(), value);
+      });
+    }
+    return null;
   }
 }

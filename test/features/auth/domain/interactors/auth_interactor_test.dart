@@ -8,6 +8,7 @@ import '../../../../core/data/repositories/mock_user_cache_repo.dart';
 import '../../../../core/data/repositories/mock_user_repo.dart';
 import '../../../../core/utils/logger/mock_logger.dart';
 import '../../data/repositories/mock_auth_repo.dart';
+import '../../data/repositories/mock_device_info_repo.dart';
 import '../../data/repositories/mock_session_cache_repo.dart';
 
 void main() {
@@ -17,6 +18,7 @@ void main() {
   late MockUserRepo mockUserRepo;
   late MockSessionCacheRepo mockSessionCacheRepo;
   late MockUserCacheRepo mockUserCacheRepo;
+  late MockDeviceInfoRepo mockDeviceInfoRepo;
   late MockLogger mockLogger;
 
   late AuthInteractor interactor;
@@ -25,6 +27,8 @@ void main() {
   late Session expiredSession;
   late Session refreshedSession;
   late User user;
+
+  const DeviceInfo deviceInfo = DeviceInfo();
 
   setUpAll(() {
     registerFallbackValue(
@@ -53,6 +57,8 @@ void main() {
         updatedAt: DateTime.utc(2029, 1, 2),
       ),
     );
+
+    registerFallbackValue(deviceInfo);
   });
 
   setUp(() {
@@ -60,13 +66,19 @@ void main() {
     mockUserRepo = MockUserRepo();
     mockSessionCacheRepo = MockSessionCacheRepo();
     mockUserCacheRepo = MockUserCacheRepo();
+    mockDeviceInfoRepo = MockDeviceInfoRepo();
     mockLogger = MockLogger();
+
+    when(
+      () => mockDeviceInfoRepo.getDeviceInfo(),
+    ).thenAnswer((_) async => deviceInfo);
 
     interactor = AuthInteractor(
       authRepo: mockAuthRepo,
       userRepo: mockUserRepo,
       sessionCacheRepo: mockSessionCacheRepo,
       userCacheRepo: mockUserCacheRepo,
+      deviceInfoRepo: mockDeviceInfoRepo,
       logger: mockLogger,
     );
 
@@ -129,11 +141,14 @@ void main() {
               password: any(named: 'password'),
               patronymic: any(named: 'patronymic'),
               description: any(named: 'description'),
+              deviceInfo: any(named: 'deviceInfo'),
             ),
           ).thenAnswer((_) async => freshSession);
 
           when(
-            () => mockSessionCacheRepo.saveSession(session: any(named: 'session')),
+            () => mockSessionCacheRepo.saveSession(
+              session: any(named: 'session'),
+            ),
           ).thenAnswer((_) async => true);
 
           when(
@@ -156,12 +171,14 @@ void main() {
           expect(result.$2, user);
 
           verifyInOrder([
+            () => mockDeviceInfoRepo.getDeviceInfo(),
             () => mockAuthRepo.register(
               username: 'john',
               firstName: 'John',
               lastName: 'Doe',
               password: '123',
               description: 'desc',
+              deviceInfo: deviceInfo,
             ),
             () => mockSessionCacheRepo.saveSession(session: freshSession),
             () => mockUserRepo.getUserById(userId: freshSession.userId),
@@ -184,11 +201,14 @@ void main() {
               password: any(named: 'password'),
               patronymic: any(named: 'patronymic'),
               description: any(named: 'description'),
+              deviceInfo: any(named: 'deviceInfo'),
             ),
           ).thenAnswer((_) async => freshSession);
 
           when(
-            () => mockSessionCacheRepo.saveSession(session: any(named: 'session')),
+            () => mockSessionCacheRepo.saveSession(
+              session: any(named: 'session'),
+            ),
           ).thenAnswer((_) async => false);
 
           when(
@@ -209,9 +229,22 @@ void main() {
           expect(result.$1, freshSession);
           expect(result.$2, user);
 
-          verify(() => mockSessionCacheRepo.saveSession(session: freshSession)).called(1);
-          verify(() => mockUserRepo.getUserById(userId: freshSession.userId)).called(1);
-          verify(() => mockUserCacheRepo.saveUser(user: user)).called(1);
+          verifyInOrder([
+            () => mockDeviceInfoRepo.getDeviceInfo(),
+            () => mockAuthRepo.register(
+              username: 'john',
+              firstName: 'John',
+              lastName: 'Doe',
+              password: '123',
+              deviceInfo: deviceInfo,
+            ),
+            () => mockSessionCacheRepo.saveSession(session: freshSession),
+            () => mockUserRepo.getUserById(userId: freshSession.userId),
+            () => mockUserCacheRepo.saveUser(user: user),
+          ]);
+
+          verify(() => mockLogger.exception(any())).called(1);
+          verifyNever(() => mockLogger.exception(any(), any()));
         },
       );
 
@@ -226,11 +259,14 @@ void main() {
               password: any(named: 'password'),
               patronymic: any(named: 'patronymic'),
               description: any(named: 'description'),
+              deviceInfo: any(named: 'deviceInfo'),
             ),
           ).thenAnswer((_) async => freshSession);
 
           when(
-            () => mockSessionCacheRepo.saveSession(session: any(named: 'session')),
+            () => mockSessionCacheRepo.saveSession(
+              session: any(named: 'session'),
+            ),
           ).thenAnswer((_) async => true);
 
           when(
@@ -251,11 +287,22 @@ void main() {
           expect(result.$1, freshSession);
           expect(result.$2, user);
 
-          verify(() => mockSessionCacheRepo.saveSession(session: freshSession)).called(1);
-          verify(() => mockUserRepo.getUserById(userId: freshSession.userId)).called(1);
-          verify(() => mockUserCacheRepo.saveUser(user: user)).called(1);
+          verifyInOrder([
+            () => mockDeviceInfoRepo.getDeviceInfo(),
+            () => mockAuthRepo.register(
+              username: 'john',
+              firstName: 'John',
+              lastName: 'Doe',
+              password: '123',
+              deviceInfo: deviceInfo,
+            ),
+            () => mockSessionCacheRepo.saveSession(session: freshSession),
+            () => mockUserRepo.getUserById(userId: freshSession.userId),
+            () => mockUserCacheRepo.saveUser(user: user),
+          ]);
 
-          
+          verify(() => mockLogger.exception(any())).called(1);
+          verifyNever(() => mockLogger.exception(any(), any()));
         },
       );
 
@@ -270,11 +317,14 @@ void main() {
               password: any(named: 'password'),
               patronymic: any(named: 'patronymic'),
               description: any(named: 'description'),
+              deviceInfo: any(named: 'deviceInfo'),
             ),
           ).thenAnswer((_) async => freshSession);
 
           when(
-            () => mockSessionCacheRepo.saveSession(session: any(named: 'session')),
+            () => mockSessionCacheRepo.saveSession(
+              session: any(named: 'session'),
+            ),
           ).thenAnswer((_) async => false);
 
           when(
@@ -311,6 +361,7 @@ void main() {
               password: any(named: 'password'),
               patronymic: any(named: 'patronymic'),
               description: any(named: 'description'),
+              deviceInfo: any(named: 'deviceInfo'),
             ),
           ).thenThrow(
             ApiValidationException(
@@ -330,11 +381,22 @@ void main() {
             throwsA(isA<UsernameAlreadyTakenException>()),
           );
 
-          verify(() => mockLogger.exception(any(), any())).called(1);
+          verifyInOrder([
+            () => mockDeviceInfoRepo.getDeviceInfo(),
+            () => mockLogger.exception(any(), any()),
+          ]);
 
-          verifyNever(() => mockSessionCacheRepo.saveSession(session: any(named: 'session')));
-          verifyNever(() => mockUserRepo.getUserById(userId: any(named: 'userId')));
-          verifyNever(() => mockUserCacheRepo.saveUser(user: any(named: 'user')));
+          verifyNever(
+            () => mockSessionCacheRepo.saveSession(
+              session: any(named: 'session'),
+            ),
+          );
+          verifyNever(
+            () => mockUserRepo.getUserById(userId: any(named: 'userId')),
+          );
+          verifyNever(
+            () => mockUserCacheRepo.saveUser(user: any(named: 'user')),
+          );
         },
       );
 
@@ -349,6 +411,7 @@ void main() {
               password: any(named: 'password'),
               patronymic: any(named: 'patronymic'),
               description: any(named: 'description'),
+              deviceInfo: any(named: 'deviceInfo'),
             ),
           ).thenThrow(
             ApiUnauthorizedException(message: 'unauthorized', statusCode: 401),
@@ -364,7 +427,10 @@ void main() {
             throwsA(isA<AuthUnauthorizedException>()),
           );
 
-          verify(() => mockLogger.exception(any(), any())).called(1);
+          verifyInOrder([
+            () => mockDeviceInfoRepo.getDeviceInfo(),
+            () => mockLogger.exception(any(), any()),
+          ]);
         },
       );
 
@@ -379,6 +445,7 @@ void main() {
               password: any(named: 'password'),
               patronymic: any(named: 'patronymic'),
               description: any(named: 'description'),
+              deviceInfo: any(named: 'deviceInfo'),
             ),
           ).thenThrow(ApiConnectionException(message: 'no connection'));
 
@@ -392,7 +459,10 @@ void main() {
             throwsA(isA<RegistrationFailedException>()),
           );
 
-          verify(() => mockLogger.exception(any(), any())).called(1);
+          verifyInOrder([
+            () => mockDeviceInfoRepo.getDeviceInfo(),
+            () => mockLogger.exception(any(), any()),
+          ]);
         },
       );
 
@@ -407,6 +477,7 @@ void main() {
               password: any(named: 'password'),
               patronymic: any(named: 'patronymic'),
               description: any(named: 'description'),
+              deviceInfo: any(named: 'deviceInfo'),
             ),
           ).thenThrow(Exception('boom'));
 
@@ -420,7 +491,10 @@ void main() {
             throwsA(isA<RegistrationFailedException>()),
           );
 
-          verify(() => mockLogger.exception(any(), any())).called(1);
+          verifyInOrder([
+            () => mockDeviceInfoRepo.getDeviceInfo(),
+            () => mockLogger.exception(any(), any()),
+          ]);
         },
       );
     });
@@ -433,11 +507,14 @@ void main() {
             () => mockAuthRepo.logIn(
               username: any(named: 'username'),
               password: any(named: 'password'),
+              deviceInfo: any(named: 'deviceInfo'),
             ),
           ).thenAnswer((_) async => freshSession);
 
           when(
-            () => mockSessionCacheRepo.saveSession(session: any(named: 'session')),
+            () => mockSessionCacheRepo.saveSession(
+              session: any(named: 'session'),
+            ),
           ).thenAnswer((_) async => true);
 
           when(
@@ -457,7 +534,12 @@ void main() {
           expect(result.$2, user);
 
           verifyInOrder([
-            () => mockAuthRepo.logIn(username: 'john', password: '123'),
+            () => mockDeviceInfoRepo.getDeviceInfo(),
+            () => mockAuthRepo.logIn(
+              username: 'john',
+              password: '123',
+              deviceInfo: deviceInfo,
+            ),
             () => mockSessionCacheRepo.saveSession(session: freshSession),
             () => mockUserRepo.getUserById(userId: freshSession.userId),
             () => mockUserCacheRepo.saveUser(user: user),
@@ -475,11 +557,14 @@ void main() {
             () => mockAuthRepo.logIn(
               username: any(named: 'username'),
               password: any(named: 'password'),
+              deviceInfo: any(named: 'deviceInfo'),
             ),
           ).thenAnswer((_) async => freshSession);
 
           when(
-            () => mockSessionCacheRepo.saveSession(session: any(named: 'session')),
+            () => mockSessionCacheRepo.saveSession(
+              session: any(named: 'session'),
+            ),
           ).thenAnswer((_) async => false);
 
           when(
@@ -510,11 +595,14 @@ void main() {
             () => mockAuthRepo.logIn(
               username: any(named: 'username'),
               password: any(named: 'password'),
+              deviceInfo: any(named: 'deviceInfo'),
             ),
           ).thenAnswer((_) async => freshSession);
 
           when(
-            () => mockSessionCacheRepo.saveSession(session: any(named: 'session')),
+            () => mockSessionCacheRepo.saveSession(
+              session: any(named: 'session'),
+            ),
           ).thenAnswer((_) async => true);
 
           when(
@@ -545,6 +633,7 @@ void main() {
             () => mockAuthRepo.logIn(
               username: any(named: 'username'),
               password: any(named: 'password'),
+              deviceInfo: any(named: 'deviceInfo'),
             ),
           ).thenThrow(
             ApiValidationException(
@@ -559,10 +648,22 @@ void main() {
             throwsA(isA<UsernameAlreadyTakenException>()),
           );
 
-          verify(() => mockLogger.exception(any(), any())).called(1);
-          verifyNever(() => mockSessionCacheRepo.saveSession(session: any(named: 'session')));
-          verifyNever(() => mockUserRepo.getUserById(userId: any(named: 'userId')));
-          verifyNever(() => mockUserCacheRepo.saveUser(user: any(named: 'user')));
+          verifyInOrder([
+            () => mockDeviceInfoRepo.getDeviceInfo(),
+            () => mockLogger.exception(any(), any()),
+          ]);
+
+          verifyNever(
+            () => mockSessionCacheRepo.saveSession(
+              session: any(named: 'session'),
+            ),
+          );
+          verifyNever(
+            () => mockUserRepo.getUserById(userId: any(named: 'userId')),
+          );
+          verifyNever(
+            () => mockUserCacheRepo.saveUser(user: any(named: 'user')),
+          );
         },
       );
 
@@ -573,6 +674,7 @@ void main() {
             () => mockAuthRepo.logIn(
               username: any(named: 'username'),
               password: any(named: 'password'),
+              deviceInfo: any(named: 'deviceInfo'),
             ),
           ).thenThrow(
             ApiUnauthorizedException(message: 'unauthorized', statusCode: 401),
@@ -583,7 +685,10 @@ void main() {
             throwsA(isA<AuthUnauthorizedException>()),
           );
 
-          verify(() => mockLogger.exception(any(), any())).called(1);
+          verifyInOrder([
+            () => mockDeviceInfoRepo.getDeviceInfo(),
+            () => mockLogger.exception(any(), any()),
+          ]);
         },
       );
 
@@ -594,6 +699,7 @@ void main() {
             () => mockAuthRepo.logIn(
               username: any(named: 'username'),
               password: any(named: 'password'),
+              deviceInfo: any(named: 'deviceInfo'),
             ),
           ).thenThrow(ApiConnectionException(message: 'no connection'));
 
@@ -602,7 +708,10 @@ void main() {
             throwsA(isA<LogInFailedException>()),
           );
 
-          verify(() => mockLogger.exception(any(), any())).called(1);
+          verifyInOrder([
+            () => mockDeviceInfoRepo.getDeviceInfo(),
+            () => mockLogger.exception(any(), any()),
+          ]);
         },
       );
 
@@ -611,6 +720,7 @@ void main() {
           () => mockAuthRepo.logIn(
             username: any(named: 'username'),
             password: any(named: 'password'),
+            deviceInfo: any(named: 'deviceInfo'),
           ),
         ).thenThrow(Exception('boom'));
 
@@ -619,7 +729,10 @@ void main() {
           throwsA(isA<LogInFailedException>()),
         );
 
-        verify(() => mockLogger.exception(any(), any())).called(1);
+        verifyInOrder([
+          () => mockDeviceInfoRepo.getDeviceInfo(),
+          () => mockLogger.exception(any(), any()),
+        ]);
       });
     });
 
@@ -627,8 +740,13 @@ void main() {
       test(
         'should use cached session and not call refresh when session is fresh',
         () async {
-          when(() => mockSessionCacheRepo.loadSession()).thenAnswer((_) async => freshSession);
-          when(() => mockUserRepo.getUserById(userId: any(named: 'userId'))).thenAnswer((_) async => user);
+          when(
+            () => mockSessionCacheRepo.loadSession(),
+          ).thenAnswer((_) async => freshSession);
+
+          when(
+            () => mockUserRepo.getUserById(userId: any(named: 'userId')),
+          ).thenAnswer((_) async => user);
 
           final (Session, User)? result = await interactor.restoreSession();
 
@@ -641,12 +759,22 @@ void main() {
             () => mockUserRepo.getUserById(userId: freshSession.userId),
           ]);
 
-          verifyNever(() => mockAuthRepo.refresh(
-                refreshToken: any(named: 'refreshToken'),
-                sessionId: any(named: 'sessionId'),
-              ));
-          verifyNever(() => mockSessionCacheRepo.saveSession(session: any(named: 'session')));
-          verifyNever(() => mockUserCacheRepo.saveUser(user: any(named: 'user')));
+          verifyNever(() => mockDeviceInfoRepo.getDeviceInfo());
+          verifyNever(
+            () => mockAuthRepo.refresh(
+              refreshToken: any(named: 'refreshToken'),
+              sessionId: any(named: 'sessionId'),
+              deviceInfo: any(named: 'deviceInfo'),
+            ),
+          );
+          verifyNever(
+            () => mockSessionCacheRepo.saveSession(
+              session: any(named: 'session'),
+            ),
+          );
+          verifyNever(
+            () => mockUserCacheRepo.saveUser(user: any(named: 'user')),
+          );
           verifyNever(() => mockSessionCacheRepo.clearSession());
           verifyNever(() => mockUserCacheRepo.clearUser());
           verifyNever(() => mockLogger.exception(any(), any()));
@@ -657,18 +785,31 @@ void main() {
       test(
         'should refresh session and persist caches when cached session is expired',
         () async {
-          when(() => mockSessionCacheRepo.loadSession()).thenAnswer((_) async => expiredSession);
+          when(
+            () => mockSessionCacheRepo.loadSession(),
+          ).thenAnswer((_) async => expiredSession);
 
           when(
             () => mockAuthRepo.refresh(
               refreshToken: any(named: 'refreshToken'),
               sessionId: any(named: 'sessionId'),
+              deviceInfo: any(named: 'deviceInfo'),
             ),
           ).thenAnswer((_) async => refreshedSession);
 
-          when(() => mockSessionCacheRepo.saveSession(session: any(named: 'session'))).thenAnswer((_) async => true);
-          when(() => mockUserRepo.getUserById(userId: any(named: 'userId'))).thenAnswer((_) async => user);
-          when(() => mockUserCacheRepo.saveUser(user: any(named: 'user'))).thenAnswer((_) async => true);
+          when(
+            () => mockSessionCacheRepo.saveSession(
+              session: any(named: 'session'),
+            ),
+          ).thenAnswer((_) async => true);
+
+          when(
+            () => mockUserRepo.getUserById(userId: any(named: 'userId')),
+          ).thenAnswer((_) async => user);
+
+          when(
+            () => mockUserCacheRepo.saveUser(user: any(named: 'user')),
+          ).thenAnswer((_) async => true);
 
           final (Session, User)? result = await interactor.restoreSession();
 
@@ -678,9 +819,11 @@ void main() {
 
           verifyInOrder([
             () => mockSessionCacheRepo.loadSession(),
+            () => mockDeviceInfoRepo.getDeviceInfo(),
             () => mockAuthRepo.refresh(
               refreshToken: expiredSession.refreshToken,
               sessionId: expiredSession.sessionId,
+              deviceInfo: deviceInfo,
             ),
             () => mockSessionCacheRepo.saveSession(session: refreshedSession),
             () => mockUserRepo.getUserById(userId: refreshedSession.userId),
@@ -697,19 +840,31 @@ void main() {
       test(
         'should return (Session, User) even when saveSession returns false after refresh and should log the failure',
         () async {
-          when(() => mockSessionCacheRepo.loadSession()).thenAnswer((_) async => expiredSession);
+          when(
+            () => mockSessionCacheRepo.loadSession(),
+          ).thenAnswer((_) async => expiredSession);
 
           when(
             () => mockAuthRepo.refresh(
               refreshToken: any(named: 'refreshToken'),
               sessionId: any(named: 'sessionId'),
+              deviceInfo: any(named: 'deviceInfo'),
             ),
           ).thenAnswer((_) async => refreshedSession);
 
-          when(() => mockSessionCacheRepo.saveSession(session: any(named: 'session'))).thenAnswer((_) async => false);
+          when(
+            () => mockSessionCacheRepo.saveSession(
+              session: any(named: 'session'),
+            ),
+          ).thenAnswer((_) async => false);
 
-          when(() => mockUserRepo.getUserById(userId: any(named: 'userId'))).thenAnswer((_) async => user);
-          when(() => mockUserCacheRepo.saveUser(user: any(named: 'user'))).thenAnswer((_) async => true);
+          when(
+            () => mockUserRepo.getUserById(userId: any(named: 'userId')),
+          ).thenAnswer((_) async => user);
+
+          when(
+            () => mockUserCacheRepo.saveUser(user: any(named: 'user')),
+          ).thenAnswer((_) async => true);
 
           final (Session, User)? result = await interactor.restoreSession();
 
@@ -717,9 +872,20 @@ void main() {
           expect(result!.$1, refreshedSession);
           expect(result.$2, user);
 
+          verifyInOrder([
+            () => mockSessionCacheRepo.loadSession(),
+            () => mockDeviceInfoRepo.getDeviceInfo(),
+            () => mockAuthRepo.refresh(
+              refreshToken: expiredSession.refreshToken,
+              sessionId: expiredSession.sessionId,
+              deviceInfo: deviceInfo,
+            ),
+            () => mockSessionCacheRepo.saveSession(session: refreshedSession),
+            () => mockUserRepo.getUserById(userId: refreshedSession.userId),
+            () => mockUserCacheRepo.saveUser(user: user),
+          ]);
+
           verify(() => mockLogger.exception(any())).called(1);
-          verifyNever(() => mockSessionCacheRepo.clearSession());
-          verifyNever(() => mockUserCacheRepo.clearUser());
           verifyNever(() => mockLogger.exception(any(), any()));
         },
       );
@@ -727,19 +893,31 @@ void main() {
       test(
         'should return (Session, User) even when saveUser returns false after refresh and should log the failure',
         () async {
-          when(() => mockSessionCacheRepo.loadSession()).thenAnswer((_) async => expiredSession);
+          when(
+            () => mockSessionCacheRepo.loadSession(),
+          ).thenAnswer((_) async => expiredSession);
 
           when(
             () => mockAuthRepo.refresh(
               refreshToken: any(named: 'refreshToken'),
               sessionId: any(named: 'sessionId'),
+              deviceInfo: any(named: 'deviceInfo'),
             ),
           ).thenAnswer((_) async => refreshedSession);
 
-          when(() => mockSessionCacheRepo.saveSession(session: any(named: 'session'))).thenAnswer((_) async => true);
+          when(
+            () => mockSessionCacheRepo.saveSession(
+              session: any(named: 'session'),
+            ),
+          ).thenAnswer((_) async => true);
 
-          when(() => mockUserRepo.getUserById(userId: any(named: 'userId'))).thenAnswer((_) async => user);
-          when(() => mockUserCacheRepo.saveUser(user: any(named: 'user'))).thenAnswer((_) async => false);
+          when(
+            () => mockUserRepo.getUserById(userId: any(named: 'userId')),
+          ).thenAnswer((_) async => user);
+
+          when(
+            () => mockUserCacheRepo.saveUser(user: any(named: 'user')),
+          ).thenAnswer((_) async => false);
 
           final (Session, User)? result = await interactor.restoreSession();
 
@@ -747,9 +925,20 @@ void main() {
           expect(result!.$1, refreshedSession);
           expect(result.$2, user);
 
+          verifyInOrder([
+            () => mockSessionCacheRepo.loadSession(),
+            () => mockDeviceInfoRepo.getDeviceInfo(),
+            () => mockAuthRepo.refresh(
+              refreshToken: expiredSession.refreshToken,
+              sessionId: expiredSession.sessionId,
+              deviceInfo: deviceInfo,
+            ),
+            () => mockSessionCacheRepo.saveSession(session: refreshedSession),
+            () => mockUserRepo.getUserById(userId: refreshedSession.userId),
+            () => mockUserCacheRepo.saveUser(user: user),
+          ]);
+
           verify(() => mockLogger.exception(any())).called(1);
-          verifyNever(() => mockSessionCacheRepo.clearSession());
-          verifyNever(() => mockUserCacheRepo.clearUser());
           verifyNever(() => mockLogger.exception(any(), any()));
         },
       );
@@ -757,8 +946,9 @@ void main() {
       test(
         'should return null when no cached session exists (StorageNotFoundException) and not log out',
         () async {
-          when(() => mockSessionCacheRepo.loadSession())
-              .thenThrow(StorageNotFoundException(message: 'no session'));
+          when(
+            () => mockSessionCacheRepo.loadSession(),
+          ).thenThrow(StorageNotFoundException(message: 'no session'));
 
           final (Session, User)? result = await interactor.restoreSession();
 
@@ -767,32 +957,47 @@ void main() {
           verify(() => mockLogger.exception(any(), any())).called(1);
           verifyNever(() => mockSessionCacheRepo.clearSession());
           verifyNever(() => mockUserCacheRepo.clearUser());
-          verifyNever(() => mockAuthRepo.refresh(
-                refreshToken: any(named: 'refreshToken'),
-                sessionId: any(named: 'sessionId'),
-              ));
+          verifyNever(() => mockDeviceInfoRepo.getDeviceInfo());
+          verifyNever(
+            () => mockAuthRepo.refresh(
+              refreshToken: any(named: 'refreshToken'),
+              sessionId: any(named: 'sessionId'),
+              deviceInfo: any(named: 'deviceInfo'),
+            ),
+          );
         },
       );
 
       test(
         'should log out and return null when refresh throws ApiUnauthorizedException',
         () async {
-          when(() => mockSessionCacheRepo.loadSession()).thenAnswer((_) async => expiredSession);
+          when(
+            () => mockSessionCacheRepo.loadSession(),
+          ).thenAnswer((_) async => expiredSession);
 
           when(
             () => mockAuthRepo.refresh(
               refreshToken: any(named: 'refreshToken'),
               sessionId: any(named: 'sessionId'),
+              deviceInfo: any(named: 'deviceInfo'),
             ),
-          ).thenThrow(ApiUnauthorizedException(message: 'unauthorized', statusCode: 401));
+          ).thenThrow(
+            ApiUnauthorizedException(message: 'unauthorized', statusCode: 401),
+          );
 
-          when(() => mockSessionCacheRepo.clearSession()).thenAnswer((_) async => true);
-          when(() => mockUserCacheRepo.clearUser()).thenAnswer((_) async => true);
+          when(
+            () => mockSessionCacheRepo.clearSession(),
+          ).thenAnswer((_) async => true);
+
+          when(
+            () => mockUserCacheRepo.clearUser(),
+          ).thenAnswer((_) async => true);
 
           final (Session, User)? result = await interactor.restoreSession();
 
           expect(result, isNull);
 
+          verify(() => mockDeviceInfoRepo.getDeviceInfo()).called(1);
           verify(() => mockLogger.exception(any(), any())).called(1);
           verify(() => mockSessionCacheRepo.clearSession()).called(1);
           verify(() => mockUserCacheRepo.clearUser()).called(1);
@@ -802,22 +1007,33 @@ void main() {
       test(
         'should log out and return null when refresh throws ApiForbiddenException',
         () async {
-          when(() => mockSessionCacheRepo.loadSession()).thenAnswer((_) async => expiredSession);
+          when(
+            () => mockSessionCacheRepo.loadSession(),
+          ).thenAnswer((_) async => expiredSession);
 
           when(
             () => mockAuthRepo.refresh(
               refreshToken: any(named: 'refreshToken'),
               sessionId: any(named: 'sessionId'),
+              deviceInfo: any(named: 'deviceInfo'),
             ),
-          ).thenThrow(ApiForbiddenException(message: 'forbidden', statusCode: 403));
+          ).thenThrow(
+            ApiForbiddenException(message: 'forbidden', statusCode: 403),
+          );
 
-          when(() => mockSessionCacheRepo.clearSession()).thenAnswer((_) async => true);
-          when(() => mockUserCacheRepo.clearUser()).thenAnswer((_) async => true);
+          when(
+            () => mockSessionCacheRepo.clearSession(),
+          ).thenAnswer((_) async => true);
+
+          when(
+            () => mockUserCacheRepo.clearUser(),
+          ).thenAnswer((_) async => true);
 
           final (Session, User)? result = await interactor.restoreSession();
 
           expect(result, isNull);
 
+          verify(() => mockDeviceInfoRepo.getDeviceInfo()).called(1);
           verify(() => mockLogger.exception(any(), any())).called(1);
           verify(() => mockSessionCacheRepo.clearSession()).called(1);
           verify(() => mockUserCacheRepo.clearUser()).called(1);
@@ -827,12 +1043,15 @@ void main() {
       test(
         'should return null and not log out when refresh throws ApiConnectionException',
         () async {
-          when(() => mockSessionCacheRepo.loadSession()).thenAnswer((_) async => expiredSession);
+          when(
+            () => mockSessionCacheRepo.loadSession(),
+          ).thenAnswer((_) async => expiredSession);
 
           when(
             () => mockAuthRepo.refresh(
               refreshToken: any(named: 'refreshToken'),
               sessionId: any(named: 'sessionId'),
+              deviceInfo: any(named: 'deviceInfo'),
             ),
           ).thenThrow(ApiConnectionException(message: 'no connection'));
 
@@ -840,6 +1059,7 @@ void main() {
 
           expect(result, isNull);
 
+          verify(() => mockDeviceInfoRepo.getDeviceInfo()).called(1);
           verify(() => mockLogger.exception(any(), any())).called(1);
           verifyNever(() => mockSessionCacheRepo.clearSession());
           verifyNever(() => mockUserCacheRepo.clearUser());
@@ -849,11 +1069,21 @@ void main() {
       test(
         'should return null and log out when cached session is fresh but getUserById throws',
         () async {
-          when(() => mockSessionCacheRepo.loadSession()).thenAnswer((_) async => freshSession);
-          when(() => mockUserRepo.getUserById(userId: any(named: 'userId'))).thenThrow(Exception('boom'));
+          when(
+            () => mockSessionCacheRepo.loadSession(),
+          ).thenAnswer((_) async => freshSession);
 
-          when(() => mockSessionCacheRepo.clearSession()).thenAnswer((_) async => true);
-          when(() => mockUserCacheRepo.clearUser()).thenAnswer((_) async => true);
+          when(
+            () => mockUserRepo.getUserById(userId: any(named: 'userId')),
+          ).thenThrow(Exception('boom'));
+
+          when(
+            () => mockSessionCacheRepo.clearSession(),
+          ).thenAnswer((_) async => true);
+
+          when(
+            () => mockUserCacheRepo.clearUser(),
+          ).thenAnswer((_) async => true);
 
           final (Session, User)? result = await interactor.restoreSession();
 
@@ -862,13 +1092,25 @@ void main() {
           verify(() => mockLogger.exception(any(), any())).called(1);
           verify(() => mockSessionCacheRepo.clearSession()).called(1);
           verify(() => mockUserCacheRepo.clearUser()).called(1);
+
+          verifyNever(() => mockDeviceInfoRepo.getDeviceInfo());
+          verifyNever(
+            () => mockAuthRepo.refresh(
+              refreshToken: any(named: 'refreshToken'),
+              sessionId: any(named: 'sessionId'),
+              deviceInfo: any(named: 'deviceInfo'),
+            ),
+          );
         },
       );
     });
 
     group('logOut', () {
       test('should clear session and user caches', () async {
-        when(() => mockSessionCacheRepo.clearSession()).thenAnswer((_) async => true);
+        when(
+          () => mockSessionCacheRepo.clearSession(),
+        ).thenAnswer((_) async => true);
+
         when(() => mockUserCacheRepo.clearUser()).thenAnswer((_) async => true);
 
         await interactor.logOut();
@@ -879,20 +1121,30 @@ void main() {
         ]);
       });
 
-      test('should propagate exception if session cache clear throws', () async {
-        when(() => mockSessionCacheRepo.clearSession()).thenThrow(StorageDeleteException(message: 'fail'));
+      test(
+        'should propagate exception if session cache clear throws',
+        () async {
+          when(
+            () => mockSessionCacheRepo.clearSession(),
+          ).thenThrow(StorageDeleteException(message: 'fail'));
 
-        await expectLater(
-          () => interactor.logOut(),
-          throwsA(isA<StorageDeleteException>()),
-        );
+          await expectLater(
+            () => interactor.logOut(),
+            throwsA(isA<StorageDeleteException>()),
+          );
 
-        verifyNever(() => mockUserCacheRepo.clearUser());
-      });
+          verifyNever(() => mockUserCacheRepo.clearUser());
+        },
+      );
 
       test('should propagate exception if user cache clear throws', () async {
-        when(() => mockSessionCacheRepo.clearSession()).thenAnswer((_) async => true);
-        when(() => mockUserCacheRepo.clearUser()).thenThrow(StorageDeleteException(message: 'fail'));
+        when(
+          () => mockSessionCacheRepo.clearSession(),
+        ).thenAnswer((_) async => true);
+
+        when(
+          () => mockUserCacheRepo.clearUser(),
+        ).thenThrow(StorageDeleteException(message: 'fail'));
 
         await expectLater(
           () => interactor.logOut(),
@@ -906,7 +1158,9 @@ void main() {
 
     group('getCachedSession', () {
       test('should return cached session from sessionCacheRepo', () async {
-        when(() => mockSessionCacheRepo.loadSession()).thenAnswer((_) async => freshSession);
+        when(
+          () => mockSessionCacheRepo.loadSession(),
+        ).thenAnswer((_) async => freshSession);
 
         final Session result = await interactor.getCachedSession();
 
@@ -914,17 +1168,21 @@ void main() {
         verify(() => mockSessionCacheRepo.loadSession()).called(1);
       });
 
-      test('should propagate exception from sessionCacheRepo.loadSession', () async {
-        when(() => mockSessionCacheRepo.loadSession())
-            .thenThrow(StorageNotFoundException(message: 'no session'));
+      test(
+        'should propagate exception from sessionCacheRepo.loadSession',
+        () async {
+          when(
+            () => mockSessionCacheRepo.loadSession(),
+          ).thenThrow(StorageNotFoundException(message: 'no session'));
 
-        await expectLater(
-          () => interactor.getCachedSession(),
-          throwsA(isA<StorageNotFoundException>()),
-        );
+          await expectLater(
+            () => interactor.getCachedSession(),
+            throwsA(isA<StorageNotFoundException>()),
+          );
 
-        verify(() => mockSessionCacheRepo.loadSession()).called(1);
-      });
+          verify(() => mockSessionCacheRepo.loadSession()).called(1);
+        },
+      );
     });
   });
 }

@@ -30,8 +30,10 @@ final class AuthRouterListenable extends ChangeNotifier {
   AuthFlowStatus get status => _status;
 
   AuthFlowStatus _mapStateToStatus(AuthState state) {
-    // Adjust mapping to your concrete states
-    if (state is AuthLoadingState || state is AuthInitialState) {
+    if (state is AuthInitialState) {
+      return AuthFlowStatus.unknown;
+    }
+    if (state is AuthLoadingState) {
       return AuthFlowStatus.loading;
     }
     if (state is AuthAuthenticatedState) {
@@ -41,7 +43,6 @@ final class AuthRouterListenable extends ChangeNotifier {
       return AuthFlowStatus.unauthenticated;
     }
     return AuthFlowStatus.unknown;
-    // unknown is rarely used in practice; loading will be first emitted.
   }
 
   @override

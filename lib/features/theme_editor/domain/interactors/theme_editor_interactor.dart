@@ -11,9 +11,7 @@ class ThemeEditorInteractor {
     return await _themeEditorRepo.loadAppTheme();
   }
 
-  Future<bool> updateAppTheme({required AppTheme updatedAppTheme}) async {
-    return await _themeEditorRepo.updateAppTheme(
-      updatedAppTheme: updatedAppTheme,
-    );
+  Future<bool> updateAppTheme({required AppTheme newAppTheme}) async {
+    return await _themeEditorRepo.saveAppTheme(newAppTheme: newAppTheme);
   }
 }

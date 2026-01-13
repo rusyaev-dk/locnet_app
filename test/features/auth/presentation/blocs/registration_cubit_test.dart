@@ -19,7 +19,7 @@ void main() {
   });
 
   group('RegistrationCubit', () {
-    group('updateFirstName', () {
+    group('updateFirstName method', () {
       blocTest<RegistrationCubit, RegistrationState>(
         'should emit EmptyFieldException when newFirstName is null',
         build: buildCubit,
@@ -92,7 +92,7 @@ void main() {
       );
     });
 
-    group('updateLastName', () {
+    group('updateLastName method', () {
       blocTest<RegistrationCubit, RegistrationState>(
         'should emit EmptyFieldException when newLastName is null',
         build: buildCubit,
@@ -161,7 +161,7 @@ void main() {
       );
     });
 
-    group('updateDescription', () {
+    group('updateDescription method', () {
       blocTest<RegistrationCubit, RegistrationState>(
         'should clear descriptionException when newUserDescription is null',
         build: buildCubit,
@@ -232,7 +232,7 @@ void main() {
       );
     });
 
-    group('updateUsername', () {
+    group('updateUsername method', () {
       blocTest<RegistrationCubit, RegistrationState>(
         'should emit EmptyFieldException when newUsername is null',
         build: buildCubit,
@@ -268,9 +268,9 @@ void main() {
         'should emit validator exception when validateUsername throws',
         build: buildCubit,
         act: (cubit) => cubit.updateUsername(newUsername: 'a!^&&&'),
-        expect: () => <dynamic>[
+        expect: () => [
           isA<RegistrationState>()
-              .having((s) => s.username, 'username', isNull)
+              .having((s) => s.username, 'username', equals('a!^&&&'))
               .having(
                 (s) => s.usernameException,
                 'usernameException',
@@ -283,12 +283,12 @@ void main() {
         'should clear usernameException when newUsername becomes valid after invalid',
         build: buildCubit,
         act: (cubit) async {
-          await cubit.updateUsername(newUsername: 'a');
+          await cubit.updateUsername(newUsername: '!exampleinvalid?');
           await cubit.updateUsername(newUsername: 'john_doe');
         },
         expect: () => <dynamic>[
           isA<RegistrationState>()
-              .having((s) => s.username, 'username', 'a')
+              .having((s) => s.username, 'username', equals("!exampleinvalid?"))
               .having(
                 (s) => s.usernameException,
                 'usernameException',
@@ -301,7 +301,7 @@ void main() {
       );
     });
 
-    group('updatePassword', () {
+    group('updatePassword method', () {
       blocTest<RegistrationCubit, RegistrationState>(
         'should emit EmptyFieldException when newPassword is null',
         build: buildCubit,
@@ -421,7 +421,7 @@ void main() {
       );
     });
 
-    group('updateRepeatPassword', () {
+    group('updateRepeatPassword method', () {
       blocTest<RegistrationCubit, RegistrationState>(
         'should emit EmptyFieldException when newRepeatPassword is null',
         build: buildCubit,
@@ -584,7 +584,7 @@ void main() {
       );
     });
 
-    group('canRegister', () {
+    group('canRegister method', () {
       test('should return false on initial state', () {
         final cubit = buildCubit();
         addTearDown(cubit.close);
@@ -645,8 +645,8 @@ void main() {
           await cubit.updateLastName(newLastName: 'Doe');
           await cubit.updateUsername(newUsername: 'john_doe');
           await cubit.updateDescription(newUserDescription: 'Hello');
-          await cubit.updatePassword(newPassword: 'abcd');
-          await cubit.updateRepeatPassword(newRepeatPassword: 'abcd');
+          await cubit.updatePassword(newPassword: 'A!fa98dsf9abcd');
+          await cubit.updateRepeatPassword(newRepeatPassword: 'A!fa98dsf9abcd');
 
           expect(cubit.canRegister(), isTrue);
 
@@ -666,8 +666,8 @@ void main() {
           await cubit.updateLastName(newLastName: 'Doe');
           await cubit.updateUsername(newUsername: 'john_doe');
           await cubit.updateDescription(newUserDescription: 'Hello');
-          await cubit.updatePassword(newPassword: 'abcd');
-          await cubit.updateRepeatPassword(newRepeatPassword: 'abcd');
+          await cubit.updatePassword(newPassword: 'A!fa98dsf9abcd');
+          await cubit.updateRepeatPassword(newRepeatPassword: 'A!fa98dsf9abcd');
 
           expect(cubit.canRegister(), isTrue);
         },
@@ -692,8 +692,8 @@ void main() {
           await cubit.updateLastName(newLastName: 'Doe');
           await cubit.updateUsername(newUsername: 'john_doe');
           await cubit.updateDescription(newUserDescription: 'Hello');
-          await cubit.updatePassword(newPassword: 'abcd');
-          await cubit.updateRepeatPassword(newRepeatPassword: 'abcd');
+          await cubit.updatePassword(newPassword: 'A!fa98dsf9abcd');
+          await cubit.updateRepeatPassword(newRepeatPassword: 'A!fa98dsf9abcd');
 
           expect(cubit.canRegister(), isTrue);
         },

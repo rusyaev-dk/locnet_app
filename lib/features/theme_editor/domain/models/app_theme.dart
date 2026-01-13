@@ -1,7 +1,8 @@
 // ignore_for_file: sort_constructors_first
 
+import 'dart:convert';
+
 import 'package:equatable/equatable.dart';
-import 'package:locnet_app/features/theme_editor/data/data.dart';
 import 'package:locnet_app/features/theme_editor/domain/domain.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
@@ -10,13 +11,6 @@ class AppTheme extends Equatable {
 
   final AppColorPalette lightPalette;
   final AppColorPalette darkPalette;
-
-  factory AppTheme.fromDto(AppThemeDto dto) {
-    return AppTheme(
-      lightPalette: AppColorPalette.fromDto(dto.lightPalette),
-      darkPalette: AppColorPalette.fromDto(dto.darkPalette),
-    );
-  }
 
   AppTheme copyWith({
     AppColorPalette? lightPalette,
@@ -39,4 +33,29 @@ class AppTheme extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[lightPalette, darkPalette];
+}
+
+extension AppThemeSerialization on AppTheme {
+  String toJsonString() {
+    final Map<String, dynamic> json = <String, dynamic>{
+      'lightPalette': lightPalette.toJson(),
+      'darkPalette': darkPalette.toJson(),
+    };
+
+    return jsonEncode(json);
+  }
+
+  static AppTheme fromJsonString(String source) {
+    final Map<String, dynamic> json =
+        jsonDecode(source) as Map<String, dynamic>;
+
+    return AppTheme(
+      lightPalette: AppColorPaletteSerialization.fromJson(
+        json['lightPalette'] as Map<String, dynamic>,
+      ),
+      darkPalette: AppColorPaletteSerialization.fromJson(
+        json['darkPalette'] as Map<String, dynamic>,
+      ),
+    );
+  }
 }

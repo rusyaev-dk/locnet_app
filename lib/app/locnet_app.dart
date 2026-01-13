@@ -11,7 +11,6 @@ import 'package:locnet_app/features/settings/presentation/presentation.dart';
 import 'package:locnet_app/features/splash/splash_screen.dart';
 import 'package:locnet_app/features/theme_editor/domain/domain.dart';
 import 'package:locnet_app/gen/gen.dart';
-import 'package:locnet_app/uikit/themes/app_theme_data.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
 class LocnetApp extends StatefulWidget {

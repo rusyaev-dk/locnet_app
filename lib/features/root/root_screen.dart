@@ -13,16 +13,20 @@ class RootScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiToastListener(
       listeners: [
+        ToastListener<AuthCubit, AuthState, AuthFailureState>(
+          bloc: context.read<AuthCubit>(),
+          messageOf: (context, AuthFailureState state) =>
+              AppExceptionsTranslator.translate(
+                context,
+                state.failure,
+                fallback: "Auth error",
+              ),
+        ),
         ToastListener<SettingsCubit, SettingsState, SettingsState>(
           bloc: context.read<SettingsCubit>(),
           messageOf: (context, SettingsState state) =>
               AppExceptionsTranslator.translate(context, state.failure),
         ),
-        ToastListener<AuthCubit, AuthState, AuthFailureState>(
-         bloc: context.read<AuthCubit>(),
-          messageOf: (context, AuthFailureState state) =>
-              AppExceptionsTranslator.translate(context, state.failure),
-        )
       ],
       child: child,
     );

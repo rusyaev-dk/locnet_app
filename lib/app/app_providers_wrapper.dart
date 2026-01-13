@@ -56,7 +56,9 @@ class AppProvidersWrapper extends StatelessWidget {
           RepositoryProvider<IConversationsListRepo>(
             create: (context) => envPreset.createConversationsListRepo(),
           ),
-
+          RepositoryProvider<IDeviceInfoRepo>(
+            create: (context) => envPreset.createDeviceInfoRepo(),
+          ),
           RepositoryProvider<ISettingsRepo>(
             create: (context) => envPreset.createSettingsRepo(),
           ),
@@ -121,6 +123,7 @@ class _InteractorProviders extends StatelessWidget {
             userRepo: context.read<IUserRepo>(),
             sessionCacheRepo: context.read<ISessionCacheRepo>(),
             userCacheRepo: context.read<IUserCacheRepo>(),
+            deviceInfoRepo: context.read<IDeviceInfoRepo>(),
             logger: context.read<ILogger>(),
           ),
         ),

@@ -38,7 +38,9 @@ final class ProdEnvPreset implements IAppEnvPreset {
 
   @override
   IThemeEditorRepo createThemeEditorRepo() {
-    return MockThemeEditorRepo();
+    return LocalThemeEditorRepo(
+      storage: _appScope.storageAggregator.localKeyValueStorage,
+    );
   }
 
   @override
@@ -95,5 +97,10 @@ final class ProdEnvPreset implements IAppEnvPreset {
     return LocalUserCacheRepo(
       storage: _appScope.storageAggregator.secureStorage,
     );
+  }
+
+  @override
+  IDeviceInfoRepo createDeviceInfoRepo() {
+    return const DeviceInfoRepo();
   }
 }

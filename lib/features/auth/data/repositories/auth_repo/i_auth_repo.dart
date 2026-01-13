@@ -1,7 +1,11 @@
 import 'package:locnet_app/features/auth/domain/domain.dart';
 
 abstract interface class IAuthRepo {
-  Future<Session> logIn({required String username, required String password});
+  Future<Session> logIn({
+    required String username,
+    required String password,
+    DeviceInfo? deviceInfo,
+  });
 
   Future<Session> register({
     required String username,
@@ -10,11 +14,13 @@ abstract interface class IAuthRepo {
     required String password,
     String? patronymic,
     String? description,
+    DeviceInfo? deviceInfo,
   });
 
   Future<Session> refresh({
     required String refreshToken,
     required String sessionId,
+    DeviceInfo? deviceInfo,
   });
 
   Future<void> logOut({required String sessionId});

@@ -25,6 +25,12 @@ final class DevEnvPreset implements IAppEnvPreset {
   @override
   IAuthRepo createAuthRepo() {
     return MockAuthRepo();
+    // return HttpAuthRepo(
+    //   httpClient: DioHttpClient(
+    //     dio: _appScope.dio,
+    //     apiConfig: _appScope.apiConfig,
+    //   ),
+    // );
   }
 
   @override
@@ -36,7 +42,9 @@ final class DevEnvPreset implements IAppEnvPreset {
 
   @override
   IThemeEditorRepo createThemeEditorRepo() {
-    return MockThemeEditorRepo();
+    return LocalThemeEditorRepo(
+      storage: _appScope.storageAggregator.localKeyValueStorage,
+    );
   }
 
   @override
@@ -86,5 +94,10 @@ final class DevEnvPreset implements IAppEnvPreset {
     return LocalUserCacheRepo(
       storage: _appScope.storageAggregator.secureStorage,
     );
+  }
+
+  @override
+  IDeviceInfoRepo createDeviceInfoRepo() {
+    return const DeviceInfoRepo();
   }
 }

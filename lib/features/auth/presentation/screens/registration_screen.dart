@@ -63,7 +63,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     return Scaffold(
       backgroundColor: colorScheme.primaryContainer,
       body: SafeArea(
-        child:
+        child: MultiToastListener(
+          listeners: [
+            ToastListener<AuthCubit, AuthState, AuthFailureState>(
+              bloc: context.read<AuthCubit>(),
+              messageOf: (context, AuthFailureState state) =>
+                  AppExceptionsTranslator.translate(
+                    context,
+                    state.failure,
+                    fallback: 'Auth error',
+                  ),
+            ),
             ToastListener<
               RegistrationCubit,
               RegistrationState,
@@ -72,28 +82,25 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               bloc: context.read<RegistrationCubit>(),
               messageOf: (context, RegistrationState state) =>
                   AppExceptionsTranslator.translate(context, state.failure),
-              child: BlocBuilder<AuthCubit, AuthState>(
-                builder: (BuildContext context, AuthState state) {
-                  switch (state) {
-                    case AuthLoadingState():
-                      return const Center(child: CircularProgressIndicator());
-                    case AuthInitialState():
-                    case AuthUnauthenticatedState():
-                    case AuthFailureState():
-                      return _RegistrationScrollableForm(
-                        firstNameController: _firstNameController,
-                        lastNameController: _lastNameController,
-                        jobPositionController: _jobPositionController,
-                        loginController: _usernameController,
-                        passwordController: _passwordController,
-                        repeatPasswordController: _repeatPasswordController,
-                      );
-                    case AuthAuthenticatedState():
-                      return const SizedBox.shrink();
-                  }
-                },
-              ),
             ),
+          ],
+          child: BlocBuilder<AuthCubit, AuthState>(
+            builder: (BuildContext context, AuthState state) {
+              if (state is AuthAuthenticatedState) {
+                return const SizedBox.shrink();
+              }
+
+              return _RegistrationScrollableForm(
+                firstNameController: _firstNameController,
+                lastNameController: _lastNameController,
+                jobPositionController: _jobPositionController,
+                loginController: _usernameController,
+                passwordController: _passwordController,
+                repeatPasswordController: _repeatPasswordController,
+              );
+            },
+          ),
+        ),
       ),
     );
   }

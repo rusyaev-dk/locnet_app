@@ -31,6 +31,13 @@ class AppRouter {
         final String location = state.uri.path;
 
         if (status == AuthFlowStatus.loading) {
+          final bool isAuthRoute =
+              location == AppRoutes.login || location == AppRoutes.registration;
+
+          if (isAuthRoute) {
+            return null;
+          }
+
           return location == '/' ? null : '/';
         }
 

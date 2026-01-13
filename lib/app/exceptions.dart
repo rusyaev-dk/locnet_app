@@ -1,24 +1,23 @@
-// Core app exceptions
-
-abstract class AppException implements Exception {
+class AppException implements Exception {
   AppException({
     required this.message,
-    required this.error,
-    required this.stackTrace,
+    this.error,
+    this.stackTrace,
+    this.statusCode,
+    this.details,
   });
 
   final String message;
+
   final Object? error;
   final StackTrace? stackTrace;
 
-  @override
-  String toString() => 'AppException: $message';
+  final int? statusCode;
+
+  final Map<String, Object?>? details;
 }
 
-class AppUnknownException extends AppException {
-  AppUnknownException({
-    required super.message,
-    super.error,
-    super.stackTrace,
-  });
+final class AppUnknownException extends AppException {
+  AppUnknownException({required super.message, super.error, super.stackTrace})
+    : super();
 }

@@ -50,27 +50,33 @@ class _LogInScreenState extends State<LogInScreen> {
     return Scaffold(
       backgroundColor: colorScheme.primaryContainer,
       body: SafeArea(
-        child: ToastListener<LogInCubit, LogInState, LogInState>(
-          bloc: context.read<LogInCubit>(),
-          messageOf: (context, LogInState state) =>
-              AppExceptionsTranslator.translate(context, state.failure),
+        child: MultiToastListener(
+          listeners: [
+            ToastListener<AuthCubit, AuthState, AuthFailureState>(
+              bloc: context.read<AuthCubit>(),
+              messageOf: (context, AuthFailureState state) =>
+                  AppExceptionsTranslator.translate(
+                    context,
+                    state.failure,
+                    fallback: 'Auth error',
+                  ),
+            ),
+            ToastListener<LogInCubit, LogInState, LogInState>(
+              bloc: context.read<LogInCubit>(),
+              messageOf: (context, LogInState state) =>
+                  AppExceptionsTranslator.translate(context, state.failure),
+            ),
+          ],
           child: BlocBuilder<AuthCubit, AuthState>(
             builder: (BuildContext context, AuthState state) {
-              switch (state) {
-                case AuthLoadingState():
-                  return const Center(child: CircularProgressIndicator());
-
-                case AuthInitialState():
-                case AuthUnauthenticatedState():
-                case AuthFailureState():
-                  return _AuthScrollableForm(
-                    loginController: _usernameController,
-                    passwordController: _passwordController,
-                  );
-
-                case AuthAuthenticatedState():
-                  return const SizedBox.shrink();
+              if (state is AuthAuthenticatedState) {
+                return const SizedBox.shrink();
               }
+
+              return _AuthScrollableForm(
+                loginController: _usernameController,
+                passwordController: _passwordController,
+              );
             },
           ),
         ),

@@ -12,53 +12,24 @@ final class HttpAuthRepo implements IAuthRepo {
   Future<Session> logIn({
     required String username,
     required String password,
+    DeviceInfo? deviceInfo,
   }) async {
     try {
       final httpResponse = await _httpClient.post(
         path: ApiEndpoints.logIn,
-        data: <String, dynamic>{'username': username, 'password': password},
+        data: <String, dynamic>{
+          'username': username,
+          'password': password,
+          if (deviceInfo != null) 'deviceInfo': _mapDeviceInfo(deviceInfo),
+        },
       );
 
-      final dynamic responseData = httpResponse.data;
-
-      if (responseData is! Map<String, dynamic>) {
-        throw AppUnknownException(
-          message: 'Invalid login response format',
-          error: responseData,
-          stackTrace: StackTrace.current,
-        );
-      }
-
-      return Session.fromJson(responseData);
-    } on ApiUnauthorizedException catch (e, st) {
-      throw AuthInvalidCredentialsException(
-        message: e.message,
-        error: e,
-        stackTrace: st,
-      );
-    } on ApiValidationException catch (e, st) {
-      final String? usernameError = _getFieldError(e.errors, 'username');
-      final String? passwordError = _getFieldError(e.errors, 'password');
-
-      if (usernameError != null || passwordError != null) {
-        throw AuthInvalidCredentialsException(
-          message: usernameError ?? passwordError ?? e.message,
-          error: e,
-          stackTrace: st,
-        );
-      }
-
-      throw LogInFailedException(message: e.message, error: e, stackTrace: st);
-    } on AppApiException catch (e, st) {
-      throw LogInFailedException(
-        message: 'Auth API error',
-        error: e,
-        stackTrace: st,
-      );
+      final Map<String, dynamic> responseJson = _asJsonMap(httpResponse.data);
+      return Session.fromJson(responseJson);
     } on AppException {
       rethrow;
     } catch (e, st) {
-      throw LogInFailedException(
+      throw AppUnknownException(
         message: 'Failed to login',
         error: e,
         stackTrace: st,
@@ -74,6 +45,7 @@ final class HttpAuthRepo implements IAuthRepo {
     required String password,
     String? patronymic,
     String? description,
+    DeviceInfo? deviceInfo,
   }) async {
     try {
       final httpResponse = await _httpClient.post(
@@ -85,60 +57,16 @@ final class HttpAuthRepo implements IAuthRepo {
           'patronymic': patronymic,
           'description': description,
           'password': password,
+          if (deviceInfo != null) 'deviceInfo': _mapDeviceInfo(deviceInfo),
         },
       );
 
-      final dynamic responseData = httpResponse.data;
-
-      if (responseData is! Map<String, dynamic>) {
-        throw AppUnknownException(
-          message: 'Invalid registration response format',
-          error: responseData,
-          stackTrace: StackTrace.current,
-        );
-      }
-
-      return Session.fromJson(responseData);
-    } on ApiValidationException catch (e, st) {
-      final String? usernameError = _getFieldError(e.errors, 'username');
-      if (usernameError != null) {
-        throw UsernameAlreadyTakenException(
-          message: usernameError,
-          error: e,
-          stackTrace: st,
-        );
-      }
-
-      final String? passwordError = _getFieldError(e.errors, 'password');
-      if (passwordError != null) {
-        throw RegistrationFailedException(
-          message: passwordError,
-          error: e,
-          stackTrace: st,
-        );
-      }
-
-      throw RegistrationFailedException(
-        message: e.message,
-        error: e,
-        stackTrace: st,
-      );
-    } on ApiUnauthorizedException catch (e, st) {
-      throw AuthUnauthorizedException(
-        message: e.message,
-        error: e,
-        stackTrace: st,
-      );
-    } on AppApiException catch (e, st) {
-      throw RegistrationFailedException(
-        message: 'Auth API error',
-        error: e,
-        stackTrace: st,
-      );
+      final Map<String, dynamic> responseJson = _asJsonMap(httpResponse.data);
+      return Session.fromJson(responseJson);
     } on AppException {
       rethrow;
     } catch (e, st) {
-      throw RegistrationFailedException(
+      throw AppUnknownException(
         message: 'Failed to register',
         error: e,
         stackTrace: st,
@@ -150,6 +78,7 @@ final class HttpAuthRepo implements IAuthRepo {
   Future<Session> refresh({
     required String refreshToken,
     required String sessionId,
+    DeviceInfo? deviceInfo,
   }) async {
     try {
       final httpResponse = await _httpClient.post(
@@ -157,48 +86,16 @@ final class HttpAuthRepo implements IAuthRepo {
         data: <String, dynamic>{
           'refreshToken': refreshToken,
           'sessionId': sessionId,
+          if (deviceInfo != null) 'deviceInfo': _mapDeviceInfo(deviceInfo),
         },
       );
 
-      final dynamic responseData = httpResponse.data;
-
-      if (responseData is! Map<String, dynamic>) {
-        throw AppUnknownException(
-          message: 'Invalid refresh response format',
-          error: responseData,
-          stackTrace: StackTrace.current,
-        );
-      }
-
-      return Session.fromJson(responseData);
-    } on ApiUnauthorizedException catch (e, st) {
-      throw AuthExpiredSessionException(
-        message: e.message,
-        error: e,
-        stackTrace: st,
-      );
-    } on ApiForbiddenException catch (e, st) {
-      throw AuthExpiredSessionException(
-        message: e.message,
-        error: e,
-        stackTrace: st,
-      );
-    } on ApiValidationException catch (e, st) {
-      throw AuthExpiredSessionException(
-        message: e.message,
-        error: e,
-        stackTrace: st,
-      );
-    } on AppApiException catch (e, st) {
-      throw AuthExpiredSessionException(
-        message: 'Auth API error',
-        error: e,
-        stackTrace: st,
-      );
+      final Map<String, dynamic> responseJson = _asJsonMap(httpResponse.data);
+      return Session.fromJson(responseJson);
     } on AppException {
       rethrow;
     } catch (e, st) {
-      throw AuthExpiredSessionException(
+      throw AppUnknownException(
         message: 'Failed to refresh session',
         error: e,
         stackTrace: st,
@@ -213,18 +110,6 @@ final class HttpAuthRepo implements IAuthRepo {
         path: ApiEndpoints.logOut,
         data: <String, dynamic>{'sessionId': sessionId},
       );
-    } on ApiUnauthorizedException catch (e, st) {
-      throw AuthUnauthorizedException(
-        message: e.message,
-        error: e,
-        stackTrace: st,
-      );
-    } on AppApiException catch (e, st) {
-      throw AppUnknownException(
-        message: 'Auth API error',
-        error: e,
-        stackTrace: st,
-      );
     } on AppException {
       rethrow;
     } catch (e, st) {
@@ -236,24 +121,25 @@ final class HttpAuthRepo implements IAuthRepo {
     }
   }
 
-  String? _getFieldError(Map<String, dynamic>? errors, String fieldName) {
-    if (errors == null) {
-      return null;
+  Map<String, dynamic> _mapDeviceInfo(DeviceInfo deviceInfo) {
+    return DeviceInfoDto(
+      ipAddress: deviceInfo.ipAddress,
+      macAddress: deviceInfo.macAddress,
+      deviceName: deviceInfo.deviceName,
+      deviceType: deviceInfo.deviceType,
+      operatingSystem: deviceInfo.operatingSystem,
+    ).toJson();
+  }
+
+  Map<String, dynamic> _asJsonMap(dynamic value) {
+    if (value is Map<String, dynamic>) {
+      return value;
     }
 
-    final dynamic fieldValue = errors[fieldName];
-
-    if (fieldValue is String && fieldValue.isNotEmpty) {
-      return fieldValue;
-    }
-
-    if (fieldValue is List && fieldValue.isNotEmpty) {
-      final dynamic firstValue = fieldValue.first;
-      if (firstValue is String && firstValue.isNotEmpty) {
-        return firstValue;
-      }
-    }
-
-    return null;
+    throw AppUnknownException(
+      message: 'Invalid API response format',
+      error: value,
+      stackTrace: StackTrace.current,
+    );
   }
 }

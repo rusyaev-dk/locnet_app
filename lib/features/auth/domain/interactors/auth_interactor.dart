@@ -8,17 +8,20 @@ class AuthInteractor {
     required IUserRepo userRepo,
     required ISessionCacheRepo sessionCacheRepo,
     required IUserCacheRepo userCacheRepo,
+    required IDeviceInfoRepo deviceInfoRepo,
     required ILogger logger,
   }) : _authRepo = authRepo,
        _userRepo = userRepo,
        _sessionCacheRepo = sessionCacheRepo,
        _userCacheRepo = userCacheRepo,
+       _deviceInfoRepo = deviceInfoRepo,
        _logger = logger;
 
   final IAuthRepo _authRepo;
   final IUserRepo _userRepo;
   final ISessionCacheRepo _sessionCacheRepo;
   final IUserCacheRepo _userCacheRepo;
+  final IDeviceInfoRepo _deviceInfoRepo;
   final ILogger _logger;
 
   Future<(Session, User)> register({
@@ -30,6 +33,8 @@ class AuthInteractor {
     String? description,
   }) async {
     try {
+      final DeviceInfo deviceInfo = await _deviceInfoRepo.getDeviceInfo();
+
       final Session session = await _authRepo.register(
         username: username,
         firstName: firstName,
@@ -37,6 +42,7 @@ class AuthInteractor {
         patronymic: patronymic,
         description: description,
         password: password,
+        deviceInfo: deviceInfo,
       );
 
       final bool cacheSessionSuccess = await _sessionCacheRepo.saveSession(
@@ -44,7 +50,7 @@ class AuthInteractor {
       );
 
       if (!cacheSessionSuccess) {
-         _logger.exception("Failed to save session to cache");
+        _logger.exception('Failed to save session to cache');
       }
 
       final User user = await _userRepo.getUserById(userId: session.userId);
@@ -52,36 +58,92 @@ class AuthInteractor {
       final bool cacheUserSuccess = await _userCacheRepo.saveUser(user: user);
 
       if (!cacheUserSuccess) {
-        _logger.exception("Failed to save user to cache");
+        _logger.exception('Failed to save user to cache');
       }
 
       return (session, user);
     } on ApiValidationException catch (e, st) {
       _logger.exception(e, st);
-      // TODO: переделать
-      throw UsernameAlreadyTakenException(
-        message: 'Username is already taken',
+
+      final String? usernameError = _getFieldError(e.errors, 'username');
+      if (usernameError != null) {
+        throw UsernameAlreadyTakenException(
+          message: usernameError,
+          error: e,
+          stackTrace: st,
+        );
+      }
+
+      final String? passwordError = _getFieldError(e.errors, 'password');
+      if (passwordError != null) {
+        throw RegistrationFailedException(
+          message: passwordError,
+          error: e,
+          stackTrace: st,
+        );
+      }
+
+      throw RegistrationFailedException(
+        message: e.message,
         error: e,
         stackTrace: st,
       );
     } on ApiUnauthorizedException catch (e, st) {
       _logger.exception(e, st);
+
       throw AuthUnauthorizedException(
-        message: 'Unauthorized registration attempt',
+        message: e.message,
+        error: e,
+        stackTrace: st,
+      );
+    } on ApiForbiddenException catch (e, st) {
+      _logger.exception(e, st);
+
+      throw AuthUnauthorizedException(
+        message: e.message,
+        error: e,
+        stackTrace: st,
+      );
+    } on ApiTimeoutException catch (e, st) {
+      _logger.exception(e, st);
+
+      throw RegistrationFailedException(
+        message: e.message,
         error: e,
         stackTrace: st,
       );
     } on ApiConnectionException catch (e, st) {
       _logger.exception(e, st);
+
       throw RegistrationFailedException(
-        message: 'Unable to connect to server',
+        message: e.message,
         error: e,
         stackTrace: st,
       );
+    } on ApiServerException catch (e, st) {
+      _logger.exception(e, st);
+
+      throw RegistrationFailedException(
+        message: e.message,
+        error: e,
+        stackTrace: st,
+      );
+    } on AppApiException catch (e, st) {
+      _logger.exception(e, st);
+
+      throw RegistrationFailedException(
+        message: e.message,
+        error: e,
+        stackTrace: st,
+      );
+    } on AppStorageException catch (e, st) {
+      _logger.exception(e, st);
+      rethrow;
     } catch (e, st) {
       _logger.exception(e, st);
+
       throw RegistrationFailedException(
-        message: 'Unknown registration error',
+        message: e.toString(),
         error: e,
         stackTrace: st,
       );
@@ -93,9 +155,12 @@ class AuthInteractor {
     required String password,
   }) async {
     try {
-      final session = await _authRepo.logIn(
+      final DeviceInfo deviceInfo = await _deviceInfoRepo.getDeviceInfo();
+
+      final Session session = await _authRepo.logIn(
         username: username,
         password: password,
+        deviceInfo: deviceInfo,
       );
 
       final bool cacheSessionSuccess = await _sessionCacheRepo.saveSession(
@@ -103,7 +168,7 @@ class AuthInteractor {
       );
 
       if (!cacheSessionSuccess) {
-        _logger.exception("Failed to save session to cache");
+        _logger.exception('Failed to save session to cache');
       }
 
       final User user = await _userRepo.getUserById(userId: session.userId);
@@ -111,36 +176,65 @@ class AuthInteractor {
       final bool cacheUserSuccess = await _userCacheRepo.saveUser(user: user);
 
       if (!cacheUserSuccess) {
-        _logger.exception("Failed to save user to cache");
+        _logger.exception('Failed to save user to cache');
       }
 
       return (session, user);
     } on ApiValidationException catch (e, st) {
       _logger.exception(e, st);
-      // TODO: переделать
-      throw UsernameAlreadyTakenException(
-        message: 'Username is already taken',
-        error: e,
-        stackTrace: st,
-      );
+
+      final String? usernameError = _getFieldError(e.errors, 'username');
+      final String? passwordError = _getFieldError(e.errors, 'password');
+
+      if (usernameError != null || passwordError != null) {
+        throw AuthInvalidCredentialsException(
+          message: usernameError ?? passwordError ?? e.message,
+          error: e,
+          stackTrace: st,
+        );
+      }
+
+      throw LogInFailedException(message: e.message, error: e, stackTrace: st);
     } on ApiUnauthorizedException catch (e, st) {
       _logger.exception(e, st);
-      throw AuthUnauthorizedException(
-        message: 'Unauthorized logIn attempt',
+
+      throw AuthInvalidCredentialsException(
+        message: e.message,
         error: e,
         stackTrace: st,
       );
+    } on ApiForbiddenException catch (e, st) {
+      _logger.exception(e, st);
+
+      throw AuthUnauthorizedException(
+        message: e.message,
+        error: e,
+        stackTrace: st,
+      );
+    } on ApiTimeoutException catch (e, st) {
+      _logger.exception(e, st);
+
+      throw LogInFailedException(message: e.message, error: e, stackTrace: st);
     } on ApiConnectionException catch (e, st) {
       _logger.exception(e, st);
-      throw LogInFailedException(
-        message: 'Unable to connect to server',
-        error: e,
-        stackTrace: st,
-      );
+
+      throw LogInFailedException(message: e.message, error: e, stackTrace: st);
+    } on ApiServerException catch (e, st) {
+      _logger.exception(e, st);
+
+      throw LogInFailedException(message: e.message, error: e, stackTrace: st);
+    } on AppApiException catch (e, st) {
+      _logger.exception(e, st);
+
+      throw LogInFailedException(message: e.message, error: e, stackTrace: st);
+    } on AppStorageException catch (e, st) {
+      _logger.exception(e, st);
+      rethrow;
     } catch (e, st) {
       _logger.exception(e, st);
+
       throw LogInFailedException(
-        message: 'Unknown logIn error',
+        message: e.toString(),
         error: e,
         stackTrace: st,
       );
@@ -158,9 +252,12 @@ class AuthInteractor {
         return (cachedSession, user);
       }
 
+      final DeviceInfo deviceInfo = await _deviceInfoRepo.getDeviceInfo();
+
       final Session refreshedSession = await _authRepo.refresh(
         refreshToken: cachedSession.refreshToken,
         sessionId: cachedSession.sessionId,
+        deviceInfo: deviceInfo,
       );
 
       final bool cacheSessionSuccess = await _sessionCacheRepo.saveSession(
@@ -168,7 +265,7 @@ class AuthInteractor {
       );
 
       if (!cacheSessionSuccess) {
-        _logger.exception("Failed to save session to cache");
+        _logger.exception('Failed to save session to cache');
       }
 
       final User user = await _userRepo.getUserById(
@@ -178,10 +275,19 @@ class AuthInteractor {
       final bool cacheUserSuccess = await _userCacheRepo.saveUser(user: user);
 
       if (!cacheUserSuccess) {
-        _logger.exception("Failed to save user to cache");
+        _logger.exception('Failed to save user to cache');
       }
 
       return (refreshedSession, user);
+    } on StorageNotFoundException catch (e, st) {
+      _logger.exception(e, st);
+      return null;
+    } on ApiConnectionException catch (e, st) {
+      _logger.exception(e, st);
+      return null;
+    } on ApiTimeoutException catch (e, st) {
+      _logger.exception(e, st);
+      return null;
     } on ApiUnauthorizedException catch (e, st) {
       _logger.exception(e, st);
       await logOut();
@@ -190,11 +296,12 @@ class AuthInteractor {
       _logger.exception(e, st);
       await logOut();
       return null;
-    } on ApiConnectionException catch (e, st) {
+    } on AppStorageException catch (e, st) {
       _logger.exception(e, st);
       return null;
-    } on StorageNotFoundException catch (e, st) {
+    } on AppApiException catch (e, st) {
       _logger.exception(e, st);
+      await logOut();
       return null;
     } catch (e, st) {
       _logger.exception(e, st);
@@ -210,5 +317,26 @@ class AuthInteractor {
 
   Future<Session> getCachedSession() async {
     return await _sessionCacheRepo.loadSession();
+  }
+
+  String? _getFieldError(Map<String, dynamic>? errors, String fieldName) {
+    if (errors == null) {
+      return null;
+    }
+
+    final dynamic fieldValue = errors[fieldName];
+
+    if (fieldValue is String && fieldValue.isNotEmpty) {
+      return fieldValue;
+    }
+
+    if (fieldValue is List && fieldValue.isNotEmpty) {
+      final dynamic firstValue = fieldValue.first;
+      if (firstValue is String && firstValue.isNotEmpty) {
+        return firstValue;
+      }
+    }
+
+    return null;
   }
 }

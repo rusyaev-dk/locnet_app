@@ -2,7 +2,6 @@
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:locnet_app/features/theme_editor/data/data.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
 final class AppColorPalette extends Equatable {
@@ -160,46 +159,6 @@ final class AppColorPalette extends Equatable {
   final Color surfaceTint;
   final Color approval;
 
-  factory AppColorPalette.fromDto(AppColorPaletteDto dto) {
-    return AppColorPalette(
-      primary: dto.primary,
-      onPrimary: dto.onPrimary,
-      primaryContainer: dto.primaryContainer,
-      onPrimaryContainer: dto.onPrimaryContainer,
-      secondary: dto.secondary,
-      onSecondary: dto.onSecondary,
-      secondaryContainer: dto.secondaryContainer,
-      onSecondaryContainer: dto.onSecondaryContainer,
-      tertiary: dto.tertiary,
-      onTertiary: dto.onTertiary,
-      tertiaryContainer: dto.tertiaryContainer,
-      onTertiaryContainer: dto.onTertiaryContainer,
-      error: dto.error,
-      onError: dto.onError,
-      errorContainer: dto.errorContainer,
-      onErrorContainer: dto.onErrorContainer,
-      surface: dto.surface,
-      onSurface: dto.onSurface,
-      surfaceDim: dto.surfaceDim,
-      surfaceBright: dto.surfaceBright,
-      surfaceContainerLowest: dto.surfaceContainerLowest,
-      surfaceContainerLow: dto.surfaceContainerLow,
-      surfaceContainer: dto.surfaceContainer,
-      surfaceContainerHigh: dto.surfaceContainerHigh,
-      surfaceContainerHighest: dto.surfaceContainerHighest,
-      onSurfaceVariant: dto.onSurfaceVariant,
-      outline: dto.outline,
-      outlineVariant: dto.outlineVariant,
-      shadow: dto.shadow,
-      scrim: dto.scrim,
-      inverseSurface: dto.inverseSurface,
-      onInverseSurface: dto.onInverseSurface,
-      inversePrimary: dto.inversePrimary,
-      surfaceTint: dto.surfaceTint,
-      approval: dto.approval,
-    );
-  }
-
   AppColorPalette copyWith({
     Color? primary,
     Color? onPrimary,
@@ -322,4 +281,98 @@ final class AppColorPalette extends Equatable {
     surfaceTint,
     approval,
   ];
+}
+
+extension ColorArgb32 on Color {
+  int toArgb32() {
+    return toARGB32();
+  }
+
+  static Color fromArgb32(int argb32) {
+    return Color(argb32);
+  }
+}
+
+extension AppColorPaletteSerialization on AppColorPalette {
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'primary': primary.toArgb32(),
+      'onPrimary': onPrimary.toArgb32(),
+      'primaryContainer': primaryContainer.toArgb32(),
+      'onPrimaryContainer': onPrimaryContainer.toArgb32(),
+      'secondary': secondary.toArgb32(),
+      'onSecondary': onSecondary.toArgb32(),
+      'secondaryContainer': secondaryContainer.toArgb32(),
+      'onSecondaryContainer': onSecondaryContainer.toArgb32(),
+      'tertiary': tertiary.toArgb32(),
+      'onTertiary': onTertiary.toArgb32(),
+      'tertiaryContainer': tertiaryContainer.toArgb32(),
+      'onTertiaryContainer': onTertiaryContainer.toArgb32(),
+      'error': error.toArgb32(),
+      'onError': onError.toArgb32(),
+      'errorContainer': errorContainer.toArgb32(),
+      'onErrorContainer': onErrorContainer.toArgb32(),
+      'surface': surface.toArgb32(),
+      'onSurface': onSurface.toArgb32(),
+      'surfaceDim': surfaceDim.toArgb32(),
+      'surfaceBright': surfaceBright.toArgb32(),
+      'surfaceContainerLowest': surfaceContainerLowest.toArgb32(),
+      'surfaceContainerLow': surfaceContainerLow.toArgb32(),
+      'surfaceContainer': surfaceContainer.toArgb32(),
+      'surfaceContainerHigh': surfaceContainerHigh.toArgb32(),
+      'surfaceContainerHighest': surfaceContainerHighest.toArgb32(),
+      'onSurfaceVariant': onSurfaceVariant.toArgb32(),
+      'outline': outline.toArgb32(),
+      'outlineVariant': outlineVariant.toArgb32(),
+      'shadow': shadow.toArgb32(),
+      'scrim': scrim.toArgb32(),
+      'inverseSurface': inverseSurface.toArgb32(),
+      'onInverseSurface': onInverseSurface.toArgb32(),
+      'inversePrimary': inversePrimary.toArgb32(),
+      'surfaceTint': surfaceTint.toArgb32(),
+      'approval': approval.toArgb32(),
+    };
+  }
+
+  static AppColorPalette fromJson(Map<String, dynamic> json) {
+    Color color(String key) => ColorArgb32.fromArgb32(json[key] as int);
+
+    return AppColorPalette(
+      primary: color('primary'),
+      onPrimary: color('onPrimary'),
+      primaryContainer: color('primaryContainer'),
+      onPrimaryContainer: color('onPrimaryContainer'),
+      secondary: color('secondary'),
+      onSecondary: color('onSecondary'),
+      secondaryContainer: color('secondaryContainer'),
+      onSecondaryContainer: color('onSecondaryContainer'),
+      tertiary: color('tertiary'),
+      onTertiary: color('onTertiary'),
+      tertiaryContainer: color('tertiaryContainer'),
+      onTertiaryContainer: color('onTertiaryContainer'),
+      error: color('error'),
+      onError: color('onError'),
+      errorContainer: color('errorContainer'),
+      onErrorContainer: color('onErrorContainer'),
+      surface: color('surface'),
+      onSurface: color('onSurface'),
+      surfaceDim: color('surfaceDim'),
+      surfaceBright: color('surfaceBright'),
+      surfaceContainerLowest: color('surfaceContainerLowest'),
+      surfaceContainerLow: color('surfaceContainerLow'),
+      surfaceContainer: color('surfaceContainer'),
+      surfaceContainerHigh: color('surfaceContainerHigh'),
+      surfaceContainerHighest: color('surfaceContainerHighest'),
+      onSurfaceVariant: color('onSurfaceVariant'),
+      outline: color('outline'),
+      outlineVariant: color('outlineVariant'),
+      shadow: color('shadow'),
+      scrim: color('scrim'),
+      inverseSurface: color('inverseSurface'),
+      onInverseSurface: color('onInverseSurface'),
+      inversePrimary: color('inversePrimary'),
+      surfaceTint: color('surfaceTint'),
+      approval: color('approval'),
+    );
+  }
 }

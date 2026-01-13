@@ -28,6 +28,8 @@ abstract interface class IAppEnvPreset {
 
   ISettingsRepo createSettingsRepo();
   IThemeEditorRepo createThemeEditorRepo();
+
+  IDeviceInfoRepo createDeviceInfoRepo();
 }
 
 sealed class AppEnvPresetsFactory {
@@ -35,10 +37,7 @@ sealed class AppEnvPresetsFactory {
     switch (appScope.env) {
       case AppEnvType.dev:
         final mockBackend = MockInMemoryBackend();
-        return DevEnvPreset(
-          appScope: appScope,
-          mockBackend: mockBackend,
-        );
+        return DevEnvPreset(appScope: appScope, mockBackend: mockBackend);
       case AppEnvType.stage:
         return StageEnvPreset(appScope: appScope);
       case AppEnvType.prod:

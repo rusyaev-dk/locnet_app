@@ -7,12 +7,10 @@ import 'package:locnet_app/features/auth/domain/domain.dart';
 part 'auth_state.dart';
 
 final class AuthCubit extends Cubit<AuthState> {
-  AuthCubit({
-    required AuthInteractor authInteractor,
-    required ILogger logger,
-  }) : _authInteractor = authInteractor,
-       _logger = logger,
-       super(const AuthInitialState());
+  AuthCubit({required AuthInteractor authInteractor, required ILogger logger})
+    : _authInteractor = authInteractor,
+      _logger = logger,
+      super(const AuthInitialState());
 
   final AuthInteractor _authInteractor;
   final ILogger _logger;
@@ -33,9 +31,10 @@ final class AuthCubit extends Cubit<AuthState> {
       );
       final user = result.$2;
 
+      _logger.info("LogIn successful");
       emit(AuthAuthenticatedState(user: user));
     } catch (e, st) {
-      _logger.exception(e, st);
+      _logger.exception("LogIn failed: $e", st);
       emit(
         AuthFailureState(
           failure: e is AppException
@@ -67,9 +66,10 @@ final class AuthCubit extends Cubit<AuthState> {
         description: description,
       );
 
+      _logger.info("Registration successful");
       emit(AuthAuthenticatedState(user: res.$2));
     } catch (e, st) {
-      _logger.exception(e, st);
+      _logger.exception("Register failed: $e", st);
       emit(
         AuthFailureState(
           failure: e is AppException
@@ -86,6 +86,7 @@ final class AuthCubit extends Cubit<AuthState> {
         emit(const AuthLoadingState());
       }
 
+      _logger.info("Trying to restore session...");
       final (Session, User)? restored = await _authInteractor.restoreSession();
 
       if (restored == null) {
@@ -95,13 +96,14 @@ final class AuthCubit extends Cubit<AuthState> {
 
       emit(AuthAuthenticatedState(user: restored.$2));
     } catch (e, st) {
-      _logger.exception(e, st);
+      _logger.exception("Restore session failed: $e", st);
       emit(const AuthUnauthenticatedState());
     }
   }
 
   Future<void> logOut() async {
     try {
+      _logger.info("LogOut...");
       await _authInteractor.logOut();
       emit(const AuthUnauthenticatedState());
     } catch (e, st) {

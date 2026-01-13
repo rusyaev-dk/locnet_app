@@ -1,77 +1,29 @@
-import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/app/app.dart';
 
-abstract class AppAuthException extends DomainException {
-  AppAuthException({required super.message, super.error, super.stackTrace});
-}
+final class AuthExceptionCodes {
+  const AuthExceptionCodes._();
 
-final class AuthUnauthorizedException extends AppAuthException {
-  AuthUnauthorizedException({
-    required super.message,
-    super.error,
-    super.stackTrace,
-  });
-}
+  static const AppExceptionCode invalidCredentials = AppExceptionCode(
+    'auth.invalidCredentials',
+  );
 
-final class AuthInvalidCredentialsException extends AppAuthException {
-  AuthInvalidCredentialsException({
-    required super.message,
-    super.error,
-    super.stackTrace,
-  });
-}
+  static const AppExceptionCode expiredSession = AppExceptionCode(
+    'auth.expiredSession',
+  );
 
-final class AuthExpiredSessionException extends AppAuthException {
-  AuthExpiredSessionException({
-    required super.message,
-    super.error,
-    super.stackTrace,
-  });
-}
+  static const AppExceptionCode passwordsDontMatch = AppExceptionCode(
+    'auth.passwordsDontMatch',
+  );
 
-final class RegistrationPasswordsDontMatchException extends AppAuthException {
-  RegistrationPasswordsDontMatchException({
-    required super.message,
-    super.error,
-    super.stackTrace,
-  });
-}
+  static const AppExceptionCode usernameAlreadyTaken = AppExceptionCode(
+    'auth.usernameAlreadyTaken',
+  );
 
-final class RegistrationFailedException extends AppAuthException {
-  RegistrationFailedException({
-    required super.message,
-    super.error,
-    super.stackTrace,
-  });
-}
+  static const AppExceptionCode registerFailed = AppExceptionCode(
+    'auth.registerFailed',
+  );
 
-final class LogInFailedException extends AppAuthException {
-  LogInFailedException({required super.message, super.error, super.stackTrace});
-}
-
-final class UsernameAlreadyTakenException extends AppAuthException {
-  UsernameAlreadyTakenException({
-    required super.message,
-    super.error,
-    super.stackTrace,
-  });
-}
-
-abstract class AppSessionException extends DomainException {
-  AppSessionException({required super.message, super.error, super.stackTrace});
-}
-
-final class SessionCacheWriteException extends AppSessionException {
-  SessionCacheWriteException({
-    required super.message,
-    super.error,
-    super.stackTrace,
-  });
-}
-
-final class UserCacheWriteException extends AppSessionException {
-  UserCacheWriteException({
-    required super.message,
-    super.error,
-    super.stackTrace,
-  });
+  static const AppExceptionCode loginFailed = AppExceptionCode(
+    'auth.loginFailed',
+  );
 }

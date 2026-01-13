@@ -18,11 +18,15 @@ final class MockAuthRepo implements IAuthRepo {
     updatedAt: DateTime.now(),
   );
 
+  final _delay = const Duration(milliseconds: 300);
+
   @override
   Future<Session> logIn({
     required String username,
     required String password,
+    DeviceInfo? deviceInfo,
   }) async {
+    await Future.delayed(_delay);
     return _mockSession;
   }
 
@@ -35,6 +39,7 @@ final class MockAuthRepo implements IAuthRepo {
   Future<Session> refresh({
     required String refreshToken,
     required String sessionId,
+    DeviceInfo? deviceInfo,
   }) async {
     return _mockSession;
   }
@@ -47,6 +52,7 @@ final class MockAuthRepo implements IAuthRepo {
     required String password,
     String? patronymic,
     String? description,
+    DeviceInfo? deviceInfo,
   }) async {
     return _mockSession;
   }

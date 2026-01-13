@@ -1,144 +1,60 @@
 import 'package:locnet_app/app/app.dart';
 
-abstract class AppApiException extends AppException {
-  AppApiException({
+class StorageException extends AppException {
+  StorageException({
     required super.message,
-    super.error,
     super.stackTrace,
-    this.statusCode,
+    super.error,
+    super.details,
   });
-
-  final int? statusCode;
-
-  @override
-  String toString() => 'AppApiException($statusCode): $message';
 }
 
-// Concrete API exceptions
+class StorageIOException extends StorageException {
+  StorageIOException({
+    required super.message,
+    super.stackTrace,
+    super.error,
+    super.details,
+  });
+}
 
-class ApiUnauthorizedException extends AppApiException {
+class ApiException extends AppException {
+  ApiException({
+    required super.message,
+    super.statusCode,
+    super.stackTrace,
+    super.error,
+    super.details,
+  });
+}
+
+final class ApiUnauthorizedException extends ApiException {
   ApiUnauthorizedException({
     required super.message,
-    super.statusCode,
-    super.error,
     super.stackTrace,
-  });
+    super.error,
+    super.details,
+  }) : super(statusCode: 401);
 }
 
-class ApiServerException extends AppApiException {
-  ApiServerException({
-    required super.message,
-    super.statusCode,
-    super.error,
-    super.stackTrace,
-  });
-}
-
-class ApiValidationException extends AppApiException {
-  ApiValidationException({
-    required super.message,
-    super.statusCode,
-    super.error,
-    super.stackTrace,
-    this.errors,
-  });
-
-  final Map<String, dynamic>? errors;
-}
-
-class ApiConnectionException extends AppApiException {
-  ApiConnectionException({
-    required super.message,
-    super.error,
-    super.stackTrace,
-  });
-}
-
-class ApiUnknownException extends AppApiException {
-  ApiUnknownException({
-    required super.message,
-    super.statusCode,
-    super.error,
-    super.stackTrace,
-  });
-}
-
-class ApiNotFoundException extends AppApiException {
-  ApiNotFoundException({
-    required super.message,
-    super.statusCode,
-    super.error,
-    super.stackTrace,
-  });
-}
-
-class ApiForbiddenException extends AppApiException {
+final class ApiForbiddenException extends ApiException {
   ApiForbiddenException({
     required super.message,
-    super.statusCode,
-    super.error,
     super.stackTrace,
-  });
+    super.error,
+    super.details,
+  }) : super(statusCode: 403);
 }
 
-class ApiTimeoutException extends AppApiException {
-  ApiTimeoutException({
+final class ApiValidationException extends ApiException {
+  ApiValidationException({
     required super.message,
-    super.statusCode,
-    super.error,
     super.stackTrace,
-  });
-}
-
-// Storage-related exceptions
-
-abstract class AppStorageException extends AppException {
-  AppStorageException({required super.message, super.error, super.stackTrace});
-
-  @override
-  String toString() => 'AppStorageException: $message';
-}
-
-class StorageReadException extends AppStorageException {
-  StorageReadException({required super.message, super.error, super.stackTrace});
-}
-
-class StorageSerializationException extends AppStorageException {
-  StorageSerializationException({
-    required super.message,
     super.error,
-    super.stackTrace,
-  });
+  }) : super(statusCode: 422);
 }
 
-class StorageUnknownException extends AppStorageException {
-  StorageUnknownException({
-    required super.message,
-    super.error,
-    super.stackTrace,
-  });
-}
-
-class StorageNotFoundException extends AppStorageException {
-  StorageNotFoundException({
-    required super.message,
-    super.error,
-    super.stackTrace,
-  });
-}
-
-class StorageWriteException extends AppStorageException {
-  StorageWriteException({
-    required super.message,
-    super.error,
-    super.stackTrace,
-  });
-}
-
-class StorageDeleteException extends AppStorageException {
-  StorageDeleteException({
-    required super.message,
-    super.error,
-    super.stackTrace,
-  });
+final class ApiNotFoundException extends ApiException {
+  ApiNotFoundException({required super.message, super.stackTrace, super.error})
+    : super(statusCode: 404);
 }
