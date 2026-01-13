@@ -58,3 +58,12 @@ final class ApiNotFoundException extends ApiException {
   ApiNotFoundException({required super.message, super.stackTrace, super.error})
     : super(statusCode: 404);
 }
+
+final class ApiServerException extends ApiException {
+  ApiServerException({
+    required super.message,
+    super.stackTrace,
+    super.error,
+    super.statusCode,
+  });
+}

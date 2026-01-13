@@ -22,6 +22,7 @@
     "deviceThemeMode": "Как на устройстве",
     "retry": "Попробовать снова",
     "appException": "Произошла ошибка приложения",
+    "appUnknownException": "Произошла неизвестная ошибка",
     "apiUnauthorizedException": "Ошибка авторизации, пожалуйста, войдите снова",
     "apiServerException": "Ошибка сервера, попробуйте позже",
     "apiValidationException": "Ошибка валидации данных, проверьте введённую информацию",

@@ -179,6 +179,16 @@ class S {
     );
   }
 
+  /// `Произошла неизвестная ошибка`
+  String get appUnknownException {
+    return Intl.message(
+      'Произошла неизвестная ошибка',
+      name: 'appUnknownException',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Ошибка авторизации, пожалуйста, войдите снова`
   String get apiUnauthorizedException {
     return Intl.message(

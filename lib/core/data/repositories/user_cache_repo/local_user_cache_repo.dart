@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 
 final class LocalUserCacheRepo implements IUserCacheRepo {
@@ -15,22 +16,22 @@ final class LocalUserCacheRepo implements IUserCacheRepo {
       final String jsonString = jsonEncode(jsonMap);
 
       return await _storage.write<String>(key: _userKey, value: jsonString);
-    } on AppStorageException {
+    } on StorageException {
       rethrow;
     } on FormatException catch (e, st) {
-      throw StorageSerializationException(
+      throw StorageException(
         message: 'Invalid JSON format while saving user: ${e.message}',
         error: e,
         stackTrace: st,
       );
     } on Exception catch (e, st) {
-      throw StorageWriteException(
-        message: 'Failed to save user: $e',
+      throw StorageIOException(
+        message: 'Failed to save user',
         error: e,
         stackTrace: st,
       );
     } catch (e, st) {
-      throw StorageUnknownException(
+      throw AppUnknownException(
         message: 'Unexpected error while saving user: $e',
         error: e,
         stackTrace: st,
@@ -44,7 +45,7 @@ final class LocalUserCacheRepo implements IUserCacheRepo {
       final String? rawJson = await _storage.read<String>(key: _userKey);
 
       if (rawJson == null || rawJson.isEmpty) {
-        throw StorageNotFoundException(
+        throw StorageException(
           message: 'No cached user found.',
           error: StateError('User not found'),
           stackTrace: StackTrace.current,
@@ -57,23 +58,44 @@ final class LocalUserCacheRepo implements IUserCacheRepo {
       _validateUserJson(jsonMap);
 
       return User.fromJson(jsonMap);
-    } on AppStorageException {
+    } on StorageException {
       rethrow;
     } on FormatException catch (e, st) {
-      throw StorageSerializationException(
+      throw StorageException(
         message: 'Corrupted cached user JSON: ${e.message}',
         error: e,
         stackTrace: st,
       );
     } on Exception catch (e, st) {
-      throw StorageReadException(
-        message: 'Failed to load cached user: $e',
+      throw StorageIOException(
+        message: 'Failed to load cached user',
         error: e,
         stackTrace: st,
       );
     } catch (e, st) {
-      throw StorageUnknownException(
+      throw AppUnknownException(
         message: 'Unexpected error while loading user: $e',
+        error: e,
+        stackTrace: st,
+      );
+    }
+  }
+
+  @override
+  Future<bool> clearUser() async {
+    try {
+      return await _storage.delete(key: _userKey);
+    } on StorageException {
+      rethrow;
+    } on Exception catch (e, st) {
+      throw StorageIOException(
+        message: 'Failed to delete cached user',
+        error: e,
+        stackTrace: st,
+      );
+    } catch (e, st) {
+      throw AppUnknownException(
+        message: 'Unexpected error while deleting cached user: $e',
         error: e,
         stackTrace: st,
       );
@@ -85,7 +107,7 @@ final class LocalUserCacheRepo implements IUserCacheRepo {
       return decoded;
     }
 
-    throw StorageSerializationException(
+    throw StorageException(
       message: 'Cached user JSON is not an object.',
       error: decoded.runtimeType,
       stackTrace: StackTrace.current,
@@ -107,7 +129,7 @@ final class LocalUserCacheRepo implements IUserCacheRepo {
     ];
 
     if (missingOrInvalid.isNotEmpty) {
-      throw StorageSerializationException(
+      throw StorageException(
         message:
             'Cached user JSON misses required keys or has invalid types: ${missingOrInvalid.join(', ')}',
         error: missingOrInvalid,
@@ -140,7 +162,7 @@ final class LocalUserCacheRepo implements IUserCacheRepo {
   void _validateOptionalString(Map<String, dynamic> json, String key) {
     final dynamic value = json[key];
     if (value != null && value is! String) {
-      throw StorageSerializationException(
+      throw StorageException(
         message: 'Cached user JSON has invalid type for $key.',
         error: value.runtimeType,
         stackTrace: StackTrace.current,
@@ -152,29 +174,8 @@ final class LocalUserCacheRepo implements IUserCacheRepo {
     try {
       DateTimeFormatter.parse(value);
     } on Exception catch (e, st) {
-      throw StorageSerializationException(
+      throw StorageException(
         message: 'Cached user JSON has invalid datetime for $fieldName: $value',
-        error: e,
-        stackTrace: st,
-      );
-    }
-  }
-
-  @override
-  Future<bool> clearUser() async {
-    try {
-      return await _storage.delete(key: _userKey);
-    } on AppStorageException {
-      rethrow;
-    } on Exception catch (e, st) {
-      throw StorageDeleteException(
-        message: 'Failed to delete cached user',
-        error: e,
-        stackTrace: st,
-      );
-    } catch (e, st) {
-      throw StorageUnknownException(
-        message: 'Unexpected error while deleting cached user: $e',
         error: e,
         stackTrace: st,
       );

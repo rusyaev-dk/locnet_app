@@ -17,30 +17,23 @@ final class JWTInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    try {
-      if (_isAuthEndpoint(options.path)) {
-        handler.next(options);
-        return;
-      }
+    if (_isAuthEndpoint(options.path)) {
+      handler.next(options);
+      return;
+    }
 
+    try {
       final session = await _sessionCacheRepo.loadSession();
       options.headers['Authorization'] = 'Bearer ${session.accessToken}';
-
-      handler.next(options);
-    } on StorageNotFoundException {
-      // No cached session yet: continue without Authorization header.
-      handler.next(options);
-    } on StorageReadException catch (e, st) {
-      // Cache read failed: do not block the request, just log it.
+    } on (StorageException, StorageIOException) catch (e, st) {
+      // No session / read failure: do not block request, only log.
       _logger.exception(e, st);
-      handler.next(options);
-    } on StorageUnknownException catch (e, st) {
-      _logger.exception(e, st);
-      handler.next(options);
     } catch (e, st) {
+      // Any unexpected error: also do not block, only log.
       _logger.exception(e, st);
-      handler.next(options);
     }
+
+    handler.next(options);
   }
 
   bool _isAuthEndpoint(String path) {

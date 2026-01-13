@@ -1,3 +1,4 @@
+import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -9,9 +10,7 @@ class LocalKeyValueStorage implements IKeyValueStorage {
 
   @override
   Future<bool> write<T>({required String key, required T value}) async {
-    if (key.trim().isEmpty) {
-      throw ArgumentError('Key cannot be empty');
-    }
+    _ensureValidKey(key);
 
     final bool isSupportedType =
         value is String ||
@@ -21,7 +20,11 @@ class LocalKeyValueStorage implements IKeyValueStorage {
         value is List<String>;
 
     if (!isSupportedType) {
-      throw ArgumentError('Unsupported type: ${value.runtimeType}');
+      throw StorageException(
+        message: 'Unsupported type: ${value.runtimeType}',
+        error: value.runtimeType,
+        stackTrace: StackTrace.current,
+      );
     }
 
     try {
@@ -38,14 +41,16 @@ class LocalKeyValueStorage implements IKeyValueStorage {
         return await _sharedPreferences.setBool(key, value);
       }
       return await _sharedPreferences.setStringList(key, value as List<String>);
+    } on StorageException {
+      rethrow;
     } on Exception catch (e, st) {
-      throw StorageWriteException(
-        message: 'Failed to write value for key "$key": $e',
+      throw StorageIOException(
+        message: 'Failed to write value for key "$key"',
         error: e,
         stackTrace: st,
       );
     } catch (e, st) {
-      throw StorageUnknownException(
+      throw AppUnknownException(
         message: 'Unexpected error while writing value for key "$key": $e',
         error: e,
         stackTrace: st,
@@ -55,9 +60,7 @@ class LocalKeyValueStorage implements IKeyValueStorage {
 
   @override
   Future<T?> read<T>({required String key}) async {
-    if (key.trim().isEmpty) {
-      throw ArgumentError('Key cannot be empty');
-    }
+    _ensureValidKey(key);
 
     try {
       final Object? value = _sharedPreferences.get(key);
@@ -70,15 +73,24 @@ class LocalKeyValueStorage implements IKeyValueStorage {
         return value as T;
       }
 
-      return null;
+      throw StorageException(
+        message: 'Stored value type mismatch for key "$key"',
+        error: <String, Object?>{
+          'expectedType': T.toString(),
+          'actualType': value.runtimeType.toString(),
+        },
+        stackTrace: StackTrace.current,
+      );
+    } on StorageException {
+      rethrow;
     } on Exception catch (e, st) {
-      throw StorageReadException(
-        message: 'Failed to read value for key "$key": $e',
+      throw StorageIOException(
+        message: 'Failed to read value for key "$key"',
         error: e,
         stackTrace: st,
       );
     } catch (e, st) {
-      throw StorageUnknownException(
+      throw AppUnknownException(
         message: 'Unexpected error while reading value for key "$key": $e',
         error: e,
         stackTrace: st,
@@ -88,20 +100,18 @@ class LocalKeyValueStorage implements IKeyValueStorage {
 
   @override
   Future<bool> delete({required String key}) async {
-    if (key.trim().isEmpty) {
-      throw ArgumentError('Key cannot be empty');
-    }
+    _ensureValidKey(key);
 
     try {
       return await _sharedPreferences.remove(key);
     } on Exception catch (e, st) {
-      throw StorageDeleteException(
-        message: 'Failed to delete value for key "$key": $e',
+      throw StorageIOException(
+        message: 'Failed to delete value for key "$key"',
         error: e,
         stackTrace: st,
       );
     } catch (e, st) {
-      throw StorageUnknownException(
+      throw AppUnknownException(
         message: 'Unexpected error while deleting value for key "$key": $e',
         error: e,
         stackTrace: st,
@@ -114,16 +124,26 @@ class LocalKeyValueStorage implements IKeyValueStorage {
     try {
       return await _sharedPreferences.clear();
     } on Exception catch (e, st) {
-      throw StorageDeleteException(
-        message: 'Failed to clear local storage: $e',
+      throw StorageIOException(
+        message: 'Failed to clear local storage',
         error: e,
         stackTrace: st,
       );
     } catch (e, st) {
-      throw StorageUnknownException(
+      throw AppUnknownException(
         message: 'Unexpected error while clearing local storage: $e',
         error: e,
         stackTrace: st,
+      );
+    }
+  }
+
+  void _ensureValidKey(String key) {
+    if (key.trim().isEmpty) {
+      throw StorageException(
+        message: 'Key cannot be empty',
+        error: ArgumentError('Key cannot be empty'),
+        stackTrace: StackTrace.current,
       );
     }
   }

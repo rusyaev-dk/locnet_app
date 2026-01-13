@@ -1,8 +1,6 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:locnet_app/app/exceptions.dart';
-import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/core/data/data.dart';
 
 class DioHttpClient implements IHttpClient {
@@ -18,7 +16,7 @@ class DioHttpClient implements IHttpClient {
     String? baseUrl,
     Map<String, dynamic>? parameters,
   }) {
-    final Uri uri = Uri.parse('${baseUrl ?? _apiConfig.baseUrl}$path');
+    final uri = Uri.parse('${baseUrl ?? _apiConfig.baseUrl}$path');
     return parameters != null ? uri.replace(queryParameters: parameters) : uri;
   }
 
@@ -98,14 +96,14 @@ class DioHttpClient implements IHttpClient {
     Map<String, dynamic>? headers,
     dynamic data,
   }) async {
-    final Uri uri = _makeUri(
+    final uri = _makeUri(
       path: path,
       baseUrl: baseUrl,
       parameters: uriParameters,
     );
 
     try {
-      final Options options = Options(
+      final options = Options(
         contentType: Headers.jsonContentType,
         headers: headers,
       );
@@ -126,127 +124,133 @@ class DioHttpClient implements IHttpClient {
           response = await _dio.deleteUri(uri, options: options);
           break;
         default:
-          throw AppException(
-            message: 'Unsupported HTTP method: $method',
-            category: AppExceptionCategory.api,
-            code: AppExceptionCode.unknown,
-            details: <String, Object?>{'method': method},
-          );
+          throw ApiException(message: 'Unsupported HTTP method: $method');
       }
 
       _validateResponse(response);
       return response;
     } on DioException catch (e, st) {
-      throw _mapDioError(e: e, stackTrace: st);
+      throw _mapDioError(e, st);
     } catch (e, st) {
-      throw AppException(
-        message: 'Unexpected API error',
-        category: AppExceptionCategory.api,
-        code: AppExceptionCode.unknown,
-        error: e,
-        stackTrace: st,
-      );
+      throw ApiException(message: 'Unexpected error', error: e, stackTrace: st);
     }
   }
 
   void _validateResponse(Response response) {
-    final int code = response.statusCode ?? 0;
-    if (code >= 400) {
-      throw _mapHttpError(statusCode: code, data: response.data);
+    final statusCode = response.statusCode ?? 0;
+    if (statusCode >= 400) {
+      throw _mapHttpError(statusCode, response.data);
     }
   }
 
-  AppException _mapDioError({
-    required DioException e,
-    required StackTrace stackTrace,
-  }) {
-    if (e.error is SocketException) {
-      return AppException(
+  Exception _mapDioError(DioException exception, StackTrace st) {
+    if (exception.error is SocketException) {
+      return ApiException(
         message: 'No internet',
-        category: AppExceptionCategory.api,
-        code: AppExceptionCode.connection,
-        error: e,
-        stackTrace: stackTrace,
+        error: exception,
+        stackTrace: st,
       );
     }
 
-    switch (e.type) {
+    switch (exception.type) {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.receiveTimeout:
       case DioExceptionType.sendTimeout:
-        return AppException(
+        return ApiException(
           message: 'Request timed out',
-          category: AppExceptionCategory.api,
-          code: AppExceptionCode.timeout,
-          error: e,
-          stackTrace: stackTrace,
+          error: exception,
+          stackTrace: st,
         );
 
       case DioExceptionType.badResponse:
         return _mapHttpError(
-          statusCode: e.response?.statusCode,
-          data: e.response?.data,
-          error: e,
-          stackTrace: stackTrace,
+          exception.response?.statusCode,
+          exception.response?.data,
+          error: exception,
+          st: st,
         );
 
       default:
-        return AppException(
+        return ApiException(
           message: 'Dio error',
-          category: AppExceptionCategory.api,
-          code: AppExceptionCode.unknown,
-          error: e,
-          stackTrace: stackTrace,
+          error: exception,
+          stackTrace: st,
         );
     }
   }
 
-  AppException _mapHttpError({
-    required int? statusCode,
-    required dynamic data,
+  Exception _mapHttpError(
+    int? statusCode,
+    dynamic data, {
     Object? error,
-    StackTrace? stackTrace,
+    StackTrace? st,
   }) {
-    final String message = _extractMessage(data) ?? 'Unknown error';
+    final message = _extractMessage(data: data);
 
-    final AppExceptionCode code = switch (statusCode) {
-      400 => AppExceptionCode.validation,
-      401 => AppExceptionCode.unauthorized,
-      403 => AppExceptionCode.forbidden,
-      404 => AppExceptionCode.notFound,
-      500 => AppExceptionCode.server,
-      _ => AppExceptionCode.unknown,
-    };
+    switch (statusCode) {
+      case 401:
+        return ApiUnauthorizedException(
+          message: message,
+          error: error,
+          stackTrace: st,
+          details: _extractDetails(data: data),
+        );
 
-    final Map<String, Object?>? details = _extractErrors(data);
+      case 403:
+        return ApiForbiddenException(
+          message: message,
+          error: error,
+          stackTrace: st,
+          details: _extractDetails(data: data),
+        );
 
-    return AppException(
-      message: message,
-      category: AppExceptionCategory.api,
-      code: code,
-      statusCode: statusCode,
-      error: error,
-      stackTrace: stackTrace,
-      details: details,
-    );
-  }
+      case 404:
+        return ApiNotFoundException(
+          message: message,
+          error: error,
+          stackTrace: st,
+        );
 
-  String? _extractMessage(dynamic data) {
-    if (data is Map && data['msg'] is String) {
-      final String msg = data['msg'] as String;
-      if (msg.isNotEmpty) {
-        return msg;
-      }
+      case 422:
+      case 400:
+        return ApiValidationException(
+          message: message,
+          error: error,
+          stackTrace: st,
+        );
+
+      case 500:
+      case 502:
+      case 503:
+      case 504:
+        return ApiServerException(
+          message: 'Server error',
+          statusCode: statusCode,
+          error: error,
+          stackTrace: st,
+        );
+
+      default:
+        return ApiException(
+          message: message,
+          statusCode: statusCode,
+          error: error,
+          stackTrace: st,
+        );
     }
-    return null;
   }
 
-  Map<String, Object?>? _extractErrors(dynamic data) {
-    if (data is Map && data['errors'] is Map) {
-      final Map errors = data['errors'] as Map;
-      return errors.map((dynamic key, dynamic value) {
-        return MapEntry(key.toString(), value);
-      });
+  String _extractMessage({required dynamic data}) {
+    if (data is Map) {
+      final dynamic msg = data['msg'] ?? data['message'] ?? data['error'];
+      if (msg is String && msg.isNotEmpty) return msg;
+    }
+    return 'Unknown error';
+  }
+
+  Map<String, Object?>? _extractDetails({required dynamic data}) {
+    if (data is Map) {
+      return data.cast<String, Object?>();
     }
     return null;
   }

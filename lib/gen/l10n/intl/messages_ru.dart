@@ -53,6 +53,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "appException": MessageLookupByLibrary.simpleMessage(
       "Произошла ошибка приложения",
     ),
+    "appUnknownException": MessageLookupByLibrary.simpleMessage(
+      "Произошла неизвестная ошибка",
+    ),
     "appearance": MessageLookupByLibrary.simpleMessage("Внешний вид"),
     "apply": MessageLookupByLibrary.simpleMessage("Применить"),
     "authExpiredSessionException": MessageLookupByLibrary.simpleMessage(
