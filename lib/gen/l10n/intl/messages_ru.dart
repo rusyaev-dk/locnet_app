@@ -26,9 +26,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "alreadyRegisteredQuestion": MessageLookupByLibrary.simpleMessage(
       "Уже зарегистрированы?",
     ),
-    "apiConnectionException": MessageLookupByLibrary.simpleMessage(
-      "Ошибка соединения, проверьте интернет-подключение",
-    ),
     "apiForbiddenException": MessageLookupByLibrary.simpleMessage(
       "Доступ запрещён, у вас нет прав для выполнения этого действия",
     ),
@@ -44,9 +41,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "apiUnauthorizedException": MessageLookupByLibrary.simpleMessage(
       "Ошибка авторизации, пожалуйста, войдите снова",
     ),
-    "apiUnknownException": MessageLookupByLibrary.simpleMessage(
-      "Неизвестная ошибка при запросе к серверу",
-    ),
     "apiValidationException": MessageLookupByLibrary.simpleMessage(
       "Ошибка валидации данных, проверьте введённую информацию",
     ),
@@ -58,41 +52,30 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "appearance": MessageLookupByLibrary.simpleMessage("Внешний вид"),
     "apply": MessageLookupByLibrary.simpleMessage("Применить"),
-    "authExpiredSessionException": MessageLookupByLibrary.simpleMessage(
-      "Сессия истекла, пожалуйста, выполните вход снова",
-    ),
+    "authException": MessageLookupByLibrary.simpleMessage("Ошибка авторизации"),
     "authInvalidCredentialsException": MessageLookupByLibrary.simpleMessage(
       "Неверные учетные данные, проверьте логин или пароль",
     ),
     "authUnauthorizedException": MessageLookupByLibrary.simpleMessage(
       "Вы не авторизованы, пожалуйста, войдите снова",
     ),
-    "authUnknownException": MessageLookupByLibrary.simpleMessage(
-      "Неизвестная ошибка при авторизации",
-    ),
     "authorization": MessageLookupByLibrary.simpleMessage("Авторизация"),
     "back": MessageLookupByLibrary.simpleMessage("Назад"),
     "blockCompanion": MessageLookupByLibrary.simpleMessage("Заблокировать"),
     "cancel": MessageLookupByLibrary.simpleMessage("Отмена"),
+    "charactersCountViolationException": MessageLookupByLibrary.simpleMessage(
+      "Недопустимое количество символов",
+    ),
     "chooseHowTheAppLooks": MessageLookupByLibrary.simpleMessage(
       "Выберите облик приложения",
     ),
     "clear": MessageLookupByLibrary.simpleMessage("Очистить"),
     "close": MessageLookupByLibrary.simpleMessage("Закрыть"),
     "confirm": MessageLookupByLibrary.simpleMessage("Подтвердить"),
-    "conversationCreateException": MessageLookupByLibrary.simpleMessage(
-      "Не удалось создать беседу",
-    ),
     "conversationCreating": MessageLookupByLibrary.simpleMessage(
       "Создание переписки",
     ),
-    "conversationDataTooLongException": MessageLookupByLibrary.simpleMessage(
-      "Введённые данные слишком длинные",
-    ),
     "conversationDescription": MessageLookupByLibrary.simpleMessage("Описание"),
-    "conversationEmptyFieldException": MessageLookupByLibrary.simpleMessage(
-      "Поле не может быть пустым",
-    ),
     "conversationTitle": MessageLookupByLibrary.simpleMessage("Название"),
     "conversationType": MessageLookupByLibrary.simpleMessage("Тип"),
     "conversationTypeChannel": MessageLookupByLibrary.simpleMessage("Канал"),
@@ -111,23 +94,13 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "edit": MessageLookupByLibrary.simpleMessage("Редактировать"),
     "edited": MessageLookupByLibrary.simpleMessage("Изменено"),
-    "filteringClearException": MessageLookupByLibrary.simpleMessage(
-      "Не удалось сбросить фильтры",
-    ),
-    "filteringSaveException": MessageLookupByLibrary.simpleMessage(
-      "Не удалось сохранить фильтры",
-    ),
-    "filteringUpdateException": MessageLookupByLibrary.simpleMessage(
-      "Не удалось обновить фильтры",
-    ),
     "filters": MessageLookupByLibrary.simpleMessage("Фильтры"),
     "firstName": MessageLookupByLibrary.simpleMessage("Имя"),
     "homePage": MessageLookupByLibrary.simpleMessage("Домашняя страница"),
+    "invalidCharactersException": MessageLookupByLibrary.simpleMessage(
+      "Введены некорректные символы",
+    ),
     "jobPosition": MessageLookupByLibrary.simpleMessage("Должность"),
-    "jobPositionInvalidCharactersException":
-        MessageLookupByLibrary.simpleMessage(
-          "Название должности содержит недопустимые символы",
-        ),
     "joinedAt": MessageLookupByLibrary.simpleMessage("Дата присоединения"),
     "language": MessageLookupByLibrary.simpleMessage("Язык"),
     "lastName": MessageLookupByLibrary.simpleMessage("Фамилия"),
@@ -135,33 +108,19 @@ class MessageLookup extends MessageLookupByLibrary {
       "Дата последнего обновления",
     ),
     "login": MessageLookupByLibrary.simpleMessage("Логин"),
+    "logout": MessageLookupByLibrary.simpleMessage("Выйти"),
     "message": MessageLookupByLibrary.simpleMessage("Сообщение"),
     "meta": MessageLookupByLibrary.simpleMessage("Мета"),
-    "nameInvalidCharactersException": MessageLookupByLibrary.simpleMessage(
-      "Имя содержит недопустимые символы",
-    ),
     "next": MessageLookupByLibrary.simpleMessage("Далее"),
     "noLabel": MessageLookupByLibrary.simpleMessage("Нет"),
     "notSpecified": MessageLookupByLibrary.simpleMessage("Не задано"),
     "ok": MessageLookupByLibrary.simpleMessage("ОК"),
     "password": MessageLookupByLibrary.simpleMessage("Пароль"),
-    "passwordInvalidCharactersException": MessageLookupByLibrary.simpleMessage(
-      "Пароль содержит недопустимые символы",
+    "passwordTooWeakException": MessageLookupByLibrary.simpleMessage(
+      "Пароль слишком слабый",
     ),
-    "passwordNoDigitException": MessageLookupByLibrary.simpleMessage(
-      "Пароль должен содержать хотя бы одну цифру",
-    ),
-    "passwordNoLowerCaseException": MessageLookupByLibrary.simpleMessage(
-      "Пароль должен содержать хотя бы одну строчную букву",
-    ),
-    "passwordNoUpperCaseException": MessageLookupByLibrary.simpleMessage(
-      "Пароль должен содержать хотя бы одну заглавную букву",
-    ),
-    "passwordTooShortException": MessageLookupByLibrary.simpleMessage(
-      "Пароль должен содержать не менее 14 символов",
-    ),
-    "passwordsMatchException": MessageLookupByLibrary.simpleMessage(
-      "Пароли не сопадают",
+    "passwordsMismatchException": MessageLookupByLibrary.simpleMessage(
+      "Пароли не совпадают",
     ),
     "personalInformation": MessageLookupByLibrary.simpleMessage(
       "Личная информация",
@@ -171,22 +130,17 @@ class MessageLookup extends MessageLookupByLibrary {
       "Редактирование профиля",
     ),
     "registration": MessageLookupByLibrary.simpleMessage("Регистрация"),
-    "registrationEmptyFieldException": MessageLookupByLibrary.simpleMessage(
-      "Поле обязательно для заполнения",
-    ),
-    "registrationPasswordsDontMatchException":
-        MessageLookupByLibrary.simpleMessage("Пароли не совпадают"),
     "registrationQuestion": MessageLookupByLibrary.simpleMessage(
       "Не зарегистрированы?",
     ),
     "repeatPassword": MessageLookupByLibrary.simpleMessage("Повторите пароль"),
+    "requiredValueNotProvidedException": MessageLookupByLibrary.simpleMessage(
+      "Обязательно для заполнения",
+    ),
     "reset": MessageLookupByLibrary.simpleMessage("Сбросить"),
     "retry": MessageLookupByLibrary.simpleMessage("Попробовать снова"),
     "save": MessageLookupByLibrary.simpleMessage("Сохранить"),
     "search": MessageLookupByLibrary.simpleMessage("Поиск"),
-    "searchUnknownException": MessageLookupByLibrary.simpleMessage(
-      "Неизвестная ошибка при поиске",
-    ),
     "selectInterfaceLanguage": MessageLookupByLibrary.simpleMessage(
       "Выберите язык интерфейса",
     ),
@@ -210,50 +164,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "sessionUpdatedAt": MessageLookupByLibrary.simpleMessage("Обновлена"),
     "sessionUserId": MessageLookupByLibrary.simpleMessage("ID пользователя"),
     "settings": MessageLookupByLibrary.simpleMessage("Настройки"),
-    "settingsLocaleChangeException": MessageLookupByLibrary.simpleMessage(
-      "Не удалось сменить язык",
-    ),
-    "settingsRestoreLocaleException": MessageLookupByLibrary.simpleMessage(
-      "Не удалось загрузить язык",
-    ),
-    "settingsRestoreThemeModeException": MessageLookupByLibrary.simpleMessage(
-      "Не удалось загрузить тему",
-    ),
-    "settingsThemeModeChangeException": MessageLookupByLibrary.simpleMessage(
-      "Не удалось сменить тему",
-    ),
-    "settingsUnknownException": MessageLookupByLibrary.simpleMessage(
-      "Неизвестная ошибка при работе с настройками",
-    ),
     "share": MessageLookupByLibrary.simpleMessage("Поделиться"),
     "signIn": MessageLookupByLibrary.simpleMessage("Войти"),
-    "sortingClearException": MessageLookupByLibrary.simpleMessage(
-      "Не удалось сбросить сортировку",
-    ),
-    "sortingSaveException": MessageLookupByLibrary.simpleMessage(
-      "Не удалось сохранить сортировку",
-    ),
-    "sortingUpdateException": MessageLookupByLibrary.simpleMessage(
-      "Не удалось обновить сортировку",
-    ),
     "storage": MessageLookupByLibrary.simpleMessage("Хранилище"),
-    "storageDeleteException": MessageLookupByLibrary.simpleMessage(
-      "Ошибка удаления данных из хранилища",
+    "storageException": MessageLookupByLibrary.simpleMessage(
+      "Ошибка хранилища",
     ),
-    "storageNotFoundException": MessageLookupByLibrary.simpleMessage(
-      "Данные не найдены в хранилище",
-    ),
-    "storageReadException": MessageLookupByLibrary.simpleMessage(
-      "Ошибка чтения данных из хранилища",
-    ),
-    "storageSerializationException": MessageLookupByLibrary.simpleMessage(
-      "Ошибка сериализации данных",
-    ),
-    "storageUnknownException": MessageLookupByLibrary.simpleMessage(
-      "Неизвестная ошибка при работе с хранилищем",
-    ),
-    "storageWriteException": MessageLookupByLibrary.simpleMessage(
-      "Ошибка сохранения данных в хранилище",
+    "storageIOException": MessageLookupByLibrary.simpleMessage(
+      "Ошибка чтения/записи в хранилище",
     ),
     "themeMode": MessageLookupByLibrary.simpleMessage("Тема"),
     "themeModeDark": MessageLookupByLibrary.simpleMessage("Тёмная"),
@@ -266,22 +184,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Включить уведомления",
     ),
     "unknownValue": MessageLookupByLibrary.simpleMessage("Неизвестно"),
-    "userFavouritesAddException": MessageLookupByLibrary.simpleMessage(
-      "Не удалось добавить в избранное",
-    ),
-    "userFavouritesDeleteException": MessageLookupByLibrary.simpleMessage(
-      "Не удалось удалить из избранного",
-    ),
-    "userFavouritesLoadException": MessageLookupByLibrary.simpleMessage(
-      "Не удалось загрузить избранное",
-    ),
-    "userFavouritesUnknownException": MessageLookupByLibrary.simpleMessage(
-      "Неизвестная ошибка при работе с избранным",
-    ),
     "username": MessageLookupByLibrary.simpleMessage("Юзернейм"),
-    "usernameInvalidCharactersException": MessageLookupByLibrary.simpleMessage(
-      "Имя пользователя содержит недопустимые символы",
-    ),
     "yesLabel": MessageLookupByLibrary.simpleMessage("Да"),
   };
 }

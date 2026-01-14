@@ -16,11 +16,7 @@ class RootScreen extends StatelessWidget {
         ToastListener<AuthCubit, AuthState, AuthFailureState>(
           bloc: context.read<AuthCubit>(),
           messageOf: (context, AuthFailureState state) =>
-              AppExceptionsTranslator.translate(
-                context,
-                state.failure,
-                fallback: "Auth error",
-              ),
+              AuthExceptionsTranslator.translate(context, state.failure),
         ),
         ToastListener<SettingsCubit, SettingsState, SettingsState>(
           bloc: context.read<SettingsCubit>(),

@@ -5,6 +5,7 @@ import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/home/presentation/presentation.dart';
 import 'package:locnet_app/features/profile/presentation/presentation.dart';
+import 'package:locnet_app/features/settings/presentation/presentation.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
 class PanelSidebar extends StatefulWidget {
@@ -59,7 +60,7 @@ class _PanelSidebarState extends State<PanelSidebar> {
               constraints.maxWidth <= _collapsedBreakpoint;
 
           final textScheme = context.textScheme;
-          final double horizontalPadding = isCollapsedLayout ? 8 : 16;
+          final double horizontalPadding = isCollapsedLayout ? 8 : 12;
 
           return Column(
             children: [
@@ -68,19 +69,6 @@ class _PanelSidebarState extends State<PanelSidebar> {
                 padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
                 child: Row(
                   children: [
-                    Container(
-                      width: isCollapsedLayout ? 28 : 36,
-                      height: isCollapsedLayout ? 28 : 36,
-                      decoration: BoxDecoration(
-                        color: colorScheme.secondary,
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Icon(
-                        Icons.bubble_chart_outlined,
-                        size: isCollapsedLayout ? 16 : 20,
-                        color: colorScheme.primary,
-                      ),
-                    ),
                     if (!isCollapsedLayout) ...[
                       const SizedBox(width: 15),
                       Expanded(
@@ -136,24 +124,7 @@ class _PanelSidebarState extends State<PanelSidebar> {
                           GoRouter.of(context).go(AppRoutes.conversations);
                         },
                       ),
-                      SidebarItem(
-                        label: l10n.storage,
-                        icon: Icons.folder_outlined,
-                        isSelected: _isSelected(AppRoutes.storage),
-                        isCollapsed: isCollapsedLayout,
-                        onTap: () {
-                          GoRouter.of(context).go(AppRoutes.storage);
-                        },
-                      ),
-                      SidebarItem(
-                        label: l10n.settings,
-                        icon: Icons.settings_outlined,
-                        isSelected: _isSelected(AppRoutes.settings),
-                        isCollapsed: isCollapsedLayout,
-                        onTap: () {
-                          Scaffold.of(context).openDrawer();
-                        },
-                      ),
+
                       const SizedBox(height: 12),
                     ],
                   ),
@@ -166,22 +137,39 @@ class _PanelSidebarState extends State<PanelSidebar> {
                   horizontalPadding,
                   12,
                 ),
-                child: SidebarItem(
-                  label: l10n.profile,
-                  icon: Icons.person_outline,
-                  isSelected: _isSelected(AppRoutes.profile),
-                  isCollapsed: isCollapsedLayout,
-                  onTap: () {
-                    showGeneralDialog(
-                      routeSettings: const RouteSettings(
-                        name: AppRoutes.profile,
-                      ),
-                      context: context,
-                      pageBuilder: (context, _, _) {
-                        return const ProfileModalCard();
+                child: Column(
+                  children: [
+                    SidebarItem(
+                      label: l10n.settings,
+                      icon: Icons.settings_outlined,
+                      isSelected: _isSelected(AppRoutes.settings),
+                      isCollapsed: isCollapsedLayout,
+                      onTap: () {
+                        showGeneralDialog(
+                          context: context,
+                          pageBuilder: (context, _, _) =>
+                              const SettingsModalCard(),
+                        );
                       },
-                    );
-                  },
+                    ),
+                    SidebarItem(
+                      label: l10n.profile,
+                      icon: Icons.person_outline,
+                      isSelected: _isSelected(AppRoutes.profile),
+                      isCollapsed: isCollapsedLayout,
+                      onTap: () {
+                        showGeneralDialog(
+                          routeSettings: const RouteSettings(
+                            name: AppRoutes.profile,
+                          ),
+                          context: context,
+                          pageBuilder: (context, _, _) {
+                            return const ProfileModalCard();
+                          },
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ),
             ],

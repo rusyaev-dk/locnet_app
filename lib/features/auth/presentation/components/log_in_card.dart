@@ -62,7 +62,7 @@ class LogInCard extends StatelessWidget {
               logInCubit.updateUsername(updatedUsername: value);
             },
             errorText: logInCubit.state.usernameException != null
-                ? AppExceptionsTranslator.translate(
+                ? AuthExceptionsTranslator.translate(
                     context,
                     logInCubit.state.usernameException,
                   )
@@ -85,7 +85,7 @@ class LogInCard extends StatelessWidget {
               logInCubit.updatePassword(updatedPassword: value);
             },
             errorText: logInCubit.state.passwordException != null
-                ? AppExceptionsTranslator.translate(
+                ? AuthExceptionsTranslator.translate(
                     context,
                     logInCubit.state.passwordException,
                   )

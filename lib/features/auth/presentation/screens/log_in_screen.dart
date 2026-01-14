@@ -55,16 +55,12 @@ class _LogInScreenState extends State<LogInScreen> {
             ToastListener<AuthCubit, AuthState, AuthFailureState>(
               bloc: context.read<AuthCubit>(),
               messageOf: (context, AuthFailureState state) =>
-                  AppExceptionsTranslator.translate(
-                    context,
-                    state.failure,
-                    fallback: 'Auth error',
-                  ),
+                  AuthExceptionsTranslator.translate(context, state.failure),
             ),
             ToastListener<LogInCubit, LogInState, LogInState>(
               bloc: context.read<LogInCubit>(),
               messageOf: (context, LogInState state) =>
-                  AppExceptionsTranslator.translate(context, state.failure),
+                  AuthExceptionsTranslator.translate(context, state.failure),
             ),
           ],
           child: BlocBuilder<AuthCubit, AuthState>(

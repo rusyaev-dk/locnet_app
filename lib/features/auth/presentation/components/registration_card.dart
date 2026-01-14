@@ -70,7 +70,7 @@ class RegistrationCard extends StatelessWidget {
                   registrationCubit.updateFirstName(newFirstName: value);
                 },
                 errorText: registrationCubit.state.firstNameException != null
-                    ? AppExceptionsTranslator.translate(
+                    ? AuthExceptionsTranslator.translate(
                         context,
                         registrationCubit.state.firstNameException,
                       )
@@ -89,7 +89,7 @@ class RegistrationCard extends StatelessWidget {
                   registrationCubit.updateLastName(newLastName: value);
                 },
                 errorText: registrationCubit.state.lastNameException != null
-                    ? AppExceptionsTranslator.translate(
+                    ? AuthExceptionsTranslator.translate(
                         context,
                         registrationCubit.state.lastNameException,
                       )
@@ -112,7 +112,7 @@ class RegistrationCard extends StatelessWidget {
                   );
                 },
                 errorText: registrationCubit.state.descriptionException != null
-                    ? AppExceptionsTranslator.translate(
+                    ? AuthExceptionsTranslator.translate(
                         context,
                         registrationCubit.state.descriptionException,
                       )
@@ -132,7 +132,7 @@ class RegistrationCard extends StatelessWidget {
                   registrationCubit.updateUsername(newUsername: value);
                 },
                 errorText: registrationCubit.state.usernameException != null
-                    ? AppExceptionsTranslator.translate(
+                    ? AuthExceptionsTranslator.translate(
                         context,
                         registrationCubit.state.usernameException,
                       )
@@ -152,7 +152,7 @@ class RegistrationCard extends StatelessWidget {
                   registrationCubit.updatePassword(newPassword: value);
                 },
                 errorText: registrationCubit.state.passwordException != null
-                    ? AppExceptionsTranslator.translate(
+                    ? AuthExceptionsTranslator.translate(
                         context,
                         registrationCubit.state.passwordException,
                       )
@@ -177,7 +177,7 @@ class RegistrationCard extends StatelessWidget {
                 },
                 errorText:
                     registrationCubit.state.repeatPasswordException != null
-                    ? AppExceptionsTranslator.translate(
+                    ? AuthExceptionsTranslator.translate(
                         context,
                         registrationCubit.state.repeatPasswordException,
                       )

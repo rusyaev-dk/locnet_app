@@ -3,47 +3,32 @@ import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/gen/l10n/l10n.dart';
 
-final class AppExceptionsTranslator {
-  AppExceptionsTranslator._();
+class AppExceptionsTranslator {
+  static final Map<Type, String Function(S)> _registry =
+      <Type, String Function(S)>{
+        // General exceptions
+        AppException: (s) => s.appException,
+        AppUnknownException: (s) => s.appUnknownException,
 
-  static final Map<Type, String Function(S)>
-  _registry = <Type, String Function(S)>{
-    // General exceptions
-    AppException: (s) => s.appException,
-    AppUnknownException: (s) => s.appUnknownException,
+        // API exceptions
+        ApiUnauthorizedException: (s) => s.apiUnauthorizedException,
+        ApiServerException: (s) => s.apiServerException,
+        ApiValidationException: (s) => s.apiValidationException,
+        ApiNotFoundException: (s) => s.apiNotFoundException,
+        ApiForbiddenException: (s) => s.apiForbiddenException,
+        ApiTimeoutException: (s) => s.apiTimeoutException,
 
-    // API exceptions
-    ApiUnauthorizedException: (s) => s.apiUnauthorizedException,
-    ApiServerException: (s) => s.apiServerException,
-    ApiValidationException: (s) => s.apiValidationException,
-    ApiNotFoundException: (s) => s.apiNotFoundException,
-    ApiForbiddenException: (s) => s.apiForbiddenException,
+        // Storage exceptions
+        StorageException: (s) => s.storageException,
+        StorageIOException: (s) => s.storageIOException,
 
-    // Storage exceptions
-    StorageException: (s) => s.storageReadException,
-    StorageIOException: (s) => s.storageSerializationException,
-
-    // NameInvalidCharactersException: (s) => s.nameInvalidCharactersException,
-    // UsernameInvalidCharactersException: (s) =>
-    //     s.usernameInvalidCharactersException,
-    // UserDescriptionTooLongException: (s) =>
-    //     s.jobPositionInvalidCharactersException,
-    // PasswordTooShortException: (s) => s.passwordTooShortException,
-    // PasswordNoUpperCaseException: (s) => s.passwordNoUpperCaseException,
-    // PasswordNoLowerCaseException: (s) => s.passwordNoLowerCaseException,
-    // PasswordNoDigitException: (s) => s.passwordNoDigitException,
-    // PasswordInvalidCharactersException: (s) =>
-    //     s.passwordInvalidCharactersException,
-
-    // // Conversation Creator exceptions
-    // ConversationEmptyFieldException: (s) => s.conversationEmptyFieldException,
-    // ConversationDataTooLongException: (s) => s.conversationDataTooLongException,
-    // ConversationCreateException: (s) => s.conversationCreateException,
-
-    // // Optional base-class fallbacks
-    // AppApiException: (s) => s.apiUnknownException,
-    // AppStorageException: (s) => s.storageUnknownException,
-  };
+        // General domain exceptions
+        InvalidCharactersException: (s) => s.invalidCharactersException,
+        CharactersCountViolationException: (s) =>
+            s.charactersCountViolationException,
+        RequiredValueNotProvidedException: (s) =>
+            s.requiredValueNotProvidedException,
+      };
 
   static String translate(
     BuildContext context,

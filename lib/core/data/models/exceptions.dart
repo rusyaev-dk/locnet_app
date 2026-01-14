@@ -74,3 +74,12 @@ final class ApiServerException extends ApiException {
     super.statusCode,
   });
 }
+
+final class ApiTimeoutException extends ApiException {
+  ApiTimeoutException({
+    required super.message,
+    super.stackTrace,
+    super.error,
+    super.statusCode,
+  });
+}

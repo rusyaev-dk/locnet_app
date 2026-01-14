@@ -156,7 +156,7 @@ class DioHttpClient implements IHttpClient {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.receiveTimeout:
       case DioExceptionType.sendTimeout:
-        return ApiException(
+        return ApiTimeoutException(
           message: 'Request timed out',
           error: exception,
           stackTrace: st,
@@ -207,6 +207,13 @@ class DioHttpClient implements IHttpClient {
       case 404:
         return ApiNotFoundException(
           message: message,
+          error: error,
+          stackTrace: st,
+        );
+
+      case 408:
+        return ApiTimeoutException(
+          message: message.isNotEmpty ? message : 'Request timed out',
           error: error,
           stackTrace: st,
         );

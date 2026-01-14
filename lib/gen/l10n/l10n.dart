@@ -219,26 +219,6 @@ class S {
     );
   }
 
-  /// `Ошибка соединения, проверьте интернет-подключение`
-  String get apiConnectionException {
-    return Intl.message(
-      'Ошибка соединения, проверьте интернет-подключение',
-      name: 'apiConnectionException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Неизвестная ошибка при запросе к серверу`
-  String get apiUnknownException {
-    return Intl.message(
-      'Неизвестная ошибка при запросе к серверу',
-      name: 'apiUnknownException',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `Запрашиваемый ресурс не найден`
   String get apiNotFoundException {
     return Intl.message(
@@ -269,61 +249,31 @@ class S {
     );
   }
 
-  /// `Ошибка чтения данных из хранилища`
-  String get storageReadException {
+  /// `Ошибка хранилища`
+  String get storageException {
     return Intl.message(
-      'Ошибка чтения данных из хранилища',
-      name: 'storageReadException',
+      'Ошибка хранилища',
+      name: 'storageException',
       desc: '',
       args: [],
     );
   }
 
-  /// `Ошибка сериализации данных`
-  String get storageSerializationException {
+  /// `Ошибка чтения/записи в хранилище`
+  String get storageIOException {
     return Intl.message(
-      'Ошибка сериализации данных',
-      name: 'storageSerializationException',
+      'Ошибка чтения/записи в хранилище',
+      name: 'storageIOException',
       desc: '',
       args: [],
     );
   }
 
-  /// `Неизвестная ошибка при работе с хранилищем`
-  String get storageUnknownException {
+  /// `Ошибка авторизации`
+  String get authException {
     return Intl.message(
-      'Неизвестная ошибка при работе с хранилищем',
-      name: 'storageUnknownException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Данные не найдены в хранилище`
-  String get storageNotFoundException {
-    return Intl.message(
-      'Данные не найдены в хранилище',
-      name: 'storageNotFoundException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Ошибка сохранения данных в хранилище`
-  String get storageWriteException {
-    return Intl.message(
-      'Ошибка сохранения данных в хранилище',
-      name: 'storageWriteException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Ошибка удаления данных из хранилища`
-  String get storageDeleteException {
-    return Intl.message(
-      'Ошибка удаления данных из хранилища',
-      name: 'storageDeleteException',
+      'Ошибка авторизации',
+      name: 'authException',
       desc: '',
       args: [],
     );
@@ -349,311 +299,51 @@ class S {
     );
   }
 
-  /// `Сессия истекла, пожалуйста, выполните вход снова`
-  String get authExpiredSessionException {
+  /// `Введены некорректные символы`
+  String get invalidCharactersException {
     return Intl.message(
-      'Сессия истекла, пожалуйста, выполните вход снова',
-      name: 'authExpiredSessionException',
+      'Введены некорректные символы',
+      name: 'invalidCharactersException',
       desc: '',
       args: [],
     );
   }
 
-  /// `Неизвестная ошибка при авторизации`
-  String get authUnknownException {
+  /// `Недопустимое количество символов`
+  String get charactersCountViolationException {
     return Intl.message(
-      'Неизвестная ошибка при авторизации',
-      name: 'authUnknownException',
+      'Недопустимое количество символов',
+      name: 'charactersCountViolationException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Обязательно для заполнения`
+  String get requiredValueNotProvidedException {
+    return Intl.message(
+      'Обязательно для заполнения',
+      name: 'requiredValueNotProvidedException',
       desc: '',
       args: [],
     );
   }
 
   /// `Пароли не совпадают`
-  String get registrationPasswordsDontMatchException {
+  String get passwordsMismatchException {
     return Intl.message(
       'Пароли не совпадают',
-      name: 'registrationPasswordsDontMatchException',
+      name: 'passwordsMismatchException',
       desc: '',
       args: [],
     );
   }
 
-  /// `Поле обязательно для заполнения`
-  String get registrationEmptyFieldException {
+  /// `Пароль слишком слабый`
+  String get passwordTooWeakException {
     return Intl.message(
-      'Поле обязательно для заполнения',
-      name: 'registrationEmptyFieldException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Не удалось сохранить сортировку`
-  String get sortingSaveException {
-    return Intl.message(
-      'Не удалось сохранить сортировку',
-      name: 'sortingSaveException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Не удалось сбросить сортировку`
-  String get sortingClearException {
-    return Intl.message(
-      'Не удалось сбросить сортировку',
-      name: 'sortingClearException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Не удалось обновить сортировку`
-  String get sortingUpdateException {
-    return Intl.message(
-      'Не удалось обновить сортировку',
-      name: 'sortingUpdateException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Не удалось сохранить фильтры`
-  String get filteringSaveException {
-    return Intl.message(
-      'Не удалось сохранить фильтры',
-      name: 'filteringSaveException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Не удалось сбросить фильтры`
-  String get filteringClearException {
-    return Intl.message(
-      'Не удалось сбросить фильтры',
-      name: 'filteringClearException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Не удалось обновить фильтры`
-  String get filteringUpdateException {
-    return Intl.message(
-      'Не удалось обновить фильтры',
-      name: 'filteringUpdateException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Неизвестная ошибка при поиске`
-  String get searchUnknownException {
-    return Intl.message(
-      'Неизвестная ошибка при поиске',
-      name: 'searchUnknownException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Не удалось сменить язык`
-  String get settingsLocaleChangeException {
-    return Intl.message(
-      'Не удалось сменить язык',
-      name: 'settingsLocaleChangeException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Не удалось сменить тему`
-  String get settingsThemeModeChangeException {
-    return Intl.message(
-      'Не удалось сменить тему',
-      name: 'settingsThemeModeChangeException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Не удалось загрузить язык`
-  String get settingsRestoreLocaleException {
-    return Intl.message(
-      'Не удалось загрузить язык',
-      name: 'settingsRestoreLocaleException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Не удалось загрузить тему`
-  String get settingsRestoreThemeModeException {
-    return Intl.message(
-      'Не удалось загрузить тему',
-      name: 'settingsRestoreThemeModeException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Неизвестная ошибка при работе с настройками`
-  String get settingsUnknownException {
-    return Intl.message(
-      'Неизвестная ошибка при работе с настройками',
-      name: 'settingsUnknownException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Не удалось добавить в избранное`
-  String get userFavouritesAddException {
-    return Intl.message(
-      'Не удалось добавить в избранное',
-      name: 'userFavouritesAddException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Не удалось удалить из избранного`
-  String get userFavouritesDeleteException {
-    return Intl.message(
-      'Не удалось удалить из избранного',
-      name: 'userFavouritesDeleteException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Не удалось загрузить избранное`
-  String get userFavouritesLoadException {
-    return Intl.message(
-      'Не удалось загрузить избранное',
-      name: 'userFavouritesLoadException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Неизвестная ошибка при работе с избранным`
-  String get userFavouritesUnknownException {
-    return Intl.message(
-      'Неизвестная ошибка при работе с избранным',
-      name: 'userFavouritesUnknownException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Имя содержит недопустимые символы`
-  String get nameInvalidCharactersException {
-    return Intl.message(
-      'Имя содержит недопустимые символы',
-      name: 'nameInvalidCharactersException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Имя пользователя содержит недопустимые символы`
-  String get usernameInvalidCharactersException {
-    return Intl.message(
-      'Имя пользователя содержит недопустимые символы',
-      name: 'usernameInvalidCharactersException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Название должности содержит недопустимые символы`
-  String get jobPositionInvalidCharactersException {
-    return Intl.message(
-      'Название должности содержит недопустимые символы',
-      name: 'jobPositionInvalidCharactersException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Пароль должен содержать не менее 14 символов`
-  String get passwordTooShortException {
-    return Intl.message(
-      'Пароль должен содержать не менее 14 символов',
-      name: 'passwordTooShortException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Пароль должен содержать хотя бы одну заглавную букву`
-  String get passwordNoUpperCaseException {
-    return Intl.message(
-      'Пароль должен содержать хотя бы одну заглавную букву',
-      name: 'passwordNoUpperCaseException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Пароль должен содержать хотя бы одну строчную букву`
-  String get passwordNoLowerCaseException {
-    return Intl.message(
-      'Пароль должен содержать хотя бы одну строчную букву',
-      name: 'passwordNoLowerCaseException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Пароль должен содержать хотя бы одну цифру`
-  String get passwordNoDigitException {
-    return Intl.message(
-      'Пароль должен содержать хотя бы одну цифру',
-      name: 'passwordNoDigitException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Пароль содержит недопустимые символы`
-  String get passwordInvalidCharactersException {
-    return Intl.message(
-      'Пароль содержит недопустимые символы',
-      name: 'passwordInvalidCharactersException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Поле не может быть пустым`
-  String get conversationEmptyFieldException {
-    return Intl.message(
-      'Поле не может быть пустым',
-      name: 'conversationEmptyFieldException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Введённые данные слишком длинные`
-  String get conversationDataTooLongException {
-    return Intl.message(
-      'Введённые данные слишком длинные',
-      name: 'conversationDataTooLongException',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Не удалось создать беседу`
-  String get conversationCreateException {
-    return Intl.message(
-      'Не удалось создать беседу',
-      name: 'conversationCreateException',
+      'Пароль слишком слабый',
+      name: 'passwordTooWeakException',
       desc: '',
       args: [],
     );
@@ -679,6 +369,11 @@ class S {
     return Intl.message('Логин', name: 'login', desc: '', args: []);
   }
 
+  /// `Выйти`
+  String get logout {
+    return Intl.message('Выйти', name: 'logout', desc: '', args: []);
+  }
+
   /// `Пароль`
   String get password {
     return Intl.message('Пароль', name: 'password', desc: '', args: []);
@@ -689,16 +384,6 @@ class S {
     return Intl.message(
       'Повторите пароль',
       name: 'repeatPassword',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Пароли не сопадают`
-  String get passwordsMatchException {
-    return Intl.message(
-      'Пароли не сопадают',
-      name: 'passwordsMatchException',
       desc: '',
       args: [],
     );
