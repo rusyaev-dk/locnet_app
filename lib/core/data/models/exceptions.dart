@@ -34,7 +34,8 @@ final class ApiUnauthorizedException extends ApiException {
     super.stackTrace,
     super.error,
     super.details,
-  }) : super(statusCode: 401);
+    super.statusCode = 401,
+  });
 }
 
 final class ApiForbiddenException extends ApiException {
@@ -43,7 +44,8 @@ final class ApiForbiddenException extends ApiException {
     super.stackTrace,
     super.error,
     super.details,
-  }) : super(statusCode: 403);
+    super.statusCode = 403,
+  });
 }
 
 final class ApiValidationException extends ApiException {
@@ -51,12 +53,17 @@ final class ApiValidationException extends ApiException {
     required super.message,
     super.stackTrace,
     super.error,
-  }) : super(statusCode: 422);
+    super.statusCode = 422,
+  });
 }
 
 final class ApiNotFoundException extends ApiException {
-  ApiNotFoundException({required super.message, super.stackTrace, super.error})
-    : super(statusCode: 404);
+  ApiNotFoundException({
+    required super.message,
+    super.stackTrace,
+    super.error,
+    super.statusCode = 404,
+  });
 }
 
 final class ApiServerException extends ApiException {

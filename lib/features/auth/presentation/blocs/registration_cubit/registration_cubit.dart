@@ -18,9 +18,9 @@ class RegistrationCubit extends Cubit<RegistrationState> {
       if (newFirstName == null || newFirstName.trim().isEmpty) {
         emit(
           state.copyWith(
-            firstName: newFirstName,
-            firstNameException: EmptyFieldException(
-              message: "First name can not be empty",
+            firstName: null,
+            firstNameException: RequiredValueNotProvidedException(
+              message: "Firstname cannot be empty",
             ),
           ),
         );
@@ -53,9 +53,9 @@ class RegistrationCubit extends Cubit<RegistrationState> {
       if (newLastName == null || newLastName.trim().isEmpty) {
         emit(
           state.copyWith(
-            lastName: newLastName,
-            lastNameException: EmptyFieldException(
-              message: "Last name can not be empty",
+            lastName: null,
+            lastNameException: RequiredValueNotProvidedException(
+              message: "Lastname cannot be empty",
             ),
           ),
         );
@@ -86,7 +86,8 @@ class RegistrationCubit extends Cubit<RegistrationState> {
   Future<void> updateDescription({String? newUserDescription}) async {
     try {
       if (newUserDescription == null || newUserDescription.trim().isEmpty) {
-        return emit(state.copyWith(descriptionException: null));
+        emit(state.copyWith(description: null, descriptionException: null));
+        return;
       }
 
       try {
@@ -121,12 +122,12 @@ class RegistrationCubit extends Cubit<RegistrationState> {
 
   Future<void> updateUsername({String? newUsername}) async {
     try {
-      if (newUsername == null || newUsername.isEmpty) {
+      if (newUsername == null || newUsername.trim().isEmpty) {
         emit(
           state.copyWith(
-            username: newUsername,
-            usernameException: EmptyFieldException(
-              message: "Username can not be empty",
+            username: null,
+            usernameException: RequiredValueNotProvidedException(
+              message: "Username cannot be empty",
             ),
           ),
         );
@@ -159,9 +160,9 @@ class RegistrationCubit extends Cubit<RegistrationState> {
       if (newPassword == null || newPassword.trim().isEmpty) {
         emit(
           state.copyWith(
-            password: newPassword,
-            passwordException: EmptyFieldException(
-              message: "Password can not be empty",
+            password: null,
+            passwordException: RequiredValueNotProvidedException(
+              message: "Password cannot be empty",
             ),
           ),
         );
@@ -178,7 +179,7 @@ class RegistrationCubit extends Cubit<RegistrationState> {
         emit(
           state.copyWith(
             password: newPassword,
-            repeatPasswordException: RegistrationPasswordsDontMatchException(
+            repeatPasswordException: PasswordsMismatchException(
               message: "Passwords don't match",
             ),
           ),
@@ -225,9 +226,9 @@ class RegistrationCubit extends Cubit<RegistrationState> {
       if (newRepeatPassword == null || newRepeatPassword.trim().isEmpty) {
         emit(
           state.copyWith(
-            repeatPassword: newRepeatPassword,
-            repeatPasswordException: EmptyFieldException(
-              message: "Repeat password can not be empty",
+            repeatPassword: null,
+            repeatPasswordException: RequiredValueNotProvidedException(
+              message: "Repeat password cannot be empty",
             ),
           ),
         );
@@ -239,7 +240,7 @@ class RegistrationCubit extends Cubit<RegistrationState> {
         final String repeatPasswordInput = newRepeatPassword;
 
         if (firstPassword == null || firstPassword.isEmpty) {
-          throw RegistrationPasswordsDontMatchException(
+          throw PasswordsMismatchException(
             message: "Passwords don't match",
             stackTrace: StackTrace.current,
           );
@@ -248,7 +249,7 @@ class RegistrationCubit extends Cubit<RegistrationState> {
         if (firstPassword.isNotEmpty &&
             (firstPassword.length != repeatPasswordInput.length ||
                 firstPassword != repeatPasswordInput)) {
-          throw RegistrationPasswordsDontMatchException(
+          throw PasswordsMismatchException(
             message: "Passwords don't match",
             stackTrace: StackTrace.current,
           );

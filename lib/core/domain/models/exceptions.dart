@@ -19,3 +19,11 @@ final class CharactersCountViolationException extends DomainException {
     super.error,
   });
 }
+
+final class RequiredValueNotProvidedException extends DomainException {
+  RequiredValueNotProvidedException({
+    required super.message,
+    super.stackTrace,
+    super.error,
+  });
+}

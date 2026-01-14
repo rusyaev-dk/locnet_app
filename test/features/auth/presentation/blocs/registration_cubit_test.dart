@@ -21,7 +21,7 @@ void main() {
   group('RegistrationCubit', () {
     group('updateFirstName method', () {
       blocTest<RegistrationCubit, RegistrationState>(
-        'should emit EmptyFieldException when newFirstName is null',
+        'should emit RequiredValueNotProvidedException when newFirstName is null',
         build: buildCubit,
         act: (cubit) => cubit.updateFirstName(),
         expect: () => <dynamic>[
@@ -30,25 +30,32 @@ void main() {
               .having(
                 (s) => s.firstNameException,
                 'firstNameException',
-                isA<EmptyFieldException>(),
+                isA<RequiredValueNotProvidedException>(),
               )
               .having((s) => s.failure, 'failure', isNull),
         ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
       );
 
       blocTest<RegistrationCubit, RegistrationState>(
-        'should emit EmptyFieldException when newFirstName is whitespace',
+        'should emit RequiredValueNotProvidedException when newFirstName is whitespace',
         build: buildCubit,
         act: (cubit) => cubit.updateFirstName(newFirstName: '   '),
         expect: () => <dynamic>[
           isA<RegistrationState>()
-              .having((s) => s.firstName, 'firstName', '   ')
+              .having((s) => s.firstName, 'firstName', isNull)
               .having(
                 (s) => s.firstNameException,
                 'firstNameException',
-                isA<EmptyFieldException>(),
-              ),
+                isA<RequiredValueNotProvidedException>(),
+              )
+              .having((s) => s.failure, 'failure', isNull),
         ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
       );
 
       blocTest<RegistrationCubit, RegistrationState>(
@@ -62,8 +69,12 @@ void main() {
                 (s) => s.firstNameException,
                 'firstNameException',
                 isNotNull,
-              ),
+              )
+              .having((s) => s.failure, 'failure', isNull),
         ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
       );
 
       blocTest<RegistrationCubit, RegistrationState>(
@@ -80,21 +91,22 @@ void main() {
                 (s) => s.firstNameException,
                 'firstNameException',
                 isNotNull,
-              ),
+              )
+              .having((s) => s.failure, 'failure', isNull),
           isA<RegistrationState>()
               .having((s) => s.firstName, 'firstName', 'John')
-              .having(
-                (s) => s.firstNameException,
-                'firstNameException',
-                isNull,
-              ),
+              .having((s) => s.firstNameException, 'firstNameException', isNull)
+              .having((s) => s.failure, 'failure', isNull),
         ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
       );
     });
 
     group('updateLastName method', () {
       blocTest<RegistrationCubit, RegistrationState>(
-        'should emit EmptyFieldException when newLastName is null',
+        'should emit RequiredValueNotProvidedException when newLastName is null',
         build: buildCubit,
         act: (cubit) => cubit.updateLastName(),
         expect: () => <dynamic>[
@@ -103,25 +115,32 @@ void main() {
               .having(
                 (s) => s.lastNameException,
                 'lastNameException',
-                isA<EmptyFieldException>(),
+                isA<RequiredValueNotProvidedException>(),
               )
               .having((s) => s.failure, 'failure', isNull),
         ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
       );
 
       blocTest<RegistrationCubit, RegistrationState>(
-        'should emit EmptyFieldException when newLastName is whitespace',
+        'should emit RequiredValueNotProvidedException when newLastName is whitespace',
         build: buildCubit,
         act: (cubit) => cubit.updateLastName(newLastName: '   '),
         expect: () => <dynamic>[
           isA<RegistrationState>()
-              .having((s) => s.lastName, 'lastName', '   ')
+              .having((s) => s.lastName, 'lastName', isNull)
               .having(
                 (s) => s.lastNameException,
                 'lastNameException',
-                isA<EmptyFieldException>(),
-              ),
+                isA<RequiredValueNotProvidedException>(),
+              )
+              .having((s) => s.failure, 'failure', isNull),
         ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
       );
 
       blocTest<RegistrationCubit, RegistrationState>(
@@ -135,8 +154,12 @@ void main() {
                 (s) => s.lastNameException,
                 'lastNameException',
                 isNotNull,
-              ),
+              )
+              .having((s) => s.failure, 'failure', isNull),
         ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
       );
 
       blocTest<RegistrationCubit, RegistrationState>(
@@ -153,11 +176,16 @@ void main() {
                 (s) => s.lastNameException,
                 'lastNameException',
                 isNotNull,
-              ),
+              )
+              .having((s) => s.failure, 'failure', isNull),
           isA<RegistrationState>()
               .having((s) => s.lastName, 'lastName', 'Doe')
-              .having((s) => s.lastNameException, 'lastNameException', isNull),
+              .having((s) => s.lastNameException, 'lastNameException', isNull)
+              .having((s) => s.failure, 'failure', isNull),
         ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
       );
     });
 
@@ -175,6 +203,9 @@ void main() {
               )
               .having((s) => s.failure, 'failure', isNull),
         ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
       );
 
       blocTest<RegistrationCubit, RegistrationState>(
@@ -182,12 +213,17 @@ void main() {
         build: buildCubit,
         act: (cubit) => cubit.updateDescription(newUserDescription: '   '),
         expect: () => <dynamic>[
-          isA<RegistrationState>().having(
-            (s) => s.descriptionException,
-            'descriptionException',
-            isNull,
-          ),
+          isA<RegistrationState>()
+              .having(
+                (s) => s.descriptionException,
+                'descriptionException',
+                isNull,
+              )
+              .having((s) => s.failure, 'failure', isNull),
         ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
       );
 
       blocTest<RegistrationCubit, RegistrationState>(
@@ -202,8 +238,12 @@ void main() {
                 (s) => s.descriptionException,
                 'descriptionException',
                 isNotNull,
-              ),
+              )
+              .having((s) => s.failure, 'failure', isNull),
         ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
       );
 
       blocTest<RegistrationCubit, RegistrationState>(
@@ -220,21 +260,54 @@ void main() {
                 (s) => s.descriptionException,
                 'descriptionException',
                 isNotNull,
-              ),
+              )
+              .having((s) => s.failure, 'failure', isNull),
           isA<RegistrationState>()
               .having((s) => s.description, 'description', 'Hello')
               .having(
                 (s) => s.descriptionException,
                 'descriptionException',
                 isNull,
+              )
+              .having((s) => s.failure, 'failure', isNull),
+        ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
+      );
+
+      blocTest<RegistrationCubit, RegistrationState>(
+        'should overwrite description to null if null provided',
+        build: buildCubit,
+        act: (cubit) async {
+          await cubit.updateDescription(newUserDescription: 'Hello');
+          await cubit.updateDescription();
+        },
+        expect: () => <dynamic>[
+          isA<RegistrationState>()
+              .having((s) => s.description, 'description', equals('Hello'))
+              .having(
+                (s) => s.descriptionException,
+                'descriptionException',
+                isNull,
+              ),
+          isA<RegistrationState>()
+              .having((s) => s.description, 'description', isNull)
+              .having(
+                (s) => s.descriptionException,
+                'descriptionException',
+                isNull,
               ),
         ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
       );
     });
 
     group('updateUsername method', () {
       blocTest<RegistrationCubit, RegistrationState>(
-        'should emit EmptyFieldException when newUsername is null',
+        'should emit RequiredValueNotProvidedException when newUsername is null',
         build: buildCubit,
         act: (cubit) => cubit.updateUsername(),
         expect: () => <dynamic>[
@@ -243,40 +316,51 @@ void main() {
               .having(
                 (s) => s.usernameException,
                 'usernameException',
-                isA<EmptyFieldException>(),
+                isA<RequiredValueNotProvidedException>(),
               )
               .having((s) => s.failure, 'failure', isNull),
         ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
       );
 
       blocTest<RegistrationCubit, RegistrationState>(
-        'should emit EmptyFieldException when newUsername is empty',
+        'should emit RequiredValueNotProvidedException when newUsername is empty',
         build: buildCubit,
         act: (cubit) => cubit.updateUsername(newUsername: ''),
         expect: () => <dynamic>[
           isA<RegistrationState>()
-              .having((s) => s.username, 'username', '')
+              .having((s) => s.username, 'username', isNull)
               .having(
                 (s) => s.usernameException,
                 'usernameException',
-                isA<EmptyFieldException>(),
-              ),
+                isA<RequiredValueNotProvidedException>(),
+              )
+              .having((s) => s.failure, 'failure', isNull),
         ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
       );
 
       blocTest<RegistrationCubit, RegistrationState>(
         'should emit validator exception when validateUsername throws',
         build: buildCubit,
         act: (cubit) => cubit.updateUsername(newUsername: 'a!^&&&'),
-        expect: () => [
+        expect: () => <dynamic>[
           isA<RegistrationState>()
               .having((s) => s.username, 'username', equals('a!^&&&'))
               .having(
                 (s) => s.usernameException,
                 'usernameException',
                 isNotNull,
-              ),
+              )
+              .having((s) => s.failure, 'failure', isNull),
         ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
       );
 
       blocTest<RegistrationCubit, RegistrationState>(
@@ -288,22 +372,27 @@ void main() {
         },
         expect: () => <dynamic>[
           isA<RegistrationState>()
-              .having((s) => s.username, 'username', equals("!exampleinvalid?"))
+              .having((s) => s.username, 'username', equals('!exampleinvalid?'))
               .having(
                 (s) => s.usernameException,
                 'usernameException',
                 isNotNull,
-              ),
+              )
+              .having((s) => s.failure, 'failure', isNull),
           isA<RegistrationState>()
               .having((s) => s.username, 'username', 'john_doe')
-              .having((s) => s.usernameException, 'usernameException', isNull),
+              .having((s) => s.usernameException, 'usernameException', isNull)
+              .having((s) => s.failure, 'failure', isNull),
         ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
       );
     });
 
     group('updatePassword method', () {
       blocTest<RegistrationCubit, RegistrationState>(
-        'should emit EmptyFieldException when newPassword is null',
+        'should emit RequiredValueNotProvidedException when newPassword is null',
         build: buildCubit,
         act: (cubit) => cubit.updatePassword(),
         expect: () => <dynamic>[
@@ -312,25 +401,32 @@ void main() {
               .having(
                 (s) => s.passwordException,
                 'passwordException',
-                isA<EmptyFieldException>(),
+                isA<RequiredValueNotProvidedException>(),
               )
               .having((s) => s.failure, 'failure', isNull),
         ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
       );
 
       blocTest<RegistrationCubit, RegistrationState>(
-        'should emit EmptyFieldException when newPassword is whitespace',
+        'should emit RequiredValueNotProvidedException when newPassword is whitespace',
         build: buildCubit,
         act: (cubit) => cubit.updatePassword(newPassword: '   '),
         expect: () => <dynamic>[
           isA<RegistrationState>()
-              .having((s) => s.password, 'password', '   ')
+              .having((s) => s.password, 'password', isNull)
               .having(
                 (s) => s.passwordException,
                 'passwordException',
-                isA<EmptyFieldException>(),
-              ),
+                isA<RequiredValueNotProvidedException>(),
+              )
+              .having((s) => s.failure, 'failure', isNull),
         ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
       );
 
       blocTest<RegistrationCubit, RegistrationState>(
@@ -353,9 +449,12 @@ void main() {
               .having(
                 (s) => s.repeatPasswordException,
                 'repeatPasswordException',
-                isA<RegistrationPasswordsDontMatchException>(),
+                isA<PasswordsMismatchException>(),
               ),
         ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
       );
 
       blocTest<RegistrationCubit, RegistrationState>(
@@ -380,8 +479,12 @@ void main() {
                 'repeatPasswordException',
                 isNull,
               )
-              .having((s) => s.passwordException, 'passwordException', isNull),
+              .having((s) => s.passwordException, 'passwordException', isNull)
+              .having((s) => s.failure, 'failure', isNull),
         ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
       );
 
       blocTest<RegistrationCubit, RegistrationState>(
@@ -395,8 +498,12 @@ void main() {
                 (s) => s.passwordException,
                 'passwordException',
                 isNotNull,
-              ),
+              )
+              .having((s) => s.failure, 'failure', isNull),
         ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
       );
 
       blocTest<RegistrationCubit, RegistrationState>(
@@ -413,17 +520,50 @@ void main() {
                 (s) => s.passwordException,
                 'passwordException',
                 isNotNull,
-              ),
+              )
+              .having((s) => s.failure, 'failure', isNull),
           isA<RegistrationState>()
               .having((s) => s.password, 'password', 'StrongPassword1!')
-              .having((s) => s.passwordException, 'passwordException', isNull),
+              .having((s) => s.passwordException, 'passwordException', isNull)
+              .having((s) => s.failure, 'failure', isNull),
         ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
+      );
+
+      blocTest<RegistrationCubit, RegistrationState>(
+        'should not clear repeatPasswordException when repeatPassword is shorter than newPassword (length guard)',
+        build: buildCubit,
+        act: (cubit) async {
+          await cubit.updateRepeatPassword(newRepeatPassword: 'abc');
+          await cubit.updatePassword(newPassword: 'abcd');
+        },
+        expect: () => <dynamic>[
+          isA<RegistrationState>()
+              .having((s) => s.repeatPassword, 'repeatPassword', 'abc')
+              .having(
+                (s) => s.repeatPasswordException,
+                'repeatPasswordException',
+                isNotNull,
+              ),
+          isA<RegistrationState>()
+              .having((s) => s.password, 'password', 'abcd')
+              .having(
+                (s) => s.repeatPasswordException,
+                'repeatPasswordException',
+                isNotNull,
+              ),
+        ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
       );
     });
 
     group('updateRepeatPassword method', () {
       blocTest<RegistrationCubit, RegistrationState>(
-        'should emit EmptyFieldException when newRepeatPassword is null',
+        'should emit RequiredValueNotProvidedException when newRepeatPassword is null',
         build: buildCubit,
         act: (cubit) => cubit.updateRepeatPassword(),
         expect: () => <dynamic>[
@@ -432,29 +572,36 @@ void main() {
               .having(
                 (s) => s.repeatPasswordException,
                 'repeatPasswordException',
-                isA<EmptyFieldException>(),
+                isA<RequiredValueNotProvidedException>(),
               )
               .having((s) => s.failure, 'failure', isNull),
         ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
       );
 
       blocTest<RegistrationCubit, RegistrationState>(
-        'should emit EmptyFieldException when newRepeatPassword is whitespace',
+        'should emit RequiredValueNotProvidedException when newRepeatPassword is whitespace',
         build: buildCubit,
         act: (cubit) => cubit.updateRepeatPassword(newRepeatPassword: '   '),
         expect: () => <dynamic>[
           isA<RegistrationState>()
-              .having((s) => s.repeatPassword, 'repeatPassword', '   ')
+              .having((s) => s.repeatPassword, 'repeatPassword', isNull)
               .having(
                 (s) => s.repeatPasswordException,
                 'repeatPasswordException',
-                isA<EmptyFieldException>(),
-              ),
+                isA<RequiredValueNotProvidedException>(),
+              )
+              .having((s) => s.failure, 'failure', isNull),
         ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
       );
 
       blocTest<RegistrationCubit, RegistrationState>(
-        'should emit passwords-dont-match when first password is not set',
+        'should emit passwords mismatch when first password is not set',
         build: buildCubit,
         act: (cubit) => cubit.updateRepeatPassword(newRepeatPassword: '1234'),
         expect: () => <dynamic>[
@@ -463,13 +610,17 @@ void main() {
               .having(
                 (s) => s.repeatPasswordException,
                 'repeatPasswordException',
-                isA<RegistrationPasswordsDontMatchException>(),
-              ),
+                isA<PasswordsMismatchException>(),
+              )
+              .having((s) => s.failure, 'failure', isNull),
         ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
       );
 
       blocTest<RegistrationCubit, RegistrationState>(
-        'should emit passwords-dont-match when first password differs by content',
+        'should emit passwords mismatch when first password differs by content',
         build: buildCubit,
         act: (cubit) async {
           await cubit.updatePassword(newPassword: 'abcd');
@@ -486,13 +637,17 @@ void main() {
               .having(
                 (s) => s.repeatPasswordException,
                 'repeatPasswordException',
-                isA<RegistrationPasswordsDontMatchException>(),
-              ),
+                isA<PasswordsMismatchException>(),
+              )
+              .having((s) => s.failure, 'failure', isNull),
         ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
       );
 
       blocTest<RegistrationCubit, RegistrationState>(
-        'should emit passwords-dont-match when first password differs by length',
+        'should emit passwords mismatch when first password differs by length',
         build: buildCubit,
         act: (cubit) async {
           await cubit.updatePassword(newPassword: 'abcd');
@@ -509,9 +664,13 @@ void main() {
               .having(
                 (s) => s.repeatPasswordException,
                 'repeatPasswordException',
-                isA<RegistrationPasswordsDontMatchException>(),
-              ),
+                isA<PasswordsMismatchException>(),
+              )
+              .having((s) => s.failure, 'failure', isNull),
         ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
       );
 
       blocTest<RegistrationCubit, RegistrationState>(
@@ -533,8 +692,12 @@ void main() {
                 (s) => s.repeatPasswordException,
                 'repeatPasswordException',
                 isNull,
-              ),
+              )
+              .having((s) => s.failure, 'failure', isNull),
         ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
       );
     });
 
@@ -698,6 +861,27 @@ void main() {
           expect(cubit.canRegister(), isTrue);
         },
       );
+
+      test(
+        'should return false when description becomes invalid (whitespace) after being valid',
+        () async {
+          final cubit = buildCubit();
+          addTearDown(cubit.close);
+
+          await cubit.updateFirstName(newFirstName: 'John');
+          await cubit.updateLastName(newLastName: 'Doe');
+          await cubit.updateUsername(newUsername: 'john_doe');
+          await cubit.updateDescription(newUserDescription: 'Hello');
+          await cubit.updatePassword(newPassword: 'A!fa98dsf9abcd');
+          await cubit.updateRepeatPassword(newRepeatPassword: 'A!fa98dsf9abcd');
+
+          expect(cubit.canRegister(), isTrue);
+
+          await cubit.updateDescription(newUserDescription: '   ');
+
+          expect(cubit.canRegister(), isFalse);
+        },
+      );
     });
 
     group('logger usage', () {
@@ -714,6 +898,22 @@ void main() {
 
         verifyNever(() => mockLogger.exception(any(), any()));
       });
+
+      test(
+        'should not log exceptions when validators throw (handled as field exceptions)',
+        () async {
+          final cubit = buildCubit();
+          addTearDown(cubit.close);
+
+          await cubit.updateFirstName(newFirstName: '1');
+          await cubit.updateLastName(newLastName: '1');
+          await cubit.updateUsername(newUsername: '!!!');
+          await cubit.updatePassword(newPassword: '1');
+          await cubit.updateDescription(newUserDescription: 'a' * 10000);
+
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
+      );
     });
   });
 }

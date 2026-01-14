@@ -30,8 +30,8 @@ class ProfileEditorCubit extends Cubit<ProfileEditorState> {
         emit(
           prevState.copyWith(
             newFirstName: newFirstName,
-            firstNameException: EmptyFieldException(
-              message: "First name can not be empty",
+            firstNameException: RequiredValueNotProvidedException(
+              message: "Firstname cannot be empty",
             ),
           ),
         );
@@ -79,8 +79,8 @@ class ProfileEditorCubit extends Cubit<ProfileEditorState> {
         emit(
           prevState.copyWith(
             newLastName: newLastName,
-            lastNameException: EmptyFieldException(
-              message: "Last name can not be empty",
+            lastNameException: RequiredValueNotProvidedException(
+              message: "Lastname cannot be empty",
             ),
           ),
         );
@@ -125,8 +125,8 @@ class ProfileEditorCubit extends Cubit<ProfileEditorState> {
         emit(
           prevState.copyWith(
             newUsername: newUsername,
-            usernameException: EmptyFieldException(
-              message: "Username can not be empty",
+            usernameException: RequiredValueNotProvidedException(
+              message: "Username cannot be empty",
             ),
           ),
         );

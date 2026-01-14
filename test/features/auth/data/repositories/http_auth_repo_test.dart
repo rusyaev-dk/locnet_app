@@ -57,12 +57,14 @@ void main() {
           );
 
           expect(session, isA<Session>());
+
           verify(
             () => mockHttpClient.post(
               path: ApiEndpoints.logIn,
               data: <String, dynamic>{'username': 'john', 'password': '123'},
             ),
           ).called(1);
+
           verifyNoMoreInteractions(mockHttpClient);
         },
       );
@@ -79,7 +81,13 @@ void main() {
 
           await expectLater(
             () => authRepo.logIn(username: 'john', password: '123'),
-            throwsA(isA<AppUnknownException>()),
+            throwsA(
+              isA<AppUnknownException>().having(
+                (exception) => exception.message,
+                'message',
+                contains('Invalid API response format'),
+              ),
+            ),
           );
 
           verify(
@@ -88,25 +96,24 @@ void main() {
               data: <String, dynamic>{'username': 'john', 'password': '123'},
             ),
           ).called(1);
+
           verifyNoMoreInteractions(mockHttpClient);
         },
       );
 
       test(
-        'should map ApiUnauthorizedException to AuthInvalidCredentialsException',
+        'should rethrow AppException unchanged (ApiUnauthorizedException)',
         () async {
           when(
             () => mockHttpClient.post(
               path: ApiEndpoints.logIn,
               data: any(named: 'data'),
             ),
-          ).thenThrow(
-            ApiUnauthorizedException(message: 'unauthorized', statusCode: 401),
-          );
+          ).thenThrow(ApiUnauthorizedException(message: 'unauthorized'));
 
           await expectLater(
             () => authRepo.logIn(username: 'john', password: 'bad'),
-            throwsA(isA<AuthInvalidCredentialsException>()),
+            throwsA(isA<ApiUnauthorizedException>()),
           );
 
           verify(
@@ -115,137 +122,46 @@ void main() {
               data: <String, dynamic>{'username': 'john', 'password': 'bad'},
             ),
           ).called(1);
+
           verifyNoMoreInteractions(mockHttpClient);
         },
       );
 
       test(
-        'should map ApiValidationException with username error to AuthInvalidCredentialsException',
+        'should rethrow AppException unchanged (ApiValidationException)',
         () async {
           when(
             () => mockHttpClient.post(
               path: ApiEndpoints.logIn,
               data: any(named: 'data'),
             ),
-          ).thenThrow(
-            ApiValidationException(
-              message: 'validation',
-              statusCode: 422,
-              errors: <String, dynamic>{'username': 'invalid username'},
-            ),
-          );
+          ).thenThrow(ApiValidationException(message: 'validation'));
 
           await expectLater(
             () => authRepo.logIn(username: 'john', password: '123'),
-            throwsA(
-              predicate<AuthInvalidCredentialsException>(
-                (exception) => exception.message.contains('invalid username'),
-              ),
-            ),
+            throwsA(isA<ApiValidationException>()),
           );
         },
       );
 
       test(
-        'should map ApiValidationException with password error list to AuthInvalidCredentialsException',
+        'should rethrow AppException unchanged (AppUnknownException)',
         () async {
           when(
             () => mockHttpClient.post(
               path: ApiEndpoints.logIn,
               data: any(named: 'data'),
             ),
-          ).thenThrow(
-            ApiValidationException(
-              message: 'validation',
-              statusCode: 422,
-              errors: <String, dynamic>{
-                'password': <dynamic>['too short'],
-              },
-            ),
-          );
+          ).thenThrow(AppUnknownException(message: 'app-level'));
 
           await expectLater(
             () => authRepo.logIn(username: 'john', password: '123'),
-            throwsA(
-              predicate<AuthInvalidCredentialsException>(
-                (exception) => exception.message.contains('too short'),
-              ),
-            ),
+            throwsA(isA<AppUnknownException>()),
           );
         },
       );
 
-      test(
-        'should map ApiValidationException with errors == null to LogInFailedException',
-        () async {
-          when(
-            () => mockHttpClient.post(
-              path: ApiEndpoints.logIn,
-              data: any(named: 'data'),
-            ),
-          ).thenThrow(
-            ApiValidationException(message: 'validation', statusCode: 422),
-          );
-
-          await expectLater(
-            () => authRepo.logIn(username: 'john', password: '123'),
-            throwsA(isA<LogInFailedException>()),
-          );
-        },
-      );
-
-      test(
-        'should map ApiValidationException with unsupported field error type to LogInFailedException',
-        () async {
-          when(
-            () => mockHttpClient.post(
-              path: ApiEndpoints.logIn,
-              data: any(named: 'data'),
-            ),
-          ).thenThrow(
-            ApiValidationException(
-              message: 'validation',
-              statusCode: 422,
-              errors: <String, dynamic>{'username': 123},
-            ),
-          );
-
-          await expectLater(
-            () => authRepo.logIn(username: 'john', password: '123'),
-            throwsA(isA<LogInFailedException>()),
-          );
-        },
-      );
-
-      test('should map AppApiException to LogInFailedException', () async {
-        when(
-          () => mockHttpClient.post(
-            path: ApiEndpoints.logIn,
-            data: any(named: 'data'),
-          ),
-        ).thenThrow(ApiServerException(message: 'server', statusCode: 500));
-
-        await expectLater(
-          () => authRepo.logIn(username: 'john', password: '123'),
-          throwsA(isA<LogInFailedException>()),
-        );
-      });
-
-      test('should rethrow AppException unchanged', () async {
-        when(
-          () => mockHttpClient.post(
-            path: ApiEndpoints.logIn,
-            data: any(named: 'data'),
-          ),
-        ).thenThrow(AppUnknownException(message: 'app-level'));
-
-        await expectLater(
-          () => authRepo.logIn(username: 'john', password: '123'),
-          throwsA(isA<AppUnknownException>()),
-        );
-      });
-
-      test('should map unknown exception to LogInFailedException', () async {
+      test('should wrap unknown exception into AppUnknownException', () async {
         when(
           () => mockHttpClient.post(
             path: ApiEndpoints.logIn,
@@ -255,9 +171,66 @@ void main() {
 
         await expectLater(
           () => authRepo.logIn(username: 'john', password: '123'),
-          throwsA(isA<LogInFailedException>()),
+          throwsA(
+            isA<AppUnknownException>()
+                .having(
+                  (exception) => exception.message,
+                  'message',
+                  'Failed to login',
+                )
+                .having(
+                  (exception) => exception.error,
+                  'error',
+                  isA<Exception>(),
+                ),
+          ),
         );
       });
+
+      test(
+        'should include deviceInfo into request body when provided',
+        () async {
+          when(
+            () => mockHttpClient.post(
+              path: ApiEndpoints.logIn,
+              data: any(named: 'data'),
+            ),
+          ).thenAnswer((_) async => FakeResponse(data: buildSessionJson()));
+
+          const DeviceInfo deviceInfo = DeviceInfo(
+            ipAddress: '127.0.0.1',
+            macAddress: '00:11:22:33:44:55',
+            deviceName: 'Pixel',
+            deviceType: 'phone',
+            operatingSystem: 'android',
+          );
+
+          await authRepo.logIn(
+            username: 'john',
+            password: '123',
+            deviceInfo: deviceInfo,
+          );
+
+          verify(
+            () => mockHttpClient.post(
+              path: ApiEndpoints.logIn,
+              data: <String, dynamic>{
+                'username': 'john',
+                'password': '123',
+                'deviceInfo': <String, dynamic>{
+                  'IPAddress': '127.0.0.1',
+                  'macAddress': '00:11:22:33:44:55',
+                  'deviceName': 'Pixel',
+                  'deviceType': 'phone',
+                  'OS': 'android',
+                },
+              },
+            ),
+          ).called(1);
+
+          verifyNoMoreInteractions(mockHttpClient);
+        },
+      );
     });
 
     group('register', () {
@@ -280,6 +253,7 @@ void main() {
           );
 
           expect(session, isA<Session>());
+
           verify(
             () => mockHttpClient.post(
               path: ApiEndpoints.register,
@@ -293,6 +267,7 @@ void main() {
               },
             ),
           ).called(1);
+
           verifyNoMoreInteractions(mockHttpClient);
         },
       );
@@ -314,26 +289,26 @@ void main() {
               lastName: 'Doe',
               password: '123',
             ),
-            throwsA(isA<AppUnknownException>()),
+            throwsA(
+              isA<AppUnknownException>().having(
+                (exception) => exception.message,
+                'message',
+                contains('Invalid API response format'),
+              ),
+            ),
           );
         },
       );
 
       test(
-        'should map ApiValidationException with username error to UsernameAlreadyTakenException',
+        'should rethrow AppException unchanged (ApiValidationException)',
         () async {
           when(
             () => mockHttpClient.post(
               path: ApiEndpoints.register,
               data: any(named: 'data'),
             ),
-          ).thenThrow(
-            ApiValidationException(
-              message: 'validation',
-              statusCode: 422,
-              errors: <String, dynamic>{'username': 'already taken'},
-            ),
-          );
+          ).thenThrow(ApiValidationException(message: 'validation'));
 
           await expectLater(
             () => authRepo.register(
@@ -342,28 +317,20 @@ void main() {
               lastName: 'Doe',
               password: '123',
             ),
-            throwsA(isA<UsernameAlreadyTakenException>()),
+            throwsA(isA<ApiValidationException>()),
           );
         },
       );
 
       test(
-        'should map ApiValidationException with username error list to UsernameAlreadyTakenException',
+        'should rethrow AppException unchanged (ApiUnauthorizedException)',
         () async {
           when(
             () => mockHttpClient.post(
               path: ApiEndpoints.register,
               data: any(named: 'data'),
             ),
-          ).thenThrow(
-            ApiValidationException(
-              message: 'validation',
-              statusCode: 422,
-              errors: <String, dynamic>{
-                'username': <dynamic>['already taken'],
-              },
-            ),
-          );
+          ).thenThrow(ApiUnauthorizedException(message: 'unauthorized'));
 
           await expectLater(
             () => authRepo.register(
@@ -372,146 +339,18 @@ void main() {
               lastName: 'Doe',
               password: '123',
             ),
-            throwsA(isA<UsernameAlreadyTakenException>()),
+            throwsA(isA<ApiUnauthorizedException>()),
           );
         },
       );
 
-      test(
-        'should map ApiValidationException with password error to RegistrationFailedException',
-        () async {
-          when(
-            () => mockHttpClient.post(
-              path: ApiEndpoints.register,
-              data: any(named: 'data'),
-            ),
-          ).thenThrow(
-            ApiValidationException(
-              message: 'validation',
-              statusCode: 422,
-              errors: <String, dynamic>{'password': 'weak password'},
-            ),
-          );
-
-          await expectLater(
-            () => authRepo.register(
-              username: 'john',
-              firstName: 'John',
-              lastName: 'Doe',
-              password: '123',
-            ),
-            throwsA(isA<RegistrationFailedException>()),
-          );
-        },
-      );
-
-      test(
-        'should map ApiValidationException with errors == null to RegistrationFailedException',
-        () async {
-          when(
-            () => mockHttpClient.post(
-              path: ApiEndpoints.register,
-              data: any(named: 'data'),
-            ),
-          ).thenThrow(
-            ApiValidationException(message: 'validation', statusCode: 422),
-          );
-
-          await expectLater(
-            () => authRepo.register(
-              username: 'john',
-              firstName: 'John',
-              lastName: 'Doe',
-              password: '123',
-            ),
-            throwsA(isA<RegistrationFailedException>()),
-          );
-        },
-      );
-
-      test(
-        'should map ApiValidationException with unsupported field error type to RegistrationFailedException',
-        () async {
-          when(
-            () => mockHttpClient.post(
-              path: ApiEndpoints.register,
-              data: any(named: 'data'),
-            ),
-          ).thenThrow(
-            ApiValidationException(
-              message: 'validation',
-              statusCode: 422,
-              errors: <String, dynamic>{
-                'username': <String, dynamic>{'msg': 'x'},
-              },
-            ),
-          );
-
-          await expectLater(
-            () => authRepo.register(
-              username: 'john',
-              firstName: 'John',
-              lastName: 'Doe',
-              password: '123',
-            ),
-            throwsA(isA<RegistrationFailedException>()),
-          );
-        },
-      );
-
-      test(
-        'should map ApiUnauthorizedException to AuthUnauthorizedException',
-        () async {
-          when(
-            () => mockHttpClient.post(
-              path: ApiEndpoints.register,
-              data: any(named: 'data'),
-            ),
-          ).thenThrow(
-            ApiUnauthorizedException(message: 'unauthorized', statusCode: 401),
-          );
-
-          await expectLater(
-            () => authRepo.register(
-              username: 'john',
-              firstName: 'John',
-              lastName: 'Doe',
-              password: '123',
-            ),
-            throwsA(isA<AuthUnauthorizedException>()),
-          );
-        },
-      );
-
-      test(
-        'should map AppApiException to RegistrationFailedException',
-        () async {
-          when(
-            () => mockHttpClient.post(
-              path: ApiEndpoints.register,
-              data: any(named: 'data'),
-            ),
-          ).thenThrow(ApiServerException(message: 'server', statusCode: 500));
-
-          await expectLater(
-            () => authRepo.register(
-              username: 'john',
-              firstName: 'John',
-              lastName: 'Doe',
-              password: '123',
-            ),
-            throwsA(isA<RegistrationFailedException>()),
-          );
-        },
-      );
-
-      test('should rethrow AppException unchanged', () async {
+      test('should wrap unknown exception into AppUnknownException', () async {
         when(
           () => mockHttpClient.post(
             path: ApiEndpoints.register,
             data: any(named: 'data'),
           ),
-        ).thenThrow(AppUnknownException(message: 'app-level'));
+        ).thenThrow(Exception('boom'));
 
         await expectLater(
           () => authRepo.register(
@@ -520,29 +359,70 @@ void main() {
             lastName: 'Doe',
             password: '123',
           ),
-          throwsA(isA<AppUnknownException>()),
+          throwsA(
+            isA<AppUnknownException>()
+                .having(
+                  (exception) => exception.message,
+                  'message',
+                  'Failed to register',
+                )
+                .having(
+                  (exception) => exception.error,
+                  'error',
+                  isA<Exception>(),
+                ),
+          ),
         );
       });
 
       test(
-        'should map unknown exception to RegistrationFailedException',
+        'should include deviceInfo into request body when provided',
         () async {
           when(
             () => mockHttpClient.post(
               path: ApiEndpoints.register,
               data: any(named: 'data'),
             ),
-          ).thenThrow(Exception('boom'));
+          ).thenAnswer((_) async => FakeResponse(data: buildSessionJson()));
 
-          await expectLater(
-            () => authRepo.register(
-              username: 'john',
-              firstName: 'John',
-              lastName: 'Doe',
-              password: '123',
-            ),
-            throwsA(isA<RegistrationFailedException>()),
+          const DeviceInfo deviceInfo = DeviceInfo(
+            ipAddress: '127.0.0.1',
+            macAddress: '00:11:22:33:44:55',
+            deviceName: 'Pixel',
+            deviceType: 'phone',
+            operatingSystem: 'android',
           );
+
+          await authRepo.register(
+            username: 'john',
+            firstName: 'John',
+            lastName: 'Doe',
+            password: '123',
+            deviceInfo: deviceInfo,
+          );
+
+          verify(
+            () => mockHttpClient.post(
+              path: ApiEndpoints.register,
+              data: <String, dynamic>{
+                'username': 'john',
+                'firstName': 'John',
+                'lastName': 'Doe',
+                'patronymic': null,
+                'description': null,
+                'password': '123',
+                'deviceInfo': <String, dynamic>{
+                  'IPAddress': '127.0.0.1',
+                  'macAddress': '00:11:22:33:44:55',
+                  'deviceName': 'Pixel',
+                  'deviceType': 'phone',
+                  'OS': 'android',
+                },
+              },
+            ),
+          ).called(1);
+
+          verifyNoMoreInteractions(mockHttpClient);
         },
       );
     });
@@ -568,6 +448,7 @@ void main() {
           );
 
           expect(session, isA<Session>());
+
           verify(
             () => mockHttpClient.post(
               path: ApiEndpoints.refresh,
@@ -577,6 +458,7 @@ void main() {
               },
             ),
           ).called(1);
+
           verifyNoMoreInteractions(mockHttpClient);
         },
       );
@@ -593,117 +475,136 @@ void main() {
 
           await expectLater(
             () => authRepo.refresh(refreshToken: 'rt', sessionId: 'sid'),
-            throwsA(isA<AppUnknownException>()),
+            throwsA(
+              isA<AppUnknownException>().having(
+                (exception) => exception.message,
+                'message',
+                contains('Invalid API response format'),
+              ),
+            ),
           );
         },
       );
 
       test(
-        'should map ApiUnauthorizedException to AuthExpiredSessionException',
+        'should rethrow AppException unchanged (ApiUnauthorizedException)',
         () async {
           when(
             () => mockHttpClient.post(
               path: ApiEndpoints.refresh,
               data: any(named: 'data'),
             ),
-          ).thenThrow(
-            ApiUnauthorizedException(message: 'unauthorized', statusCode: 401),
-          );
+          ).thenThrow(ApiUnauthorizedException(message: 'unauthorized'));
 
           await expectLater(
             () => authRepo.refresh(refreshToken: 'rt', sessionId: 'sid'),
-            throwsA(isA<AuthExpiredSessionException>()),
+            throwsA(isA<ApiUnauthorizedException>()),
           );
         },
       );
 
       test(
-        'should map ApiForbiddenException to AuthExpiredSessionException',
+        'should rethrow AppException unchanged (ApiForbiddenException)',
         () async {
           when(
             () => mockHttpClient.post(
               path: ApiEndpoints.refresh,
               data: any(named: 'data'),
             ),
-          ).thenThrow(
-            ApiForbiddenException(message: 'forbidden', statusCode: 403),
-          );
+          ).thenThrow(ApiForbiddenException(message: 'forbidden'));
 
           await expectLater(
             () => authRepo.refresh(refreshToken: 'rt', sessionId: 'sid'),
-            throwsA(isA<AuthExpiredSessionException>()),
+            throwsA(isA<ApiForbiddenException>()),
           );
         },
       );
 
       test(
-        'should map ApiValidationException to AuthExpiredSessionException',
+        'should rethrow AppException unchanged (ApiValidationException)',
         () async {
           when(
             () => mockHttpClient.post(
               path: ApiEndpoints.refresh,
               data: any(named: 'data'),
             ),
-          ).thenThrow(
-            ApiValidationException(
-              message: 'validation',
-              statusCode: 422,
-              errors: <String, dynamic>{},
-            ),
-          );
+          ).thenThrow(ApiValidationException(message: 'validation'));
 
           await expectLater(
             () => authRepo.refresh(refreshToken: 'rt', sessionId: 'sid'),
-            throwsA(isA<AuthExpiredSessionException>()),
+            throwsA(isA<ApiValidationException>()),
           );
         },
       );
 
-      test(
-        'should map AppApiException to AuthExpiredSessionException',
-        () async {
-          when(
-            () => mockHttpClient.post(
-              path: ApiEndpoints.refresh,
-              data: any(named: 'data'),
-            ),
-          ).thenThrow(ApiServerException(message: 'server', statusCode: 500));
-
-          await expectLater(
-            () => authRepo.refresh(refreshToken: 'rt', sessionId: 'sid'),
-            throwsA(isA<AuthExpiredSessionException>()),
-          );
-        },
-      );
-
-      test('should rethrow AppException unchanged', () async {
+      test('should wrap unknown exception into AppUnknownException', () async {
         when(
           () => mockHttpClient.post(
             path: ApiEndpoints.refresh,
             data: any(named: 'data'),
           ),
-        ).thenThrow(AppUnknownException(message: 'app-level'));
+        ).thenThrow(Exception('boom'));
 
         await expectLater(
           () => authRepo.refresh(refreshToken: 'rt', sessionId: 'sid'),
-          throwsA(isA<AppUnknownException>()),
+          throwsA(
+            isA<AppUnknownException>()
+                .having(
+                  (exception) => exception.message,
+                  'message',
+                  'Failed to refresh session',
+                )
+                .having(
+                  (exception) => exception.error,
+                  'error',
+                  isA<Exception>(),
+                ),
+          ),
         );
       });
 
       test(
-        'should map unknown exception to AuthExpiredSessionException',
+        'should include deviceInfo into request body when provided',
         () async {
           when(
             () => mockHttpClient.post(
               path: ApiEndpoints.refresh,
               data: any(named: 'data'),
             ),
-          ).thenThrow(Exception('boom'));
+          ).thenAnswer((_) async => FakeResponse(data: buildSessionJson()));
 
-          await expectLater(
-            () => authRepo.refresh(refreshToken: 'rt', sessionId: 'sid'),
-            throwsA(isA<AuthExpiredSessionException>()),
+          const DeviceInfo deviceInfo = DeviceInfo(
+            ipAddress: '127.0.0.1',
+            macAddress: '00:11:22:33:44:55',
+            deviceName: 'Pixel',
+            deviceType: 'phone',
+            operatingSystem: 'android',
           );
+
+          await authRepo.refresh(
+            refreshToken: 'refresh-token',
+            sessionId: 'session-id',
+            deviceInfo: deviceInfo,
+          );
+
+          verify(
+            () => mockHttpClient.post(
+              path: ApiEndpoints.refresh,
+              data: <String, dynamic>{
+                'refreshToken': 'refresh-token',
+                'sessionId': 'session-id',
+                'deviceInfo': <String, dynamic>{
+                  'IPAddress': '127.0.0.1',
+                  'macAddress': '00:11:22:33:44:55',
+                  'deviceName': 'Pixel',
+                  'deviceType': 'phone',
+                  'OS': 'android',
+                },
+              },
+            ),
+          ).called(1);
+
+          verifyNoMoreInteractions(mockHttpClient);
         },
       );
     });
@@ -725,57 +626,45 @@ void main() {
             data: <String, dynamic>{'sessionId': 'session-id'},
           ),
         ).called(1);
+
         verifyNoMoreInteractions(mockHttpClient);
       });
 
       test(
-        'should map ApiUnauthorizedException to AuthUnauthorizedException',
+        'should rethrow AppException unchanged (ApiUnauthorizedException)',
         () async {
           when(
             () => mockHttpClient.post(
               path: ApiEndpoints.logOut,
               data: any(named: 'data'),
             ),
-          ).thenThrow(
-            ApiUnauthorizedException(message: 'unauthorized', statusCode: 401),
-          );
+          ).thenThrow(ApiUnauthorizedException(message: 'unauthorized'));
 
           await expectLater(
             () => authRepo.logOut(sessionId: 'session-id'),
-            throwsA(isA<AuthUnauthorizedException>()),
+            throwsA(isA<ApiUnauthorizedException>()),
           );
         },
       );
 
-      test('should map AppApiException to AppUnknownException', () async {
-        when(
-          () => mockHttpClient.post(
-            path: ApiEndpoints.logOut,
-            data: any(named: 'data'),
-          ),
-        ).thenThrow(ApiServerException(message: 'server', statusCode: 500));
+      test(
+        'should rethrow AppException unchanged (AppUnknownException)',
+        () async {
+          when(
+            () => mockHttpClient.post(
+              path: ApiEndpoints.logOut,
+              data: any(named: 'data'),
+            ),
+          ).thenThrow(AppUnknownException(message: 'app-level'));
 
-        await expectLater(
-          () => authRepo.logOut(sessionId: 'session-id'),
-          throwsA(isA<AppUnknownException>()),
-        );
-      });
+          await expectLater(
+            () => authRepo.logOut(sessionId: 'session-id'),
+            throwsA(isA<AppUnknownException>()),
+          );
+        },
+      );
 
-      test('should rethrow AppException unchanged', () async {
-        when(
-          () => mockHttpClient.post(
-            path: ApiEndpoints.logOut,
-            data: any(named: 'data'),
-          ),
-        ).thenThrow(AppUnknownException(message: 'app-level'));
-
-        await expectLater(
-          () => authRepo.logOut(sessionId: 'session-id'),
-          throwsA(isA<AppUnknownException>()),
-        );
-      });
-
-      test('should map unknown exception to AppUnknownException', () async {
+      test('should wrap unknown exception into AppUnknownException', () async {
         when(
           () => mockHttpClient.post(
             path: ApiEndpoints.logOut,
@@ -785,7 +674,19 @@ void main() {
 
         await expectLater(
           () => authRepo.logOut(sessionId: 'session-id'),
-          throwsA(isA<AppUnknownException>()),
+          throwsA(
+            isA<AppUnknownException>()
+                .having(
+                  (exception) => exception.message,
+                  'message',
+                  'Failed to logout',
+                )
+                .having(
+                  (exception) => exception.error,
+                  'error',
+                  isA<Exception>(),
+                ),
+          ),
         );
       });
     });

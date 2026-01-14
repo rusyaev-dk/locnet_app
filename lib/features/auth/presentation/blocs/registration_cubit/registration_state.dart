@@ -40,42 +40,54 @@ final class RegistrationState extends Equatable {
   final Object? failure;
 
   RegistrationState copyWith({
-    String? firstName,
+    Object? firstName = _noChange,
     Object? firstNameException = _noChange,
-    String? lastName,
+    Object? lastName = _noChange,
     Object? lastNameException = _noChange,
-    String? description,
+    Object? description = _noChange,
     Object? descriptionException = _noChange,
-    String? username,
+    Object? username = _noChange,
     Object? usernameException = _noChange,
-    String? password,
+    Object? password = _noChange,
     Object? passwordException = _noChange,
-    String? repeatPassword,
+    Object? repeatPassword = _noChange,
     Object? repeatPasswordException = _noChange,
     Object? failure = _noChange,
   }) {
     return RegistrationState(
-      firstName: firstName ?? this.firstName,
+      firstName: identical(firstName, _noChange)
+          ? this.firstName
+          : firstName as String?,
       firstNameException: identical(firstNameException, _noChange)
           ? this.firstNameException
           : firstNameException,
-      lastName: lastName ?? this.lastName,
+      lastName: identical(lastName, _noChange)
+          ? this.lastName
+          : lastName as String?,
       lastNameException: identical(lastNameException, _noChange)
           ? this.lastNameException
           : lastNameException,
-      description: description ?? this.description,
+      description: identical(description, _noChange)
+          ? this.description
+          : description as String?,
       descriptionException: identical(descriptionException, _noChange)
           ? this.descriptionException
           : descriptionException,
-      username: username ?? this.username,
+      username: identical(username, _noChange)
+          ? this.username
+          : username as String?,
       usernameException: identical(usernameException, _noChange)
           ? this.usernameException
           : usernameException,
-      password: password ?? this.password,
+      password: identical(password, _noChange)
+          ? this.password
+          : password as String?,
       passwordException: identical(passwordException, _noChange)
           ? this.passwordException
           : passwordException,
-      repeatPassword: repeatPassword ?? this.repeatPassword,
+      repeatPassword: identical(repeatPassword, _noChange)
+          ? this.repeatPassword
+          : repeatPassword as String?,
       repeatPasswordException: identical(repeatPasswordException, _noChange)
           ? this.repeatPasswordException
           : repeatPasswordException,

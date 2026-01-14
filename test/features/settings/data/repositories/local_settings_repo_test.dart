@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:locnet_app/app/app_config.dart';
-import 'package:locnet_app/core/data/data.dart';
+import 'package:locnet_app/app/app.dart';
+import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -46,6 +46,7 @@ void main() {
         ).called(1);
 
         verifyNever(() => mockStorage.read<String>(key: any(named: 'key')));
+        verifyNoMoreInteractions(mockStorage);
       });
 
       test('should write new language code and return false', () async {
@@ -73,34 +74,105 @@ void main() {
             value: newLanguageCode,
           ),
         ).called(1);
+
+        verifyNoMoreInteractions(mockStorage);
       });
 
-      test('should throw when storage.write throws', () async {
-        // Arrange
-        const String newLanguageCode = 'uz';
+      test(
+        'should rethrow StorageException when storage.write throws StorageException',
+        () async {
+          // Arrange
+          const String newLanguageCode = 'uz';
 
-        when(
-          () => mockStorage.write<String>(
-            key: any(named: 'key'),
-            value: any(named: 'value'),
-          ),
-        ).thenThrow(StorageWriteException(message: 'write failed'));
+          when(
+            () => mockStorage.write<String>(
+              key: any(named: 'key'),
+              value: any(named: 'value'),
+            ),
+          ).thenThrow(StorageException(message: 'write failed'));
 
-        // Act
-        final Future<bool> future = localSettingsRepo.changeLanguage(
-          newLanguageCode: newLanguageCode,
-        );
+          // Act
+          final Future<bool> future = localSettingsRepo.changeLanguage(
+            newLanguageCode: newLanguageCode,
+          );
 
-        // Assert
-        await expectLater(future, throwsA(isA<StorageWriteException>()));
+          // Assert
+          await expectLater(future, throwsA(isA<StorageException>()));
 
-        verify(
-          () => mockStorage.write<String>(
-            key: 'language_code',
-            value: newLanguageCode,
-          ),
-        ).called(1);
-      });
+          verify(
+            () => mockStorage.write<String>(
+              key: 'language_code',
+              value: newLanguageCode,
+            ),
+          ).called(1);
+
+          verifyNoMoreInteractions(mockStorage);
+        },
+      );
+
+      test(
+        'should rethrow StorageIOException when storage.write throws StorageIOException',
+        () async {
+          // Arrange
+          const String newLanguageCode = 'uz';
+
+          when(
+            () => mockStorage.write<String>(
+              key: any(named: 'key'),
+              value: any(named: 'value'),
+            ),
+          ).thenThrow(StorageIOException(message: 'io write failed'));
+
+          // Act
+          final Future<bool> future = localSettingsRepo.changeLanguage(
+            newLanguageCode: newLanguageCode,
+          );
+
+          // Assert
+          await expectLater(future, throwsA(isA<StorageIOException>()));
+
+          verify(
+            () => mockStorage.write<String>(
+              key: 'language_code',
+              value: newLanguageCode,
+            ),
+          ).called(1);
+
+          verifyNoMoreInteractions(mockStorage);
+        },
+      );
+
+      test(
+        'should rethrow AppUnknownException when storage.write throws AppUnknownException',
+        () async {
+          // Arrange
+          const String newLanguageCode = 'uz';
+
+          when(
+            () => mockStorage.write<String>(
+              key: any(named: 'key'),
+              value: any(named: 'value'),
+            ),
+          ).thenThrow(AppUnknownException(message: 'boom'));
+
+          // Act
+          final Future<bool> future = localSettingsRepo.changeLanguage(
+            newLanguageCode: newLanguageCode,
+          );
+
+          // Assert
+          await expectLater(future, throwsA(isA<AppUnknownException>()));
+
+          verify(
+            () => mockStorage.write<String>(
+              key: 'language_code',
+              value: newLanguageCode,
+            ),
+          ).called(1);
+
+          verifyNoMoreInteractions(mockStorage);
+        },
+      );
     });
 
     group('getCurrentLanguageCode method', () {
@@ -119,6 +191,7 @@ void main() {
         expect(result, equals(storedLanguageCode));
 
         verify(() => mockStorage.read<String>(key: 'language_code')).called(1);
+        verifyNoMoreInteractions(mockStorage);
       });
 
       test(
@@ -139,24 +212,119 @@ void main() {
           verify(
             () => mockStorage.read<String>(key: 'language_code'),
           ).called(1);
+          verifyNoMoreInteractions(mockStorage);
         },
       );
 
-      test('should throw when storage.read throws', () async {
-        // Arrange
-        when(
-          () => mockStorage.read<String>(key: any(named: 'key')),
-        ).thenThrow(StorageReadException(message: 'read failed'));
+      test(
+        'should return empty string when storage returns empty string',
+        () async {
+          // Arrange
+          when(
+            () => mockStorage.read<String>(key: any(named: 'key')),
+          ).thenAnswer((_) async => '');
 
-        // Act
-        final Future<String> future = localSettingsRepo
-            .getCurrentLanguageCode();
+          // Act
+          final String result = await localSettingsRepo
+              .getCurrentLanguageCode();
 
-        // Assert
-        await expectLater(future, throwsA(isA<StorageReadException>()));
+          // Assert
+          expect(result, equals(''));
 
-        verify(() => mockStorage.read<String>(key: 'language_code')).called(1);
-      });
+          verify(
+            () => mockStorage.read<String>(key: 'language_code'),
+          ).called(1);
+          verifyNoMoreInteractions(mockStorage);
+        },
+      );
+
+      test(
+        'should return whitespace string when storage returns whitespace string',
+        () async {
+          // Arrange
+          when(
+            () => mockStorage.read<String>(key: any(named: 'key')),
+          ).thenAnswer((_) async => '   ');
+
+          // Act
+          final String result = await localSettingsRepo
+              .getCurrentLanguageCode();
+
+          // Assert
+          expect(result, equals('   '));
+
+          verify(
+            () => mockStorage.read<String>(key: 'language_code'),
+          ).called(1);
+          verifyNoMoreInteractions(mockStorage);
+        },
+      );
+
+      test(
+        'should rethrow StorageException when storage.read throws StorageException',
+        () async {
+          // Arrange
+          when(
+            () => mockStorage.read<String>(key: any(named: 'key')),
+          ).thenThrow(StorageException(message: 'read failed'));
+
+          // Act
+          final Future<String> future = localSettingsRepo
+              .getCurrentLanguageCode();
+
+          // Assert
+          await expectLater(future, throwsA(isA<StorageException>()));
+
+          verify(
+            () => mockStorage.read<String>(key: 'language_code'),
+          ).called(1);
+          verifyNoMoreInteractions(mockStorage);
+        },
+      );
+
+      test(
+        'should rethrow StorageIOException when storage.read throws StorageIOException',
+        () async {
+          // Arrange
+          when(
+            () => mockStorage.read<String>(key: any(named: 'key')),
+          ).thenThrow(StorageIOException(message: 'io read failed'));
+
+          // Act
+          final Future<String> future = localSettingsRepo
+              .getCurrentLanguageCode();
+
+          // Assert
+          await expectLater(future, throwsA(isA<StorageIOException>()));
+
+          verify(
+            () => mockStorage.read<String>(key: 'language_code'),
+          ).called(1);
+          verifyNoMoreInteractions(mockStorage);
+        },
+      );
+
+      test(
+        'should rethrow AppUnknownException when storage.read throws AppUnknownException',
+        () async {
+          // Arrange
+          when(
+            () => mockStorage.read<String>(key: any(named: 'key')),
+          ).thenThrow(AppUnknownException(message: 'boom'));
+
+          // Act
+          final Future<String> future = localSettingsRepo
+              .getCurrentLanguageCode();
+
+          // Assert
+          await expectLater(future, throwsA(isA<AppUnknownException>()));
+
+          verify(
+            () => mockStorage.read<String>(key: 'language_code'),
+          ).called(1);
+          verifyNoMoreInteractions(mockStorage);
+        },
+      );
     });
 
     group('changeThemeMode method', () {
@@ -184,6 +352,7 @@ void main() {
         ).called(1);
 
         verifyNever(() => mockStorage.read<String>(key: any(named: 'key')));
+        verifyNoMoreInteractions(mockStorage);
       });
 
       test('should write new theme code and return false', () async {
@@ -208,31 +377,67 @@ void main() {
         verify(
           () => mockStorage.write<String>(key: 'theme', value: newThemeCode),
         ).called(1);
+
+        verifyNoMoreInteractions(mockStorage);
       });
 
-      test('should throw when storage.write throws', () async {
-        // Arrange
-        const String newThemeCode = 'system';
+      test(
+        'should rethrow StorageException when storage.write throws StorageException',
+        () async {
+          // Arrange
+          const String newThemeCode = 'system';
 
-        when(
-          () => mockStorage.write<String>(
-            key: any(named: 'key'),
-            value: any(named: 'value'),
-          ),
-        ).thenThrow(StorageWriteException(message: 'write failed'));
+          when(
+            () => mockStorage.write<String>(
+              key: any(named: 'key'),
+              value: any(named: 'value'),
+            ),
+          ).thenThrow(StorageException(message: 'write failed'));
 
-        // Act
-        final Future<bool> future = localSettingsRepo.changeThemeMode(
-          newThemeCode: newThemeCode,
-        );
+          // Act
+          final Future<bool> future = localSettingsRepo.changeThemeMode(
+            newThemeCode: newThemeCode,
+          );
 
-        // Assert
-        await expectLater(future, throwsA(isA<StorageWriteException>()));
+          // Assert
+          await expectLater(future, throwsA(isA<StorageException>()));
 
-        verify(
-          () => mockStorage.write<String>(key: 'theme', value: newThemeCode),
-        ).called(1);
-      });
+          verify(
+            () => mockStorage.write<String>(key: 'theme', value: newThemeCode),
+          ).called(1);
+
+          verifyNoMoreInteractions(mockStorage);
+        },
+      );
+
+      test(
+        'should rethrow AppUnknownException when storage.write throws AppUnknownException',
+        () async {
+          // Arrange
+          const String newThemeCode = 'system';
+
+          when(
+            () => mockStorage.write<String>(
+              key: any(named: 'key'),
+              value: any(named: 'value'),
+            ),
+          ).thenThrow(AppUnknownException(message: 'boom'));
+
+          // Act
+          final Future<bool> future = localSettingsRepo.changeThemeMode(
+            newThemeCode: newThemeCode,
+          );
+
+          // Assert
+          await expectLater(future, throwsA(isA<AppUnknownException>()));
+
+          verify(
+            () => mockStorage.write<String>(key: 'theme', value: newThemeCode),
+          ).called(1);
+
+          verifyNoMoreInteractions(mockStorage);
+        },
+      );
     });
 
     group('getCurrentThemeMode method', () {
@@ -251,6 +456,7 @@ void main() {
         expect(result, equals(storedThemeCode));
 
         verify(() => mockStorage.read<String>(key: 'theme')).called(1);
+        verifyNoMoreInteractions(mockStorage);
       });
 
       test(
@@ -268,23 +474,66 @@ void main() {
           expect(result, equals(AppConfig.defaultThemeMode));
 
           verify(() => mockStorage.read<String>(key: 'theme')).called(1);
+          verifyNoMoreInteractions(mockStorage);
         },
       );
 
-      test('should throw when storage.read throws', () async {
-        // Arrange
-        when(
-          () => mockStorage.read<String>(key: any(named: 'key')),
-        ).thenThrow(StorageReadException(message: 'read failed'));
+      test(
+        'should return empty string when storage returns empty string',
+        () async {
+          // Arrange
+          when(
+            () => mockStorage.read<String>(key: any(named: 'key')),
+          ).thenAnswer((_) async => '');
 
-        // Act
-        final Future<String> future = localSettingsRepo.getCurrentThemeMode();
+          // Act
+          final String result = await localSettingsRepo.getCurrentThemeMode();
 
-        // Assert
-        await expectLater(future, throwsA(isA<StorageReadException>()));
+          // Assert
+          expect(result, equals(''));
 
-        verify(() => mockStorage.read<String>(key: 'theme')).called(1);
-      });
+          verify(() => mockStorage.read<String>(key: 'theme')).called(1);
+          verifyNoMoreInteractions(mockStorage);
+        },
+      );
+
+      test(
+        'should rethrow StorageException when storage.read throws StorageException',
+        () async {
+          // Arrange
+          when(
+            () => mockStorage.read<String>(key: any(named: 'key')),
+          ).thenThrow(StorageException(message: 'read failed'));
+
+          // Act
+          final Future<String> future = localSettingsRepo.getCurrentThemeMode();
+
+          // Assert
+          await expectLater(future, throwsA(isA<StorageException>()));
+
+          verify(() => mockStorage.read<String>(key: 'theme')).called(1);
+          verifyNoMoreInteractions(mockStorage);
+        },
+      );
+
+      test(
+        'should rethrow AppUnknownException when storage.read throws AppUnknownException',
+        () async {
+          // Arrange
+          when(
+            () => mockStorage.read<String>(key: any(named: 'key')),
+          ).thenThrow(AppUnknownException(message: 'boom'));
+
+          // Act
+          final Future<String> future = localSettingsRepo.getCurrentThemeMode();
+
+          // Assert
+          await expectLater(future, throwsA(isA<AppUnknownException>()));
+
+          verify(() => mockStorage.read<String>(key: 'theme')).called(1);
+          verifyNoMoreInteractions(mockStorage);
+        },
+      );
     });
   });
 }

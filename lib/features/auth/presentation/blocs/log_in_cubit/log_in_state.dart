@@ -20,18 +20,22 @@ final class LogInState extends Equatable {
   final Object? failure;
 
   LogInState copyWith({
-    String? username,
+    Object? username = _noChange,
     Object? usernameException = _noChange,
-    String? password,
+    Object? password = _noChange,
     Object? passwordException = _noChange,
     Object? failure = _noChange,
   }) {
     return LogInState(
-      username: username ?? this.username,
+      username: identical(username, _noChange)
+          ? this.username
+          : username as String?,
       usernameException: identical(usernameException, _noChange)
           ? this.usernameException
           : usernameException,
-      password: password ?? this.password,
+      password: identical(password, _noChange)
+          ? this.password
+          : password as String?,
       passwordException: identical(passwordException, _noChange)
           ? this.passwordException
           : passwordException,

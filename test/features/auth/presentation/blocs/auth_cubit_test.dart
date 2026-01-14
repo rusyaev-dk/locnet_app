@@ -74,7 +74,7 @@ void main() {
             () => mockAuthInteractor.logIn(username: 'john', password: '123'),
           ).called(1);
 
-          verify(() => mockLogger.info(any())).called(1);
+          verify(() => mockLogger.info(any())).called(2);
           verifyNever(() => mockLogger.exception(any(), any()));
           verifyNoMoreInteractions(mockAuthInteractor);
         },
@@ -99,7 +99,8 @@ void main() {
           verify(
             () => mockAuthInteractor.logIn(username: 'john', password: '123'),
           ).called(1);
-          verify(() => mockLogger.info(any())).called(1);
+
+          verify(() => mockLogger.info(any())).called(2);
           verifyNever(() => mockLogger.exception(any(), any()));
           verifyNoMoreInteractions(mockAuthInteractor);
         },
@@ -132,6 +133,7 @@ void main() {
           verify(
             () => mockAuthInteractor.logIn(username: 'john', password: 'bad'),
           ).called(1);
+
           verify(() => mockLogger.exception(any(), any())).called(1);
           verifyNoMoreInteractions(mockAuthInteractor);
         },
@@ -162,7 +164,42 @@ void main() {
           verify(
             () => mockAuthInteractor.logIn(username: 'john', password: '123'),
           ).called(1);
+
           verify(() => mockLogger.exception(any(), any())).called(1);
+          verifyNoMoreInteractions(mockAuthInteractor);
+        },
+      );
+
+      blocTest<AuthCubit, AuthState>(
+        'should keep failure stackTrace when wrapping non-AppException',
+        build: () {
+          when(
+            () => mockAuthInteractor.logIn(
+              username: any(named: 'username'),
+              password: any(named: 'password'),
+            ),
+          ).thenThrow(StateError('boom'));
+
+          return buildCubit();
+        },
+        act: (cubit) =>
+            cubit.logIn(username: 'john', password: 'SKFJJDSF@^!&sdfsdmd'),
+        expect: () => <dynamic>[
+          const AuthLoadingState(),
+          isA<AuthFailureState>().having(
+            (state) => state.failure,
+            'failure',
+            isA<AppUnknownException>(),
+          ),
+        ],
+        verify: (_) {
+          verify(() => mockLogger.exception(any(), any())).called(1);
+          verify(
+            () => mockAuthInteractor.logIn(
+              username: any(named: "username"),
+              password: any(named: "password"),
+            ),
+          ).called(1);
           verifyNoMoreInteractions(mockAuthInteractor);
         },
       );
@@ -206,8 +243,48 @@ void main() {
             ),
           ).called(1);
 
-          verify(() => mockLogger.info(any())).called(1);
+          verify(() => mockLogger.info(any())).called(2);
           verifyNever(() => mockLogger.exception(any(), any()));
+          verifyNoMoreInteractions(mockAuthInteractor);
+        },
+      );
+
+      blocTest<AuthCubit, AuthState>(
+        'should pass null description when not provided',
+        build: () {
+          when(
+            () => mockAuthInteractor.register(
+              username: any(named: 'username'),
+              firstName: any(named: 'firstName'),
+              lastName: any(named: 'lastName'),
+              password: any(named: 'password'),
+              description: any(named: 'description'),
+            ),
+          ).thenAnswer((_) async => (session, user));
+
+          return buildCubit();
+        },
+        act: (cubit) => cubit.register(
+          firstName: 'John',
+          lastName: 'Doe',
+          username: 'john',
+          password: '123',
+        ),
+        expect: () => <AuthState>[
+          const AuthLoadingState(),
+          AuthAuthenticatedState(user: user),
+        ],
+        verify: (_) {
+          verify(
+            () => mockAuthInteractor.register(
+              username: 'john',
+              firstName: 'John',
+              lastName: 'Doe',
+              password: '123',
+            ),
+          ).called(1);
+
+          verify(() => mockLogger.info(any())).called(2);
           verifyNoMoreInteractions(mockAuthInteractor);
         },
       );
@@ -235,6 +312,19 @@ void main() {
           password: '123',
         ),
         expect: () => <AuthState>[AuthAuthenticatedState(user: user)],
+        verify: (_) {
+          verify(
+            () => mockAuthInteractor.register(
+              username: 'john',
+              firstName: 'John',
+              lastName: 'Doe',
+              password: '123',
+            ),
+          ).called(1);
+
+          verify(() => mockLogger.info(any())).called(2);
+          verifyNoMoreInteractions(mockAuthInteractor);
+        },
       );
 
       blocTest<AuthCubit, AuthState>(
@@ -248,7 +338,7 @@ void main() {
               password: any(named: 'password'),
               description: any(named: 'description'),
             ),
-          ).thenThrow(UsernameAlreadyTakenException(message: 'taken'));
+          ).thenThrow(AuthException(message: 'register failed'));
 
           return buildCubit();
         },
@@ -263,11 +353,21 @@ void main() {
           isA<AuthFailureState>().having(
             (state) => state.failure,
             'failure',
-            isA<UsernameAlreadyTakenException>(),
+            isA<AuthException>(),
           ),
         ],
         verify: (_) {
           verify(() => mockLogger.exception(any(), any())).called(1);
+          verify(
+            () => mockAuthInteractor.register(
+              username: any(named: 'username'),
+              firstName: any(named: 'firstName'),
+              lastName: any(named: 'lastName'),
+              password: any(named: 'password'),
+              description: any(named: 'description'),
+            ),
+          ).called(1);
+          verifyNoMoreInteractions(mockAuthInteractor);
         },
       );
 
@@ -302,6 +402,16 @@ void main() {
         ],
         verify: (_) {
           verify(() => mockLogger.exception(any(), any())).called(1);
+          verify(
+            () => mockAuthInteractor.register(
+              username: any(named: 'username'),
+              firstName: any(named: 'firstName'),
+              lastName: any(named: 'lastName'),
+              password: any(named: 'password'),
+              description: any(named: 'description'),
+            ),
+          ).called(1);
+          verifyNoMoreInteractions(mockAuthInteractor);
         },
       );
     });
@@ -342,6 +452,7 @@ void main() {
         ],
         verify: (_) {
           verify(() => mockAuthInteractor.restoreSession()).called(1);
+          verify(() => mockLogger.info(any())).called(1);
           verifyNoMoreInteractions(mockAuthInteractor);
         },
       );
@@ -377,6 +488,11 @@ void main() {
         seed: () => const AuthLoadingState(),
         act: (cubit) => cubit.tryRestoreSession(),
         expect: () => <AuthState>[AuthAuthenticatedState(user: user)],
+        verify: (_) {
+          verify(() => mockAuthInteractor.restoreSession()).called(1);
+          verify(() => mockLogger.info(any())).called(1);
+          verifyNoMoreInteractions(mockAuthInteractor);
+        },
       );
     });
 
@@ -392,6 +508,7 @@ void main() {
         expect: () => <AuthState>[const AuthUnauthenticatedState()],
         verify: (_) {
           verify(() => mockAuthInteractor.logOut()).called(1);
+          verify(() => mockLogger.info(any())).called(1);
           verifyNoMoreInteractions(mockAuthInteractor);
         },
       );
@@ -422,6 +539,7 @@ void main() {
         expect: () => <AuthState>[const AuthUnauthenticatedState()],
         verify: (_) {
           verify(() => mockAuthInteractor.logOut()).called(1);
+          verify(() => mockLogger.info(any())).called(1);
           verifyNoMoreInteractions(mockAuthInteractor);
         },
       );

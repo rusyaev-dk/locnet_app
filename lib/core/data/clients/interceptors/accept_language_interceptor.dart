@@ -20,7 +20,7 @@ final class AcceptLanguageInterceptor extends Interceptor {
     try {
       final user = await _userCacheRepo.loadUser();
       options.headers['Accept-Language'] = user.languageCode;
-    } on (StorageException, StorageIOException) catch (e, st) {
+    } on StorageException catch (e, st) {
       options.headers['Accept-Language'] = AppConfig.defaultLanguageCode;
       _logger.exception(e, st);
     } catch (e, st) {

@@ -53,7 +53,11 @@ class ConversationCreatorBloc
     try {
       if (event.title == null || event.title!.isEmpty) {
         return emit(
-          state.copyWith(titleException: ConversationEmptyFieldException()),
+          state.copyWith(
+            titleException: RequiredValueNotProvidedException(
+              message: 'Title cannot be empty',
+            ),
+          ),
         );
       }
 
@@ -134,7 +138,13 @@ class ConversationCreatorBloc
       );
 
       if (!success) {
-        return emit(state.copyWith(failure: ConversationCreateException()));
+        return emit(
+          state.copyWith(
+            failure: AppUnknownException(
+              message: "Unknown exception during conversation creating",
+            ),
+          ),
+        );
       }
       emit(state.copyWith(success: true));
     } catch (e, st) {

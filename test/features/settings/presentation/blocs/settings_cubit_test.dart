@@ -1,7 +1,7 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:locnet_app/features/settings/domain/domain.dart';
+import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
 import 'package:locnet_app/features/theme_editor/domain/domain.dart';
 import 'package:mocktail/mocktail.dart';
@@ -44,12 +44,15 @@ void main() {
       blocTest<SettingsCubit, SettingsState>(
         'emits [Loading, Loaded] when restore succeeds',
         build: () {
-          when(() => mockSettingsInteractor.getCurrentLanguageCode())
-              .thenAnswer((_) async => 'en');
-          when(() => mockSettingsInteractor.getCurrentThemeMode())
-              .thenAnswer((_) async => 'dark');
-          when(() => mockThemeEditorInteractor.loadAppTheme())
-              .thenAnswer((_) async => appTheme);
+          when(
+            () => mockSettingsInteractor.getCurrentLanguageCode(),
+          ).thenAnswer((_) async => 'en');
+          when(
+            () => mockSettingsInteractor.getCurrentThemeMode(),
+          ).thenAnswer((_) async => 'dark');
+          when(
+            () => mockThemeEditorInteractor.loadAppTheme(),
+          ).thenAnswer((_) async => appTheme);
 
           return buildCubit();
         },
@@ -63,8 +66,9 @@ void main() {
           ),
         ],
         verify: (_) {
-          verify(() => mockSettingsInteractor.getCurrentLanguageCode())
-              .called(1);
+          verify(
+            () => mockSettingsInteractor.getCurrentLanguageCode(),
+          ).called(1);
           verify(() => mockSettingsInteractor.getCurrentThemeMode()).called(1);
           verify(() => mockThemeEditorInteractor.loadAppTheme()).called(1);
           verifyNever(() => mockLogger.exception(any(), any()));
@@ -74,12 +78,15 @@ void main() {
       blocTest<SettingsCubit, SettingsState>(
         'emits [Loading, Loaded] even if called twice (second call re-emits Loading)',
         build: () {
-          when(() => mockSettingsInteractor.getCurrentLanguageCode())
-              .thenAnswer((_) async => 'en');
-          when(() => mockSettingsInteractor.getCurrentThemeMode())
-              .thenAnswer((_) async => 'system');
-          when(() => mockThemeEditorInteractor.loadAppTheme())
-              .thenAnswer((_) async => appTheme);
+          when(
+            () => mockSettingsInteractor.getCurrentLanguageCode(),
+          ).thenAnswer((_) async => 'en');
+          when(
+            () => mockSettingsInteractor.getCurrentThemeMode(),
+          ).thenAnswer((_) async => 'system');
+          when(
+            () => mockThemeEditorInteractor.loadAppTheme(),
+          ).thenAnswer((_) async => appTheme);
 
           return buildCubit();
         },
@@ -102,8 +109,9 @@ void main() {
           ),
         ],
         verify: (_) {
-          verify(() => mockSettingsInteractor.getCurrentLanguageCode())
-              .called(2);
+          verify(
+            () => mockSettingsInteractor.getCurrentLanguageCode(),
+          ).called(2);
           verify(() => mockSettingsInteractor.getCurrentThemeMode()).called(2);
           verify(() => mockThemeEditorInteractor.loadAppTheme()).called(2);
         },
@@ -112,46 +120,143 @@ void main() {
       blocTest<SettingsCubit, SettingsState>(
         'emits [Loading, Failure] when getCurrentLanguageCode throws',
         build: () {
-          when(() => mockSettingsInteractor.getCurrentLanguageCode())
-              .thenThrow(Exception('boom'));
-          when(() => mockSettingsInteractor.getCurrentThemeMode())
-              .thenAnswer((_) async => 'system');
-          when(() => mockThemeEditorInteractor.loadAppTheme())
-              .thenAnswer((_) async => appTheme);
+          when(
+            () => mockSettingsInteractor.getCurrentLanguageCode(),
+          ).thenThrow(Exception('boom'));
+          when(
+            () => mockSettingsInteractor.getCurrentThemeMode(),
+          ).thenAnswer((_) async => 'system');
+          when(
+            () => mockThemeEditorInteractor.loadAppTheme(),
+          ).thenAnswer((_) async => appTheme);
 
           return buildCubit();
         },
         act: (cubit) => cubit.restoreSettings(),
         expect: () => <dynamic>[
           const SettingsLoadingState(),
-          isA<SettingsFailureState>(),
+          isA<SettingsFailureState>().having(
+            (state) => state.failure,
+            'failure',
+            isA<AppUnknownException>(),
+          ),
         ],
         verify: (_) {
           verify(() => mockLogger.exception(any(), any())).called(1);
-          verifyNever(() => mockThemeEditorInteractor.loadAppTheme());
+        },
+      );
+
+      blocTest<SettingsCubit, SettingsState>(
+        'emits [Loading, Failure] when getCurrentThemeMode throws',
+        build: () {
+          when(
+            () => mockSettingsInteractor.getCurrentLanguageCode(),
+          ).thenAnswer((_) async => 'en');
+          when(
+            () => mockSettingsInteractor.getCurrentThemeMode(),
+          ).thenThrow(Exception('boom'));
+          when(
+            () => mockThemeEditorInteractor.loadAppTheme(),
+          ).thenAnswer((_) async => appTheme);
+
+          return buildCubit();
+        },
+        act: (cubit) => cubit.restoreSettings(),
+        expect: () => <dynamic>[
+          const SettingsLoadingState(),
+          isA<SettingsFailureState>().having(
+            (state) => state.failure,
+            'failure',
+            isA<AppUnknownException>(),
+          ),
+        ],
+        verify: (_) {
+          verify(() => mockLogger.exception(any(), any())).called(1);
         },
       );
 
       blocTest<SettingsCubit, SettingsState>(
         'emits [Loading, Failure] when loadAppTheme throws',
         build: () {
-          when(() => mockSettingsInteractor.getCurrentLanguageCode())
-              .thenAnswer((_) async => 'en');
-          when(() => mockSettingsInteractor.getCurrentThemeMode())
-              .thenAnswer((_) async => 'system');
-          when(() => mockThemeEditorInteractor.loadAppTheme())
-              .thenThrow(Exception('boom'));
+          when(
+            () => mockSettingsInteractor.getCurrentLanguageCode(),
+          ).thenAnswer((_) async => 'en');
+          when(
+            () => mockSettingsInteractor.getCurrentThemeMode(),
+          ).thenAnswer((_) async => 'system');
+          when(
+            () => mockThemeEditorInteractor.loadAppTheme(),
+          ).thenThrow(Exception('boom'));
 
           return buildCubit();
         },
         act: (cubit) => cubit.restoreSettings(),
         expect: () => <dynamic>[
           const SettingsLoadingState(),
-          isA<SettingsFailureState>(),
+          isA<SettingsFailureState>().having(
+            (state) => state.failure,
+            'failure',
+            isA<AppUnknownException>(),
+          ),
         ],
         verify: (_) {
           verify(() => mockLogger.exception(any(), any())).called(1);
         },
+      );
+
+      blocTest<SettingsCubit, SettingsState>(
+        'emits Failure with same AppException when restore throws AppException',
+        build: () {
+          when(
+            () => mockSettingsInteractor.getCurrentLanguageCode(),
+          ).thenThrow(AppUnknownException(message: 'app'));
+          when(
+            () => mockSettingsInteractor.getCurrentThemeMode(),
+          ).thenAnswer((_) async => 'system');
+          when(
+            () => mockThemeEditorInteractor.loadAppTheme(),
+          ).thenAnswer((_) async => appTheme);
+
+          return buildCubit();
+        },
+        act: (cubit) => cubit.restoreSettings(),
+        expect: () => <dynamic>[
+          const SettingsLoadingState(),
+          isA<SettingsFailureState>().having(
+            (state) => state.failure,
+            'failure',
+            isA<AppUnknownException>(),
+          ),
+        ],
+        verify: (_) {
+          verify(() => mockLogger.exception(any(), any())).called(1);
+        },
+      );
+
+      blocTest<SettingsCubit, SettingsState>(
+        'decodes unknown theme code to ThemeMode.system',
+        build: () {
+          when(
+            () => mockSettingsInteractor.getCurrentLanguageCode(),
+          ).thenAnswer((_) async => 'en');
+          when(
+            () => mockSettingsInteractor.getCurrentThemeMode(),
+          ).thenAnswer((_) async => 'unknown');
+          when(
+            () => mockThemeEditorInteractor.loadAppTheme(),
+          ).thenAnswer((_) async => appTheme);
+
+          return buildCubit();
+        },
+        act: (cubit) => cubit.restoreSettings(),
+        expect: () => <SettingsState>[
+          const SettingsLoadingState(),
+          SettingsLoadedState(
+            locale: const Locale('en'),
+            themeMode: ThemeMode.system,
+            appTheme: appTheme,
+          ),
+        ],
       );
     });
 
@@ -182,15 +287,19 @@ void main() {
       blocTest<SettingsCubit, SettingsState>(
         'updates locale when changeLanguage returns true and locale differs',
         build: () {
-          when(() => mockSettingsInteractor.getCurrentLanguageCode())
-              .thenAnswer((_) async => 'en');
-          when(() => mockSettingsInteractor.getCurrentThemeMode())
-              .thenAnswer((_) async => 'system');
-          when(() => mockThemeEditorInteractor.loadAppTheme())
-              .thenAnswer((_) async => appTheme);
+          when(
+            () => mockSettingsInteractor.getCurrentLanguageCode(),
+          ).thenAnswer((_) async => 'en');
+          when(
+            () => mockSettingsInteractor.getCurrentThemeMode(),
+          ).thenAnswer((_) async => 'system');
+          when(
+            () => mockThemeEditorInteractor.loadAppTheme(),
+          ).thenAnswer((_) async => appTheme);
 
-          when(() => mockSettingsInteractor.changeLanguage(newLanguageCode: 'ru'))
-              .thenAnswer((_) async => true);
+          when(
+            () => mockSettingsInteractor.changeLanguage(newLanguageCode: 'ru'),
+          ).thenAnswer((_) async => true);
 
           return buildCubit();
         },
@@ -212,8 +321,9 @@ void main() {
           ),
         ],
         verify: (_) {
-          verify(() => mockSettingsInteractor.changeLanguage(newLanguageCode: 'ru'))
-              .called(1);
+          verify(
+            () => mockSettingsInteractor.changeLanguage(newLanguageCode: 'ru'),
+          ).called(1);
           verifyNever(() => mockLogger.exception(any(), any()));
         },
       );
@@ -221,15 +331,19 @@ void main() {
       blocTest<SettingsCubit, SettingsState>(
         'does not emit new Loaded when new locale equals previous locale (but still calls interactor)',
         build: () {
-          when(() => mockSettingsInteractor.getCurrentLanguageCode())
-              .thenAnswer((_) async => 'en');
-          when(() => mockSettingsInteractor.getCurrentThemeMode())
-              .thenAnswer((_) async => 'system');
-          when(() => mockThemeEditorInteractor.loadAppTheme())
-              .thenAnswer((_) async => appTheme);
+          when(
+            () => mockSettingsInteractor.getCurrentLanguageCode(),
+          ).thenAnswer((_) async => 'en');
+          when(
+            () => mockSettingsInteractor.getCurrentThemeMode(),
+          ).thenAnswer((_) async => 'system');
+          when(
+            () => mockThemeEditorInteractor.loadAppTheme(),
+          ).thenAnswer((_) async => appTheme);
 
-          when(() => mockSettingsInteractor.changeLanguage(newLanguageCode: 'en'))
-              .thenAnswer((_) async => true);
+          when(
+            () => mockSettingsInteractor.changeLanguage(newLanguageCode: 'en'),
+          ).thenAnswer((_) async => true);
 
           return buildCubit();
         },
@@ -246,24 +360,29 @@ void main() {
           ),
         ],
         verify: (_) {
-          verify(() => mockSettingsInteractor.changeLanguage(newLanguageCode: 'en'))
-              .called(1);
+          verify(
+            () => mockSettingsInteractor.changeLanguage(newLanguageCode: 'en'),
+          ).called(1);
           verifyNever(() => mockLogger.exception(any(), any()));
         },
       );
 
       blocTest<SettingsCubit, SettingsState>(
-        'emits Loaded(with failure) when changeLanguage returns false',
+        'emits Loaded(with failure AppUnknownException) when changeLanguage returns false',
         build: () {
-          when(() => mockSettingsInteractor.getCurrentLanguageCode())
-              .thenAnswer((_) async => 'en');
-          when(() => mockSettingsInteractor.getCurrentThemeMode())
-              .thenAnswer((_) async => 'system');
-          when(() => mockThemeEditorInteractor.loadAppTheme())
-              .thenAnswer((_) async => appTheme);
+          when(
+            () => mockSettingsInteractor.getCurrentLanguageCode(),
+          ).thenAnswer((_) async => 'en');
+          when(
+            () => mockSettingsInteractor.getCurrentThemeMode(),
+          ).thenAnswer((_) async => 'system');
+          when(
+            () => mockThemeEditorInteractor.loadAppTheme(),
+          ).thenAnswer((_) async => appTheme);
 
-          when(() => mockSettingsInteractor.changeLanguage(newLanguageCode: 'ru'))
-              .thenAnswer((_) async => false);
+          when(
+            () => mockSettingsInteractor.changeLanguage(newLanguageCode: 'ru'),
+          ).thenAnswer((_) async => false);
 
           return buildCubit();
         },
@@ -274,13 +393,18 @@ void main() {
         expect: () => <dynamic>[
           const SettingsLoadingState(),
           isA<SettingsLoadedState>(),
-          predicate<SettingsLoadedState>(
-            (state) => state.failure is SettingsLocaleChangeException,
-          ),
+          isA<SettingsLoadedState>()
+              .having((state) => state.locale, 'locale', const Locale('en'))
+              .having(
+                (state) => state.failure,
+                'failure',
+                isA<AppUnknownException>(),
+              ),
         ],
         verify: (_) {
-          verify(() => mockSettingsInteractor.changeLanguage(newLanguageCode: 'ru'))
-              .called(1);
+          verify(
+            () => mockSettingsInteractor.changeLanguage(newLanguageCode: 'ru'),
+          ).called(1);
           verify(() => mockLogger.exception(any(), any())).called(1);
         },
       );
@@ -288,15 +412,19 @@ void main() {
       blocTest<SettingsCubit, SettingsState>(
         'emits FailureState when changeLanguage throws',
         build: () {
-          when(() => mockSettingsInteractor.getCurrentLanguageCode())
-              .thenAnswer((_) async => 'en');
-          when(() => mockSettingsInteractor.getCurrentThemeMode())
-              .thenAnswer((_) async => 'system');
-          when(() => mockThemeEditorInteractor.loadAppTheme())
-              .thenAnswer((_) async => appTheme);
+          when(
+            () => mockSettingsInteractor.getCurrentLanguageCode(),
+          ).thenAnswer((_) async => 'en');
+          when(
+            () => mockSettingsInteractor.getCurrentThemeMode(),
+          ).thenAnswer((_) async => 'system');
+          when(
+            () => mockThemeEditorInteractor.loadAppTheme(),
+          ).thenAnswer((_) async => appTheme);
 
-          when(() => mockSettingsInteractor.changeLanguage(newLanguageCode: 'ru'))
-              .thenThrow(Exception('boom'));
+          when(
+            () => mockSettingsInteractor.changeLanguage(newLanguageCode: 'ru'),
+          ).thenThrow(Exception('boom'));
 
           return buildCubit();
         },
@@ -307,7 +435,48 @@ void main() {
         expect: () => <dynamic>[
           const SettingsLoadingState(),
           isA<SettingsLoadedState>(),
-          isA<SettingsFailureState>(),
+          isA<SettingsFailureState>().having(
+            (state) => state.failure,
+            'failure',
+            isA<AppUnknownException>(),
+          ),
+        ],
+        verify: (_) {
+          verify(() => mockLogger.exception(any(), any())).called(1);
+        },
+      );
+
+      blocTest<SettingsCubit, SettingsState>(
+        'emits FailureState with same AppException when changeLanguage throws AppException',
+        build: () {
+          when(
+            () => mockSettingsInteractor.getCurrentLanguageCode(),
+          ).thenAnswer((_) async => 'en');
+          when(
+            () => mockSettingsInteractor.getCurrentThemeMode(),
+          ).thenAnswer((_) async => 'system');
+          when(
+            () => mockThemeEditorInteractor.loadAppTheme(),
+          ).thenAnswer((_) async => appTheme);
+
+          when(
+            () => mockSettingsInteractor.changeLanguage(newLanguageCode: 'ru'),
+          ).thenThrow(AppUnknownException(message: 'app'));
+
+          return buildCubit();
+        },
+        act: (cubit) async {
+          await cubit.restoreSettings();
+          await cubit.changeLanguageCode(const Locale('ru'));
+        },
+        expect: () => <dynamic>[
+          const SettingsLoadingState(),
+          isA<SettingsLoadedState>(),
+          isA<SettingsFailureState>().having(
+            (state) => state.failure,
+            'failure',
+            isA<AppUnknownException>(),
+          ),
         ],
         verify: (_) {
           verify(() => mockLogger.exception(any(), any())).called(1);
@@ -342,15 +511,19 @@ void main() {
       blocTest<SettingsCubit, SettingsState>(
         'updates themeMode when changeThemeMode returns true and mode differs',
         build: () {
-          when(() => mockSettingsInteractor.getCurrentLanguageCode())
-              .thenAnswer((_) async => 'en');
-          when(() => mockSettingsInteractor.getCurrentThemeMode())
-              .thenAnswer((_) async => 'system');
-          when(() => mockThemeEditorInteractor.loadAppTheme())
-              .thenAnswer((_) async => appTheme);
+          when(
+            () => mockSettingsInteractor.getCurrentLanguageCode(),
+          ).thenAnswer((_) async => 'en');
+          when(
+            () => mockSettingsInteractor.getCurrentThemeMode(),
+          ).thenAnswer((_) async => 'system');
+          when(
+            () => mockThemeEditorInteractor.loadAppTheme(),
+          ).thenAnswer((_) async => appTheme);
 
-          when(() => mockSettingsInteractor.changeThemeMode(newThemeCode: 'dark'))
-              .thenAnswer((_) async => true);
+          when(
+            () => mockSettingsInteractor.changeThemeMode(newThemeCode: 'dark'),
+          ).thenAnswer((_) async => true);
 
           return buildCubit();
         },
@@ -372,8 +545,9 @@ void main() {
           ),
         ],
         verify: (_) {
-          verify(() => mockSettingsInteractor.changeThemeMode(newThemeCode: 'dark'))
-              .called(1);
+          verify(
+            () => mockSettingsInteractor.changeThemeMode(newThemeCode: 'dark'),
+          ).called(1);
           verifyNever(() => mockLogger.exception(any(), any()));
         },
       );
@@ -381,15 +555,19 @@ void main() {
       blocTest<SettingsCubit, SettingsState>(
         'does not emit new Loaded when new theme equals previous theme (but still calls interactor)',
         build: () {
-          when(() => mockSettingsInteractor.getCurrentLanguageCode())
-              .thenAnswer((_) async => 'en');
-          when(() => mockSettingsInteractor.getCurrentThemeMode())
-              .thenAnswer((_) async => 'dark');
-          when(() => mockThemeEditorInteractor.loadAppTheme())
-              .thenAnswer((_) async => appTheme);
+          when(
+            () => mockSettingsInteractor.getCurrentLanguageCode(),
+          ).thenAnswer((_) async => 'en');
+          when(
+            () => mockSettingsInteractor.getCurrentThemeMode(),
+          ).thenAnswer((_) async => 'dark');
+          when(
+            () => mockThemeEditorInteractor.loadAppTheme(),
+          ).thenAnswer((_) async => appTheme);
 
-          when(() => mockSettingsInteractor.changeThemeMode(newThemeCode: 'dark'))
-              .thenAnswer((_) async => true);
+          when(
+            () => mockSettingsInteractor.changeThemeMode(newThemeCode: 'dark'),
+          ).thenAnswer((_) async => true);
 
           return buildCubit();
         },
@@ -406,24 +584,74 @@ void main() {
           ),
         ],
         verify: (_) {
-          verify(() => mockSettingsInteractor.changeThemeMode(newThemeCode: 'dark'))
-              .called(1);
+          verify(
+            () => mockSettingsInteractor.changeThemeMode(newThemeCode: 'dark'),
+          ).called(1);
           verifyNever(() => mockLogger.exception(any(), any()));
         },
       );
 
       blocTest<SettingsCubit, SettingsState>(
-        'emits Loaded(with failure) when changeThemeMode returns false',
+        'encodes ThemeMode.system as "system" (interactor called with correct code)',
         build: () {
-          when(() => mockSettingsInteractor.getCurrentLanguageCode())
-              .thenAnswer((_) async => 'en');
-          when(() => mockSettingsInteractor.getCurrentThemeMode())
-              .thenAnswer((_) async => 'system');
-          when(() => mockThemeEditorInteractor.loadAppTheme())
-              .thenAnswer((_) async => appTheme);
+          when(
+            () => mockSettingsInteractor.getCurrentLanguageCode(),
+          ).thenAnswer((_) async => 'en');
+          when(
+            () => mockSettingsInteractor.getCurrentThemeMode(),
+          ).thenAnswer((_) async => 'dark');
+          when(
+            () => mockThemeEditorInteractor.loadAppTheme(),
+          ).thenAnswer((_) async => appTheme);
 
-          when(() => mockSettingsInteractor.changeThemeMode(newThemeCode: 'dark'))
-              .thenAnswer((_) async => false);
+          when(
+            () =>
+                mockSettingsInteractor.changeThemeMode(newThemeCode: 'system'),
+          ).thenAnswer((_) async => true);
+
+          return buildCubit();
+        },
+        act: (cubit) async {
+          await cubit.restoreSettings();
+          await cubit.changeThemeMode(ThemeMode.system);
+        },
+        expect: () => <SettingsState>[
+          const SettingsLoadingState(),
+          SettingsLoadedState(
+            locale: const Locale('en'),
+            themeMode: ThemeMode.dark,
+            appTheme: appTheme,
+          ),
+          SettingsLoadedState(
+            locale: const Locale('en'),
+            themeMode: ThemeMode.system,
+            appTheme: appTheme,
+          ),
+        ],
+        verify: (_) {
+          verify(
+            () =>
+                mockSettingsInteractor.changeThemeMode(newThemeCode: 'system'),
+          ).called(1);
+        },
+      );
+
+      blocTest<SettingsCubit, SettingsState>(
+        'emits Loaded(with failure AppUnknownException) when changeThemeMode returns false',
+        build: () {
+          when(
+            () => mockSettingsInteractor.getCurrentLanguageCode(),
+          ).thenAnswer((_) async => 'en');
+          when(
+            () => mockSettingsInteractor.getCurrentThemeMode(),
+          ).thenAnswer((_) async => 'system');
+          when(
+            () => mockThemeEditorInteractor.loadAppTheme(),
+          ).thenAnswer((_) async => appTheme);
+
+          when(
+            () => mockSettingsInteractor.changeThemeMode(newThemeCode: 'dark'),
+          ).thenAnswer((_) async => false);
 
           return buildCubit();
         },
@@ -434,13 +662,18 @@ void main() {
         expect: () => <dynamic>[
           const SettingsLoadingState(),
           isA<SettingsLoadedState>(),
-          predicate<SettingsLoadedState>(
-            (state) => state.failure is SettingsThemeModeChangeException,
-          ),
+          isA<SettingsLoadedState>()
+              .having((state) => state.themeMode, 'themeMode', ThemeMode.system)
+              .having(
+                (state) => state.failure,
+                'failure',
+                isA<AppUnknownException>(),
+              ),
         ],
         verify: (_) {
-          verify(() => mockSettingsInteractor.changeThemeMode(newThemeCode: 'dark'))
-              .called(1);
+          verify(
+            () => mockSettingsInteractor.changeThemeMode(newThemeCode: 'dark'),
+          ).called(1);
           verify(() => mockLogger.exception(any(), any())).called(1);
         },
       );
@@ -448,15 +681,19 @@ void main() {
       blocTest<SettingsCubit, SettingsState>(
         'emits FailureState when changeThemeMode throws',
         build: () {
-          when(() => mockSettingsInteractor.getCurrentLanguageCode())
-              .thenAnswer((_) async => 'en');
-          when(() => mockSettingsInteractor.getCurrentThemeMode())
-              .thenAnswer((_) async => 'system');
-          when(() => mockThemeEditorInteractor.loadAppTheme())
-              .thenAnswer((_) async => appTheme);
+          when(
+            () => mockSettingsInteractor.getCurrentLanguageCode(),
+          ).thenAnswer((_) async => 'en');
+          when(
+            () => mockSettingsInteractor.getCurrentThemeMode(),
+          ).thenAnswer((_) async => 'system');
+          when(
+            () => mockThemeEditorInteractor.loadAppTheme(),
+          ).thenAnswer((_) async => appTheme);
 
-          when(() => mockSettingsInteractor.changeThemeMode(newThemeCode: 'dark'))
-              .thenThrow(Exception('boom'));
+          when(
+            () => mockSettingsInteractor.changeThemeMode(newThemeCode: 'dark'),
+          ).thenThrow(Exception('boom'));
 
           return buildCubit();
         },
@@ -467,7 +704,48 @@ void main() {
         expect: () => <dynamic>[
           const SettingsLoadingState(),
           isA<SettingsLoadedState>(),
-          isA<SettingsFailureState>(),
+          isA<SettingsFailureState>().having(
+            (state) => state.failure,
+            'failure',
+            isA<AppUnknownException>(),
+          ),
+        ],
+        verify: (_) {
+          verify(() => mockLogger.exception(any(), any())).called(1);
+        },
+      );
+
+      blocTest<SettingsCubit, SettingsState>(
+        'emits FailureState with same AppException when changeThemeMode throws AppException',
+        build: () {
+          when(
+            () => mockSettingsInteractor.getCurrentLanguageCode(),
+          ).thenAnswer((_) async => 'en');
+          when(
+            () => mockSettingsInteractor.getCurrentThemeMode(),
+          ).thenAnswer((_) async => 'system');
+          when(
+            () => mockThemeEditorInteractor.loadAppTheme(),
+          ).thenAnswer((_) async => appTheme);
+
+          when(
+            () => mockSettingsInteractor.changeThemeMode(newThemeCode: 'dark'),
+          ).thenThrow(AppUnknownException(message: 'app'));
+
+          return buildCubit();
+        },
+        act: (cubit) async {
+          await cubit.restoreSettings();
+          await cubit.changeThemeMode(ThemeMode.dark);
+        },
+        expect: () => <dynamic>[
+          const SettingsLoadingState(),
+          isA<SettingsLoadedState>(),
+          isA<SettingsFailureState>().having(
+            (state) => state.failure,
+            'failure',
+            isA<AppUnknownException>(),
+          ),
         ],
         verify: (_) {
           verify(() => mockLogger.exception(any(), any())).called(1);

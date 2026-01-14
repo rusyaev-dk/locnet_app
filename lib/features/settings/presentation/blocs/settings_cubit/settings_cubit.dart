@@ -34,7 +34,7 @@ class SettingsCubit extends Cubit<SettingsState> {
       );
 
       if (!changeLocaleSuccess) {
-        final failure = SettingsLocaleChangeException(
+        final failure = AppUnknownException(
           message: "Failed to update app locale",
         );
         emit(prevState.copyWith(failure: failure));
@@ -70,7 +70,7 @@ class SettingsCubit extends Cubit<SettingsState> {
       );
 
       if (!changeThemeSuccess) {
-        final failure = SettingsThemeModeChangeException(
+        final failure = AppUnknownException(
           message: "Failed to update app theme mode",
         );
         emit(prevState.copyWith(failure: failure));

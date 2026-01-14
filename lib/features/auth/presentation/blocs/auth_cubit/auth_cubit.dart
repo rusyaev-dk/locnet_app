@@ -23,7 +23,7 @@ final class AuthCubit extends Cubit<AuthState> {
       if (state is! AuthLoadingState) {
         emit(const AuthLoadingState());
       }
-      _logger.info("Trying to login...");
+      _logger.info("Trying to log in...");
 
       final result = await _authInteractor.logIn(
         username: username,
@@ -103,7 +103,7 @@ final class AuthCubit extends Cubit<AuthState> {
 
   Future<void> logOut() async {
     try {
-      _logger.info("LogOut...");
+      _logger.info("Log out...");
       await _authInteractor.logOut();
       emit(const AuthUnauthenticatedState());
     } catch (e, st) {

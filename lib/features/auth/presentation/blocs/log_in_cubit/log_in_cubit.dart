@@ -17,9 +17,9 @@ class LogInCubit extends Cubit<LogInState> {
       if (updatedUsername == null || updatedUsername.isEmpty) {
         emit(
           state.copyWith(
-            username: updatedUsername,
-            usernameException: EmptyFieldException(
-              message: "Username can not be empty",
+            username: null,
+            usernameException: RequiredValueNotProvidedException(
+              message: "Username cannot be empty",
             ),
           ),
         );
@@ -44,9 +44,9 @@ class LogInCubit extends Cubit<LogInState> {
       if (updatedPassword == null || updatedPassword.isEmpty) {
         emit(
           state.copyWith(
-            password: updatedPassword,
-            passwordException: EmptyFieldException(
-              message: "Password can not be empty",
+            password: null,
+            passwordException: RequiredValueNotProvidedException(
+              message: "Password cannot be empty",
             ),
           ),
         );

@@ -1,5 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/auth/presentation/blocs/log_in_cubit/log_in_cubit.dart';
 import 'package:mocktail/mocktail.dart';
@@ -29,7 +30,7 @@ void main() {
               .having(
                 (state) => state.usernameException,
                 'usernameException',
-                isA<EmptyFieldException>(),
+                isA<RequiredValueNotProvidedException>(),
               )
               .having((state) => state.failure, 'failure', isNull),
         ],
@@ -44,11 +45,30 @@ void main() {
         act: (cubit) => cubit.updateUsername(updatedUsername: ''),
         expect: () => <dynamic>[
           isA<LogInState>()
-              .having((state) => state.username, 'username', '')
+              .having((state) => state.username, 'username', isNull)
               .having(
                 (state) => state.usernameException,
                 'usernameException',
-                isA<EmptyFieldException>(),
+                isA<RequiredValueNotProvidedException>(),
+              )
+              .having((state) => state.failure, 'failure', isNull),
+        ],
+        verify: (_) {
+          verifyNever(() => mockLogger.exception(any(), any()));
+        },
+      );
+
+      blocTest<LogInCubit, LogInState>(
+        'should emit usernameException when updatedUsername is whitespaces only',
+        build: buildCubit,
+        act: (cubit) => cubit.updateUsername(updatedUsername: '   '),
+        expect: () => <dynamic>[
+          isA<LogInState>()
+              .having((state) => state.username, 'username', '   ')
+              .having(
+                (state) => state.usernameException,
+                'usernameException',
+                isNull,
               )
               .having((state) => state.failure, 'failure', isNull),
         ],
@@ -85,19 +105,21 @@ void main() {
         },
         expect: () => <dynamic>[
           isA<LogInState>()
-              .having((state) => state.username, 'username', '')
+              .having((state) => state.username, 'username', isNull)
               .having(
                 (state) => state.usernameException,
                 'usernameException',
-                isA<EmptyFieldException>(),
-              ),
+                isA<RequiredValueNotProvidedException>(),
+              )
+              .having((state) => state.failure, 'failure', isNull),
           isA<LogInState>()
               .having((state) => state.username, 'username', 'john')
               .having(
                 (state) => state.usernameException,
                 'usernameException',
                 isNull,
-              ),
+              )
+              .having((state) => state.failure, 'failure', isNull),
         ],
         verify: (_) {
           verifyNever(() => mockLogger.exception(any(), any()));
@@ -105,31 +127,12 @@ void main() {
       );
 
       blocTest<LogInCubit, LogInState>(
-        'should keep previous username when updatedUsername is null (copyWith keeps previous username)',
+        'should keep failure null when validation emits field exception (not failure)',
         build: buildCubit,
-        act: (cubit) async {
-          await cubit.updateUsername(updatedUsername: 'john');
-          await cubit.updateUsername();
-        },
+        act: (cubit) => cubit.updateUsername(updatedUsername: ''),
         expect: () => <dynamic>[
-          isA<LogInState>()
-              .having((state) => state.username, 'username', 'john')
-              .having(
-                (state) => state.usernameException,
-                'usernameException',
-                isNull,
-              ),
-          isA<LogInState>()
-              .having((state) => state.username, 'username', 'john')
-              .having(
-                (state) => state.usernameException,
-                'usernameException',
-                isA<EmptyFieldException>(),
-              ),
+          isA<LogInState>().having((state) => state.failure, 'failure', isNull),
         ],
-        verify: (_) {
-          verifyNever(() => mockLogger.exception(any(), any()));
-        },
       );
     });
 
@@ -144,7 +147,7 @@ void main() {
               .having(
                 (state) => state.passwordException,
                 'passwordException',
-                isA<EmptyFieldException>(),
+                isA<RequiredValueNotProvidedException>(),
               )
               .having((state) => state.failure, 'failure', isNull),
         ],
@@ -154,16 +157,16 @@ void main() {
       );
 
       blocTest<LogInCubit, LogInState>(
-        'should emit passwordException and set password to empty when updatedPassword is empty',
+        'should emit passwordException and set password to null when updatedPassword is null',
         build: buildCubit,
         act: (cubit) => cubit.updatePassword(updatedPassword: ''),
         expect: () => <dynamic>[
           isA<LogInState>()
-              .having((state) => state.password, 'password', '')
+              .having((state) => state.password, 'password', isNull)
               .having(
                 (state) => state.passwordException,
                 'passwordException',
-                isA<EmptyFieldException>(),
+                isA<RequiredValueNotProvidedException>(),
               )
               .having((state) => state.failure, 'failure', isNull),
         ],
@@ -200,47 +203,21 @@ void main() {
         },
         expect: () => <dynamic>[
           isA<LogInState>()
-              .having((state) => state.password, 'password', '')
+              .having((state) => state.password, 'password', isNull)
               .having(
                 (state) => state.passwordException,
                 'passwordException',
-                isA<EmptyFieldException>(),
-              ),
+                isA<RequiredValueNotProvidedException>(),
+              )
+              .having((state) => state.failure, 'failure', isNull),
           isA<LogInState>()
               .having((state) => state.password, 'password', '123')
               .having(
                 (state) => state.passwordException,
                 'passwordException',
                 isNull,
-              ),
-        ],
-        verify: (_) {
-          verifyNever(() => mockLogger.exception(any(), any()));
-        },
-      );
-
-      blocTest<LogInCubit, LogInState>(
-        'should keep previous password when updatedPassword is null (copyWith keeps previous password)',
-        build: buildCubit,
-        act: (cubit) async {
-          await cubit.updatePassword(updatedPassword: '123');
-          await cubit.updatePassword();
-        },
-        expect: () => <dynamic>[
-          isA<LogInState>()
-              .having((state) => state.password, 'password', '123')
-              .having(
-                (state) => state.passwordException,
-                'passwordException',
-                isNull,
-              ),
-          isA<LogInState>()
-              .having((state) => state.password, 'password', '123')
-              .having(
-                (state) => state.passwordException,
-                'passwordException',
-                isA<EmptyFieldException>(),
-              ),
+              )
+              .having((state) => state.failure, 'failure', isNull),
         ],
         verify: (_) {
           verifyNever(() => mockLogger.exception(any(), any()));
@@ -317,6 +294,34 @@ void main() {
         verify: (_) {
           verifyNever(() => mockLogger.exception(any(), any()));
         },
+      );
+
+      blocTest<LogInCubit, LogInState>(
+        'should not clear usernameException when updating password',
+        build: buildCubit,
+        act: (cubit) async {
+          await cubit.updateUsername(updatedUsername: '');
+          await cubit.updatePassword(updatedPassword: '123');
+        },
+        expect: () => <dynamic>[
+          isA<LogInState>().having(
+            (state) => state.usernameException,
+            'usernameException',
+            isA<RequiredValueNotProvidedException>(),
+          ),
+          isA<LogInState>()
+              .having((state) => state.password, 'password', '123')
+              .having(
+                (state) => state.passwordException,
+                'passwordException',
+                isNull,
+              )
+              .having(
+                (state) => state.usernameException,
+                'usernameException',
+                isA<RequiredValueNotProvidedException>(),
+              ),
+        ],
       );
     });
 
@@ -396,6 +401,39 @@ void main() {
 
         await cubit.updateUsername(updatedUsername: 'john');
         await cubit.updatePassword(updatedPassword: '123');
+
+        expect(cubit.canLogIn(), isTrue);
+      });
+
+      test(
+        'should return false when both are non-empty but any field exception exists',
+        () async {
+          final cubit = buildCubit();
+          addTearDown(cubit.close);
+
+          await cubit.updateUsername(updatedUsername: 'john');
+          await cubit.updatePassword(updatedPassword: '123');
+
+          expect(cubit.canLogIn(), isTrue);
+
+          await cubit.updateUsername();
+
+          expect(cubit.canLogIn(), isFalse);
+        },
+      );
+
+      test('should not depend on failure field for canLogIn', () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+
+        await cubit.updateUsername(updatedUsername: 'john');
+        await cubit.updatePassword(updatedPassword: '123');
+
+        expect(cubit.canLogIn(), isTrue);
+
+        cubit.emit(
+          cubit.state.copyWith(failure: AppUnknownException(message: 'boom')),
+        );
 
         expect(cubit.canLogIn(), isTrue);
       });

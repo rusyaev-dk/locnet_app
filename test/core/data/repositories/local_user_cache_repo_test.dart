@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -122,7 +123,7 @@ void main() {
       });
 
       test(
-        'should throw StorageWriteException when storage.write throws Exception',
+        'should rethrow StorageException when storage.write throws StorageException',
         () async {
           final User user = buildUser();
 
@@ -131,11 +132,11 @@ void main() {
               key: any(named: 'key'),
               value: any(named: 'value'),
             ),
-          ).thenThrow(Exception('disk error'));
+          ).thenThrow(StorageException(message: 'write failed'));
 
           final Future<bool> future = localUserCacheRepo.saveUser(user: user);
 
-          await expectLater(future, throwsA(isA<StorageWriteException>()));
+          await expectLater(future, throwsA(isA<StorageException>()));
 
           verify(
             () => mockStorage.write<String>(
@@ -148,7 +149,33 @@ void main() {
       );
 
       test(
-        'should throw StorageUnknownException when storage.write throws non-Exception error',
+        'should throw StorageIOException when storage.write throws Exception',
+        () async {
+          final User user = buildUser();
+
+          when(
+            () => mockStorage.write<String>(
+              key: any(named: 'key'),
+              value: any(named: 'value'),
+            ),
+          ).thenThrow(Exception('disk error'));
+
+          final Future<bool> future = localUserCacheRepo.saveUser(user: user);
+
+          await expectLater(future, throwsA(isA<StorageIOException>()));
+
+          verify(
+            () => mockStorage.write<String>(
+              key: 'user',
+              value: jsonEncode(user.toJson()),
+            ),
+          ).called(1);
+          verifyNoMoreInteractions(mockStorage);
+        },
+      );
+
+      test(
+        'should throw AppUnknownException when storage.write throws non-Exception error',
         () async {
           final User user = buildUser();
 
@@ -161,7 +188,7 @@ void main() {
 
           final Future<bool> future = localUserCacheRepo.saveUser(user: user);
 
-          await expectLater(future, throwsA(isA<StorageUnknownException>()));
+          await expectLater(future, throwsA(isA<AppUnknownException>()));
 
           verify(
             () => mockStorage.write<String>(
@@ -208,42 +235,36 @@ void main() {
         verifyNoMoreInteractions(mockStorage);
       });
 
-      test(
-        'should throw StorageNotFoundException when value is null',
-        () async {
-          when(
-            () => mockStorage.read<String>(key: any(named: 'key')),
-          ).thenAnswer((_) async => null);
+      test('should throw StorageException when value is null', () async {
+        when(
+          () => mockStorage.read<String>(key: any(named: 'key')),
+        ).thenAnswer((_) async => null);
 
-          await expectLater(
-            () => localUserCacheRepo.loadUser(),
-            throwsA(isA<StorageNotFoundException>()),
-          );
+        await expectLater(
+          () => localUserCacheRepo.loadUser(),
+          throwsA(isA<StorageException>()),
+        );
 
-          verify(() => mockStorage.read<String>(key: 'user')).called(1);
-          verifyNoMoreInteractions(mockStorage);
-        },
-      );
+        verify(() => mockStorage.read<String>(key: 'user')).called(1);
+        verifyNoMoreInteractions(mockStorage);
+      });
 
-      test(
-        'should throw StorageNotFoundException when value is empty',
-        () async {
-          when(
-            () => mockStorage.read<String>(key: any(named: 'key')),
-          ).thenAnswer((_) async => '');
+      test('should throw StorageException when value is empty', () async {
+        when(
+          () => mockStorage.read<String>(key: any(named: 'key')),
+        ).thenAnswer((_) async => '');
 
-          await expectLater(
-            () => localUserCacheRepo.loadUser(),
-            throwsA(isA<StorageNotFoundException>()),
-          );
+        await expectLater(
+          () => localUserCacheRepo.loadUser(),
+          throwsA(isA<StorageException>()),
+        );
 
-          verify(() => mockStorage.read<String>(key: 'user')).called(1);
-          verifyNoMoreInteractions(mockStorage);
-        },
-      );
+        verify(() => mockStorage.read<String>(key: 'user')).called(1);
+        verifyNoMoreInteractions(mockStorage);
+      });
 
       test(
-        'should throw StorageSerializationException when cached json is corrupted (FormatException)',
+        'should throw StorageException when cached json is corrupted (FormatException)',
         () async {
           when(
             () => mockStorage.read<String>(key: any(named: 'key')),
@@ -251,7 +272,7 @@ void main() {
 
           await expectLater(
             () => localUserCacheRepo.loadUser(),
-            throwsA(isA<StorageSerializationException>()),
+            throwsA(isA<StorageException>()),
           );
 
           verify(() => mockStorage.read<String>(key: 'user')).called(1);
@@ -260,7 +281,7 @@ void main() {
       );
 
       test(
-        'should throw StorageSerializationException when cached json is not an object',
+        'should throw StorageException when cached json is not an object',
         () async {
           when(
             () => mockStorage.read<String>(key: any(named: 'key')),
@@ -268,7 +289,7 @@ void main() {
 
           await expectLater(
             () => localUserCacheRepo.loadUser(),
-            throwsA(isA<StorageSerializationException>()),
+            throwsA(isA<StorageException>()),
           );
 
           verify(() => mockStorage.read<String>(key: 'user')).called(1);
@@ -277,12 +298,10 @@ void main() {
       );
 
       test(
-        'should throw StorageSerializationException when cached json misses required keys',
+        'should throw StorageException when cached json misses required keys',
         () async {
           final Map<String, dynamic> invalidJson = <String, dynamic>{
             'userId': 'user-id',
-            // Missing: username, firstName, patronymic, lastName, languageCode,
-            // isDeleted, isBanned, createdAt, updatedAt
           };
 
           when(
@@ -291,7 +310,7 @@ void main() {
 
           await expectLater(
             () => localUserCacheRepo.loadUser(),
-            throwsA(isA<StorageSerializationException>()),
+            throwsA(isA<StorageException>()),
           );
 
           verify(() => mockStorage.read<String>(key: 'user')).called(1);
@@ -300,7 +319,7 @@ void main() {
       );
 
       test(
-        'should throw StorageSerializationException when cached json has wrong field types',
+        'should throw StorageException when cached json has wrong field types',
         () async {
           final Map<String, dynamic> invalidJson = <String, dynamic>{
             'userId': 123,
@@ -323,7 +342,7 @@ void main() {
 
           await expectLater(
             () => localUserCacheRepo.loadUser(),
-            throwsA(isA<StorageSerializationException>()),
+            throwsA(isA<StorageException>()),
           );
 
           verify(() => mockStorage.read<String>(key: 'user')).called(1);
@@ -332,7 +351,7 @@ void main() {
       );
 
       test(
-        'should throw StorageSerializationException when cached json has invalid datetime strings',
+        'should throw StorageException when cached json has invalid datetime strings',
         () async {
           final Map<String, dynamic> invalidJson = <String, dynamic>{
             'userId': 'user-id',
@@ -355,7 +374,7 @@ void main() {
 
           await expectLater(
             () => localUserCacheRepo.loadUser(),
-            throwsA(isA<StorageSerializationException>()),
+            throwsA(isA<StorageException>()),
           );
 
           verify(() => mockStorage.read<String>(key: 'user')).called(1);
@@ -364,7 +383,7 @@ void main() {
       );
 
       test(
-        'should throw StorageSerializationException when optional fields have invalid types',
+        'should throw StorageException when optional fields have invalid types',
         () async {
           final User user = buildUser();
           final Map<String, dynamic> jsonMap = user.toJson()
@@ -376,7 +395,7 @@ void main() {
 
           await expectLater(
             () => localUserCacheRepo.loadUser(),
-            throwsA(isA<StorageSerializationException>()),
+            throwsA(isA<StorageException>()),
           );
 
           verify(() => mockStorage.read<String>(key: 'user')).called(1);
@@ -385,7 +404,24 @@ void main() {
       );
 
       test(
-        'should throw StorageReadException when storage.read throws Exception',
+        'should rethrow StorageException when storage.read throws StorageException',
+        () async {
+          when(
+            () => mockStorage.read<String>(key: any(named: 'key')),
+          ).thenThrow(StorageException(message: 'read failed'));
+
+          await expectLater(
+            () => localUserCacheRepo.loadUser(),
+            throwsA(isA<StorageException>()),
+          );
+
+          verify(() => mockStorage.read<String>(key: 'user')).called(1);
+          verifyNoMoreInteractions(mockStorage);
+        },
+      );
+
+      test(
+        'should throw StorageIOException when storage.read throws Exception',
         () async {
           when(
             () => mockStorage.read<String>(key: any(named: 'key')),
@@ -393,7 +429,7 @@ void main() {
 
           await expectLater(
             () => localUserCacheRepo.loadUser(),
-            throwsA(isA<StorageReadException>()),
+            throwsA(isA<StorageIOException>()),
           );
 
           verify(() => mockStorage.read<String>(key: 'user')).called(1);
@@ -402,7 +438,7 @@ void main() {
       );
 
       test(
-        'should throw StorageUnknownException when storage.read throws non-Exception error',
+        'should throw AppUnknownException when storage.read throws non-Exception error',
         () async {
           when(
             () => mockStorage.read<String>(key: any(named: 'key')),
@@ -410,10 +446,89 @@ void main() {
 
           await expectLater(
             () => localUserCacheRepo.loadUser(),
-            throwsA(isA<StorageUnknownException>()),
+            throwsA(isA<AppUnknownException>()),
           );
 
           verify(() => mockStorage.read<String>(key: 'user')).called(1);
+          verifyNoMoreInteractions(mockStorage);
+        },
+      );
+    });
+
+    group('clearUser', () {
+      test('should delete cached user and return true', () async {
+        when(
+          () => mockStorage.delete(key: any(named: 'key')),
+        ).thenAnswer((_) async => true);
+
+        final bool result = await localUserCacheRepo.clearUser();
+
+        expect(result, isTrue);
+
+        verify(() => mockStorage.delete(key: 'user')).called(1);
+        verifyNoMoreInteractions(mockStorage);
+      });
+
+      test('should return false when storage returns false', () async {
+        when(
+          () => mockStorage.delete(key: any(named: 'key')),
+        ).thenAnswer((_) async => false);
+
+        final bool result = await localUserCacheRepo.clearUser();
+
+        expect(result, isFalse);
+
+        verify(() => mockStorage.delete(key: 'user')).called(1);
+        verifyNoMoreInteractions(mockStorage);
+      });
+
+      test(
+        'should rethrow StorageException when storage.delete throws StorageException',
+        () async {
+          when(
+            () => mockStorage.delete(key: any(named: 'key')),
+          ).thenThrow(StorageException(message: 'delete failed'));
+
+          await expectLater(
+            () => localUserCacheRepo.clearUser(),
+            throwsA(isA<StorageException>()),
+          );
+
+          verify(() => mockStorage.delete(key: 'user')).called(1);
+          verifyNoMoreInteractions(mockStorage);
+        },
+      );
+
+      test(
+        'should throw StorageIOException when storage.delete throws Exception',
+        () async {
+          when(
+            () => mockStorage.delete(key: any(named: 'key')),
+          ).thenThrow(Exception('delete error'));
+
+          await expectLater(
+            () => localUserCacheRepo.clearUser(),
+            throwsA(isA<StorageIOException>()),
+          );
+
+          verify(() => mockStorage.delete(key: 'user')).called(1);
+          verifyNoMoreInteractions(mockStorage);
+        },
+      );
+
+      test(
+        'should throw AppUnknownException when storage.delete throws non-Exception error',
+        () async {
+          when(
+            () => mockStorage.delete(key: any(named: 'key')),
+          ).thenThrow(StateError('boom'));
+
+          await expectLater(
+            () => localUserCacheRepo.clearUser(),
+            throwsA(isA<AppUnknownException>()),
+          );
+
+          verify(() => mockStorage.delete(key: 'user')).called(1);
           verifyNoMoreInteractions(mockStorage);
         },
       );

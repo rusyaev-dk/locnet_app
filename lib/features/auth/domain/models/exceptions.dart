@@ -15,3 +15,23 @@ final class PasswordTooWeakException extends DomainException {
     super.error,
   });
 }
+
+class AuthException extends DomainException {
+  AuthException({required super.message, super.stackTrace, super.error});
+}
+
+class AuthInvalidCredentialsException extends DomainException {
+  AuthInvalidCredentialsException({
+    required super.message,
+    super.stackTrace,
+    super.error,
+  });
+}
+
+class AuthUnauthorizedException extends DomainException {
+  AuthUnauthorizedException({
+    required super.message,
+    super.stackTrace,
+    super.error,
+  });
+}

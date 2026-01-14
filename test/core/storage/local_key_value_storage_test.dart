@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -19,7 +20,7 @@ void main() {
 
   group('LocalKeyValueStorage', () {
     group('write method', () {
-      test('should throw ArgumentError when key is empty', () async {
+      test('should throw StorageException when key is empty', () async {
         const String key = '';
         const String value = 'value';
 
@@ -28,17 +29,18 @@ void main() {
           value: value,
         );
 
-        await expectLater(future, throwsA(isA<ArgumentError>()));
+        await expectLater(future, throwsA(isA<StorageException>()));
 
         verifyNever(() => mockSharedPreferences.setString(any(), any()));
         verifyNever(() => mockSharedPreferences.setInt(any(), any()));
         verifyNever(() => mockSharedPreferences.setDouble(any(), any()));
         verifyNever(() => mockSharedPreferences.setBool(any(), any()));
         verifyNever(() => mockSharedPreferences.setStringList(any(), any()));
+        verifyNoMoreInteractions(mockSharedPreferences);
       });
 
       test(
-        'should throw ArgumentError when key contains only whitespaces',
+        'should throw StorageException when key contains only whitespaces',
         () async {
           const String key = '   ';
           const String value = 'value';
@@ -48,13 +50,14 @@ void main() {
             value: value,
           );
 
-          await expectLater(future, throwsA(isA<ArgumentError>()));
+          await expectLater(future, throwsA(isA<StorageException>()));
 
           verifyNever(() => mockSharedPreferences.setString(any(), any()));
           verifyNever(() => mockSharedPreferences.setInt(any(), any()));
           verifyNever(() => mockSharedPreferences.setDouble(any(), any()));
           verifyNever(() => mockSharedPreferences.setBool(any(), any()));
           verifyNever(() => mockSharedPreferences.setStringList(any(), any()));
+          verifyNoMoreInteractions(mockSharedPreferences);
         },
       );
 
@@ -149,7 +152,6 @@ void main() {
       });
 
       test('should successfully write double NaN data', () async {
-        // Arrange
         const String key = 'test_key';
         const double value = double.nan;
 
@@ -157,13 +159,11 @@ void main() {
           () => mockSharedPreferences.setDouble(key, any(that: isA<double>())),
         ).thenAnswer((_) async => true);
 
-        // Act
         final bool success = await localKeyValueStorage.write<double>(
           key: key,
           value: value,
         );
 
-        // Assert
         expect(success, isTrue);
 
         final verification = verify(
@@ -254,13 +254,13 @@ void main() {
         verifyNoMoreInteractions(mockSharedPreferences);
       });
 
-      test('should throw ArgumentError on unsupported type', () async {
+      test('should throw StorageException on unsupported type', () async {
         const String key = 'test_key';
         final DateTime value = DateTime(2025);
 
         await expectLater(
           () => localKeyValueStorage.write<DateTime>(key: key, value: value),
-          throwsA(isA<ArgumentError>()),
+          throwsA(isA<StorageException>()),
         );
 
         verifyNever(() => mockSharedPreferences.setString(any(), any()));
@@ -272,7 +272,7 @@ void main() {
       });
 
       test(
-        'should throw StorageWriteException when plugin throws Exception',
+        'should throw StorageIOException when plugin throws Exception',
         () async {
           const String key = 'test_key';
           const String value = 'test_value';
@@ -286,14 +286,14 @@ void main() {
             value: value,
           );
 
-          await expectLater(future, throwsA(isA<StorageWriteException>()));
+          await expectLater(future, throwsA(isA<StorageIOException>()));
           verify(() => mockSharedPreferences.setString(key, value)).called(1);
           verifyNoMoreInteractions(mockSharedPreferences);
         },
       );
 
       test(
-        'should throw StorageUnknownException when plugin throws non-Exception error',
+        'should throw AppUnknownException when plugin throws non-Exception error',
         () async {
           const String key = 'test_key';
           const String value = 'test_value';
@@ -307,7 +307,7 @@ void main() {
             value: value,
           );
 
-          await expectLater(future, throwsA(isA<StorageUnknownException>()));
+          await expectLater(future, throwsA(isA<AppUnknownException>()));
           verify(() => mockSharedPreferences.setString(key, value)).called(1);
           verifyNoMoreInteractions(mockSharedPreferences);
         },
@@ -315,19 +315,19 @@ void main() {
     });
 
     group('read method', () {
-      test('should throw ArgumentError when key is empty', () async {
+      test('should throw StorageException when key is empty', () async {
         const String key = '';
 
         final Future<String?> future = localKeyValueStorage.read<String>(
           key: key,
         );
 
-        await expectLater(future, throwsA(isA<ArgumentError>()));
+        await expectLater(future, throwsA(isA<StorageException>()));
         verifyNoMoreInteractions(mockSharedPreferences);
       });
 
       test(
-        'should throw ArgumentError when key contains only whitespaces',
+        'should throw StorageException when key contains only whitespaces',
         () async {
           const String key = '   ';
 
@@ -335,7 +335,7 @@ void main() {
             key: key,
           );
 
-          await expectLater(future, throwsA(isA<ArgumentError>()));
+          await expectLater(future, throwsA(isA<StorageException>()));
           verifyNoMoreInteractions(mockSharedPreferences);
         },
       );
@@ -428,22 +428,24 @@ void main() {
       });
 
       test(
-        'should return null when stored type does not match requested type',
+        'should throw StorageException when stored type does not match requested type',
         () async {
           const String key = 'test_key';
 
           when(() => mockSharedPreferences.get(key)).thenReturn('123');
 
-          final int? result = await localKeyValueStorage.read<int>(key: key);
+          await expectLater(
+            () => localKeyValueStorage.read<int>(key: key),
+            throwsA(isA<StorageException>()),
+          );
 
-          expect(result, isNull);
           verify(() => mockSharedPreferences.get(key)).called(1);
           verifyNoMoreInteractions(mockSharedPreferences);
         },
       );
 
       test(
-        'should throw StorageReadException when plugin throws Exception',
+        'should throw StorageIOException when plugin throws Exception',
         () async {
           const String key = 'test_key';
 
@@ -455,14 +457,14 @@ void main() {
             key: key,
           );
 
-          await expectLater(future, throwsA(isA<StorageReadException>()));
+          await expectLater(future, throwsA(isA<StorageIOException>()));
           verify(() => mockSharedPreferences.get(key)).called(1);
           verifyNoMoreInteractions(mockSharedPreferences);
         },
       );
 
       test(
-        'should throw StorageUnknownException when plugin throws non-Exception error',
+        'should throw AppUnknownException when plugin throws non-Exception error',
         () async {
           const String key = 'test_key';
 
@@ -474,7 +476,7 @@ void main() {
             key: key,
           );
 
-          await expectLater(future, throwsA(isA<StorageUnknownException>()));
+          await expectLater(future, throwsA(isA<AppUnknownException>()));
           verify(() => mockSharedPreferences.get(key)).called(1);
           verifyNoMoreInteractions(mockSharedPreferences);
         },
@@ -482,14 +484,26 @@ void main() {
     });
 
     group('delete method', () {
-      test('should throw ArgumentError when key is empty', () async {
+      test('should throw StorageException when key is empty', () async {
         const String key = '';
 
         final Future<bool> future = localKeyValueStorage.delete(key: key);
 
-        await expectLater(future, throwsA(isA<ArgumentError>()));
+        await expectLater(future, throwsA(isA<StorageException>()));
         verifyNoMoreInteractions(mockSharedPreferences);
       });
+
+      test(
+        'should throw StorageException when key contains only whitespaces',
+        () async {
+          const String key = '   ';
+
+          final Future<bool> future = localKeyValueStorage.delete(key: key);
+
+          await expectLater(future, throwsA(isA<StorageException>()));
+          verifyNoMoreInteractions(mockSharedPreferences);
+        },
+      );
 
       test('should delete value and return true', () async {
         const String key = 'test_key';
@@ -520,7 +534,7 @@ void main() {
       });
 
       test(
-        'should throw StorageDeleteException when plugin throws Exception',
+        'should throw StorageIOException when plugin throws Exception',
         () async {
           const String key = 'test_key';
 
@@ -530,14 +544,14 @@ void main() {
 
           final Future<bool> future = localKeyValueStorage.delete(key: key);
 
-          await expectLater(future, throwsA(isA<StorageDeleteException>()));
+          await expectLater(future, throwsA(isA<StorageIOException>()));
           verify(() => mockSharedPreferences.remove(key)).called(1);
           verifyNoMoreInteractions(mockSharedPreferences);
         },
       );
 
       test(
-        'should throw StorageUnknownException when plugin throws non-Exception error',
+        'should throw AppUnknownException when plugin throws non-Exception error',
         () async {
           const String key = 'test_key';
 
@@ -547,7 +561,7 @@ void main() {
 
           final Future<bool> future = localKeyValueStorage.delete(key: key);
 
-          await expectLater(future, throwsA(isA<StorageUnknownException>()));
+          await expectLater(future, throwsA(isA<AppUnknownException>()));
           verify(() => mockSharedPreferences.remove(key)).called(1);
           verifyNoMoreInteractions(mockSharedPreferences);
         },
@@ -578,7 +592,7 @@ void main() {
       });
 
       test(
-        'should throw StorageDeleteException when plugin throws Exception',
+        'should throw StorageIOException when plugin throws Exception',
         () async {
           when(
             () => mockSharedPreferences.clear(),
@@ -586,14 +600,14 @@ void main() {
 
           final Future<bool> future = localKeyValueStorage.clear();
 
-          await expectLater(future, throwsA(isA<StorageDeleteException>()));
+          await expectLater(future, throwsA(isA<StorageIOException>()));
           verify(() => mockSharedPreferences.clear()).called(1);
           verifyNoMoreInteractions(mockSharedPreferences);
         },
       );
 
       test(
-        'should throw StorageUnknownException when plugin throws non-Exception error',
+        'should throw AppUnknownException when plugin throws non-Exception error',
         () async {
           when(
             () => mockSharedPreferences.clear(),
@@ -601,7 +615,7 @@ void main() {
 
           final Future<bool> future = localKeyValueStorage.clear();
 
-          await expectLater(future, throwsA(isA<StorageUnknownException>()));
+          await expectLater(future, throwsA(isA<AppUnknownException>()));
           verify(() => mockSharedPreferences.clear()).called(1);
           verifyNoMoreInteractions(mockSharedPreferences);
         },

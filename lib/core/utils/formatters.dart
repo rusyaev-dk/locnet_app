@@ -27,6 +27,7 @@ final class DateTimeFormatter {
 }
 
 final class ConversationDataFormatter {
+  // TODO: move to its dedicated feature
   static void validateTitle(String title) {
     final String trimmedTitle = title.trim();
 
@@ -38,7 +39,7 @@ final class ConversationDataFormatter {
 
     if (trimmedTitle.length > 120) {
       throw CharactersCountViolationException(
-        message: "Conversation title too much characters (max 120)",
+        message: "Conversation title contains too much characters (max 120)",
       );
     }
   }
@@ -47,11 +48,16 @@ final class ConversationDataFormatter {
     final String trimmedDescription = description.trim();
 
     if (trimmedDescription.isEmpty) {
-      throw ConversationEmptyFieldException();
+      throw RequiredValueNotProvidedException(
+        message: 'Conversation description cannot be empty',
+      );
     }
 
     if (trimmedDescription.length > 1000) {
-      throw ConversationDataTooLongException();
+      throw CharactersCountViolationException(
+        message:
+            'Conversation description contains too much characters (max 1000)',
+      );
     }
   }
 }
