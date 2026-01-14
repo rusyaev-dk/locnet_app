@@ -8,37 +8,10 @@ final class PasswordsMismatchException extends DomainException {
   });
 }
 
-final class PasswordTooWeakException extends 
-
-// // Password
-// abstract class PasswordException extends DomainException {
-//   PasswordException({required super.message});
-// }
-
-// final class PasswordTooShortException extends PasswordException {
-//   PasswordTooShortException()
-//     : super(message: 'Password must be at least 14 characters long');
-// }
-
-// final class PasswordNoUpperCaseException extends PasswordException {
-//   PasswordNoUpperCaseException()
-//     : super(message: 'Password must contain an uppercase letter');
-// }
-
-// final class PasswordNoLowerCaseException extends PasswordException {
-//   PasswordNoLowerCaseException()
-//     : super(message: 'Password must contain a lowercase letter');
-// }
-
-// final class PasswordNoDigitException extends PasswordException {
-//   PasswordNoDigitException() : super(message: 'Password must contain a digit');
-// }
-
-// final class PasswordInvalidCharactersException extends PasswordException {
-//   PasswordInvalidCharactersException()
-//     : super(message: 'Password contains invalid characters');
-// }
-
-// final class EmptyFieldException extends DomainException {
-//   EmptyFieldException({required super.message});
-// }
+final class PasswordTooWeakException extends DomainException {
+  PasswordTooWeakException({
+    required super.message,
+    super.stackTrace,
+    super.error,
+  });
+}
