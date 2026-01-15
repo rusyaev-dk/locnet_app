@@ -25,18 +25,15 @@ class ConversationListTile extends StatelessWidget {
     final textScheme = context.textScheme;
 
     if (isCompact) {
-      return Center(
-        child: Material(
-          color: Colors.transparent,
-          shape: const CircleBorder(),
-          child: InkWell(
-            customBorder: const CircleBorder(),
-            onTap: onTap,
-            child: Padding(
-              padding: const EdgeInsets.all(4),
-              child: _ConversationAvatar(
-                backgroundColor: colorScheme.onSurface.withAlpha(0x14),
-              ),
+      return Material(
+        color: isSelected ? colorScheme.surfaceContainer : Colors.transparent,
+      
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(4),
+            child: _ConversationAvatar(
+              backgroundColor: colorScheme.onSurface.withAlpha(0x14),
             ),
           ),
         ),
@@ -89,9 +86,8 @@ class ConversationListTile extends StatelessWidget {
       color: isSelected
           ? colorScheme.surfaceContainer
           : colorScheme.surfaceBright,
-      borderRadius: BorderRadius.circular(12),
+
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),

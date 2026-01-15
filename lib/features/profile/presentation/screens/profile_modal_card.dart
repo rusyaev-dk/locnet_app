@@ -4,6 +4,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/features/auth/domain/domain.dart';
+import 'package:locnet_app/features/auth/presentation/presentation.dart';
 import 'package:locnet_app/features/profile/domain/domain.dart';
 import 'package:locnet_app/features/profile/presentation/presentation.dart';
 
@@ -118,6 +120,16 @@ class _ProfileView extends StatelessWidget {
       letterSpacing: 0.2,
     );
 
+    final Session? session = context.select<AuthCubit, Session?>((
+      AuthCubit cubit,
+    ) {
+      final AuthState state = cubit.state;
+      if (state is AuthAuthenticatedState) {
+        return state.session;
+      }
+      return null;
+    });
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -129,16 +141,18 @@ class _ProfileView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ProfileMainInfo(user: user),
+                ProfileGeneralInfo(user: user),
                 const SizedBox(height: 24),
-                Text(l10n.accountStatus, style: sectionTitleStyle),
-                const SizedBox(height: 8),
                 Text(
                   '${l10n.language}: ${user.languageCode}',
                   style: context.textScheme.label.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
                 ),
+                if (session != null) ...[
+                  const SizedBox(height: 24),
+                  SessionInfo(session: session),
+                ],
               ],
             ),
           ),

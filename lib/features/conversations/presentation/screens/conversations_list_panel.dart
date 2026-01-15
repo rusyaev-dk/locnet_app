@@ -189,31 +189,26 @@ class _ConversationsListPanel extends StatelessWidget {
               children: [
                 if (!isCompact) const ChipsBar(),
                 Expanded(
-                  child: ListView.separated(
+                  child: ListView.builder(
                     itemCount: tiles.length,
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: 5),
+                    // separatorBuilder: (context, index) =>
+                    //     const SizedBox(height: 5),
                     itemBuilder: (BuildContext context, int index) {
                       final ConversationTile tile = tiles[index];
 
-                      return Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: isCompact ? 4 : 7,
-                        ),
-                        child: ConversationListTile(
-                          conversationTile: tile,
-                          isSelected:
-                              tile.conversation.conversationId ==
-                              selectedConversationId,
-                          isCompact: isCompact,
-                          onTap: () {
-                            GoRouter.of(context).go(
-                              AppRoutes.conversation(
-                                tile.conversation.conversationId,
-                              ),
-                            );
-                          },
-                        ),
+                      return ConversationListTile(
+                        conversationTile: tile,
+                        isSelected:
+                            tile.conversation.conversationId ==
+                            selectedConversationId,
+                        isCompact: isCompact,
+                        onTap: () {
+                          GoRouter.of(context).go(
+                            AppRoutes.conversation(
+                              tile.conversation.conversationId,
+                            ),
+                          );
+                        },
                       );
                     },
                   ),

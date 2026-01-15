@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 
-class ProfileMainInfo extends StatelessWidget {
-  const ProfileMainInfo({required this.user, super.key});
+class ProfileGeneralInfo extends StatelessWidget {
+  const ProfileGeneralInfo({required this.user, super.key});
 
   final User user;
 

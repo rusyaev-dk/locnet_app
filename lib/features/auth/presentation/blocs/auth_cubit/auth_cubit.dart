@@ -25,14 +25,13 @@ final class AuthCubit extends Cubit<AuthState> {
       }
       _logger.info("Trying to log in...");
 
-      final result = await _authInteractor.logIn(
+      final res = await _authInteractor.logIn(
         username: username,
         password: password,
       );
-      final user = result.$2;
 
       _logger.info("LogIn successful");
-      emit(AuthAuthenticatedState(user: user));
+      emit(AuthAuthenticatedState(user: res.$2, session: res.$1));
     } catch (e, st) {
       _logger.exception("LogIn failed: $e", st);
       emit(
@@ -67,7 +66,7 @@ final class AuthCubit extends Cubit<AuthState> {
       );
 
       _logger.info("Registration successful");
-      emit(AuthAuthenticatedState(user: res.$2));
+      emit(AuthAuthenticatedState(user: res.$2, session: res.$1));
     } catch (e, st) {
       _logger.exception("Register failed: $e", st);
       emit(
@@ -94,7 +93,7 @@ final class AuthCubit extends Cubit<AuthState> {
         return;
       }
 
-      emit(AuthAuthenticatedState(user: restored.$2));
+      emit(AuthAuthenticatedState(user: restored.$2, session: restored.$1));
     } catch (e, st) {
       _logger.exception("Restore session failed: $e", st);
       emit(const AuthUnauthenticatedState());

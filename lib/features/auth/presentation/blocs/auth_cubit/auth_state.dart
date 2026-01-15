@@ -21,17 +21,35 @@ final class AuthLoadingState extends AuthState {
 }
 
 final class AuthAuthenticatedState extends AuthState {
-  const AuthAuthenticatedState({required this.user, super.failure});
+  const AuthAuthenticatedState({
+    required this.user,
+    required this.session,
+    super.failure,
+  });
 
   final User user;
+  final Session session;
 
-  AuthAuthenticatedState copyWith({User? user, Object? failure}) {
-    return AuthAuthenticatedState(user: user ?? this.user, failure: failure);
+  AuthAuthenticatedState copyWith({
+    User? user,
+    Session? session,
+    Object? failure,
+  }) {
+    return AuthAuthenticatedState(
+      user: user ?? this.user,
+      session: session ?? this.session,
+      failure: failure,
+    );
   }
 
   @override
-  List<Object?> get props => <Object?>[user, failure];
+  List<Object?> get props => <Object?>[
+    user,
+    session,
+    failure,
+  ];
 }
+
 
 final class AuthUnauthenticatedState extends AuthState {
   const AuthUnauthenticatedState({ super.failure});

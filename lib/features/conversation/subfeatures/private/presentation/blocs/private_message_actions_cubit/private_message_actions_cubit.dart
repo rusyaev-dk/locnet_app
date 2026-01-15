@@ -39,7 +39,6 @@ class PrivateMessageActionsCubit extends Cubit<PrivateMessageActionsState> {
       final User user = await _userInteractor.getCachedUser();
 
       final Message localMessage = Message(
-        messageId: clientMessageId,
         clientMessageId: clientMessageId,
         senderId: user.userId,
         conversationId: conversationId,
