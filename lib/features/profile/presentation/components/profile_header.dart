@@ -30,19 +30,19 @@ class ProfileHeader extends StatelessWidget {
               maxLines: 2,
               style: textScheme.display.copyWith(
                 color: colorScheme.onSurface,
-                fontSize: 24,
+                fontSize: 20,
               ),
             ),
           ),
           const Spacer(),
           RoundedIconButton(
-            buttonSize: 35,
-            iconSize: 18.5,
             onPressed: () async {
               final profileInteractor = context.read<ProfileInteractor>();
               final bool shouldUpdate =
                   await showGeneralDialog(
                     context: context,
+                    barrierColor: Colors.transparent,
+                    transitionBuilder: slideFadeDialogTransition,
                     pageBuilder: (context, _, _) {
                       return ProfileEditorModalWrapper(
                         profileInteractor: profileInteractor,
@@ -53,17 +53,19 @@ class ProfileHeader extends StatelessWidget {
                   false;
 
               if (shouldUpdate && context.mounted) {
-                context.read<ProfileCubit>().loadUserData();
+                await context.read<ProfileCubit>().loadUserData();
               }
             },
             icon: Icons.edit,
+            backgroundColor: Colors.transparent,
           ),
           const SizedBox(width: 10),
           RoundedIconButton(
-            buttonSize: 35,
-            iconSize: 18.5,
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
             icon: Icons.close,
+            backgroundColor: Colors.transparent,
           ),
         ],
       ),

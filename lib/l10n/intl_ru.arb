@@ -103,5 +103,8 @@
     "toggleNotificationsOn": "Включить уведомления",
     "toggleNotificationsOff": "Выключить уведомления",
     "filters": "Фильтры",
-    "edited": "Изменено"
+    "edited": "Изменено",
+    "sessionIsNotLoadedYet": "Данные о сессии ещё не загружены. Попробуйте ещё раз",
+    "logOut": "Выход",
+    "logOutConfirmation": "Вы действительно хотите выйти?"
 }

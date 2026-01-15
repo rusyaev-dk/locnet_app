@@ -89,6 +89,7 @@ class SettingsView extends StatelessWidget {
       color: colorScheme.primary,
       fontWeight: FontWeight.w600,
       letterSpacing: 0.2,
+      fontSize: 15,
     );
 
     return Column(
@@ -110,20 +111,14 @@ class SettingsView extends StatelessWidget {
                     children: [
                       Text(
                         l10n.themeMode,
-                        style: textScheme.headline.copyWith(
-                          fontSize: textScheme.headline.fontSize,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        l10n.chooseHowTheAppLooks,
-                        style: textScheme.label.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
+                        style: textScheme.label.copyWith(fontSize: 14),
                       ),
                       const SizedBox(height: 10),
-                      ThemeModeSelectorChips(
-                        selectedThemeMode: settingsState.themeMode,
+                      SizedBox(
+                        width: double.infinity,
+                        child: ThemeModeSelectorChips(
+                          selectedThemeMode: settingsState.themeMode,
+                        ),
                       ),
                     ],
                   ),
@@ -139,6 +134,7 @@ class SettingsView extends StatelessWidget {
                         l10n.selectInterfaceLanguage,
                         style: textScheme.label.copyWith(
                           color: colorScheme.onSurfaceVariant,
+                          fontSize: 14,
                         ),
                       ),
                       const SizedBox(height: 8),

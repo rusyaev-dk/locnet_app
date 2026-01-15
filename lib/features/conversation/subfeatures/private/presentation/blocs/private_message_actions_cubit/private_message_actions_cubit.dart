@@ -4,6 +4,7 @@ import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/domain/domain.dart';
 import 'package:locnet_app/features/message/domain/domain.dart';
+import 'package:locnet_app/features/message/subfeatures/message_input/domain/domain.dart';
 import 'package:uuid/uuid.dart';
 
 part 'private_message_actions_state.dart';
@@ -25,6 +26,7 @@ class PrivateMessageActionsCubit extends Cubit<PrivateMessageActionsState> {
 
   Future<void> sendMessage({
     required String conversationId,
+    List<UploadableFile>? attachedFiles,
     String? text,
   }) async {
     final String normalizedText = text?.trim() ?? '';
@@ -33,6 +35,7 @@ class PrivateMessageActionsCubit extends Cubit<PrivateMessageActionsState> {
     }
 
     final String clientMessageId = 'local-${const Uuid().v4()}';
+
     final DateTime now = DateTime.now();
 
     try {
@@ -42,6 +45,17 @@ class PrivateMessageActionsCubit extends Cubit<PrivateMessageActionsState> {
         clientMessageId: clientMessageId,
         senderId: user.userId,
         conversationId: conversationId,
+        attachments:
+            attachedFiles
+                ?.map(
+                  (attachedFile) => MessageAttachment(
+                    clientAttachmentId: 'local-attach-${const Uuid().v4()}',
+                    createdAt: now,
+                    updatedAt: now,
+                  ),
+                )
+                .toList() ??
+            [],
         text: normalizedText,
         hasAttachments: false,
         createdAt: now,

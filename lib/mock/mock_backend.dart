@@ -33,7 +33,7 @@ final class MockInMemoryBackend {
   final int _conversationsPageSize = 20;
   final int _conversationParticipantsPageSize = 20;
   final int _conversationMessagesPageSize = 20;
-  
+
   // Storage
 
   final Map<String, UserDto> _users = {};
@@ -148,10 +148,23 @@ final class MockInMemoryBackend {
       );
     }
 
+    final messageId = const Uuid().v4();
+
     final messageDto = MessageDto(
-      messageId: const Uuid().v4(),
-      clientMessageId: const Uuid().v4(),
+      messageId: messageId,
+      clientMessageId: newMessage.clientMessageId,
       deliveryStatus: MessageDeliveryStatus.sent.toString(),
+      attachments: newMessage.attachments
+          .map(
+            (attachment) => MessageAttachmentDto(
+              clientAttachmentId: attachment.clientAttachmentId,
+              attachmentId: const Uuid().v4(),
+              createdAt: attachment.createdAt,
+              updatedAt: attachment.updatedAt,
+              messageId: messageId,
+            ),
+          )
+          .toList(),
       conversationId: newMessage.conversationId,
       senderId: newMessage.senderId,
       hasAttachments: newMessage.hasAttachments,

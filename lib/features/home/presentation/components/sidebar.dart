@@ -28,6 +28,11 @@ class _PanelSidebarState extends State<PanelSidebar> {
   double get _targetWidth => _isCollapsed ? _collapsedWidth : _expandedWidth;
 
   bool _isSelected(String path) {
+    if (path == AppRoutes.conversations) {
+      return widget.currentLocation == AppRoutes.conversations ||
+          widget.currentLocation.startsWith('${AppRoutes.conversations}/');
+    }
+
     return widget.currentLocation == path;
   }
 
@@ -48,10 +53,6 @@ class _PanelSidebarState extends State<PanelSidebar> {
       width: _targetWidth,
       decoration: BoxDecoration(
         color: colorScheme.secondary,
-        borderRadius: const BorderRadius.only(
-          topRight: Radius.circular(24),
-          bottomRight: Radius.circular(24),
-        ),
         border: Border.all(color: colorScheme.outlineVariant),
       ),
       child: LayoutBuilder(
@@ -147,6 +148,7 @@ class _PanelSidebarState extends State<PanelSidebar> {
                       onTap: () {
                         showGeneralDialog(
                           context: context,
+                          transitionBuilder: slideFadeDialogTransition,
                           pageBuilder: (context, _, _) =>
                               const SettingsModalCard(),
                         );
@@ -163,6 +165,7 @@ class _PanelSidebarState extends State<PanelSidebar> {
                             name: AppRoutes.profile,
                           ),
                           context: context,
+                          transitionBuilder: slideFadeDialogTransition,
                           pageBuilder: (context, _, _) {
                             return const ProfileModalCard();
                           },

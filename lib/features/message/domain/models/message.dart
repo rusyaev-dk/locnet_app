@@ -13,6 +13,7 @@ class Message extends Equatable {
     required this.createdAt,
     required this.updatedAt,
     required this.deliveryStatus,
+    this.attachments = const <MessageAttachment>[],
     this.messageId,
     this.text,
     this.replyToMessageId,
@@ -30,6 +31,7 @@ class Message extends Equatable {
 
   final String? text;
   final bool hasAttachments;
+  final List<MessageAttachment> attachments;
   final String? replyToMessageId;
   final bool isPinned;
   final DateTime? editedAt;
@@ -51,6 +53,12 @@ class Message extends Equatable {
       senderId: dto.senderId,
       text: dto.text,
       hasAttachments: dto.hasAttachments,
+      attachments: dto.attachments
+          .map(
+            (MessageAttachmentDto attachmentDto) =>
+                MessageAttachment.fromDto(attachmentDto),
+          )
+          .toList(growable: false),
       replyToMessageId: dto.replyToMessageId,
       isPinned: dto.isPinned ?? false,
       editedAt: dto.editedAt,
@@ -70,6 +78,7 @@ class Message extends Equatable {
     MessageDeliveryStatus? deliveryStatus,
     String? text,
     bool? hasAttachments,
+    List<MessageAttachment>? attachments,
     String? replyToMessageId,
     bool? isPinned,
     DateTime? editedAt,
@@ -86,6 +95,7 @@ class Message extends Equatable {
       deliveryStatus: deliveryStatus ?? this.deliveryStatus,
       text: text ?? this.text,
       hasAttachments: hasAttachments ?? this.hasAttachments,
+      attachments: attachments ?? this.attachments,
       replyToMessageId: replyToMessageId ?? this.replyToMessageId,
       isPinned: isPinned ?? this.isPinned,
       editedAt: editedAt ?? this.editedAt,
@@ -105,6 +115,7 @@ class Message extends Equatable {
     deliveryStatus,
     text,
     hasAttachments,
+    attachments,
     replyToMessageId,
     isPinned,
     editedAt,

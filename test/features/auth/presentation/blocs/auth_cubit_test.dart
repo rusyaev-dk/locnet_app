@@ -67,7 +67,7 @@ void main() {
         act: (cubit) => cubit.logIn(username: 'john', password: '123'),
         expect: () => <AuthState>[
           const AuthLoadingState(),
-          AuthAuthenticatedState(user: user),
+          AuthAuthenticatedState(user: user, session: session),
         ],
         verify: (_) {
           verify(
@@ -94,7 +94,9 @@ void main() {
         },
         seed: () => const AuthLoadingState(),
         act: (cubit) => cubit.logIn(username: 'john', password: '123'),
-        expect: () => <AuthState>[AuthAuthenticatedState(user: user)],
+        expect: () => <AuthState>[
+          AuthAuthenticatedState(user: user, session: session),
+        ],
         verify: (_) {
           verify(
             () => mockAuthInteractor.logIn(username: 'john', password: '123'),
@@ -230,7 +232,7 @@ void main() {
         ),
         expect: () => <AuthState>[
           const AuthLoadingState(),
-          AuthAuthenticatedState(user: user),
+          AuthAuthenticatedState(user: user, session: session),
         ],
         verify: (_) {
           verify(
@@ -272,7 +274,7 @@ void main() {
         ),
         expect: () => <AuthState>[
           const AuthLoadingState(),
-          AuthAuthenticatedState(user: user),
+          AuthAuthenticatedState(user: user, session: session),
         ],
         verify: (_) {
           verify(
@@ -311,7 +313,9 @@ void main() {
           username: 'john',
           password: '123',
         ),
-        expect: () => <AuthState>[AuthAuthenticatedState(user: user)],
+        expect: () => <AuthState>[
+          AuthAuthenticatedState(user: user, session: session),
+        ],
         verify: (_) {
           verify(
             () => mockAuthInteractor.register(
@@ -448,7 +452,7 @@ void main() {
         act: (cubit) => cubit.tryRestoreSession(),
         expect: () => <AuthState>[
           const AuthLoadingState(),
-          AuthAuthenticatedState(user: user),
+          AuthAuthenticatedState(user: user, session: session),
         ],
         verify: (_) {
           verify(() => mockAuthInteractor.restoreSession()).called(1);
@@ -487,7 +491,9 @@ void main() {
         },
         seed: () => const AuthLoadingState(),
         act: (cubit) => cubit.tryRestoreSession(),
-        expect: () => <AuthState>[AuthAuthenticatedState(user: user)],
+        expect: () => <AuthState>[
+          AuthAuthenticatedState(user: user, session: session),
+        ],
         verify: (_) {
           verify(() => mockAuthInteractor.restoreSession()).called(1);
           verify(() => mockLogger.info(any())).called(1);
@@ -503,7 +509,7 @@ void main() {
           when(() => mockAuthInteractor.logOut()).thenAnswer((_) async {});
           return buildCubit();
         },
-        seed: () => AuthAuthenticatedState(user: user),
+        seed: () => AuthAuthenticatedState(user: user, session: session),
         act: (cubit) => cubit.logOut(),
         expect: () => <AuthState>[const AuthUnauthenticatedState()],
         verify: (_) {
@@ -519,7 +525,7 @@ void main() {
           when(() => mockAuthInteractor.logOut()).thenThrow(Exception('boom'));
           return buildCubit();
         },
-        seed: () => AuthAuthenticatedState(user: user),
+        seed: () => AuthAuthenticatedState(user: user, session: session),
         act: (cubit) => cubit.logOut(),
         expect: () => <AuthState>[const AuthUnauthenticatedState()],
         verify: (_) {

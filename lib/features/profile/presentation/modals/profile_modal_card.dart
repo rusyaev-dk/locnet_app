@@ -2,12 +2,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/auth/domain/domain.dart';
 import 'package:locnet_app/features/auth/presentation/presentation.dart';
 import 'package:locnet_app/features/profile/domain/domain.dart';
 import 'package:locnet_app/features/profile/presentation/presentation.dart';
+import 'package:locnet_app/uikit/uikit.dart';
 
 class ProfileModalWrapper extends StatelessWidget {
   const ProfileModalWrapper({required this.child, super.key});
@@ -49,12 +51,12 @@ class ProfileModalCard extends StatelessWidget {
               maxHeight: MediaQuery.of(context).size.height - 48,
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(14),
               child: Material(
                 child: Container(
                   decoration: BoxDecoration(
                     color: colorScheme.secondary,
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: BorderRadius.circular(14),
                     border: Border.all(color: colorScheme.outlineVariant),
                   ),
                   child: BlocBuilder<ProfileCubit, ProfileState>(
@@ -109,16 +111,9 @@ class _ProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
-    final textScheme = context.textScheme;
     final l10n = context.l10n;
 
     final User user = profileState.user;
-
-    final TextStyle sectionTitleStyle = textScheme.label.copyWith(
-      color: colorScheme.primary,
-      fontWeight: FontWeight.w600,
-      letterSpacing: 0.2,
-    );
 
     final Session? session = context.select<AuthCubit, Session?>((
       AuthCubit cubit,
@@ -137,22 +132,85 @@ class _ProfileView extends StatelessWidget {
         Divider(height: 1, color: colorScheme.outlineVariant),
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ProfileGeneralInfo(user: user),
-                const SizedBox(height: 24),
-                Text(
-                  '${l10n.language}: ${user.languageCode}',
-                  style: context.textScheme.label.copyWith(
-                    color: colorScheme.onSurfaceVariant,
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
                   ),
+                  child: ProfileGeneralInfo(user: user),
                 ),
-                if (session != null) ...[
-                  const SizedBox(height: 24),
-                  SessionInfo(session: session),
-                ],
+
+                ProfileAdditionalInfo(user: user),
+
+                const SizedBox(height: 16),
+
+                ProfileActionTile(
+                  icon: Icons.devices,
+                  title: l10n.currentSession,
+                  onPressed: () async {
+                    if (session == null) {
+                      await showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AppAlertDialog(
+                            title: Text(l10n.appException),
+                            content: Text(l10n.sessionIsNotLoadedYet),
+                            actions: [
+                              AppAlertDialogAction(
+                                child: Text(l10n.ok),
+                                onPressed: () => GoRouter.of(context).pop(),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else {
+                      await showGeneralDialog(
+                        context: context,
+                        barrierColor: Colors.transparent,
+                        transitionBuilder: slideFadeDialogTransition,
+                        pageBuilder: (context, _, _) {
+                          return SessionModalCard(session: session);
+                        },
+                      );
+                    }
+                  },
+                ),
+                const SizedBox(height: 10),
+                ProfileActionTile(
+                  icon: Icons.logout,
+                  title: l10n.logout,
+                  isDestructive: true,
+                  onPressed: () async {
+                    await showGeneralDialog(
+                      context: context,
+                      transitionBuilder: slideFadeDialogTransition,
+                      pageBuilder: (context, _, _) {
+                        return AppAlertDialog(
+                          title: Text(l10n.logOut),
+                          content: Text(l10n.logOutConfirmation),
+                          actions: [
+                            AppAlertDialogAction(
+                              isDestructiveAction: true,
+                              onPressed: () =>
+                                  context.read<AuthCubit>().logOut(),
+                              child: Text(l10n.yesLabel),
+                            ),
+                            AppAlertDialogAction(
+                              child: Text(l10n.cancel),
+                              onPressed: () => GoRouter.of(context).pop(),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 8),
               ],
             ),
           ),

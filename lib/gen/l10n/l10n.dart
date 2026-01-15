@@ -873,6 +873,31 @@ class S {
   String get edited {
     return Intl.message('Изменено', name: 'edited', desc: '', args: []);
   }
+
+  /// `Данные о сессии ещё не загружены. Попробуйте ещё раз`
+  String get sessionIsNotLoadedYet {
+    return Intl.message(
+      'Данные о сессии ещё не загружены. Попробуйте ещё раз',
+      name: 'sessionIsNotLoadedYet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Выход`
+  String get logOut {
+    return Intl.message('Выход', name: 'logOut', desc: '', args: []);
+  }
+
+  /// `Вы действительно хотите выйти?`
+  String get logOutConfirmation {
+    return Intl.message(
+      'Вы действительно хотите выйти?',
+      name: 'logOutConfirmation',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -5,28 +5,30 @@ import 'package:locnet_app/features/message/data/data.dart';
 
 class MessageAttachment extends Equatable {
   const MessageAttachment({
-    required this.id,
-    required this.messageId,
+    required this.clientAttachmentId,
     required this.createdAt,
     required this.updatedAt,
+    this.attachmentId,
+    this.messageId,
     this.fileId,
     this.position,
   });
 
-  final String id;
-  final String messageId;
+  final String clientAttachmentId;
+  final String? attachmentId;
+  final String? messageId;
   final String? fileId;
   final int? position;
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  /// Convenience flag for UI/business logic.
   bool get hasFile => fileId != null && fileId!.isNotEmpty;
+  bool get isUploaded => attachmentId != null;
 
-  /// Convert from DTO to domain.
   factory MessageAttachment.fromDto(MessageAttachmentDto dto) {
     return MessageAttachment(
-      id: dto.attachmentId,
+      clientAttachmentId: dto.clientAttachmentId,
+      attachmentId: dto.attachmentId,
       messageId: dto.messageId,
       fileId: dto.fileId,
       position: dto.position,
@@ -35,10 +37,10 @@ class MessageAttachment extends Equatable {
     );
   }
 
-  /// Convert from domain back to DTO.
   MessageAttachmentDto toDto() {
     return MessageAttachmentDto(
-      attachmentId: id,
+      clientAttachmentId: clientAttachmentId,
+      attachmentId: attachmentId,
       messageId: messageId,
       fileId: fileId,
       position: position,
@@ -48,7 +50,8 @@ class MessageAttachment extends Equatable {
   }
 
   MessageAttachment copyWith({
-    String? id,
+    String? clientAttachmentId,
+    String? attachmentId,
     String? messageId,
     String? fileId,
     int? position,
@@ -56,7 +59,8 @@ class MessageAttachment extends Equatable {
     DateTime? updatedAt,
   }) {
     return MessageAttachment(
-      id: id ?? this.id,
+      clientAttachmentId: clientAttachmentId ?? this.clientAttachmentId,
+      attachmentId: attachmentId ?? this.attachmentId,
       messageId: messageId ?? this.messageId,
       fileId: fileId ?? this.fileId,
       position: position ?? this.position,
@@ -67,7 +71,8 @@ class MessageAttachment extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-    id,
+    clientAttachmentId,
+    attachmentId,
     messageId,
     fileId,
     position,

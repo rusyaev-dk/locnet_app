@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
+import 'package:locnet_app/core/presentation/presentation.dart';
 import 'package:locnet_app/features/conversation/subfeatures/conversation_creator/presentation/modals/conversation_creator_modal_card.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
@@ -27,6 +28,7 @@ class ChipsBar extends StatelessWidget {
                 onPressed: () {
                   showGeneralDialog(
                     context: context,
+                    transitionBuilder: slideFadeDialogTransition,
                     pageBuilder: (_, _, _) {
                       return const ConversationCreatorModalWrapper(
                         child: ConversationCreatorModalCard(),

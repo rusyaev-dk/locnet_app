@@ -10,8 +10,8 @@ class RoundedIconButton extends StatelessWidget {
     this.backgroundColor,
     this.foregroundColor,
     this.borderRadius,
-    this.buttonSize = 33,
-    this.iconSize = 17,
+    this.buttonSize = 38,
+    this.iconSize = 23,
   });
 
   final IconData icon;
@@ -40,7 +40,7 @@ class RoundedIconButton extends StatelessWidget {
           height: buttonSize,
           width: buttonSize,
           decoration: BoxDecoration(
-            color: backgroundColor ?? colorScheme.secondary,
+            color: backgroundColor ?? Colors.transparent,
             borderRadius: borderRadius,
           ),
           child: Icon(

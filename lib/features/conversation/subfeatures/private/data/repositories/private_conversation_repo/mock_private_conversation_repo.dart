@@ -92,16 +92,30 @@ final class MockPrivateConversationRepo implements IPrivateConversationRepo {
   }
 
   @override
-  Future<Message> sendMessage({
-    required Message message,
-  }) async {
-    await Future<void>.delayed(const Duration(milliseconds: 200));
-
-    _backendStorage.addMessage(newMessage: message);
-
+  Future<Message> sendMessage({required Message message}) async {
     _updatesController.add((
       updateType: PrivateConversationMessageUpdateType.created,
       message: message,
+    ));
+
+    await Future<void>.delayed(const Duration(milliseconds: 1000));
+
+    final resMsg = _backendStorage.addMessage(newMessage: message);
+
+    _updatesController.add((
+      updateType: PrivateConversationMessageUpdateType.created,
+      message: message.copyWith(
+        deliveryStatus: MessageDeliveryStatus.sent,
+        messageId: resMsg.messageId,
+        attachments: message.attachments
+            .map(
+              (attachment) => attachment.copyWith(
+                messageId: resMsg.messageId,
+                // attachmentId: "test",
+              ),
+            )
+            .toList(),
+      ),
     ));
     return message;
   }

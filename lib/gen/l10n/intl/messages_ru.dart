@@ -107,6 +107,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "lastUpdated": MessageLookupByLibrary.simpleMessage(
       "Дата последнего обновления",
     ),
+    "logOut": MessageLookupByLibrary.simpleMessage("Выход"),
+    "logOutConfirmation": MessageLookupByLibrary.simpleMessage(
+      "Вы действительно хотите выйти?",
+    ),
     "login": MessageLookupByLibrary.simpleMessage("Логин"),
     "logout": MessageLookupByLibrary.simpleMessage("Выйти"),
     "message": MessageLookupByLibrary.simpleMessage("Сообщение"),
@@ -151,6 +155,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "sessionExpiresAt": MessageLookupByLibrary.simpleMessage("Истекает"),
     "sessionIpAddress": MessageLookupByLibrary.simpleMessage("IP-адрес"),
     "sessionIsExpired": MessageLookupByLibrary.simpleMessage("Истекла"),
+    "sessionIsNotLoadedYet": MessageLookupByLibrary.simpleMessage(
+      "Данные о сессии ещё не загружены. Попробуйте ещё раз",
+    ),
     "sessionIsTerminated": MessageLookupByLibrary.simpleMessage("Завершена"),
     "sessionMacAddress": MessageLookupByLibrary.simpleMessage("MAC-адрес"),
     "sessionOs": MessageLookupByLibrary.simpleMessage("ОС"),

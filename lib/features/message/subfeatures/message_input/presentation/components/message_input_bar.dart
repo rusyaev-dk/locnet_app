@@ -110,6 +110,10 @@ class _MessageInputBarState extends State<MessageInputBar> {
                       onPressed: () {
                         context.read<PrivateMessageActionsCubit>().sendMessage(
                           conversationId: widget.conversationId,
+                          attachedFiles: context
+                              .read<MessageAttachmentsCubit>()
+                              .state
+                              .files,
                           text: _textEditingController.text,
                         );
                         _textEditingController.clear();

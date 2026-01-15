@@ -1,2 +1,2 @@
-export 'app_alert_dialog.dart';
-export 'app_alert_dialog_action.dart';
+export 'alert_dialog.dart';
+export 'alert_dialog_action.dart';

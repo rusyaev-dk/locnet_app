@@ -108,12 +108,8 @@ class CustomTextField extends StatelessWidget {
       keyboardType: keyboardType,
       textInputAction: textInputAction,
       inputFormatters: inputFormatters,
-      maxLines: obscureText
-          ? 1
-          : (isExpandable ? null : maxLines),
-      minLines: obscureText
-          ? 1
-          : (isExpandable ? (minLines ?? 1) : minLines),
+      maxLines: obscureText ? 1 : (isExpandable ? null : maxLines),
+      minLines: obscureText ? 1 : (isExpandable ? (minLines ?? 1) : minLines),
       maxLength: maxSymbols,
       maxLengthEnforcement: MaxLengthEnforcement.enforced,
       buildCounter: maxSymbols != null
@@ -213,10 +209,7 @@ class CustomTextField extends StatelessWidget {
           child: textField,
         );
       } else {
-        child = SizedBox(
-          height: height,
-          child: textField,
-        );
+        child = SizedBox(height: height, child: textField);
       }
     }
 

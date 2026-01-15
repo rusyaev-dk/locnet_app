@@ -17,6 +17,15 @@ class ProfileEditorHeader extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
+          RoundedIconButton(
+            onPressed: () {
+              context.read<ProfileEditorCubit>().resetUpdates();
+              Navigator.of(context).pop();
+            },
+            icon: Icons.chevron_left,
+            backgroundColor: Colors.transparent,
+          ),
+          const SizedBox(width: 8),
           Expanded(
             flex: 5,
             child: Text(
@@ -25,17 +34,16 @@ class ProfileEditorHeader extends StatelessWidget {
               maxLines: 2,
               style: textScheme.display.copyWith(
                 color: colorScheme.onSurface,
-                fontSize: 24,
+                fontSize: 20,
               ),
             ),
           ),
           const Spacer(),
           RoundedIconButton(
-            buttonSize: 35,
-            iconSize: 18.5,
             icon: Icons.close,
             onPressed: () {
               context.read<ProfileEditorCubit>().resetUpdates();
+              Navigator.of(context).pop();
               Navigator.of(context).pop();
             },
           ),

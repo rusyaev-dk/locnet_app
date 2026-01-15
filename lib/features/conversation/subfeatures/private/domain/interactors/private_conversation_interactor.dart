@@ -73,12 +73,8 @@ final class PrivateConversationInteractor {
     );
   }
 
-  Future<Message> sendMessage({
-    required Message message,
-  }) async {
-    return await _privateConversationRepo.sendMessage(
-      message: message,
-    );
+  Future<Message> sendMessage({required Message message}) async {
+    return await _privateConversationRepo.sendMessage(message: message);
   }
 
   Future<Message> editMessage({required Message newMessage}) async {

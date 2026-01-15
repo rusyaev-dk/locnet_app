@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/features/message/domain/domain.dart';
@@ -102,6 +103,16 @@ class PrivateMessageBubble extends StatelessWidget {
                         child: Text(l10n.edited, style: metaTextStyle),
                       ),
                     Text(timeText, style: metaTextStyle),
+                    const SizedBox(width: 6),
+                    _MessageDeliveryStatusIndicator(
+                      deliveryStatus: message.deliveryStatus,
+                      color:
+                          metaTextStyle.color ??
+                          (isMine
+                              ? colorScheme.onPrimary
+                              : colorScheme.onSurface),
+                      size: 14,
+                    ),
                   ],
                 ),
               ],
@@ -110,5 +121,48 @@ class PrivateMessageBubble extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _MessageDeliveryStatusIndicator extends StatelessWidget {
+  const _MessageDeliveryStatusIndicator({
+    required this.deliveryStatus,
+    required this.color,
+    required this.size,
+  });
+
+  final MessageDeliveryStatus deliveryStatus;
+  final Color color;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    switch (deliveryStatus) {
+      case MessageDeliveryStatus.sending:
+        return _SendingClockIcon(color: color, size: size);
+
+      case MessageDeliveryStatus.sent:
+        return Icon(Icons.check, size: size, color: color);
+
+      case MessageDeliveryStatus.failed:
+        return Icon(Icons.error_outline, size: size, color: color);
+    }
+  }
+}
+
+class _SendingClockIcon extends StatelessWidget {
+  const _SendingClockIcon({required this.color, required this.size});
+
+  final Color color;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Icon(Icons.schedule, size: size, color: color)
+        .animate(onPlay: (controller) => controller.repeat())
+        .rotate(duration: 900.ms, begin: 0, end: 1, curve: Curves.linear)
+        .fade(duration: 450.ms, begin: 0.55, end: 1)
+        .then()
+        .fade(duration: 450.ms, begin: 1, end: 0.55);
   }
 }

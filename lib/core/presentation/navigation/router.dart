@@ -57,8 +57,16 @@ class AppRouter {
             return AppRoutes.home;
           }
 
-          final bool isHomeRoute = location.startsWith('/home');
-          if (isHomeRoute) {
+          final bool isAppRoute =
+              location == AppRoutes.home ||
+              location.startsWith('${AppRoutes.conversations}/') ||
+              location == AppRoutes.conversations ||
+              location == AppRoutes.storage ||
+              location == AppRoutes.settings ||
+              location.startsWith('${AppRoutes.storage}/') ||
+              location.startsWith('${AppRoutes.settings}/');
+
+          if (isAppRoute) {
             return null;
           }
 
@@ -78,7 +86,7 @@ class AppRouter {
         GoRoute(
           path: '/registration',
           name: 'registration',
-          pageBuilder: buildPageTransition((
+          pageBuilder: buildFadePage((
             BuildContext context,
             GoRouterState state,
           ) {
@@ -88,7 +96,7 @@ class AppRouter {
         GoRoute(
           path: '/login',
           name: 'login',
-          pageBuilder: buildPageTransition((
+          pageBuilder: buildFadePage((
             BuildContext context,
             GoRouterState state,
           ) {
@@ -107,31 +115,34 @@ class AppRouter {
             GoRoute(
               path: '/home',
               name: 'home',
-              pageBuilder: buildPageTransition((
-                BuildContext context,
-                GoRouterState state,
-              ) {
+              pageBuilder: buildNoTransitionPage((context, state) {
                 return const HomePageScreen();
               }),
+            ),
+
+            // Conversations branch (now top-level under the shell)
+            ShellRoute(
+              builder:
+                  (BuildContext context, GoRouterState state, Widget child) {
+                    return ConversationsPanelWrapper(child: child);
+                  },
               routes: <RouteBase>[
-                // Shell для ветки conversations: здесь живёт ConversationsPanelWrapper
-                ShellRoute(
-                  builder:
-                      (
-                        BuildContext context,
-                        GoRouterState state,
-                        Widget child,
-                      ) {
-                        return ConversationsPanelWrapper(child: child);
-                      },
+                GoRoute(
+                  path: '/conversations',
+                  name: 'conversations',
+                  pageBuilder: buildNoTransitionPage((context, state) {
+                    final String? selectedConversationId =
+                        state.pathParameters['conversationId'];
+
+                    return ConversationsPanel(
+                      selectedConversationId: selectedConversationId,
+                    );
+                  }),
                   routes: <RouteBase>[
                     GoRoute(
-                      path: 'conversations',
-                      name: 'conversations',
-                      pageBuilder: buildPageTransition((
-                        BuildContext context,
-                        GoRouterState state,
-                      ) {
+                      path: ':conversationId',
+                      name: 'conversationDetails',
+                      pageBuilder: buildNoTransitionPage((context, state) {
                         final String? selectedConversationId =
                             state.pathParameters['conversationId'];
 
@@ -139,48 +150,26 @@ class AppRouter {
                           selectedConversationId: selectedConversationId,
                         );
                       }),
-                      routes: <RouteBase>[
-                        GoRoute(
-                          path: ':conversationId',
-                          name: 'conversationDetails',
-                          pageBuilder: buildPageTransition((
-                            BuildContext context,
-                            GoRouterState state,
-                          ) {
-                            final String? selectedConversationId =
-                                state.pathParameters['conversationId'];
-
-                            return ConversationsPanel(
-                              selectedConversationId: selectedConversationId,
-                            );
-                          }),
-                        ),
-                      ],
                     ),
                   ],
                 ),
-
-                GoRoute(
-                  path: 'storage',
-                  name: 'storage',
-                  pageBuilder: buildPageTransition((
-                    BuildContext context,
-                    GoRouterState state,
-                  ) {
-                    return const StorageScreen();
-                  }),
-                ),
-                GoRoute(
-                  path: 'settings',
-                  name: 'settings',
-                  pageBuilder: buildPageTransition((
-                    BuildContext context,
-                    GoRouterState state,
-                  ) {
-                    return const SettingsScreen();
-                  }),
-                ),
               ],
+            ),
+
+            GoRoute(
+              path: '/storage',
+              name: 'storage',
+              pageBuilder: buildNoTransitionPage((context, state) {
+                return const StorageScreen();
+              }),
+            ),
+
+            GoRoute(
+              path: '/settings',
+              name: 'settings',
+              pageBuilder: buildNoTransitionPage((context, state) {
+                return const SettingsScreen();
+              }),
             ),
           ],
         ),
@@ -189,15 +178,22 @@ class AppRouter {
   }
 }
 
-Page<dynamic> Function(BuildContext, GoRouterState) buildPageTransition(
+Page<dynamic> Function(BuildContext, GoRouterState) buildFadePage(
   Widget Function(BuildContext, GoRouterState) childBuilder,
 ) {
   return (BuildContext context, GoRouterState state) {
+    final bool disableAnimations =
+        MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+
     return CustomTransitionPage<dynamic>(
       key: state.pageKey,
+      transitionDuration: disableAnimations
+          ? Duration.zero
+          : const Duration(milliseconds: 180),
+      reverseTransitionDuration: disableAnimations
+          ? Duration.zero
+          : const Duration(milliseconds: 150),
       child: childBuilder(context, state),
-      transitionDuration: const Duration(milliseconds: 380),
-      reverseTransitionDuration: const Duration(milliseconds: 260),
       transitionsBuilder:
           (
             BuildContext context,
@@ -205,6 +201,8 @@ Page<dynamic> Function(BuildContext, GoRouterState) buildPageTransition(
             Animation<double> secondaryAnimation,
             Widget child,
           ) {
+            if (disableAnimations) return child;
+
             final Animation<double> opacity = CurvedAnimation(
               parent: animation,
               curve: Curves.easeOutCubic,
@@ -221,25 +219,21 @@ buildShellPageTransition(
   Widget Function(BuildContext, GoRouterState, Widget child) childBuilder,
 ) {
   return (BuildContext context, GoRouterState state, Widget child) {
-    return CustomTransitionPage<dynamic>(
+    // No animation for Shell: keeps panel navigation snappy on desktop.
+    return NoTransitionPage<dynamic>(
       key: state.pageKey,
       child: childBuilder(context, state, child),
-      transitionDuration: const Duration(milliseconds: 380),
-      reverseTransitionDuration: const Duration(milliseconds: 260),
-      transitionsBuilder:
-          (
-            BuildContext context,
-            Animation<double> animation,
-            Animation<double> secondaryAnimation,
-            Widget child,
-          ) {
-            final Animation<double> opacity = CurvedAnimation(
-              parent: animation,
-              curve: Curves.easeOutCubic,
-              reverseCurve: Curves.easeInCubic,
-            );
-            return FadeTransition(opacity: opacity, child: child);
-          },
+    );
+  };
+}
+
+Page<dynamic> Function(BuildContext, GoRouterState) buildNoTransitionPage(
+  Widget Function(BuildContext, GoRouterState) childBuilder,
+) {
+  return (BuildContext context, GoRouterState state) {
+    return NoTransitionPage<dynamic>(
+      key: state.pageKey,
+      child: childBuilder(context, state),
     );
   };
 }

@@ -1,6 +1,7 @@
 // ignore_for_file: sort_constructors_first
 
 import 'package:equatable/equatable.dart';
+import 'package:locnet_app/features/message/data/data.dart';
 
 class MessageDto extends Equatable {
   const MessageDto({
@@ -12,6 +13,7 @@ class MessageDto extends Equatable {
     required this.createdAt,
     required this.updatedAt,
     required this.deliveryStatus,
+    this.attachments = const <MessageAttachmentDto>[],
     this.text,
     this.replyToMessageId,
     this.isPinned,
@@ -27,6 +29,7 @@ class MessageDto extends Equatable {
   final String senderId;
   final String? text;
   final bool hasAttachments;
+  final List<MessageAttachmentDto> attachments;
   final String? replyToMessageId;
   final bool? isPinned;
   final DateTime? editedAt;
@@ -53,12 +56,25 @@ class MessageDto extends Equatable {
       return DateTime.parse(value as String);
     }
 
+    final List<dynamic>? attachmentsJson =
+        json['attachments'] as List<dynamic>?;
+
+    final List<MessageAttachmentDto> attachments = attachmentsJson == null
+        ? const <MessageAttachmentDto>[]
+        : attachmentsJson
+              .map(
+                (dynamic item) =>
+                    MessageAttachmentDto.fromJson(item as Map<String, dynamic>),
+              )
+              .toList(growable: false);
+
     return MessageDto(
       messageId: json['messageId'] as String,
       conversationId: json['conversationId'] as String,
       senderId: json['senderId'] as String,
       text: json['text'] as String?,
       hasAttachments: json['hasAttachments'] as bool,
+      attachments: attachments,
       replyToMessageId: json['replyToMessageId'] as String?,
       isPinned: json['isPinned'] as bool?,
       editedAt: parseNullable(json['editedAt']),
@@ -77,6 +93,9 @@ class MessageDto extends Equatable {
     'senderId': senderId,
     'text': text,
     'hasAttachments': hasAttachments,
+    'attachments': attachments
+        .map((MessageAttachmentDto attachmentDto) => attachmentDto.toJson())
+        .toList(growable: false),
     'replyToMessageId': replyToMessageId,
     'isPinned': isPinned,
     'editedAt': editedAt?.toIso8601String(),
@@ -94,6 +113,7 @@ class MessageDto extends Equatable {
     String? senderId,
     String? text,
     bool? hasAttachments,
+    List<MessageAttachmentDto>? attachments,
     String? replyToMessageId,
     bool? isPinned,
     DateTime? editedAt,
@@ -110,6 +130,7 @@ class MessageDto extends Equatable {
       senderId: senderId ?? this.senderId,
       text: text ?? this.text,
       hasAttachments: hasAttachments ?? this.hasAttachments,
+      attachments: attachments ?? this.attachments,
       replyToMessageId: replyToMessageId ?? this.replyToMessageId,
       isPinned: isPinned ?? this.isPinned,
       editedAt: editedAt ?? this.editedAt,
@@ -129,6 +150,7 @@ class MessageDto extends Equatable {
     senderId,
     text,
     hasAttachments,
+    attachments,
     replyToMessageId,
     isPinned,
     editedAt,

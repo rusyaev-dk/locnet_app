@@ -4,20 +4,22 @@ import 'package:equatable/equatable.dart';
 
 class MessageAttachmentDto extends Equatable {
   const MessageAttachmentDto({
-    required this.attachmentId,
-    required this.messageId,
+    required this.clientAttachmentId,
     required this.createdAt,
     required this.updatedAt,
+    this.attachmentId,
+    this.messageId,
     this.fileId,
     this.position,
   });
 
-  final String attachmentId; // uuid
-  final String messageId; // uuid
-  final String? fileId; // uuid?
-  final int? position; // bigint? -> Dart int is arbitrary precision
-  final DateTime createdAt; // timestamp
-  final DateTime updatedAt; // timestamp
+  final String clientAttachmentId;
+  final String? attachmentId;
+  final String? messageId;
+  final String? fileId;
+  final int? position;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
   factory MessageAttachmentDto.fromJson(Map<String, dynamic> json) {
     DateTime parseNonNull(dynamic v) {
@@ -27,8 +29,9 @@ class MessageAttachmentDto extends Equatable {
     }
 
     return MessageAttachmentDto(
-      attachmentId: json['attachmentId'] as String,
-      messageId: json['messageId'] as String,
+      clientAttachmentId: json['clientAttachmentId'] as String,
+      attachmentId: json['attachmentId'] as String?,
+      messageId: json['messageId'] as String?,
       fileId: json['fileId'] as String?,
       position: (json['position'] is String)
           ? int.tryParse(json['position'] as String)
@@ -39,6 +42,7 @@ class MessageAttachmentDto extends Equatable {
   }
 
   Map<String, dynamic> toJson() => <String, dynamic>{
+    'clientAttachmentId': clientAttachmentId,
     'attachmentId': attachmentId,
     'messageId': messageId,
     'fileId': fileId,
@@ -48,6 +52,7 @@ class MessageAttachmentDto extends Equatable {
   };
 
   MessageAttachmentDto copyWith({
+    String? clientAttachmentId,
     String? attachmentId,
     String? messageId,
     String? fileId,
@@ -56,6 +61,7 @@ class MessageAttachmentDto extends Equatable {
     DateTime? updatedAt,
   }) {
     return MessageAttachmentDto(
+      clientAttachmentId: clientAttachmentId ?? this.clientAttachmentId,
       attachmentId: attachmentId ?? this.attachmentId,
       messageId: messageId ?? this.messageId,
       fileId: fileId ?? this.fileId,
@@ -67,6 +73,7 @@ class MessageAttachmentDto extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
+    clientAttachmentId,
     attachmentId,
     messageId,
     fileId,
