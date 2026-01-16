@@ -26,14 +26,11 @@ class SessionModalCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: colorScheme.secondary,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: colorScheme.outlineVariant),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SessionModalHeader(
-                      onClosePressed: () => Navigator.of(context).pop(),
-                    ),
+                    const SessionHeader(),
                     Divider(height: 1, color: colorScheme.outlineVariant),
                     Expanded(
                       child: SingleChildScrollView(
@@ -50,38 +47,6 @@ class SessionModalCard extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class SessionModalHeader extends StatelessWidget {
-  const SessionModalHeader({required this.onClosePressed, super.key});
-
-  final VoidCallback onClosePressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = context.colorScheme;
-    final textScheme = context.textScheme;
-    final l10n = context.l10n;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              l10n.sessionDetails,
-              style: textScheme.headline.copyWith(color: colorScheme.onSurface),
-            ),
-          ),
-          IconButton(
-            onPressed: onClosePressed,
-            icon: Icon(Icons.close, color: colorScheme.onSurfaceVariant),
-            splashRadius: 20,
-          ),
-        ],
       ),
     );
   }

@@ -37,11 +37,10 @@ class ProfileActionTile extends StatelessWidget {
     return InkWell(
       onTap: onPressed,
       borderRadius: BorderRadius.circular(14),
-      child: Ink(
+      child: Container(
         decoration: BoxDecoration(
-          color: colorScheme.secondary,
+          color: colorScheme.secondaryContainer,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: colorScheme.outlineVariant.withAlpha(0x6A)),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),

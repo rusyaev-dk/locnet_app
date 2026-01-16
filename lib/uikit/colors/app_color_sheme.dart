@@ -42,15 +42,16 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
   });
 
   const AppColorScheme.light()
-    : primary = const Color(0xFF2563EB), // blue-600
+    : primary = const Color(0xFF1D4ED8), // blue-700 (глубже, спокойнее)
       onPrimary = const Color(0xFFFFFFFF),
-      primaryContainer = const Color(0xFFDBEAFE), // blue-100
-      onPrimaryContainer = const Color(0xFF0B1120),
+      primaryContainer = const Color(0xFFE0EAFF), // мягкий холодный blue-100
+      onPrimaryContainer = const Color(0xFF0A1020),
 
-      secondary = const Color(0x182563EB),
-      onSecondary = const Color(0xFF001319),
-      secondaryContainer = const Color(0xFFCFF5FF),
-      onSecondaryContainer = const Color(0xFF022C3A),
+      // Более чистый secondary без грязной альфы
+      secondary = const Color(0xFFEAF1FF), // light blue surface
+      onSecondary = const Color(0xFF0A1020),
+      secondaryContainer = const Color(0xFFD6E4FF),
+      onSecondaryContainer = const Color(0xFF0B1F44),
 
       tertiary = const Color(0xFFF97316), // orange-500
       onTertiary = const Color(0xFF1F1304),
@@ -62,82 +63,83 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
       errorContainer = const Color(0xFFFEE2E2),
       onErrorContainer = const Color(0xFF450A0A),
 
-      surface = const Color(0xFFF9FAFB), // slate-50
-      onSurface = const Color(0xFF020617), // slate-950
-      surfaceDim = const Color(0xFFE5E7EB), // gray-200
+      // Поверхности стали чище и светлее
+      surface = const Color(0xFFFCFDFF), // почти белый, холодный
+      onSurface = const Color(0xFF020617),
+      surfaceDim = const Color(0xFFE6EAF0),
       surfaceBright = const Color(0xFFFFFFFF),
       surfaceContainerLowest = const Color(0xFFFFFFFF),
-      surfaceContainerLow = const Color(0xFFF3F4F6), // gray-100
-      surfaceContainer = const Color(0xFFE5E7EB),
-      surfaceContainerHigh = const Color(0xFFD1D5DB), // gray-300
-      surfaceContainerHighest = const Color(0xFFCBD5E1), // slate-300
+      surfaceContainerLow = const Color(0xFFF4F7FB),
+      surfaceContainer = const Color(0xFFE8EDF4),
+      surfaceContainerHigh = const Color(0xFFD8DEE9),
+      surfaceContainerHighest = const Color(0xFFCBD5E1),
 
-      onSurfaceVariant = const Color(0xFF4B5563), // gray-600
-      outline = const Color(0xFFCBD5E1),
-      outlineVariant = const Color(0xFFE5E7EB),
+      // Текст вторичный — чуть темнее
+      onSurfaceVariant = const Color(0xFF475569), // slate-600
+      outline = const Color(0xFFD1D9E6),
+      outlineVariant = const Color(0xFFE2E8F0),
 
-      shadow = const Color(0xFF000000),
+      // Тени холодные, не “грязно-чёрные”
+      shadow = const Color(0xFF0F172A),
       scrim = const Color(0xFF020617),
 
       inverseSurface = const Color(0xFF020617),
       onInverseSurface = const Color(0xFFE5E7EB),
-      inversePrimary = const Color(0xFF60A5FA), // blue-400
+      inversePrimary = const Color(0xFF60A5FA),
 
-      surfaceTint = const Color(0xFF2563EB),
-      shimmer = const Color(0xFFE5E7EB),
+      surfaceTint = const Color(0xFF1D4ED8),
+      shimmer = const Color(0xFFE5EAF2),
 
-      approval = const Color(0xFF22C55E); // green-500
+      approval = const Color(0xFF22C55E);
 
   const AppColorScheme.dark()
-    : primary = const Color(0xFF60A5FA), // blue-400
-      onPrimary = const Color.fromARGB(255, 226, 230, 239),
-      primaryContainer = const Color(0xFF1D4ED8), // blue-700
-      onPrimaryContainer = const Color(0xFFDBEAFE), // blue-100
+    : primary = const Color(0xFF7AB4FF), // softer blue (чуть светлее)
+      onPrimary = const Color(0xFF020617),
+      primaryContainer = const Color(0xFF1E40AF), // blue-800
+      onPrimaryContainer = const Color(0xFFDBEAFE),
 
-      secondary = const Color(
-        0x182563EB,
-      ), // soft primary tint (same base as light)
-      onSecondary = const Color(0xFFE5E7EB), // gray-200
-      secondaryContainer = const Color(0xFF075985), // sky-800
-      onSecondaryContainer = const Color(0xFFE0F2FE), // sky-100
+      secondary = const Color(0xFF0F1F3D),
+      onSecondary = const Color(0xFFE5E7EB),
+      secondaryContainer = const Color(0xFF183A72),
+      onSecondaryContainer = const Color(0xFFDCE7FF),
 
-      tertiary = const Color(0xFFF97316), // orange-500
+      tertiary = const Color(0xFFF59E0B), // orange-400 (мягче)
       onTertiary = const Color(0xFF1F1304),
-      tertiaryContainer = const Color(0xFF9A3412), // orange-800
-      onTertiaryContainer = const Color(0xFFFDE7C3), // orange-100
+      tertiaryContainer = const Color(0xFF92400E), // orange-700
+      onTertiaryContainer = const Color(0xFFFFF3C4),
 
       error = const Color(0xFFF87171), // red-400
       onError = const Color(0xFF450A0A),
-      errorContainer = const Color(0xFF7F1D1D), // red-900
-      onErrorContainer = const Color(0xFFFEE2E2), // red-100
+      errorContainer = const Color(0xFF7F1D1D),
+      onErrorContainer = const Color(0xFFFEE2E2),
 
+      // Поверхности: не pure black
       surface = const Color(0xFF020617), // slate-950
       onSurface = const Color(0xFFE5E7EB),
       surfaceDim = const Color(0xFF020617),
-      surfaceBright = const Color(0xFF111827), // slate-900
+      surfaceBright = const Color(0xFF0B1220),
       surfaceContainerLowest = const Color(0xFF000000),
-      surfaceContainerLow = const Color(0xFF030712),
-      surfaceContainer = const Color(0xFF020617),
+      surfaceContainerLow = const Color(0xFF020617),
+      surfaceContainer = const Color(0xFF0B1220),
       surfaceContainerHigh = const Color(0xFF111827),
-      surfaceContainerHighest = const Color(0xFF1F2937), // slate-800
+      surfaceContainerHighest = const Color(0xFF1E293B), // slate-700
+      // Текст и разделители — мягче и читабельнее
+      onSurfaceVariant = const Color(0xFFB6C0D1), // холодный gray-blue
+      outline = const Color(0xFF334155), // slate-600
+      outlineVariant = const Color(0xFF1E293B),
 
-      onSurfaceVariant = const Color(0xFF9CA3AF), // gray-400
-      outline = const Color(0xFF4B5563), // gray-600
-      outlineVariant = const Color(0xFF1F2937),
-
+      // Тени минимальные
       shadow = const Color(0xFF000000),
       scrim = const Color(0xFF000000),
 
       inverseSurface = const Color(0xFFF9FAFB),
       onInverseSurface = const Color(0xFF020617),
-      inversePrimary = const Color(
-        0xFF2563EB,
-      ), // blue-600 (matches light.primary)
+      inversePrimary = const Color(0xFF2563EB),
 
-      surfaceTint = const Color(0xFF60A5FA),
-      shimmer = const Color(0xFF374151), // slate-700
+      surfaceTint = const Color(0xFF7AB4FF),
+      shimmer = const Color(0xFF1E293B),
 
-      approval = const Color(0xFF22C55E); // green-500
+      approval = const Color(0xFF22C55E);
 
   final Color primary;
   final Color onPrimary;

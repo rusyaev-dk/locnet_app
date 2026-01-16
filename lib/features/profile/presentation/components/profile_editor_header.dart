@@ -14,7 +14,7 @@ class ProfileEditorHeader extends StatelessWidget {
     final l10n = context.l10n;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Row(
         children: [
           RoundedIconButton(

@@ -11,46 +11,92 @@ class ProfileGeneralInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
+    final l10n = context.l10n;
 
     final String initials = _buildInitials(user: user);
 
-    return Row(
-      children: [
-        CircleAvatar(
-          radius: 40,
-          backgroundColor: colorScheme.tertiary,
-          child: Text(
-            initials,
-            style: textScheme.headline.copyWith(
-              color: colorScheme.onPrimaryContainer,
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              user.fullName,
-              textAlign: TextAlign.start,
-              style: textScheme.display.copyWith(
-                color: colorScheme.onSurface,
-                fontSize: 22,
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(14),
+        color: colorScheme.secondaryContainer,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 40,
+                backgroundColor: colorScheme.tertiary,
+                child: Text(
+                  initials,
+                  style: textScheme.headline.copyWith(
+                    color: colorScheme.onPrimaryContainer,
+                  ),
+                ),
               ),
-            ),
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    user.fullName,
+                    textAlign: TextAlign.start,
+                    style: textScheme.display.copyWith(
+                      color: colorScheme.onSurface,
+                      fontSize: 22,
+                    ),
+                  ),
 
-            const SizedBox(height: 4),
-            Text(
-              '@${user.username}',
-              textAlign: TextAlign.start,
-              style: textScheme.label.copyWith(
-                color: colorScheme.onSurfaceVariant,
-                fontSize: 14,
+                  const SizedBox(height: 4),
+                  Text(
+                    '@${user.username}',
+                    textAlign: TextAlign.start,
+                    style: textScheme.label.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
-      ],
+            ],
+          ),
+          const SizedBox(height: 10),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (user.description != null) ...[
+                Text(
+                  '${l10n.description}:',
+                  textAlign: TextAlign.start,
+                  style: textScheme.label.copyWith(
+                    fontSize: 14,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  user.description!,
+                  maxLines: 4,
+                  textAlign: TextAlign.start,
+                  overflow: TextOverflow.ellipsis,
+                  style: textScheme.label.copyWith(fontSize: 14),
+                ),
+                const SizedBox(height: 8),
+              ],
+              Text(
+                '${l10n.language}: ${user.languageCode}',
+                textAlign: TextAlign.start,
+                style: textScheme.label.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -71,72 +117,5 @@ class ProfileGeneralInfo extends StatelessWidget {
 
     final String initials = '$firstLetter$lastLetter';
     return initials.isEmpty ? '?' : initials;
-  }
-}
-
-class ProfileAdditionalInfo extends StatelessWidget {
-  const ProfileAdditionalInfo({required this.user, super.key});
-
-  final User user;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = context.colorScheme;
-    final textScheme = context.textScheme;
-    final l10n = context.l10n;
-
-    final String? description = _normalizeOptionalText(value: user.description);
-
-    return LayoutBuilder(
-      builder: (BuildContext context, BoxConstraints constraints) {
-        final double maxDescriptionHeight = constraints.maxHeight * 0.6;
-
-        return Container(
-          padding: const EdgeInsets.all(16),
-          width: double.infinity,
-          decoration: BoxDecoration(color: colorScheme.secondary),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (description != null) ...[
-                Text(
-                  '${l10n.description}:',
-                  style: textScheme.label.copyWith(
-                    fontSize: 14,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                ConstrainedBox(
-                  constraints: BoxConstraints(maxHeight: maxDescriptionHeight),
-                  child: Text(
-                    description,
-                    maxLines: 4,
-                    overflow: TextOverflow.ellipsis,
-                    style: textScheme.label.copyWith(fontSize: 14),
-                  ),
-                ),
-                const SizedBox(height: 8),
-              ],
-              Text(
-                '${l10n.language}: ${user.languageCode}',
-                style: textScheme.label.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  static String? _normalizeOptionalText({required String? value}) {
-    final String normalized = value?.trim() ?? '';
-    if (normalized.isEmpty) {
-      return null;
-    }
-    return normalized;
   }
 }

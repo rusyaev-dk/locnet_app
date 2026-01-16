@@ -91,12 +91,12 @@ class _ConversationCreatorModalCardState
             maxHeight: MediaQuery.of(context).size.height - 48,
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(14),
             child: Material(
               child: Container(
                 decoration: BoxDecoration(
                   color: colorScheme.secondary,
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: colorScheme.outlineVariant),
                 ),
                 child:

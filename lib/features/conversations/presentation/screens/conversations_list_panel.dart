@@ -164,11 +164,16 @@ class _ConversationsListPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+
     return BlocBuilder<AllConversationsListBloc, AllConversationsListState>(
       builder: (context, state) {
         switch (state) {
           case AllConversationsListLoadingState():
-            return const Center(child: CircularProgressIndicator());
+            return Container(
+              decoration: BoxDecoration(color: colorScheme.surface),
+              child: const Center(child: CircularProgressIndicator()),
+            );
 
           case AllConversationsListFailureState():
             return InfoWidget(

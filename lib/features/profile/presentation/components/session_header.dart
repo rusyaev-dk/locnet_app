@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
-class ConversationCreatorHeader extends StatelessWidget {
-  const ConversationCreatorHeader({super.key});
+class SessionHeader extends StatelessWidget {
+  const SessionHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,10 +16,18 @@ class ConversationCreatorHeader extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Row(
         children: [
+          RoundedIconButton(
+            onPressed: () {
+              GoRouter.of(context).pop();
+            },
+            icon: Icons.chevron_left,
+            backgroundColor: Colors.transparent,
+          ),
+          const SizedBox(width: 8),
           Expanded(
             flex: 5,
             child: Text(
-              l10n.conversationCreating,
+              l10n.sessionDetails,
               overflow: TextOverflow.ellipsis,
               maxLines: 2,
               style: textScheme.display.copyWith(
@@ -29,10 +38,12 @@ class ConversationCreatorHeader extends StatelessWidget {
           ),
           const Spacer(),
           RoundedIconButton(
-            buttonSize: 35,
-            iconSize: 18.5,
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              GoRouter.of(context).pop();
+              GoRouter.of(context).pop();
+            },
             icon: Icons.close,
+            backgroundColor: Colors.transparent,
           ),
         ],
       ),

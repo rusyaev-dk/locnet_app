@@ -57,7 +57,6 @@ class ProfileModalCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: colorScheme.secondary,
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: colorScheme.outlineVariant),
                   ),
                   child: BlocBuilder<ProfileCubit, ProfileState>(
                     builder: (BuildContext context, ProfileState state) {
@@ -130,88 +129,84 @@ class _ProfileView extends StatelessWidget {
       children: [
         ProfileHeader(user: user),
         Divider(height: 1, color: colorScheme.outlineVariant),
+        const SizedBox(height: 10),
         Expanded(
           child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ProfileGeneralInfo(user: user),
+
+                  const SizedBox(height: 16),
+
+                  ProfileActionTile(
+                    icon: Icons.devices,
+                    title: l10n.currentSession,
+                    onPressed: () async {
+                      if (session == null) {
+                        await showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AppAlertDialog(
+                              title: Text(l10n.appException),
+                              content: Text(l10n.sessionIsNotLoadedYet),
+                              actions: [
+                                AppAlertDialogAction(
+                                  child: Text(l10n.ok),
+                                  onPressed: () => GoRouter.of(context).pop(),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      } else {
+                        await showGeneralDialog(
+                          context: context,
+                          barrierColor: Colors.transparent,
+                          transitionBuilder: slideFadeDialogTransition,
+                          pageBuilder: (context, _, _) {
+                            return SessionModalCard(session: session);
+                          },
+                        );
+                      }
+                    },
                   ),
-                  child: ProfileGeneralInfo(user: user),
-                ),
-
-                ProfileAdditionalInfo(user: user),
-
-                const SizedBox(height: 16),
-
-                ProfileActionTile(
-                  icon: Icons.devices,
-                  title: l10n.currentSession,
-                  onPressed: () async {
-                    if (session == null) {
-                      await showDialog(
+                  const SizedBox(height: 10),
+                  ProfileActionTile(
+                    icon: Icons.logout,
+                    title: l10n.logout,
+                    isDestructive: true,
+                    onPressed: () async {
+                      await showGeneralDialog(
                         context: context,
-                        builder: (context) {
+                        transitionBuilder: slideFadeDialogTransition,
+                        pageBuilder: (context, _, _) {
                           return AppAlertDialog(
-                            title: Text(l10n.appException),
-                            content: Text(l10n.sessionIsNotLoadedYet),
+                            title: Text(l10n.logOut),
+                            content: Text(l10n.logOutConfirmation),
                             actions: [
                               AppAlertDialogAction(
-                                child: Text(l10n.ok),
+                                isDestructiveAction: true,
+                                onPressed: () =>
+                                    context.read<AuthCubit>().logOut(),
+                                child: Text(l10n.yesLabel),
+                              ),
+                              AppAlertDialogAction(
+                                child: Text(l10n.cancel),
                                 onPressed: () => GoRouter.of(context).pop(),
                               ),
                             ],
                           );
                         },
                       );
-                    } else {
-                      await showGeneralDialog(
-                        context: context,
-                        barrierColor: Colors.transparent,
-                        transitionBuilder: slideFadeDialogTransition,
-                        pageBuilder: (context, _, _) {
-                          return SessionModalCard(session: session);
-                        },
-                      );
-                    }
-                  },
-                ),
-                const SizedBox(height: 10),
-                ProfileActionTile(
-                  icon: Icons.logout,
-                  title: l10n.logout,
-                  isDestructive: true,
-                  onPressed: () async {
-                    await showGeneralDialog(
-                      context: context,
-                      transitionBuilder: slideFadeDialogTransition,
-                      pageBuilder: (context, _, _) {
-                        return AppAlertDialog(
-                          title: Text(l10n.logOut),
-                          content: Text(l10n.logOutConfirmation),
-                          actions: [
-                            AppAlertDialogAction(
-                              isDestructiveAction: true,
-                              onPressed: () =>
-                                  context.read<AuthCubit>().logOut(),
-                              child: Text(l10n.yesLabel),
-                            ),
-                            AppAlertDialogAction(
-                              child: Text(l10n.cancel),
-                              onPressed: () => GoRouter.of(context).pop(),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                ),
+                    },
+                  ),
 
-                const SizedBox(height: 8),
-              ],
+                  const SizedBox(height: 8),
+                ],
+              ),
             ),
           ),
         ),

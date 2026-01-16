@@ -102,7 +102,6 @@ class _ProfileEditorModalCardState extends State<ProfileEditorModalCard> {
                   decoration: BoxDecoration(
                     color: colorScheme.secondary,
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: colorScheme.outlineVariant),
                   ),
                   child: BlocBuilder<ProfileEditorCubit, ProfileEditorState>(
                     builder: (BuildContext context, ProfileEditorState state) {

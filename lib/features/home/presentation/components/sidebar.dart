@@ -51,10 +51,7 @@ class _PanelSidebarState extends State<PanelSidebar> {
       duration: kThemeChangeDuration,
       curve: Curves.easeOutCubic,
       width: _targetWidth,
-      decoration: BoxDecoration(
-        color: colorScheme.secondary,
-        border: Border.all(color: colorScheme.outlineVariant),
-      ),
+      decoration: BoxDecoration(color: colorScheme.secondary),
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           final bool isCollapsedLayout =
