@@ -15,6 +15,7 @@ final class PrivateConversationLoadingState extends PrivateConversationState {
 
 final class PrivateConversationLoadedState extends PrivateConversationState {
   const PrivateConversationLoadedState({
+    required this.companion,
     required this.messages,
     required this.conversation,
     required this.companionId,
@@ -24,6 +25,7 @@ final class PrivateConversationLoadedState extends PrivateConversationState {
 
   final List<Message> messages;
   final Conversation conversation;
+  final User companion;
   final String companionId;
   final int page;
 
@@ -31,11 +33,13 @@ final class PrivateConversationLoadedState extends PrivateConversationState {
     List<Message>? messages,
     Conversation? conversation,
     String? companionId,
+    User? companion,
     int? page,
     Object? failure,
   }) {
     return PrivateConversationLoadedState(
       messages: messages ?? this.messages,
+      companion: companion ?? this.companion,
       conversation: conversation ?? this.conversation,
       companionId: companionId ?? this.companionId,
       page: page ?? this.page,
@@ -49,6 +53,7 @@ final class PrivateConversationLoadedState extends PrivateConversationState {
     conversation,
     companionId,
     page,
+    companion,
     failure,
   ];
 }

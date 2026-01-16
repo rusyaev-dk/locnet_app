@@ -61,6 +61,7 @@ class PrivateConversationBloc
           messages: messages,
           conversation: conversation,
           companionId: companion.userId,
+          companion: companion,
         ),
       );
     } catch (e, st) {

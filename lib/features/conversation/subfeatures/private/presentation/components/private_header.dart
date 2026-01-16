@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
+import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/private.dart';
 
 enum _PrivateHeaderMenuAction {
@@ -10,7 +11,9 @@ enum _PrivateHeaderMenuAction {
 }
 
 class PrivateHeader extends StatefulWidget {
-  const PrivateHeader({super.key});
+  const PrivateHeader({required this.companion, super.key});
+
+  final User companion;
 
   @override
   State<PrivateHeader> createState() => _PrivateHeaderState();
@@ -25,9 +28,6 @@ class _PrivateHeaderState extends State<PrivateHeader> {
     final textScheme = context.textScheme;
     final l10n = context.l10n;
 
-    // Пока оставляю заглушку, как у тебя в примере.
-    const conversationId = 'test';
-
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       color: colorScheme.surfaceBright,
@@ -36,10 +36,7 @@ class _PrivateHeaderState extends State<PrivateHeader> {
           CircleAvatar(
             radius: 19,
             backgroundColor: colorScheme.primary.withAlpha(40),
-            child: Text(
-              conversationId.isNotEmpty ? conversationId[0].toUpperCase() : '?',
-              style: textScheme.label,
-            ),
+            child: Text(widget.companion.firstName[0], style: textScheme.label),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -47,7 +44,7 @@ class _PrivateHeaderState extends State<PrivateHeader> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Conversation $conversationId',
+                  "${widget.companion.firstName} ${widget.companion.lastName}",
                   style: textScheme.headline.copyWith(fontSize: 18),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,

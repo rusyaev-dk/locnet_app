@@ -32,7 +32,7 @@ class SidebarItem extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(14),
           child: AnimatedContainer(
             duration: kThemeChangeDuration,
             curve: Curves.easeOutCubic,
@@ -44,7 +44,7 @@ class SidebarItem extends StatelessWidget {
               color: isSelected
                   ? colorScheme.primary.withAlpha(26)
                   : Colors.transparent,
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(14),
             ),
             child: Row(
               mainAxisAlignment: isCollapsed
@@ -52,18 +52,16 @@ class SidebarItem extends StatelessWidget {
                   : MainAxisAlignment.start,
               children: [
                 Container(
-                  width: 30,
-                  height: 30,
+                  width: 28,
+                  height: 28,
                   padding: const EdgeInsets.all(2),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(13),
-                    color: isSelected
-                        ? colorScheme.primary.withAlpha(40)
-                        : colorScheme.secondary,
+                    borderRadius: BorderRadius.circular(12),
+                    color: Colors.transparent,
                   ),
                   child: Icon(
                     icon,
-                    size: 20,
+                    size: 22,
                     color: isSelected
                         ? colorScheme.primary
                         : colorScheme.onSurfaceVariant,

@@ -3,6 +3,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/features/message/domain/domain.dart';
+import 'package:locnet_app/uikit/uikit.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PrivateMessageBubble extends StatelessWidget {
   const PrivateMessageBubble({
@@ -15,6 +17,8 @@ class PrivateMessageBubble extends StatelessWidget {
   final Message message;
   final String companionId;
   final bool isLast;
+
+  static final DateFormat _timeFormatter = DateFormat.Hm();
 
   @override
   Widget build(BuildContext context) {
@@ -48,24 +52,35 @@ class PrivateMessageBubble extends StatelessWidget {
             color: colorScheme.onPrimary,
             fontSize: 14.5,
           )
-        : textScheme.label.copyWith(fontSize: 14.5);
+        : textScheme.label.copyWith(
+            color: colorScheme.onSurface,
+            fontSize: 14.5,
+          );
 
     final TextStyle metaTextStyle = messageTextStyle.copyWith(
       fontSize: (messageTextStyle.fontSize!) * 0.8,
       color: isMine
           ? colorScheme.onPrimary.withAlpha(150)
-          : (messageTextStyle.color ?? colorScheme.onSurface).withAlpha(150),
+          : messageTextStyle.color!.withAlpha(150),
     );
 
-    final borderRadius = BorderRadius.only(
+    final BorderRadius borderRadius = BorderRadius.only(
       topLeft: const Radius.circular(16),
       topRight: const Radius.circular(16),
-      bottomLeft: Radius.circular(isMine ? 16 : 4), // внутренняя грань
-      bottomRight: Radius.circular(isMine ? 4 : 16), // внешняя грань
+      bottomLeft: Radius.circular(isMine ? 16 : 4),
+      bottomRight: Radius.circular(isMine ? 4 : 16),
     );
 
-    final String messageText = message.text ?? '';
-    final String timeText = DateFormat.Hm().format(message.createdAt);
+    final String messageText = (message.text ?? '').trim();
+    final String timeText = _timeFormatter.format(message.createdAt);
+
+    final Color selectionColor = isMine
+        ? colorScheme.onPrimary.withAlpha(80)
+        : colorScheme.onSurface.withAlpha(80);
+
+    final Color linkColor = isMine
+        ? colorScheme.onPrimary
+        : colorScheme.primary;
 
     return Align(
       alignment: alignment,
@@ -86,12 +101,27 @@ class PrivateMessageBubble extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (messageText.isNotEmpty)
-                  SelectableText(
-                    messageText,
-                    style: messageTextStyle,
-                    selectionColor: isMine
-                        ? colorScheme.onPrimary.withAlpha(150)
-                        : colorScheme.onSurface.withAlpha(150),
+                  TextSelectionTheme(
+                    data: TextSelectionThemeData(
+                      selectionColor: selectionColor,
+                    ),
+                    child: AppMarkdownText(
+                      data: messageText,
+                      textStyle: messageTextStyle,
+                      linkColor: linkColor,
+                      selectionColor: selectionColor,
+                      onLinkTap: (Uri uri) async {
+                        final bool canOpen = await canLaunchUrl(uri);
+                        if (!canOpen) {
+                          return;
+                        }
+
+                        await launchUrl(
+                          uri,
+                          mode: LaunchMode.externalApplication,
+                        );
+                      },
+                    ),
                   ),
                 const SizedBox(height: 4),
                 Row(

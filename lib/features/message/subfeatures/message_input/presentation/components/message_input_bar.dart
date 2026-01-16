@@ -119,7 +119,6 @@ class _MessageInputBarState extends State<MessageInputBar> {
                         _textEditingController.clear();
                       },
                       buttonSize: 35,
-                      iconSize: 23,
                     ),
                   ],
                 ),

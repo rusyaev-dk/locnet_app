@@ -22,7 +22,10 @@ class ConversationTypeSelector extends StatelessWidget {
     final ConversationCreatorBloc bloc = context
         .read<ConversationCreatorBloc>();
 
-    const List<ConversationType> types = ConversationType.values;
+    const List<ConversationType> types = [
+      ConversationType.group,
+      ConversationType.channel,
+    ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

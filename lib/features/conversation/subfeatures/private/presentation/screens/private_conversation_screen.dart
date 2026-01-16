@@ -84,13 +84,8 @@ class PrivateConversationScreen extends StatelessWidget {
     final l10n = context.l10n;
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        const PrivateHeader(),
-        Divider(
-          height: 1,
-          thickness: 1,
-          color: colorScheme.surfaceContainer.withAlpha(80),
-        ),
         Expanded(
           child: BlocBuilder<PrivateConversationBloc, PrivateConversationState>(
             builder: (BuildContext context, PrivateConversationState state) {
@@ -119,9 +114,21 @@ class PrivateConversationScreen extends StatelessWidget {
                     return const Text("Empty here...");
                   }
 
-                  return PrivateMessagesList(
-                    messages: messages,
-                    companionId: state.companionId,
+                  return Column(
+                    children: [
+                      PrivateHeader(companion: state.companion),
+                      Divider(
+                        height: 1,
+                        thickness: 1,
+                        color: colorScheme.surfaceContainer.withAlpha(80),
+                      ),
+                      Expanded(
+                        child: PrivateMessagesList(
+                          messages: messages,
+                          companionId: state.companionId,
+                        ),
+                      ),
+                    ],
                   );
               }
             },

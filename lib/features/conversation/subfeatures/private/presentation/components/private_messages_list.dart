@@ -16,7 +16,7 @@ class PrivateMessagesList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      cacheExtent: 800,
+      cacheExtent: 1200,
       reverse: true,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
       itemCount: messages.length,
