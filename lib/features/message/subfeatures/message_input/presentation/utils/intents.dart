@@ -19,3 +19,7 @@ class StrikeIntent extends Intent {
 class LinkIntent extends Intent {
   const LinkIntent();
 }
+
+class SendIntent extends Intent {
+  const SendIntent();
+}

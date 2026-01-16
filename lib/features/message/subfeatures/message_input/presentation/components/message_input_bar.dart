@@ -16,13 +16,23 @@ class MessageInputBar extends StatefulWidget {
 }
 
 class _MessageInputBarState extends State<MessageInputBar> {
-  late final TextEditingController _textEditingController;
+  late final MessageMarkdownInputController _textEditingController;
   bool _isEmojiPickerVisible = false;
 
   @override
   void initState() {
     super.initState();
-    _textEditingController = TextEditingController();
+    const TextStyle baseStyle = TextStyle(fontSize: 16);
+
+    _textEditingController = MessageMarkdownInputController(
+      baseStyle: baseStyle,
+      markerStyle: baseStyle.copyWith(color: Colors.black38),
+      boldStyle: baseStyle.copyWith(fontWeight: FontWeight.w700),
+      italicStyle: baseStyle.copyWith(fontStyle: FontStyle.italic),
+      codeStyle: baseStyle.copyWith(fontFamily: 'monospace'),
+      strikeStyle: baseStyle.copyWith(decoration: TextDecoration.lineThrough),
+      linkStyle: baseStyle.copyWith(decoration: TextDecoration.underline),
+    );
   }
 
   @override
@@ -92,6 +102,19 @@ class _MessageInputBarState extends State<MessageInputBar> {
                         controller: _textEditingController,
                         hintText: '${l10n.message}...',
                         maxSymbols: 4096,
+                        onSubmitted: (_) {
+                          context
+                              .read<PrivateMessageActionsCubit>()
+                              .sendMessage(
+                                conversationId: widget.conversationId,
+                                attachedFiles: context
+                                    .read<MessageAttachmentsCubit>()
+                                    .state
+                                    .files,
+                                text: _textEditingController.text,
+                              );
+                          _textEditingController.clear();
+                        },
                       ),
                     ),
                     const SizedBox(width: 5),

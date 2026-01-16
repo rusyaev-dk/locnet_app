@@ -4,4 +4,3 @@ export 'attachments_preview.dart';
 export 'emoji_selector.dart';
 export 'message_input_bar.dart';
 export 'message_input_field.dart';
-export 'message_input_format_toolbar.dart';

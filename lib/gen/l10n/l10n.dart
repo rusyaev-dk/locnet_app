@@ -948,6 +948,86 @@ class S {
       args: [],
     );
   }
+
+  /// `Вырезать`
+  String get messageInputToolbarActionCut {
+    return Intl.message(
+      'Вырезать',
+      name: 'messageInputToolbarActionCut',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Скопировать`
+  String get messageInputToolbarActionCopy {
+    return Intl.message(
+      'Скопировать',
+      name: 'messageInputToolbarActionCopy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Удалить`
+  String get messageInputToolbarActionDelete {
+    return Intl.message(
+      'Удалить',
+      name: 'messageInputToolbarActionDelete',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Жирный`
+  String get messageInputToolbarActionFormatBold {
+    return Intl.message(
+      'Жирный',
+      name: 'messageInputToolbarActionFormatBold',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Курсив`
+  String get messageInputToolbarActionFormatItalic {
+    return Intl.message(
+      'Курсив',
+      name: 'messageInputToolbarActionFormatItalic',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Зачёркнутый`
+  String get messageInputToolbarActionFormatStrike {
+    return Intl.message(
+      'Зачёркнутый',
+      name: 'messageInputToolbarActionFormatStrike',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Код`
+  String get messageInputToolbarActionFormatCode {
+    return Intl.message(
+      'Код',
+      name: 'messageInputToolbarActionFormatCode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ссылка`
+  String get messageInputToolbarActionFormatLink {
+    return Intl.message(
+      'Ссылка',
+      name: 'messageInputToolbarActionFormatLink',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

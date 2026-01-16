@@ -111,5 +111,13 @@
     "messageContextActionDelete": "Удалить",
     "messageContextActionForward": "Переслать",
     "messageContextActionSelect": "Выбрать",
-    "messageContextActionReply": "Ответить"
+    "messageContextActionReply": "Ответить",
+    "messageInputToolbarActionCut": "Вырезать",
+    "messageInputToolbarActionCopy": "Скопировать",
+    "messageInputToolbarActionDelete": "Удалить",
+    "messageInputToolbarActionFormatBold": "Жирный",
+    "messageInputToolbarActionFormatItalic": "Курсив",
+    "messageInputToolbarActionFormatStrike": "Зачёркнутый",
+    "messageInputToolbarActionFormatCode": "Код",
+    "messageInputToolbarActionFormatLink": "Ссылка"
 }

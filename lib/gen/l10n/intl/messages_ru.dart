@@ -129,6 +129,28 @@ class MessageLookup extends MessageLookupByLibrary {
     "messageContextActionSelect": MessageLookupByLibrary.simpleMessage(
       "Выбрать",
     ),
+    "messageInputToolbarActionCopy": MessageLookupByLibrary.simpleMessage(
+      "Скопировать",
+    ),
+    "messageInputToolbarActionCut": MessageLookupByLibrary.simpleMessage(
+      "Вырезать",
+    ),
+    "messageInputToolbarActionDelete": MessageLookupByLibrary.simpleMessage(
+      "Удалить",
+    ),
+    "messageInputToolbarActionFormatBold": MessageLookupByLibrary.simpleMessage(
+      "Жирный",
+    ),
+    "messageInputToolbarActionFormatCode": MessageLookupByLibrary.simpleMessage(
+      "Код",
+    ),
+    "messageInputToolbarActionFormatItalic":
+        MessageLookupByLibrary.simpleMessage("Курсив"),
+    "messageInputToolbarActionFormatLink": MessageLookupByLibrary.simpleMessage(
+      "Ссылка",
+    ),
+    "messageInputToolbarActionFormatStrike":
+        MessageLookupByLibrary.simpleMessage("Зачёркнутый"),
     "meta": MessageLookupByLibrary.simpleMessage("Мета"),
     "next": MessageLookupByLibrary.simpleMessage("Далее"),
     "noLabel": MessageLookupByLibrary.simpleMessage("Нет"),
