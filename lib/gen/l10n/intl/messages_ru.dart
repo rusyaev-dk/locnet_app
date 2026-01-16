@@ -114,6 +114,21 @@ class MessageLookup extends MessageLookupByLibrary {
     "login": MessageLookupByLibrary.simpleMessage("Логин"),
     "logout": MessageLookupByLibrary.simpleMessage("Выйти"),
     "message": MessageLookupByLibrary.simpleMessage("Сообщение"),
+    "messageContextActionCopyText": MessageLookupByLibrary.simpleMessage(
+      "Скопировать текст",
+    ),
+    "messageContextActionDelete": MessageLookupByLibrary.simpleMessage(
+      "Удалить",
+    ),
+    "messageContextActionForward": MessageLookupByLibrary.simpleMessage(
+      "Переслать",
+    ),
+    "messageContextActionReply": MessageLookupByLibrary.simpleMessage(
+      "Ответить",
+    ),
+    "messageContextActionSelect": MessageLookupByLibrary.simpleMessage(
+      "Выбрать",
+    ),
     "meta": MessageLookupByLibrary.simpleMessage("Мета"),
     "next": MessageLookupByLibrary.simpleMessage("Далее"),
     "noLabel": MessageLookupByLibrary.simpleMessage("Нет"),

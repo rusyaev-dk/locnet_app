@@ -1,15 +1,22 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/features/message/domain/domain.dart';
+import 'package:locnet_app/features/message/presentation/presentation.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class PrivateMessageBubble extends StatelessWidget {
-  const PrivateMessageBubble({
+class MessageBubble extends StatefulWidget {
+  const MessageBubble({
     required this.message,
     required this.companionId,
+    required this.onReply,
+    required this.onForward,
+    required this.onDelete,
+    required this.onSelect,
+    required this.onCopy,
     this.isLast = false,
     super.key,
   });
@@ -18,15 +25,105 @@ class PrivateMessageBubble extends StatelessWidget {
   final String companionId;
   final bool isLast;
 
+  final VoidCallback onReply;
+  final VoidCallback onForward;
+  final VoidCallback onDelete;
+  final VoidCallback onSelect;
+  final VoidCallback onCopy;
+
+  @override
+  State<MessageBubble> createState() => _MessageBubbleState();
+}
+
+class _MessageBubbleState extends State<MessageBubble> {
   static final DateFormat _timeFormatter = DateFormat.Hm();
+
+  final MessageContextMenuController _menuController =
+      MessageContextMenuController();
+
+  @override
+  void dispose() {
+    _menuController.dispose();
+    super.dispose();
+  }
+
+  void _showContextMenu(TapDownDetails details) {
+    final OverlayState overlayState = Overlay.of(context, rootOverlay: true);
+
+    final RenderObject? renderObject = overlayState.context.findRenderObject();
+    if (renderObject is! RenderBox) {
+      return;
+    }
+
+    final RenderBox overlayBox = renderObject;
+    final Offset globalPosition = details.globalPosition;
+
+    final RelativeRect position = RelativeRect.fromRect(
+      Rect.fromLTWH(globalPosition.dx, globalPosition.dy, 0, 0),
+      Offset.zero & overlayBox.size,
+    );
+
+    final l10n = context.l10n;
+    final String messageText = (widget.message.text ?? '').trim();
+
+    final List<MessageContextMenuAction> actions = <MessageContextMenuAction>[
+      MessageContextMenuAction(
+        id: 'reply',
+        title: l10n.messageContextActionReply,
+        icon: Icons.reply,
+        onPressed: widget.onReply,
+      ),
+      MessageContextMenuAction(
+        id: 'forward',
+        title: l10n.messageContextActionForward,
+        icon: Icons.forward,
+        onPressed: widget.onForward,
+      ),
+      MessageContextMenuAction(
+        id: 'copy',
+        title: l10n.messageContextActionCopyText,
+        icon: Icons.copy,
+        isEnabled: messageText.isNotEmpty,
+        onPressed: widget.onCopy,
+      ),
+      MessageContextMenuAction(
+        id: 'select',
+        title: l10n.messageContextActionSelect,
+        icon: Icons.select_all,
+        isEnabled: messageText.isNotEmpty,
+        onPressed: widget.onSelect,
+      ),
+      MessageContextMenuAction(
+        id: 'delete',
+        title: l10n.messageContextActionDelete,
+        icon: Icons.delete_outline,
+        isDestructive: true,
+        onPressed: widget.onDelete,
+      ),
+    ];
+
+    _menuController.show(
+      context: context,
+      position: position,
+      actions: actions,
+    );
+  }
+
+  void _handlePointerDown(PointerDownEvent event) {
+    final bool isSecondaryClick = (event.buttons & kSecondaryMouseButton) != 0;
+    if (!isSecondaryClick) {
+      return;
+    }
+
+    _showContextMenu(TapDownDetails(globalPosition: event.position));
+  }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
-    final l10n = context.l10n;
 
-    final bool isMine = message.senderId != companionId;
+    final bool isMine = widget.message.senderId != widget.companionId;
 
     final Alignment alignment = isMine
         ? Alignment.centerRight
@@ -71,8 +168,8 @@ class PrivateMessageBubble extends StatelessWidget {
       bottomRight: Radius.circular(isMine ? 4 : 16),
     );
 
-    final String messageText = (message.text ?? '').trim();
-    final String timeText = _timeFormatter.format(message.createdAt);
+    final String messageText = (widget.message.text ?? '').trim();
+    final String timeText = _timeFormatter.format(widget.message.createdAt);
 
     final Color selectionColor = isMine
         ? colorScheme.onPrimary.withAlpha(80)
@@ -82,117 +179,79 @@ class PrivateMessageBubble extends StatelessWidget {
         ? colorScheme.onPrimary
         : colorScheme.primary;
 
-    return Align(
-      alignment: alignment,
-      child: IntrinsicWidth(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width * 0.7,
-          ),
-          child: Container(
-            margin: margin,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: bubbleColor,
-              borderRadius: borderRadius,
+    return Listener(
+      onPointerDown: _handlePointerDown,
+      child: Align(
+        alignment: alignment,
+        child: IntrinsicWidth(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.7,
             ),
-            child: Column(
-              crossAxisAlignment: crossAxisAlignment,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (messageText.isNotEmpty)
-                  TextSelectionTheme(
-                    data: TextSelectionThemeData(
-                      selectionColor: selectionColor,
-                    ),
-                    child: AppMarkdownText(
-                      data: messageText,
-                      textStyle: messageTextStyle,
-                      linkColor: linkColor,
-                      selectionColor: selectionColor,
-                      onLinkTap: (Uri uri) async {
-                        final bool canOpen = await canLaunchUrl(uri);
-                        if (!canOpen) {
-                          return;
-                        }
-
-                        await launchUrl(
-                          uri,
-                          mode: LaunchMode.externalApplication,
-                        );
-                      },
-                    ),
-                  ),
-                const SizedBox(height: 4),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    if (message.isEdited)
-                      Padding(
-                        padding: const EdgeInsets.only(right: 4),
-                        child: Text(l10n.edited, style: metaTextStyle),
+            child: Container(
+              margin: margin,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: bubbleColor,
+                borderRadius: borderRadius,
+              ),
+              child: Column(
+                crossAxisAlignment: crossAxisAlignment,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (messageText.isNotEmpty)
+                    TextSelectionTheme(
+                      data: TextSelectionThemeData(
+                        selectionColor: selectionColor,
                       ),
-                    Text(timeText, style: metaTextStyle),
-                    const SizedBox(width: 6),
-                    _MessageDeliveryStatusIndicator(
-                      deliveryStatus: message.deliveryStatus,
-                      color:
-                          metaTextStyle.color ??
-                          (isMine
-                              ? colorScheme.onPrimary
-                              : colorScheme.onSurface),
-                      size: 14,
+                      child: AppMarkdownText(
+                        data: messageText,
+                        textStyle: messageTextStyle,
+                        linkColor: linkColor,
+                        selectionColor: selectionColor,
+                        onLinkTap: _onMessageLinkTap,
+                      ),
                     ),
-                  ],
-                ),
-              ],
+                  const SizedBox(height: 4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      if (widget.message.isEdited)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 4),
+                          child: Text(
+                            context.l10n.edited,
+                            style: metaTextStyle,
+                          ),
+                        ),
+                      Text(timeText, style: metaTextStyle),
+                      const SizedBox(width: 6),
+                      MessageDeliveryStatusIndicator(
+                        deliveryStatus: widget.message.deliveryStatus,
+                        color:
+                            metaTextStyle.color ??
+                            (isMine
+                                ? colorScheme.onPrimary
+                                : colorScheme.onSurface),
+                        size: 14,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
     );
   }
-}
 
-class _MessageDeliveryStatusIndicator extends StatelessWidget {
-  const _MessageDeliveryStatusIndicator({
-    required this.deliveryStatus,
-    required this.color,
-    required this.size,
-  });
-
-  final MessageDeliveryStatus deliveryStatus;
-  final Color color;
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    switch (deliveryStatus) {
-      case MessageDeliveryStatus.sending:
-        return _SendingClockIcon(color: color, size: size);
-
-      case MessageDeliveryStatus.sent:
-        return Icon(Icons.check, size: size, color: color);
-
-      case MessageDeliveryStatus.failed:
-        return Icon(Icons.error_outline, size: size, color: color);
+  void _onMessageLinkTap(Uri uri) async {
+    final bool canOpen = await canLaunchUrl(uri);
+    if (!canOpen) {
+      return;
     }
-  }
-}
 
-class _SendingClockIcon extends StatelessWidget {
-  const _SendingClockIcon({required this.color, required this.size});
-
-  final Color color;
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    return Icon(Icons.schedule, size: size, color: color)
-        .animate(onPlay: (controller) => controller.repeat())
-        .rotate(duration: 900.ms, begin: 0, end: 1, curve: Curves.linear)
-        .fade(duration: 450.ms, begin: 0.55, end: 1)
-        .then()
-        .fade(duration: 450.ms, begin: 1, end: 0.55);
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 }

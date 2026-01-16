@@ -36,6 +36,12 @@ class AppRunner {
     try {
       WidgetsFlutterBinding.ensureInitialized();
 
+      if (kIsWeb) {
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          await BrowserContextMenu.disableContextMenu();
+        });
+      }
+
       final talker = TalkerFlutter.init();
       final ILogger logger = AppLogger(talker: talker);
       _timerRunner = TimerRunner(logger: logger);

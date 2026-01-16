@@ -106,5 +106,10 @@
     "edited": "Изменено",
     "sessionIsNotLoadedYet": "Данные о сессии ещё не загружены. Попробуйте ещё раз",
     "logOut": "Выход",
-    "logOutConfirmation": "Вы действительно хотите выйти?"
+    "logOutConfirmation": "Вы действительно хотите выйти?",
+    "messageContextActionCopyText": "Скопировать текст",
+    "messageContextActionDelete": "Удалить",
+    "messageContextActionForward": "Переслать",
+    "messageContextActionSelect": "Выбрать",
+    "messageContextActionReply": "Ответить"
 }

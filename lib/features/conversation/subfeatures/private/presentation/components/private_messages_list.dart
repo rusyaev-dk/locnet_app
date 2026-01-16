@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:locnet_app/features/message/domain/domain.dart';
 import 'package:locnet_app/features/message/presentation/presentation.dart';
@@ -70,7 +71,22 @@ class PrivateMessageAnimatedBubble extends StatelessWidget {
           curve: Curves.easeOut,
         ),
       ],
-      child: PrivateMessageBubble(message: message, companionId: companionId),
+      child: MessageBubble(
+        message: message,
+        companionId: companionId,
+        onReply: () {},
+        onDelete: () {},
+        onForward: () {},
+        onSelect: () {},
+        onCopy: () async {
+          final String text = (message.text ?? '').trim();
+          if (text.isEmpty) {
+            return;
+          }
+
+          await Clipboard.setData(ClipboardData(text: text));
+        },
+      ),
     );
   }
 }

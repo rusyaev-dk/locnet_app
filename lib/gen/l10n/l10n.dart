@@ -898,6 +898,56 @@ class S {
       args: [],
     );
   }
+
+  /// `Скопировать текст`
+  String get messageContextActionCopyText {
+    return Intl.message(
+      'Скопировать текст',
+      name: 'messageContextActionCopyText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Удалить`
+  String get messageContextActionDelete {
+    return Intl.message(
+      'Удалить',
+      name: 'messageContextActionDelete',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Переслать`
+  String get messageContextActionForward {
+    return Intl.message(
+      'Переслать',
+      name: 'messageContextActionForward',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Выбрать`
+  String get messageContextActionSelect {
+    return Intl.message(
+      'Выбрать',
+      name: 'messageContextActionSelect',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ответить`
+  String get messageContextActionReply {
+    return Intl.message(
+      'Ответить',
+      name: 'messageContextActionReply',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
