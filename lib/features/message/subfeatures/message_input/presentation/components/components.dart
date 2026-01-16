@@ -1,6 +1,7 @@
-export 'attachments_preview.dart';
-export 'message_input_bar.dart';
-export 'emoji_selector.dart';
-export 'message_input_field.dart';
 export 'attachment_item.dart';
 export 'attachment_tile.dart';
+export 'attachments_preview.dart';
+export 'emoji_selector.dart';
+export 'message_input_bar.dart';
+export 'message_input_field.dart';
+export 'message_input_format_toolbar.dart';

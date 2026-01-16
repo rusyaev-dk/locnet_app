@@ -77,6 +77,7 @@ class _MessageInputBarState extends State<MessageInputBar> {
                   ),
                 ),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     RoundedIconButton(
                       icon: Icons.attach_file,
