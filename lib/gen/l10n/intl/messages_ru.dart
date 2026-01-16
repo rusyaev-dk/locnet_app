@@ -94,6 +94,26 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "edit": MessageLookupByLibrary.simpleMessage("Редактировать"),
     "edited": MessageLookupByLibrary.simpleMessage("Изменено"),
+    "emojiCategoryActivities": MessageLookupByLibrary.simpleMessage("Занятия"),
+    "emojiCategoryFlags": MessageLookupByLibrary.simpleMessage("Флаги"),
+    "emojiCategoryFoodAndDrink": MessageLookupByLibrary.simpleMessage(
+      "Еда и напитки",
+    ),
+    "emojiCategoryNature": MessageLookupByLibrary.simpleMessage(
+      "Природа и животные",
+    ),
+    "emojiCategoryObjects": MessageLookupByLibrary.simpleMessage("Объекты"),
+    "emojiCategoryRecent": MessageLookupByLibrary.simpleMessage("Недавние"),
+    "emojiCategorySmileysAndPeople": MessageLookupByLibrary.simpleMessage(
+      "Смайлы и люди",
+    ),
+    "emojiCategorySymbols": MessageLookupByLibrary.simpleMessage("Символы"),
+    "emojiCategoryTravelAndPlaces": MessageLookupByLibrary.simpleMessage(
+      "Путешествия и места",
+    ),
+    "emojiSearchResults": MessageLookupByLibrary.simpleMessage(
+      "Результаты поиска",
+    ),
     "filters": MessageLookupByLibrary.simpleMessage("Фильтры"),
     "firstName": MessageLookupByLibrary.simpleMessage("Имя"),
     "homePage": MessageLookupByLibrary.simpleMessage("Домашняя страница"),
@@ -182,6 +202,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "retry": MessageLookupByLibrary.simpleMessage("Попробовать снова"),
     "save": MessageLookupByLibrary.simpleMessage("Сохранить"),
     "search": MessageLookupByLibrary.simpleMessage("Поиск"),
+    "searchEmoji": MessageLookupByLibrary.simpleMessage("Поиск эмодзи"),
     "selectInterfaceLanguage": MessageLookupByLibrary.simpleMessage(
       "Выберите язык интерфейса",
     ),

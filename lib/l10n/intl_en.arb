@@ -111,5 +111,16 @@
   "messageContextActionDelete": "Удалить",
   "messageContextActionForward": "Переслать",
   "messageContextActionSelect": "Выбрать",
-  "messageContextActionReply": "Ответить"
+  "messageContextActionReply": "Ответить",
+  "searchEmoji": "Поиск эмодзи",
+  "emojiCategorySmileysAndPeople": "Смайлы и люди",
+  "emojiCategoryNature": "Природа и животные",
+  "emojiCategoryFoodAndDrink": "Еда и напитки",
+  "emojiCategoryActivities": "Занятия",
+  "emojiCategoryTravelAndPlaces": "Путешествия и места",
+  "emojiCategoryObjects": "Объекты",
+  "emojiCategorySymbols": "Символы",
+  "emojiCategoryFlags": "Флаги",
+  "emojiCategoryRecent": "Недавние",
+  "emojiSearchResults": "Результаты поиска"
 }

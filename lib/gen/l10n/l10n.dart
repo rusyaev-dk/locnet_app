@@ -1028,6 +1028,116 @@ class S {
       args: [],
     );
   }
+
+  /// `Поиск эмодзи`
+  String get searchEmoji {
+    return Intl.message(
+      'Поиск эмодзи',
+      name: 'searchEmoji',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Смайлы и люди`
+  String get emojiCategorySmileysAndPeople {
+    return Intl.message(
+      'Смайлы и люди',
+      name: 'emojiCategorySmileysAndPeople',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Природа и животные`
+  String get emojiCategoryNature {
+    return Intl.message(
+      'Природа и животные',
+      name: 'emojiCategoryNature',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Еда и напитки`
+  String get emojiCategoryFoodAndDrink {
+    return Intl.message(
+      'Еда и напитки',
+      name: 'emojiCategoryFoodAndDrink',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Занятия`
+  String get emojiCategoryActivities {
+    return Intl.message(
+      'Занятия',
+      name: 'emojiCategoryActivities',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Путешествия и места`
+  String get emojiCategoryTravelAndPlaces {
+    return Intl.message(
+      'Путешествия и места',
+      name: 'emojiCategoryTravelAndPlaces',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Объекты`
+  String get emojiCategoryObjects {
+    return Intl.message(
+      'Объекты',
+      name: 'emojiCategoryObjects',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Символы`
+  String get emojiCategorySymbols {
+    return Intl.message(
+      'Символы',
+      name: 'emojiCategorySymbols',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Флаги`
+  String get emojiCategoryFlags {
+    return Intl.message(
+      'Флаги',
+      name: 'emojiCategoryFlags',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Недавние`
+  String get emojiCategoryRecent {
+    return Intl.message(
+      'Недавние',
+      name: 'emojiCategoryRecent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Результаты поиска`
+  String get emojiSearchResults {
+    return Intl.message(
+      'Результаты поиска',
+      name: 'emojiSearchResults',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

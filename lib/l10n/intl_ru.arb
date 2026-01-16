@@ -119,5 +119,16 @@
     "messageInputToolbarActionFormatItalic": "Курсив",
     "messageInputToolbarActionFormatStrike": "Зачёркнутый",
     "messageInputToolbarActionFormatCode": "Код",
-    "messageInputToolbarActionFormatLink": "Ссылка"
+    "messageInputToolbarActionFormatLink": "Ссылка",
+    "searchEmoji": "Поиск эмодзи",
+    "emojiCategorySmileysAndPeople": "Смайлы и люди",
+    "emojiCategoryNature": "Природа и животные",
+    "emojiCategoryFoodAndDrink": "Еда и напитки",
+    "emojiCategoryActivities": "Занятия",
+    "emojiCategoryTravelAndPlaces": "Путешествия и места",
+    "emojiCategoryObjects": "Объекты",
+    "emojiCategorySymbols": "Символы",
+    "emojiCategoryFlags": "Флаги",
+    "emojiCategoryRecent": "Недавние",
+    "emojiSearchResults": "Результаты поиска"
 }

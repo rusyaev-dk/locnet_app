@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/presentation/presentation.dart';
+import 'package:locnet_app/features/message/subfeatures/emoji_selector/presentation/presentation.dart';
 import 'package:locnet_app/features/message/subfeatures/message_input/domain/domain.dart';
 import 'package:locnet_app/features/message/subfeatures/message_input/presentation/presentation.dart';
 import 'package:locnet_app/uikit/uikit.dart';
@@ -17,7 +18,6 @@ class MessageInputBar extends StatefulWidget {
 
 class _MessageInputBarState extends State<MessageInputBar> {
   late final MessageMarkdownInputController _textEditingController;
-  bool _isEmojiPickerVisible = false;
 
   @override
   void initState() {
@@ -39,12 +39,6 @@ class _MessageInputBarState extends State<MessageInputBar> {
   void dispose() {
     _textEditingController.dispose();
     super.dispose();
-  }
-
-  void _toggleEmojiSelector() {
-    setState(() {
-      _isEmojiPickerVisible = !_isEmojiPickerVisible;
-    });
   }
 
   void _handleAttachPressed() {
@@ -118,15 +112,7 @@ class _MessageInputBarState extends State<MessageInputBar> {
                       ),
                     ),
                     const SizedBox(width: 5),
-                    RoundedIconButton(
-                      buttonSize: 35,
-                      backgroundColor: colorScheme.surfaceBright,
-                      icon: _isEmojiPickerVisible
-                          ? Icons.close
-                          : Icons.emoji_emotions_outlined,
-                      onPressed: _toggleEmojiSelector,
-                      iconSize: 25,
-                    ),
+                    EmojiButton(textController: _textEditingController),
                     const SizedBox(width: 5),
                     RoundedIconButton(
                       icon: Icons.send,
@@ -147,15 +133,6 @@ class _MessageInputBarState extends State<MessageInputBar> {
                   ],
                 ),
               ),
-            ),
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 180),
-              child: _isEmojiPickerVisible
-                  ? EmojiSelector(
-                      key: const ValueKey('emoji-selector'),
-                      textController: _textEditingController,
-                    )
-                  : const SizedBox.shrink(key: ValueKey('empty')),
             ),
           ],
         );
