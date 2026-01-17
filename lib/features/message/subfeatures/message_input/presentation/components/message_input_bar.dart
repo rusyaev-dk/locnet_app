@@ -1,3 +1,4 @@
+// message_input_bar.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
@@ -17,19 +18,23 @@ class MessageInputBar extends StatefulWidget {
 }
 
 class _MessageInputBarState extends State<MessageInputBar> {
-  late final MessageMarkdownInputController _textEditingController;
+  late final MessageRichInputController _textEditingController;
 
   @override
   void initState() {
     super.initState();
     const TextStyle baseStyle = TextStyle(fontSize: 16);
 
-    _textEditingController = MessageMarkdownInputController(
+    _textEditingController = MessageRichInputController(
       baseStyle: baseStyle,
-      markerStyle: baseStyle.copyWith(color: Colors.black38),
       boldStyle: baseStyle.copyWith(fontWeight: FontWeight.w700),
       italicStyle: baseStyle.copyWith(fontStyle: FontStyle.italic),
       codeStyle: baseStyle.copyWith(fontFamily: 'monospace'),
+      codeBlockStyle: baseStyle.copyWith(
+        fontFamily: 'monospace',
+        height: 1.25,
+        backgroundColor: Colors.black.withAlpha(18),
+      ),
       strikeStyle: baseStyle.copyWith(decoration: TextDecoration.lineThrough),
       linkStyle: baseStyle.copyWith(decoration: TextDecoration.underline),
     );
@@ -45,6 +50,35 @@ class _MessageInputBarState extends State<MessageInputBar> {
     context.read<MessageAttachmentsCubit>().pickFiles();
   }
 
+  String _buildMarkdownForSend() {
+    final String plainText = _textEditingController.text;
+    if (plainText.trim().isEmpty) {
+      return '';
+    }
+
+    return MessageMarkdownCodec.encode(
+      text: plainText,
+      ranges: _textEditingController.ranges,
+    );
+  }
+
+  void _send() {
+    final String markdown = _buildMarkdownForSend();
+    if (markdown.isEmpty) {
+      return;
+    }
+
+    context.read<PrivateMessageActionsCubit>().sendMessage(
+      conversationId: widget.conversationId,
+      attachedFiles: context.read<MessageAttachmentsCubit>().state.files,
+      text: markdown,
+    );
+
+    _textEditingController
+      ..clear()
+      ..clearAllFormatting();
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
@@ -54,7 +88,7 @@ class _MessageInputBarState extends State<MessageInputBar> {
       builder: (context, state) {
         return Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
+          children: <Widget>[
             if (state.files.isNotEmpty)
               MessageAttachmentsPreview(
                 files: state.files,
@@ -67,7 +101,6 @@ class _MessageInputBarState extends State<MessageInputBar> {
                   );
                 },
               ),
-
             SafeArea(
               top: false,
               child: Container(
@@ -82,7 +115,7 @@ class _MessageInputBarState extends State<MessageInputBar> {
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     RoundedIconButton(
                       icon: Icons.attach_file,
                       backgroundColor: colorScheme.surfaceBright,
@@ -96,19 +129,7 @@ class _MessageInputBarState extends State<MessageInputBar> {
                         controller: _textEditingController,
                         hintText: '${l10n.message}...',
                         maxSymbols: 4096,
-                        onSubmitted: (_) {
-                          context
-                              .read<PrivateMessageActionsCubit>()
-                              .sendMessage(
-                                conversationId: widget.conversationId,
-                                attachedFiles: context
-                                    .read<MessageAttachmentsCubit>()
-                                    .state
-                                    .files,
-                                text: _textEditingController.text,
-                              );
-                          _textEditingController.clear();
-                        },
+                        onSubmitted: (_) => _send(),
                       ),
                     ),
                     const SizedBox(width: 5),
@@ -117,17 +138,7 @@ class _MessageInputBarState extends State<MessageInputBar> {
                     RoundedIconButton(
                       icon: Icons.send,
                       backgroundColor: colorScheme.surfaceBright,
-                      onPressed: () {
-                        context.read<PrivateMessageActionsCubit>().sendMessage(
-                          conversationId: widget.conversationId,
-                          attachedFiles: context
-                              .read<MessageAttachmentsCubit>()
-                              .state
-                              .files,
-                          text: _textEditingController.text,
-                        );
-                        _textEditingController.clear();
-                      },
+                      onPressed: _send,
                       buttonSize: 35,
                     ),
                   ],

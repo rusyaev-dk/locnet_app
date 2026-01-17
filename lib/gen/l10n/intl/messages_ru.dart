@@ -162,8 +162,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Жирный",
     ),
     "messageInputToolbarActionFormatCode": MessageLookupByLibrary.simpleMessage(
-      "Код",
+      "Моноширинный",
     ),
+    "messageInputToolbarActionFormatCodeBlock":
+        MessageLookupByLibrary.simpleMessage("Код"),
     "messageInputToolbarActionFormatItalic":
         MessageLookupByLibrary.simpleMessage("Курсив"),
     "messageInputToolbarActionFormatLink": MessageLookupByLibrary.simpleMessage(

@@ -1,3 +1,4 @@
+// intents.dart
 import 'package:flutter/material.dart';
 
 class BoldIntent extends Intent {
@@ -22,4 +23,8 @@ class LinkIntent extends Intent {
 
 class SendIntent extends Intent {
   const SendIntent();
+}
+
+class CodeBlockIntent extends Intent {
+  const CodeBlockIntent();
 }

@@ -1009,11 +1009,21 @@ class S {
     );
   }
 
-  /// `Код`
+  /// `Моноширинный`
   String get messageInputToolbarActionFormatCode {
     return Intl.message(
-      'Код',
+      'Моноширинный',
       name: 'messageInputToolbarActionFormatCode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Код`
+  String get messageInputToolbarActionFormatCodeBlock {
+    return Intl.message(
+      'Код',
+      name: 'messageInputToolbarActionFormatCodeBlock',
       desc: '',
       args: [],
     );

@@ -1,11 +1,10 @@
+// message_bubble.dart
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/features/message/domain/domain.dart';
 import 'package:locnet_app/features/message/presentation/presentation.dart';
-import 'package:locnet_app/uikit/uikit.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MessageBubble extends StatefulWidget {
@@ -198,24 +197,23 @@ class _MessageBubbleState extends State<MessageBubble> {
               child: Column(
                 crossAxisAlignment: crossAxisAlignment,
                 mainAxisSize: MainAxisSize.min,
-                children: [
+                children: <Widget>[
                   if (messageText.isNotEmpty)
                     TextSelectionTheme(
                       data: TextSelectionThemeData(
                         selectionColor: selectionColor,
                       ),
-                      child: AppMarkdownText(
+                      child: AppMessageText(
                         data: messageText,
                         textStyle: messageTextStyle,
                         linkColor: linkColor,
-                        selectionColor: selectionColor,
                         onLinkTap: _onMessageLinkTap,
                       ),
                     ),
                   const SizedBox(height: 4),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
+                    children: <Widget>[
                       if (widget.message.isEdited)
                         Padding(
                           padding: const EdgeInsets.only(right: 4),
