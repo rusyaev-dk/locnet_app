@@ -1039,6 +1039,16 @@ class S {
     );
   }
 
+  /// `Подчёркнутый`
+  String get messageInputToolbarActionFormatUnderline {
+    return Intl.message(
+      'Подчёркнутый',
+      name: 'messageInputToolbarActionFormatUnderline',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Поиск эмодзи`
   String get searchEmoji {
     return Intl.message(

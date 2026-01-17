@@ -167,7 +167,7 @@ class _MessageBubbleState extends State<MessageBubble> {
       bottomRight: Radius.circular(isMine ? 4 : 16),
     );
 
-    final String messageText = (widget.message.text ?? '').trim();
+    final String messageMarkdown = (widget.message.text ?? '').trim();
     final String timeText = _timeFormatter.format(widget.message.createdAt);
 
     final Color selectionColor = isMine
@@ -198,13 +198,13 @@ class _MessageBubbleState extends State<MessageBubble> {
                 crossAxisAlignment: crossAxisAlignment,
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  if (messageText.isNotEmpty)
+                  if (messageMarkdown.isNotEmpty)
                     TextSelectionTheme(
                       data: TextSelectionThemeData(
                         selectionColor: selectionColor,
                       ),
                       child: AppMessageText(
-                        data: messageText,
+                        data: messageMarkdown,
                         textStyle: messageTextStyle,
                         linkColor: linkColor,
                         onLinkTap: _onMessageLinkTap,

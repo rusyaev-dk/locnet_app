@@ -253,7 +253,6 @@ class _MessageInputFieldState extends State<MessageInputField> {
     );
 
     final l10n = context.l10n;
-
     final String selectedText = (_selectedTextSnapshotForToolbar ?? '').trim();
 
     final List<MessageInputSelectionToolbarAction> actions =
@@ -294,6 +293,15 @@ class _MessageInputFieldState extends State<MessageInputField> {
             onPressed: () => _applyFormattingWithSelectionSnapshot(
               (MessageRichInputController controller) =>
                   controller.toggleItalic(),
+            ),
+          ),
+          MessageInputSelectionToolbarAction(
+            id: 'underline',
+            title: l10n.messageInputToolbarActionFormatUnderline,
+            icon: Icons.format_underline,
+            onPressed: () => _applyFormattingWithSelectionSnapshot(
+              (MessageRichInputController controller) =>
+                  controller.toggleUnderline(),
             ),
           ),
           MessageInputSelectionToolbarAction(
@@ -497,6 +505,8 @@ class _MessageInputFieldState extends State<MessageInputField> {
       shortcuts: const <ShortcutActivator, Intent>{
         SingleActivator(LogicalKeyboardKey.keyB, control: true): BoldIntent(),
         SingleActivator(LogicalKeyboardKey.keyI, control: true): ItalicIntent(),
+        SingleActivator(LogicalKeyboardKey.keyU, control: true):
+            UnderlineIntent(),
         SingleActivator(LogicalKeyboardKey.keyE, control: true): CodeIntent(),
         SingleActivator(LogicalKeyboardKey.keyS, control: true): StrikeIntent(),
         SingleActivator(LogicalKeyboardKey.keyK, control: true): LinkIntent(),
@@ -504,6 +514,7 @@ class _MessageInputFieldState extends State<MessageInputField> {
             CodeBlockIntent(),
         SingleActivator(LogicalKeyboardKey.keyB, meta: true): BoldIntent(),
         SingleActivator(LogicalKeyboardKey.keyI, meta: true): ItalicIntent(),
+        SingleActivator(LogicalKeyboardKey.keyU, meta: true): UnderlineIntent(),
         SingleActivator(LogicalKeyboardKey.keyE, meta: true): CodeIntent(),
         SingleActivator(LogicalKeyboardKey.keyS, meta: true): StrikeIntent(),
         SingleActivator(LogicalKeyboardKey.keyK, meta: true): LinkIntent(),
@@ -530,6 +541,16 @@ class _MessageInputFieldState extends State<MessageInputField> {
               _applyFormattingWithSelectionSnapshot(
                 (MessageRichInputController controller) =>
                     controller.toggleItalic(),
+              );
+              return null;
+            },
+          ),
+          UnderlineIntent: CallbackAction<UnderlineIntent>(
+            onInvoke: (_) {
+              _snapshotSelectionForHotkey();
+              _applyFormattingWithSelectionSnapshot(
+                (MessageRichInputController controller) =>
+                    controller.toggleUnderline(),
               );
               return null;
             },

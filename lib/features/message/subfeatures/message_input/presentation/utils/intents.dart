@@ -28,3 +28,7 @@ class SendIntent extends Intent {
 class CodeBlockIntent extends Intent {
   const CodeBlockIntent();
 }
+
+class UnderlineIntent extends Intent {
+  const UnderlineIntent();
+}

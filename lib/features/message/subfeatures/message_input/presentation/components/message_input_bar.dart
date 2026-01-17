@@ -1,4 +1,3 @@
-// message_input_bar.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
@@ -18,31 +17,46 @@ class MessageInputBar extends StatefulWidget {
 }
 
 class _MessageInputBarState extends State<MessageInputBar> {
-  late final MessageRichInputController _textEditingController;
+  MessageRichInputController? _textEditingController;
 
   @override
-  void initState() {
-    super.initState();
-    const TextStyle baseStyle = TextStyle(fontSize: 16);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (_textEditingController != null) {
+      return;
+    }
+
+    final colorScheme = context.colorScheme;
+    final textScheme = context.textScheme;
+
+    final TextStyle baseStyle = textScheme.label.copyWith(
+      fontSize: 16,
+      color: colorScheme.onSurface,
+    );
 
     _textEditingController = MessageRichInputController(
       baseStyle: baseStyle,
       boldStyle: baseStyle.copyWith(fontWeight: FontWeight.w700),
       italicStyle: baseStyle.copyWith(fontStyle: FontStyle.italic),
+      underlineStyle: baseStyle.copyWith(decoration: TextDecoration.underline),
       codeStyle: baseStyle.copyWith(fontFamily: 'monospace'),
       codeBlockStyle: baseStyle.copyWith(
         fontFamily: 'monospace',
         height: 1.25,
-        backgroundColor: Colors.black.withAlpha(18),
+        backgroundColor: colorScheme.onSurface.withAlpha(18),
       ),
       strikeStyle: baseStyle.copyWith(decoration: TextDecoration.lineThrough),
-      linkStyle: baseStyle.copyWith(decoration: TextDecoration.underline),
+      linkStyle: baseStyle.copyWith(
+        color: colorScheme.primary,
+        decoration: TextDecoration.none,
+      ),
     );
   }
 
   @override
   void dispose() {
-    _textEditingController.dispose();
+    _textEditingController?.dispose();
     super.dispose();
   }
 
@@ -51,14 +65,15 @@ class _MessageInputBarState extends State<MessageInputBar> {
   }
 
   String _buildMarkdownForSend() {
-    final String plainText = _textEditingController.text;
+    final MessageRichInputController controller = _textEditingController!;
+    final String plainText = controller.text;
     if (plainText.trim().isEmpty) {
       return '';
     }
 
     return MessageMarkdownCodec.encode(
       text: plainText,
-      ranges: _textEditingController.ranges,
+      ranges: controller.ranges,
     );
   }
 
@@ -74,13 +89,15 @@ class _MessageInputBarState extends State<MessageInputBar> {
       text: markdown,
     );
 
-    _textEditingController
+    final MessageRichInputController _ = _textEditingController!
       ..clear()
       ..clearAllFormatting();
   }
 
   @override
   Widget build(BuildContext context) {
+    final MessageRichInputController controller = _textEditingController!;
+
     final colorScheme = context.colorScheme;
     final l10n = context.l10n;
 
@@ -126,14 +143,14 @@ class _MessageInputBarState extends State<MessageInputBar> {
                     const SizedBox(width: 5),
                     Expanded(
                       child: MessageInputField(
-                        controller: _textEditingController,
+                        controller: controller,
                         hintText: '${l10n.message}...',
                         maxSymbols: 4096,
                         onSubmitted: (_) => _send(),
                       ),
                     ),
                     const SizedBox(width: 5),
-                    EmojiButton(textController: _textEditingController),
+                    EmojiButton(textController: controller),
                     const SizedBox(width: 5),
                     RoundedIconButton(
                       icon: Icons.send,

@@ -173,6 +173,8 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "messageInputToolbarActionFormatStrike":
         MessageLookupByLibrary.simpleMessage("Зачёркнутый"),
+    "messageInputToolbarActionFormatUnderline":
+        MessageLookupByLibrary.simpleMessage("Подчёркнутый"),
     "meta": MessageLookupByLibrary.simpleMessage("Мета"),
     "next": MessageLookupByLibrary.simpleMessage("Далее"),
     "noLabel": MessageLookupByLibrary.simpleMessage("Нет"),

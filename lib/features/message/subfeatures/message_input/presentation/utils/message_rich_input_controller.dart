@@ -1,9 +1,18 @@
 // message_rich_input_controller.dart
 // ignore_for_file: use_super_parameters
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-enum MessageInlineStyleType { bold, italic, code, strike, link, codeBlock }
+enum MessageInlineStyleType {
+  bold,
+  italic,
+  underline,
+  code,
+  strike,
+  link,
+  codeBlock,
+}
 
 final class MessageInlineStyleRange {
   const MessageInlineStyleRange({
@@ -35,6 +44,7 @@ final class MessageRichInputController extends TextEditingController {
     required TextStyle baseStyle,
     required TextStyle boldStyle,
     required TextStyle italicStyle,
+    required TextStyle underlineStyle,
     required TextStyle codeStyle,
     required TextStyle strikeStyle,
     required TextStyle linkStyle,
@@ -43,6 +53,7 @@ final class MessageRichInputController extends TextEditingController {
   }) : _baseStyle = baseStyle,
        _boldStyle = boldStyle,
        _italicStyle = italicStyle,
+       _underlineStyle = underlineStyle,
        _codeStyle = codeStyle,
        _strikeStyle = strikeStyle,
        _linkStyle = linkStyle,
@@ -52,6 +63,7 @@ final class MessageRichInputController extends TextEditingController {
   final TextStyle _baseStyle;
   final TextStyle _boldStyle;
   final TextStyle _italicStyle;
+  final TextStyle _underlineStyle;
   final TextStyle _codeStyle;
   final TextStyle _strikeStyle;
   final TextStyle _linkStyle;
@@ -65,7 +77,9 @@ final class MessageRichInputController extends TextEditingController {
   void setRanges(List<MessageInlineStyleRange> newRanges) {
     _ranges
       ..clear()
-      ..addAll(newRanges.where((MessageInlineStyleRange r) => r.isValid));
+      ..addAll(
+        newRanges.where((MessageInlineStyleRange range) => range.isValid),
+      );
     notifyListeners();
   }
 
@@ -76,6 +90,7 @@ final class MessageRichInputController extends TextEditingController {
 
   void toggleBold() => _toggleStyle(MessageInlineStyleType.bold);
   void toggleItalic() => _toggleStyle(MessageInlineStyleType.italic);
+  void toggleUnderline() => _toggleStyle(MessageInlineStyleType.underline);
   void toggleCode() => _toggleStyle(MessageInlineStyleType.code);
   void toggleStrike() => _toggleStyle(MessageInlineStyleType.strike);
 
@@ -85,12 +100,11 @@ final class MessageRichInputController extends TextEditingController {
       return;
     }
 
-    // Code block should not overlap with other styles.
     final int start = currentSelection.start;
     final int end = currentSelection.end;
 
-    _ranges.removeWhere((MessageInlineStyleRange r) {
-      final bool intersects = r.start < end && r.end > start;
+    _ranges.removeWhere((MessageInlineStyleRange range) {
+      final bool intersects = range.start < end && range.end > start;
       return intersects;
     });
 
@@ -111,8 +125,8 @@ final class MessageRichInputController extends TextEditingController {
     final int end = currentSelection.end;
 
     final int existingIndex = _ranges.indexWhere(
-      (MessageInlineStyleRange r) =>
-          r.type == type && r.start == start && r.end == end,
+      (MessageInlineStyleRange range) =>
+          range.type == type && range.start == start && range.end == end,
     );
 
     if (existingIndex != -1) {
@@ -140,11 +154,11 @@ final class MessageRichInputController extends TextEditingController {
   }
 
   void _clampRangesToTextLength(int length) {
-    _ranges.removeWhere((MessageInlineStyleRange r) {
-      if (!r.isValid) {
+    _ranges.removeWhere((MessageInlineStyleRange range) {
+      if (!range.isValid) {
         return true;
       }
-      return r.start >= length || r.end > length;
+      return range.start >= length || range.end > length;
     });
 
     notifyListeners();
@@ -156,19 +170,74 @@ final class MessageRichInputController extends TextEditingController {
     required bool withComposing,
     TextStyle? style,
   }) {
-    final String plain = text;
-    if (plain.isEmpty) {
+    final String plainText = text;
+    if (plainText.isEmpty) {
       return TextSpan(text: '', style: _baseStyle);
     }
 
+    final List<InlineSpan> spans = MessageInlineSpanBuilder.build(
+      plainText: plainText,
+      ranges: _ranges,
+      baseStyle: _baseStyle,
+      boldStyle: _boldStyle,
+      italicStyle: _italicStyle,
+      underlineStyle: _underlineStyle,
+      codeStyle: _codeStyle,
+      strikeStyle: _strikeStyle,
+      linkStyle: _linkStyle,
+      codeBlockStyle: _codeBlockStyle,
+      onLinkTap: null,
+      autoDetectLinks: false,
+    );
+
+    return TextSpan(style: _baseStyle, children: spans);
+  }
+}
+
+final class MessageInlineSpanBuilder {
+  static List<InlineSpan> build({
+    required String plainText,
+    required List<MessageInlineStyleRange> ranges,
+    required TextStyle baseStyle,
+    required TextStyle boldStyle,
+    required TextStyle italicStyle,
+    required TextStyle underlineStyle,
+    required TextStyle codeStyle,
+    required TextStyle strikeStyle,
+    required TextStyle linkStyle,
+    required TextStyle? codeBlockStyle,
+    required void Function(Uri uri)? onLinkTap,
+    required bool autoDetectLinks,
+  }) {
+    if (plainText.isEmpty) {
+      return const <InlineSpan>[];
+    }
+
+    final List<MessageInlineStyleRange> normalized = ranges
+        .where((MessageInlineStyleRange range) => range.isValid)
+        .map((MessageInlineStyleRange range) {
+          final int start = range.start.clamp(0, plainText.length);
+          final int end = range.end.clamp(0, plainText.length);
+          return range.copyWith(start: start, end: end);
+        })
+        .where((MessageInlineStyleRange range) => range.isValid)
+        .toList();
+
+    final List<MessageInlineStyleRange> effectiveRanges = autoDetectLinks
+        ? _withAutoLinkRanges(plainText: plainText, ranges: normalized)
+        : normalized;
+
     final List<int> boundaries =
-        <int>{0, plain.length}
+        <int>{0, plainText.length}
             .followedBy(
-              _ranges.expand(
-                (MessageInlineStyleRange r) => <int>[r.start, r.end],
+              effectiveRanges.expand(
+                (MessageInlineStyleRange range) => <int>[
+                  range.start,
+                  range.end,
+                ],
               ),
             )
-            .where((int v) => v >= 0 && v <= plain.length)
+            .where((int value) => value >= 0 && value <= plainText.length)
             .toSet()
             .toList()
           ..sort();
@@ -182,49 +251,208 @@ final class MessageRichInputController extends TextEditingController {
         continue;
       }
 
-      final String segment = plain.substring(start, end);
-      final TextStyle segmentStyle = _resolveStyleForSegment(
-        start: start,
-        end: end,
-      );
+      final String segmentText = plainText.substring(start, end);
 
-      spans.add(TextSpan(text: segment, style: segmentStyle));
+      TextStyle resolved = baseStyle;
+      String? linkUrl;
+
+      for (final MessageInlineStyleRange range in effectiveRanges) {
+        final bool intersects = range.start < end && range.end > start;
+        if (!intersects) {
+          continue;
+        }
+
+        switch (range.type) {
+          case MessageInlineStyleType.bold:
+            resolved = resolved.merge(boldStyle);
+            break;
+          case MessageInlineStyleType.italic:
+            resolved = resolved.merge(italicStyle);
+            break;
+          case MessageInlineStyleType.underline:
+            resolved = resolved.merge(underlineStyle);
+            break;
+          case MessageInlineStyleType.code:
+            resolved = resolved.merge(codeStyle);
+            break;
+          case MessageInlineStyleType.strike:
+            resolved = resolved.merge(strikeStyle);
+            break;
+          case MessageInlineStyleType.link:
+            resolved = resolved.merge(linkStyle);
+            linkUrl ??= range.url;
+            break;
+          case MessageInlineStyleType.codeBlock:
+            if (codeBlockStyle != null) {
+              resolved = resolved.merge(codeBlockStyle);
+            }
+            break;
+        }
+      }
+
+      spans.add(
+        _SpanSegment(
+          text: segmentText,
+          style: resolved,
+          linkUrl: linkUrl,
+        ).toTextSpan(onLinkTap),
+      );
     }
 
-    return TextSpan(style: _baseStyle, children: spans);
+    return spans;
   }
 
-  TextStyle _resolveStyleForSegment({required int start, required int end}) {
-    TextStyle resolved = _baseStyle;
+  static List<MessageInlineStyleRange> _withAutoLinkRanges({
+    required String plainText,
+    required List<MessageInlineStyleRange> ranges,
+  }) {
+    final List<MessageInlineStyleRange> out =
+        List<MessageInlineStyleRange>.from(ranges);
 
-    for (final MessageInlineStyleRange range in _ranges) {
-      final bool intersects = range.start < end && range.end > start;
-      if (!intersects) {
+    final List<_UrlHit> hits = _detectUrlsTelegramLike(plainText);
+    if (hits.isEmpty) {
+      return out;
+    }
+
+    bool intersectsAnyLink(int start, int end) {
+      for (final MessageInlineStyleRange range in out) {
+        if (range.type != MessageInlineStyleType.link) {
+          continue;
+        }
+        final bool intersects = range.start < end && range.end > start;
+        if (intersects) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    for (final _UrlHit hit in hits) {
+      if (intersectsAnyLink(hit.start, hit.end)) {
         continue;
       }
 
-      switch (range.type) {
-        case MessageInlineStyleType.bold:
-          resolved = resolved.merge(_boldStyle);
-          break;
-        case MessageInlineStyleType.italic:
-          resolved = resolved.merge(_italicStyle);
-          break;
-        case MessageInlineStyleType.code:
-          resolved = resolved.merge(_codeStyle);
-          break;
-        case MessageInlineStyleType.strike:
-          resolved = resolved.merge(_strikeStyle);
-          break;
-        case MessageInlineStyleType.link:
-          resolved = resolved.merge(_linkStyle);
-          break;
-        case MessageInlineStyleType.codeBlock:
-          resolved = resolved.merge(_codeBlockStyle);
-          break;
-      }
+      out.add(
+        MessageInlineStyleRange(
+          type: MessageInlineStyleType.link,
+          start: hit.start,
+          end: hit.end,
+          url: hit.url,
+        ),
+      );
     }
 
-    return resolved;
+    return out;
   }
+
+  static List<_UrlHit> _detectUrlsTelegramLike(String text) {
+    final RegExp regExp = RegExp(
+      r'((?:https?:\/\/|www\.)[^\s<]+|(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+(?:[a-z]{2,})(?:\/[^\s<]*)?)',
+      caseSensitive: false,
+    );
+
+    final Iterable<RegExpMatch> matches = regExp.allMatches(text);
+
+    final List<_UrlHit> hits = <_UrlHit>[];
+    for (final RegExpMatch match in matches) {
+      final String? raw = match.group(0);
+      if (raw == null || raw.isEmpty) {
+        continue;
+      }
+
+      final String trimmed = _trimUrlTail(raw);
+      if (trimmed.isEmpty) {
+        continue;
+      }
+
+      final int endOffset = match.start + trimmed.length;
+
+      if (match.start > 0 && text[match.start - 1] == '@') {
+        continue;
+      }
+
+      hits.add(_UrlHit(start: match.start, end: endOffset, url: trimmed));
+    }
+
+    return hits;
+  }
+
+  static String _trimUrlTail(String url) {
+    String out = url;
+    while (out.isNotEmpty) {
+      final String last = out[out.length - 1];
+      final bool shouldTrim =
+          last == '.' ||
+          last == ',' ||
+          last == '!' ||
+          last == '?' ||
+          last == ':' ||
+          last == ';' ||
+          last == ')' ||
+          last == ']' ||
+          last == '}' ||
+          last == '"' ||
+          last == "'";
+      if (!shouldTrim) {
+        break;
+      }
+      out = out.substring(0, out.length - 1);
+    }
+    return out;
+  }
+}
+
+final class _SpanSegment {
+  const _SpanSegment({
+    required this.text,
+    required this.style,
+    required this.linkUrl,
+  });
+
+  final String text;
+  final TextStyle style;
+  final String? linkUrl;
+
+  InlineSpan toTextSpan(void Function(Uri uri)? onLinkTap) {
+    final String? url = linkUrl;
+    if (url == null || onLinkTap == null) {
+      return TextSpan(text: text, style: style);
+    }
+
+    final Uri? uri = _normalizeAndParseUrl(url);
+    if (uri == null) {
+      return TextSpan(text: text, style: style);
+    }
+
+    return TextSpan(
+      text: text,
+      style: style,
+      recognizer: TapGestureRecognizer()..onTap = () => onLinkTap(uri),
+    );
+  }
+
+  Uri? _normalizeAndParseUrl(String raw) {
+    final String trimmed = raw.trim();
+    if (trimmed.isEmpty) {
+      return null;
+    }
+
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      return Uri.tryParse(trimmed);
+    }
+
+    if (trimmed.startsWith('www.')) {
+      return Uri.tryParse('https://$trimmed');
+    }
+
+    return Uri.tryParse('https://$trimmed');
+  }
+}
+
+final class _UrlHit {
+  const _UrlHit({required this.start, required this.end, required this.url});
+
+  final int start;
+  final int end;
+  final String url;
 }
