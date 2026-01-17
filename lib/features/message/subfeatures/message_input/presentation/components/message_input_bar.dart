@@ -18,6 +18,24 @@ class MessageInputBar extends StatefulWidget {
 
 class _MessageInputBarState extends State<MessageInputBar> {
   MessageRichInputController? _textEditingController;
+  bool _emojiWarmUpStarted = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _startEmojiWarmUpIfNeeded();
+    });
+  }
+
+  void _startEmojiWarmUpIfNeeded() {
+    if (_emojiWarmUpStarted) {
+      return;
+    }
+    _emojiWarmUpStarted = true;
+    warmUpEmojiRasterization();
+  }
 
   @override
   void didChangeDependencies() {

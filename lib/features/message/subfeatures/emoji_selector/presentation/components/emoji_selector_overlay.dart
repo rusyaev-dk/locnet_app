@@ -102,12 +102,12 @@ class _EmojiSelectorPanelState extends State<_EmojiSelectorPanel> {
       _sectionKeys[category.type] = GlobalKey();
     }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (!mounted) {
-        return;
-      }
-      await warmUpEmojiRasterization();
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) async {
+    //   if (!mounted) {
+    //     return;
+    //   }
+    //   await warmUpEmojiRasterization();
+    // });
 
     _searchController.addListener(_handleSearchChanged);
   }
@@ -151,12 +151,14 @@ class _EmojiSelectorPanelState extends State<_EmojiSelectorPanel> {
               ),
               Divider(height: 1, color: colorScheme.outlineVariant),
               Expanded(
-                child: _EmojiCategoryScroll(
-                  scrollController: _scrollController,
-                  sectionKeys: _sectionKeys,
-                  query: _query,
-                  recent: _recent,
-                  onEmojiTap: _handleEmojiTap,
+                child: RepaintBoundary(
+                  child: _EmojiCategoryScroll(
+                    scrollController: _scrollController,
+                    sectionKeys: _sectionKeys,
+                    query: _query,
+                    recent: _recent,
+                    onEmojiTap: _handleEmojiTap,
+                  ),
                 ),
               ),
               EmojiSelectorBottomBar(onCategoryTap: _scrollToCategory),
@@ -255,7 +257,7 @@ class _EmojiCategoryScroll extends StatelessWidget {
     );
 
     return CustomScrollView(
-      cacheExtent: double.infinity,
+      cacheExtent: 250,
       controller: scrollController,
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       slivers: <Widget>[
@@ -373,71 +375,33 @@ class _EmojiSectionHeader extends StatelessWidget {
   }
 }
 
-Future<void> warmUpEmojiRasterization() async {
-  const List<String> sample = <String>[
-    '😀',
-    '😃',
-    '😄',
-    '😁',
-    '😆',
-    '😅',
-    '😂',
-    '🤣',
-    '😊',
-    '😉',
-    '🐶',
-    '🐱',
-    '🐻',
-    '🐼',
-    '🐨',
-    '🐯',
-    '🍎',
-    '🍊',
-    '🍌',
-    '🍉',
-    '🍔',
-    '🍟',
-    '🍕',
-    '⚽',
-    '🏀',
-    '🎮',
-    '🎲',
-    '🎯',
-    '✈️',
-    '🚗',
-    '🚆',
-    '🚀',
-    '💡',
-    '📱',
-    '💻',
-    '🔧',
-    '❤️',
-    '⚠️',
-    '✅',
-    '❌',
-    '🇺🇸',
-    '🇬🇧',
-    '🇩🇪',
-    '🇫🇷',
+void warmUpEmojiRasterization() async {
+  final List<String> warmUpEmojis = <String>[
+    for (final EmojiCategory category in emojiCategories)
+      ...category.emojis.take(60),
   ];
 
-  final TextPainter painter =
-      TextPainter(
-          text: const TextSpan(text: '', style: TextStyle(fontSize: 24)),
-          textDirection: TextDirection.ltr,
-        )
-        ..text = TextSpan(
-          text: sample.join(),
-          style: const TextStyle(fontSize: 24),
-        )
-        ..layout(maxWidth: 10000);
+  const TextStyle style = TextStyle(fontSize: 24);
+  const int batchSize = 80;
 
-  final PictureRecorder recorder = PictureRecorder();
-  final Canvas canvas = Canvas(recorder);
-  painter.paint(canvas, Offset.zero);
-  recorder.endRecording();
+  for (
+    int startIndex = 0;
+    startIndex < warmUpEmojis.length;
+    startIndex += batchSize
+  ) {
+    final int endIndex = math.min(startIndex + batchSize, warmUpEmojis.length);
+    final String text = warmUpEmojis.sublist(startIndex, endIndex).join();
 
-  await Future<void>.delayed(const Duration(milliseconds: 1));
+    final TextPainter painter = TextPainter(
+      text: TextSpan(text: text, style: style),
+      textDirection: TextDirection.ltr,
+    )..layout(maxWidth: 10000);
+
+    final PictureRecorder recorder = PictureRecorder();
+    final Canvas canvas = Canvas(recorder);
+    painter.paint(canvas, Offset.zero);
+    recorder.endRecording();
+  }
 }
 
 String emojiCategoryTitle({

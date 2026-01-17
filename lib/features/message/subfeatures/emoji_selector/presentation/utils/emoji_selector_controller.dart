@@ -7,7 +7,15 @@ final class EmojiSelectorController {
 
   OverlayEntry? _entry;
 
-  bool get isShown => _entry != null;
+  final ValueNotifier<bool> _isVisibleNotifier = ValueNotifier<bool>(false);
+  final ValueNotifier<RelativeRect?> _positionNotifier =
+      ValueNotifier<RelativeRect?>(null);
+
+  TextEditingController? _textController;
+  VoidCallback? _onDismiss;
+  void Function({required bool isHovered})? _onOverlayHoverChanged;
+
+  bool get isShown => _isVisibleNotifier.value;
 
   void show({
     required BuildContext context,
@@ -16,7 +24,32 @@ final class EmojiSelectorController {
     required VoidCallback onDismiss,
     required void Function({required bool isHovered}) onOverlayHoverChanged,
   }) {
-    hide();
+    _textController = textController;
+    _onDismiss = onDismiss;
+    _onOverlayHoverChanged = onOverlayHoverChanged;
+
+    _ensureEntryInserted(context);
+
+    _positionNotifier.value = position;
+    _isVisibleNotifier.value = true;
+  }
+
+  void hide() {
+    _isVisibleNotifier.value = false;
+  }
+
+  void dispose() {
+    _isVisibleNotifier.dispose();
+    _positionNotifier.dispose();
+
+    _entry?.remove();
+    _entry = null;
+  }
+
+  void _ensureEntryInserted(BuildContext context) {
+    if (_entry != null) {
+      return;
+    }
 
     final OverlayState overlayState = Overlay.of(context, rootOverlay: true);
 
@@ -24,13 +57,43 @@ final class EmojiSelectorController {
       builder: (BuildContext overlayContext) {
         return Padding(
           padding: const EdgeInsets.only(right: 5, bottom: 55),
-          child: MouseRegion(
-            onEnter: (_) => onOverlayHoverChanged(isHovered: true),
-            onExit: (_) => onOverlayHoverChanged(isHovered: false),
-            child: EmojiSelectorOverlay(
-              position: position,
-              textController: textController,
-              onDismiss: onDismiss,
+          child: ValueListenableBuilder<bool>(
+            valueListenable: _isVisibleNotifier,
+            builder: (BuildContext context, bool isVisible, Widget? child) {
+              return Offstage(
+                offstage: !isVisible,
+                child: IgnorePointer(ignoring: !isVisible, child: child),
+              );
+            },
+            child: MouseRegion(
+              onEnter: (_) => _onOverlayHoverChanged?.call(isHovered: true),
+              onExit: (_) => _onOverlayHoverChanged?.call(isHovered: false),
+              child: ValueListenableBuilder<RelativeRect?>(
+                valueListenable: _positionNotifier,
+                builder:
+                    (
+                      BuildContext context,
+                      RelativeRect? position,
+                      Widget? child,
+                    ) {
+                      final RelativeRect effectivePosition =
+                          position ?? const RelativeRect.fromLTRB(0, 0, 0, 0);
+
+                      final TextEditingController? controller = _textController;
+                      if (controller == null) {
+                        return const SizedBox.shrink();
+                      }
+
+                      return EmojiSelectorOverlay(
+                        position: effectivePosition,
+                        textController: controller,
+                        onDismiss: () {
+                          _onDismiss?.call();
+                          hide();
+                        },
+                      );
+                    },
+              ),
             ),
           ),
         );
@@ -38,14 +101,5 @@ final class EmojiSelectorController {
     );
 
     overlayState.insert(_entry!);
-  }
-
-  void hide() {
-    _entry?.remove();
-    _entry = null;
-  }
-
-  void dispose() {
-    hide();
   }
 }
