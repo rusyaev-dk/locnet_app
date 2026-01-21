@@ -81,82 +81,38 @@ class _ConversationCreatorModalCardState
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = context.colorScheme;
+    return AppModalCard(
+      child: BlocListener<ConversationCreatorBloc, ConversationCreatorState>(
+        listenWhen:
+            (
+              ConversationCreatorState previous,
+              ConversationCreatorState current,
+            ) {
+              return previous.success != current.success;
+            },
+        listener: (BuildContext context, ConversationCreatorState state) {
+          if (state.success) {
+            Navigator.of(context).maybePop();
+          }
+        },
+        child: BlocBuilder<ConversationCreatorBloc, ConversationCreatorState>(
+          builder: (BuildContext context, ConversationCreatorState state) {
+            final Object? failure = state.failure;
 
-    return SafeArea(
-      child: Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: 420,
-            maxHeight: MediaQuery.of(context).size.height - 48,
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(14),
-            child: Material(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: colorScheme.secondary,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: colorScheme.outlineVariant),
-                ),
-                child:
-                    BlocListener<
-                      ConversationCreatorBloc,
-                      ConversationCreatorState
-                    >(
-                      listenWhen:
-                          (
-                            ConversationCreatorState previous,
-                            ConversationCreatorState current,
-                          ) {
-                            return previous.success != current.success;
-                          },
-                      listener:
-                          (
-                            BuildContext context,
-                            ConversationCreatorState state,
-                          ) {
-                            if (state.success) {
-                              Navigator.of(context).maybePop();
-                            }
-                          },
-                      child:
-                          BlocBuilder<
-                            ConversationCreatorBloc,
-                            ConversationCreatorState
-                          >(
-                            builder:
-                                (
-                                  BuildContext context,
-                                  ConversationCreatorState state,
-                                ) {
-                                  final Object? failure = state.failure;
+            if (failure != null && !state.success && !state.isPending) {
+              return InfoWidget(
+                icon: Icons.error,
+                text: AppExceptionsTranslator.translate(context, failure),
+                iconAnimationEffect: const ShakeEffect(),
+              );
+            }
 
-                                  if (failure != null &&
-                                      !state.success &&
-                                      !state.isPending) {
-                                    return InfoWidget(
-                                      icon: Icons.error,
-                                      text: AppExceptionsTranslator.translate(
-                                        context,
-                                        failure,
-                                      ),
-                                      iconAnimationEffect: const ShakeEffect(),
-                                    );
-                                  }
-
-                                  return _ConversationCreatorView(
-                                    titleController: _titleController,
-                                    descriptionController:
-                                        _descriptionController,
-                                    state: state,
-                                  );
-                                },
-                          ),
-                    ),
-              ),
-            ),
-          ),
+            return _ConversationCreatorView(
+              titleController: _titleController,
+              descriptionController: _descriptionController,
+              state: state,
+            );
+          },
         ),
       ),
     );

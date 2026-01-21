@@ -39,63 +39,46 @@ class ProfileModalCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = context.colorScheme;
-    final textScheme = context.textScheme;
-
     return ProfileModalWrapper(
-      child: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: 420,
-              maxHeight: MediaQuery.of(context).size.height - 48,
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(14),
-              child: Material(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: colorScheme.secondary,
-                    borderRadius: BorderRadius.circular(14),
+      child: AppModalCard(
+        child: BlocBuilder<ProfileCubit, ProfileState>(
+          builder: (BuildContext context, ProfileState state) {
+            final textScheme = context.textScheme;
+            final colorScheme = context.colorScheme;
+
+            switch (state) {
+              case ProfileInitialState():
+              case ProfileLoadingState():
+                return Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const CircularProgressIndicator(),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Loading profile...',
+                          style: textScheme.headline.copyWith(
+                            color: colorScheme.onSurface,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  child: BlocBuilder<ProfileCubit, ProfileState>(
-                    builder: (BuildContext context, ProfileState state) {
-                      switch (state) {
-                        case ProfileInitialState():
-                        case ProfileLoadingState():
-                          return Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Center(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const CircularProgressIndicator(),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    'Loading profile...',
-                                    style: textScheme.headline.copyWith(
-                                      color: colorScheme.onSurface,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        case ProfileFailureState():
-                          return InfoWidget(
-                            icon: Icons.error,
-                            text: state.failure.toString(),
-                            iconAnimationEffect: const ShakeEffect(),
-                          );
-                        case ProfileLoadedState():
-                          return _ProfileView(profileState: state);
-                      }
-                    },
-                  ),
-                ),
-              ),
-            ),
-          ),
+                );
+
+              case ProfileFailureState():
+                return InfoWidget(
+                  icon: Icons.error,
+                  text: state.failure.toString(),
+                  iconAnimationEffect: const ShakeEffect(),
+                );
+
+              case ProfileLoadedState():
+                return _ProfileView(profileState: state);
+            }
+          },
         ),
       ),
     );

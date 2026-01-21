@@ -80,59 +80,38 @@ class _ProfileEditorModalCardState extends State<ProfileEditorModalCard> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = context.colorScheme;
-
     return BlocListener<ProfileEditorCubit, ProfileEditorState>(
       listener: (context, state) {
         if (state is ProfileEditorSuccessState) {
           Navigator.of(context).pop(true);
         }
       },
-      child: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: 420,
-              maxHeight: MediaQuery.of(context).size.height - 48,
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(14),
-              child: Material(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: colorScheme.secondary,
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: BlocBuilder<ProfileEditorCubit, ProfileEditorState>(
-                    builder: (BuildContext context, ProfileEditorState state) {
-                      if (state is ProfileEditorFailureState) {
-                        return InfoWidget(
-                          icon: Icons.error,
-                          text: state.failure.toString(),
-                          iconAnimationEffect: const ShakeEffect(),
-                        );
-                      }
+      child: AppModalCard(
+        child: BlocBuilder<ProfileEditorCubit, ProfileEditorState>(
+          builder: (BuildContext context, ProfileEditorState state) {
+            if (state is ProfileEditorFailureState) {
+              return InfoWidget(
+                icon: Icons.error,
+                text: state.failure.toString(),
+                iconAnimationEffect: const ShakeEffect(),
+              );
+            }
 
-                      final bool isLoading =
-                          state is ProfileEditorInitialState ||
-                          state is ProfileEditorLoadingState;
+            final bool isLoading =
+                state is ProfileEditorInitialState ||
+                state is ProfileEditorLoadingState;
 
-                      final ProfileEditorLoadedState? loadedState =
-                          state is ProfileEditorLoadedState ? state : null;
+            final ProfileEditorLoadedState? loadedState =
+                state is ProfileEditorLoadedState ? state : null;
 
-                      return _ProfileEditorView(
-                        firstNameController: _firstNameController,
-                        lastNameController: _lastNameController,
-                        usernameController: _usernameController,
-                        isLoading: isLoading,
-                        loadedState: loadedState,
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ),
-          ),
+            return _ProfileEditorView(
+              firstNameController: _firstNameController,
+              lastNameController: _lastNameController,
+              usernameController: _usernameController,
+              isLoading: isLoading,
+              loadedState: loadedState,
+            );
+          },
         ),
       ),
     );
