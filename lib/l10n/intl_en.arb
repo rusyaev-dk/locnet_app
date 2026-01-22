@@ -134,5 +134,8 @@
   "emojiCategoryRecent": "Недавние",
   "emojiSearchResults": "Результаты поиска",
     "companionStatusOnline": "В сети",
-    "companionStatusOffline": "Не в сети"
+    "companionStatusOffline": "Не в сети",
+    
+    "conversationTypeGroupHint": "Подходит для совместного общения пользователей. Все участники могут отправлять сообщения и видеть историю переписки.",
+    "conversationTypeChannelHint": "Используется для публикации сообщений. Обычно писать могут только выбранные пользователи, остальные — читать."
 }

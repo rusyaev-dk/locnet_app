@@ -81,7 +81,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "conversationTitle": MessageLookupByLibrary.simpleMessage("Название"),
     "conversationType": MessageLookupByLibrary.simpleMessage("Тип"),
     "conversationTypeChannel": MessageLookupByLibrary.simpleMessage("Канал"),
+    "conversationTypeChannelHint": MessageLookupByLibrary.simpleMessage(
+      "Используется для публикации сообщений. Обычно писать могут только выбранные пользователи, остальные — читать.",
+    ),
     "conversationTypeGroup": MessageLookupByLibrary.simpleMessage("Группа"),
+    "conversationTypeGroupHint": MessageLookupByLibrary.simpleMessage(
+      "Подходит для совместного общения пользователей. Все участники могут отправлять сообщения и видеть историю переписки.",
+    ),
     "conversationTypePrivate": MessageLookupByLibrary.simpleMessage("Личная"),
     "conversations": MessageLookupByLibrary.simpleMessage("Переписки"),
     "create": MessageLookupByLibrary.simpleMessage("Создать"),

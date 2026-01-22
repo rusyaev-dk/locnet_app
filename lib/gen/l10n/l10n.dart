@@ -1178,6 +1178,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Подходит для совместного общения пользователей. Все участники могут отправлять сообщения и видеть историю переписки.`
+  String get conversationTypeGroupHint {
+    return Intl.message(
+      'Подходит для совместного общения пользователей. Все участники могут отправлять сообщения и видеть историю переписки.',
+      name: 'conversationTypeGroupHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Используется для публикации сообщений. Обычно писать могут только выбранные пользователи, остальные — читать.`
+  String get conversationTypeChannelHint {
+    return Intl.message(
+      'Используется для публикации сообщений. Обычно писать могут только выбранные пользователи, остальные — читать.',
+      name: 'conversationTypeChannelHint',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
