@@ -7,6 +7,7 @@ import 'package:locnet_app/features/conversation/subfeatures/channel/data/data.d
 import 'package:locnet_app/features/conversation/subfeatures/group/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/data/data.dart';
 import 'package:locnet_app/features/conversations/data/data.dart';
+import 'package:locnet_app/features/conversations/subfeatures/unified_search/data/data.dart';
 import 'package:locnet_app/features/message/data/data.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
 import 'package:locnet_app/features/theme_editor/data/data.dart';
@@ -23,6 +24,8 @@ abstract interface class IAppEnvPreset {
   IPrivateConversationRepo createPrivateConversationRepo();
   IGroupConversationRepo createGroupConversationRepo();
   IConversationsListRepo createConversationsListRepo();
+
+  IUnifiedSearchRepo createUnifiedSearchRepo();
 
   IMessageRepo createMessageRepo();
 

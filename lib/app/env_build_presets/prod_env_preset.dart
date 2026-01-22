@@ -7,6 +7,7 @@ import 'package:locnet_app/features/conversation/subfeatures/channel/data/reposi
 import 'package:locnet_app/features/conversation/subfeatures/group/data/repositories/group_conversation_repo/i_group_conversation_repo.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/data/repositories/private_conversation_repo/i_private_conversation_repo.dart';
 import 'package:locnet_app/features/conversations/data/repositories/conversations_list_repo/i_conversations_list_repo.dart';
+import 'package:locnet_app/features/conversations/subfeatures/unified_search/data/data.dart';
 import 'package:locnet_app/features/message/data/repositories/message_repo/i_message_repo.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
 import 'package:locnet_app/features/theme_editor/data/data.dart';
@@ -102,5 +103,10 @@ final class ProdEnvPreset implements IAppEnvPreset {
   @override
   IDeviceInfoRepo createDeviceInfoRepo() {
     return const DeviceInfoRepo();
+  }
+
+  @override
+  IUnifiedSearchRepo createUnifiedSearchRepo() {
+    throw UnimplementedError();
   }
 }

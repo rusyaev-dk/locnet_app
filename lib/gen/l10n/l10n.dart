@@ -1198,6 +1198,46 @@ class S {
       args: [],
     );
   }
+
+  /// `Введите имя пользователя или название группы или канала.`
+  String get searchUsersAndChatsHint {
+    return Intl.message(
+      'Введите имя пользователя или название группы или канала.',
+      name: 'searchUsersAndChatsHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Пользователи`
+  String get users {
+    return Intl.message('Пользователи', name: 'users', desc: '', args: []);
+  }
+
+  /// `Чаты`
+  String get chats {
+    return Intl.message('Чаты', name: 'chats', desc: '', args: []);
+  }
+
+  /// `Ничего не найдено`
+  String get nothingFound {
+    return Intl.message(
+      'Ничего не найдено',
+      name: 'nothingFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Попробуйте изменить запрос.`
+  String get tryAnotherQuery {
+    return Intl.message(
+      'Попробуйте изменить запрос.',
+      name: 'tryAnotherQuery',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

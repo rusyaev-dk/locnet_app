@@ -8,6 +8,8 @@ import 'package:locnet_app/features/auth/domain/domain.dart';
 import 'package:locnet_app/features/auth/presentation/presentation.dart';
 import 'package:locnet_app/features/conversation/data/data.dart';
 import 'package:locnet_app/features/conversations/data/data.dart';
+import 'package:locnet_app/features/conversations/subfeatures/unified_search/data/data.dart';
+import 'package:locnet_app/features/conversations/subfeatures/unified_search/domain/domain.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
 import 'package:locnet_app/features/settings/domain/domain.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
@@ -65,6 +67,9 @@ class AppProvidersWrapper extends StatelessWidget {
           RepositoryProvider<IThemeEditorRepo>(
             create: (context) => envPreset.createThemeEditorRepo(),
           ),
+          RepositoryProvider<IUnifiedSearchRepo>(
+            create: (context) => envPreset.createUnifiedSearchRepo(),
+          ),
           RepositoryProvider<IUserCacheRepo>(
             create: (context) => LocalUserCacheRepo(
               storage: appScope.storageAggregator.secureStorage,
@@ -114,6 +119,11 @@ class _InteractorProviders extends StatelessWidget {
             userRepo: context.read<IUserRepo>(),
             userCacheRepo: context.read<IUserCacheRepo>(),
             logger: context.read<ILogger>(),
+          ),
+        ),
+        RepositoryProvider<UnifiedSearchInteractor>(
+          create: (context) => UnifiedSearchInteractor(
+            searchRepo: context.read<IUnifiedSearchRepo>(),
           ),
         ),
         RepositoryProvider<AuthInteractor>(

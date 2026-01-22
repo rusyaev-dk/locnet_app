@@ -7,6 +7,7 @@ import 'package:locnet_app/features/conversation/subfeatures/channel/data/reposi
 import 'package:locnet_app/features/conversation/subfeatures/group/data/repositories/group_conversation_repo/i_group_conversation_repo.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/data/data.dart';
 import 'package:locnet_app/features/conversations/data/data.dart';
+import 'package:locnet_app/features/conversations/subfeatures/unified_search/data/repositories/repositories.dart';
 import 'package:locnet_app/features/message/data/repositories/message_repo/i_message_repo.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
 import 'package:locnet_app/features/theme_editor/data/data.dart';
@@ -99,5 +100,10 @@ final class DevEnvPreset implements IAppEnvPreset {
   @override
   IDeviceInfoRepo createDeviceInfoRepo() {
     return const DeviceInfoRepo();
+  }
+
+  @override
+  IUnifiedSearchRepo createUnifiedSearchRepo() {
+    return MockUnifiedSearchRepo(backend: _mockInMemoryBackend);
   }
 }

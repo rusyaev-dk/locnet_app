@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/conversation/data/data.dart';
 import 'package:locnet_app/features/conversation/domain/domain.dart';
+import 'package:locnet_app/features/conversations/subfeatures/unified_search/data/data.dart';
 import 'package:locnet_app/features/message/data/data.dart';
 import 'package:locnet_app/features/message/domain/domain.dart';
 import 'package:locnet_app/mock/mock.dart';
@@ -238,7 +239,7 @@ final class MockInMemoryBackend {
       pageSize: _conversationMessagesPageSize,
     );
   }
-
+  
   // --------------------- Conversation participants
 
   List<ConversationParticipantDto> getAllParticipants({
@@ -255,6 +256,58 @@ final class MockInMemoryBackend {
       pageSize: _conversationParticipantsPageSize,
     );
   }
+
+  // --------------------- UNIFIED SEARCH
+
+  UnifiedSearchResultDto unifiedSearch({required String query, int page = 1}) {
+  final String normalizedQuery = query.trim().toLowerCase();
+  if (normalizedQuery.isEmpty) {
+    return const UnifiedSearchResultDto(
+      users: <UserDto>[],
+      conversations: <ConversationDto>[],
+    );
+  }
+
+  final List<UserDto> matchedUsers = MockUnifiedSearchHelper.filterUsers(
+    users: _users.values,
+    normalizedQuery: normalizedQuery,
+  );
+
+  final List<ConversationDto> matchedConversations =
+      MockUnifiedSearchHelper.filterConversations(
+    conversations: _conversations.values,
+    normalizedQuery: normalizedQuery,
+  );
+
+  final List<UserDto> rankedUsers = MockUnifiedSearchHelper.rankUsers(
+    items: matchedUsers,
+    normalizedQuery: normalizedQuery,
+  );
+
+  final List<ConversationDto> rankedConversations =
+      MockUnifiedSearchHelper.rankConversations(
+    items: matchedConversations,
+    normalizedQuery: normalizedQuery,
+  );
+
+  final List<UserDto> pagedUsers = _paginateList(
+    items: rankedUsers,
+    page: page,
+    pageSize: _usersPageSize,
+  );
+
+  final List<ConversationDto> pagedConversations = _paginateList(
+    items: rankedConversations,
+    page: page,
+    pageSize: _conversationsPageSize,
+  );
+
+  return UnifiedSearchResultDto(
+    users: pagedUsers,
+    conversations: pagedConversations,
+  );
+}
+
 
   List<T> _paginateList<T>({
     required List<T> items,

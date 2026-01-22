@@ -66,6 +66,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "charactersCountViolationException": MessageLookupByLibrary.simpleMessage(
       "Недопустимое количество символов",
     ),
+    "chats": MessageLookupByLibrary.simpleMessage("Чаты"),
     "chooseHowTheAppLooks": MessageLookupByLibrary.simpleMessage(
       "Выберите облик приложения",
     ),
@@ -187,6 +188,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "next": MessageLookupByLibrary.simpleMessage("Далее"),
     "noLabel": MessageLookupByLibrary.simpleMessage("Нет"),
     "notSpecified": MessageLookupByLibrary.simpleMessage("Не задано"),
+    "nothingFound": MessageLookupByLibrary.simpleMessage("Ничего не найдено"),
     "ok": MessageLookupByLibrary.simpleMessage("ОК"),
     "password": MessageLookupByLibrary.simpleMessage("Пароль"),
     "passwordTooWeakException": MessageLookupByLibrary.simpleMessage(
@@ -215,6 +217,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "save": MessageLookupByLibrary.simpleMessage("Сохранить"),
     "search": MessageLookupByLibrary.simpleMessage("Поиск"),
     "searchEmoji": MessageLookupByLibrary.simpleMessage("Поиск эмодзи"),
+    "searchUsersAndChatsHint": MessageLookupByLibrary.simpleMessage(
+      "Введите имя пользователя или название группы или канала.",
+    ),
     "selectInterfaceLanguage": MessageLookupByLibrary.simpleMessage(
       "Выберите язык интерфейса",
     ),
@@ -260,8 +265,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "toggleNotificationsOn": MessageLookupByLibrary.simpleMessage(
       "Включить уведомления",
     ),
+    "tryAnotherQuery": MessageLookupByLibrary.simpleMessage(
+      "Попробуйте изменить запрос.",
+    ),
     "unknownValue": MessageLookupByLibrary.simpleMessage("Неизвестно"),
     "username": MessageLookupByLibrary.simpleMessage("Юзернейм"),
+    "users": MessageLookupByLibrary.simpleMessage("Пользователи"),
     "yesLabel": MessageLookupByLibrary.simpleMessage("Да"),
   };
 }

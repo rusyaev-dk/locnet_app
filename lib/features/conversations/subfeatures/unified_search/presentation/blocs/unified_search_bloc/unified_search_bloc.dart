@@ -1,0 +1,193 @@
+import 'dart:async';
+
+import 'package:bloc/bloc.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:equatable/equatable.dart';
+import 'package:locnet_app/app/app.dart';
+import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/features/conversation/domain/domain.dart';
+import 'package:locnet_app/features/conversations/subfeatures/unified_search/domain/domain.dart';
+import 'package:stream_transform/stream_transform.dart';
+
+part 'unified_search_event.dart';
+part 'unified_search_state.dart';
+
+EventTransformer<E> debounceDroppable<E>(Duration duration) {
+  return (Stream<E> events, EventMapper<E> mapper) {
+    return droppable<E>().call(events.debounce(duration), mapper);
+  };
+}
+
+class UnifiedSearchBloc extends Bloc<UnifiedSearchEvent, UnifiedSearchState> {
+  UnifiedSearchBloc({
+    required UnifiedSearchInteractor searchInteractor,
+    required ILogger logger,
+  })  : _logger = logger,
+        _searchInteractor = searchInteractor,
+        super(const UnifiedSearchInitialState()) {
+    on<LoadUnifiedSearchEvent>(
+      _onLoad,
+      transformer: debounceDroppable<LoadUnifiedSearchEvent>(
+        const Duration(milliseconds: 350),
+      ),
+    );
+
+    on<LoadMoreUnifiedSearchEvent>(
+      _onLoadMore,
+      transformer: droppable<LoadMoreUnifiedSearchEvent>(),
+    );
+
+    on<FailureUnifiedSearchEvent>(_onFailure);
+  }
+
+  final UnifiedSearchInteractor _searchInteractor;
+  final ILogger _logger;
+
+  final int _pageSize = 20;
+
+  Future<void> _onLoad(
+    LoadUnifiedSearchEvent event,
+    Emitter<UnifiedSearchState> emit,
+  ) async {
+    try {
+      final String normalizedQuery = event.query.trim();
+
+      if (normalizedQuery.isEmpty) {
+        emit(const UnifiedSearchInitialState());
+        return;
+      }
+
+      emit(UnifiedSearchLoadingState(query: normalizedQuery));
+
+      final UnifiedSearchResult page1 = await _searchInteractor.search(
+        query: normalizedQuery,
+      );
+
+      final bool hasMore = _calculateHasMore(page1);
+
+      emit(
+        UnifiedSearchLoadedState(
+          query: normalizedQuery,
+          result: page1,
+          currentPage: 1,
+          hasMore: hasMore,
+        ),
+      );
+    } catch (e, st) {
+      _logger.exception(e, st);
+
+      final AppException appException = e is AppException
+          ? e
+          : AppUnknownException(
+              message: e.toString(),
+              error: e,
+              stackTrace: st,
+            );
+
+      emit(UnifiedSearchFailureState(query: event.query, failure: appException));
+    }
+  }
+
+  Future<void> _onLoadMore(
+    LoadMoreUnifiedSearchEvent event,
+    Emitter<UnifiedSearchState> emit,
+  ) async {
+    try {
+      if (state is! UnifiedSearchLoadedState) {
+        return;
+      }
+
+      final UnifiedSearchLoadedState prevState =
+          state as UnifiedSearchLoadedState;
+
+      if (!prevState.hasMore || prevState.isLoadingMore) {
+        return;
+      }
+
+      emit(prevState.copyWith(isLoadingMore: true));
+
+      final int nextPage = prevState.currentPage + 1;
+
+      final UnifiedSearchResult fetched = await _searchInteractor.search(
+        query: prevState.query,
+        page: nextPage,
+      );
+
+      final UnifiedSearchResult merged = _mergeAndDeduplicate(
+        current: prevState.result,
+        fetched: fetched,
+      );
+
+      final bool hasMore = _calculateHasMore(fetched);
+
+      emit(
+        prevState.copyWith(
+          result: merged,
+          currentPage: nextPage,
+          hasMore: hasMore,
+          isLoadingMore: false,
+        ),
+      );
+    } catch (e, st) {
+      _logger.exception(e, st);
+
+      final AppException appException = e is AppException
+          ? e
+          : AppUnknownException(
+              message: e.toString(),
+              error: e,
+              stackTrace: st,
+            );
+
+      emit(
+        UnifiedSearchFailureState(
+          query: switch (state) {
+            final UnifiedSearchLoadedState s => s.query,
+            final UnifiedSearchLoadingState s => s.query,
+            _ => null,
+          },
+          failure: appException,
+        ),
+      );
+    }
+  }
+
+  bool _calculateHasMore(UnifiedSearchResult fetched) {
+    final bool usersHasMore = fetched.users.length >= _pageSize;
+    final bool conversationsHasMore = fetched.conversations.length >= _pageSize;
+    return usersHasMore || conversationsHasMore;
+  }
+
+  UnifiedSearchResult _mergeAndDeduplicate({
+    required UnifiedSearchResult current,
+    required UnifiedSearchResult fetched,
+  }) {
+    final List<User> mergedUsers = <User>[...current.users, ...fetched.users];
+    final List<Conversation> mergedConversations = <Conversation>[
+      ...current.conversations,
+      ...fetched.conversations,
+    ];
+
+    final Map<String, User> usersById = <String, User>{};
+    for (final User user in mergedUsers) {
+      usersById[user.userId] = user;
+    }
+
+    final Map<String, Conversation> conversationsById = <String, Conversation>{};
+    for (final Conversation conversation in mergedConversations) {
+      conversationsById[conversation.conversationId] = conversation;
+    }
+
+    return UnifiedSearchResult(
+      users: usersById.values.toList(growable: false),
+      conversations: conversationsById.values.toList(growable: false),
+    );
+  }
+
+  Future<void> _onFailure(
+    FailureUnifiedSearchEvent event,
+    Emitter<UnifiedSearchState> emit,
+  ) async {
+    emit(UnifiedSearchFailureState(query: null, failure: event.failure));
+  }
+}
