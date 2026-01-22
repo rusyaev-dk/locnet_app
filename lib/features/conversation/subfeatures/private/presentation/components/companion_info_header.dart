@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/uikit/buttons/buttons.dart';
 
 class CompanionInfoHeader extends StatelessWidget {
   const CompanionInfoHeader({required this.companion, super.key});
@@ -11,14 +13,14 @@ class CompanionInfoHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
+    final l10n = context.l10n;
 
     final bool isActive = companion.isActive;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-      child: Stack(
-        children: [
-          Column(
+    return Stack(
+      children: [
+        Center(
+          child: Column(
             children: [
               const SizedBox(height: 6),
               CompanionAvatar(user: companion, size: 86),
@@ -26,13 +28,15 @@ class CompanionInfoHeader extends StatelessWidget {
               Text(
                 companion.fullName,
                 textAlign: TextAlign.center,
-                style: textScheme.display.copyWith(
+                style: textScheme.headline.copyWith(
                   color: colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: 6),
               Text(
-                isActive ? 'online' : 'offline',
+                isActive
+                    ? l10n.companionStatusOnline
+                    : l10n.companionStatusOffline,
                 style: textScheme.label.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
@@ -40,18 +44,17 @@ class CompanionInfoHeader extends StatelessWidget {
               const SizedBox(height: 12),
             ],
           ),
-          Positioned(
-            top: -4,
-            right: -4,
-            child: IconButton(
-              icon: const Icon(Icons.close),
-              color: colorScheme.onSurfaceVariant,
-              onPressed: () => Navigator.of(context).pop(),
-              tooltip: 'Close',
-            ),
+        ),
+        Align(
+          alignment: Alignment.topRight,
+          child: RoundedIconButton(
+            icon: Icons.close,
+            foregroundColor: colorScheme.onSurfaceVariant,
+            onPressed: () => GoRouter.of(context).pop(),
+            tooltip: l10n.close,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

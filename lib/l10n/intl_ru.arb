@@ -132,5 +132,8 @@
     "emojiCategorySymbols": "Символы",
     "emojiCategoryFlags": "Флаги",
     "emojiCategoryRecent": "Недавние",
-    "emojiSearchResults": "Результаты поиска"
+    "emojiSearchResults": "Результаты поиска",
+    "companionStatusOnline": "В сети",
+    "companionStatusOffline": "Не в сети"
+
 }

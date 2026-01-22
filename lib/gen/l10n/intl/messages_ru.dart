@@ -71,6 +71,8 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "clear": MessageLookupByLibrary.simpleMessage("Очистить"),
     "close": MessageLookupByLibrary.simpleMessage("Закрыть"),
+    "companionStatusOffline": MessageLookupByLibrary.simpleMessage("Не в сети"),
+    "companionStatusOnline": MessageLookupByLibrary.simpleMessage("В сети"),
     "confirm": MessageLookupByLibrary.simpleMessage("Подтвердить"),
     "conversationCreating": MessageLookupByLibrary.simpleMessage(
       "Создание переписки",

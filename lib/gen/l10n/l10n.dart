@@ -1158,6 +1158,26 @@ class S {
       args: [],
     );
   }
+
+  /// `В сети`
+  String get companionStatusOnline {
+    return Intl.message(
+      'В сети',
+      name: 'companionStatusOnline',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Не в сети`
+  String get companionStatusOffline {
+    return Intl.message(
+      'Не в сети',
+      name: 'companionStatusOffline',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

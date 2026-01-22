@@ -65,7 +65,7 @@ class _PrivateHeaderState extends State<PrivateHeader> {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    Text('online', style: textScheme.label),
+                    Text(l10n.companionStatusOnline, style: textScheme.label),
                   ],
                 ),
               ),
