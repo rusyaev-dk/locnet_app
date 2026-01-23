@@ -30,9 +30,9 @@ class ConversationsPanelWrapper extends StatelessWidget {
         providers: [
           BlocProvider(
             create: (BuildContext context) => AllConversationsListBloc(
-              conversationsListRepo: context.read<IConversationsListRepo>(),
               conversationsListInteractor: context
                   .read<ConversationsListInteractor>(),
+              userInteractor: context.read<UserInteractor>(),
               logger: context.read<ILogger>(),
             )..add(const AllConversationsListLoadEvent()),
           ),
@@ -221,8 +221,6 @@ class _ConversationsListPanel extends StatelessWidget {
                 Expanded(
                   child: ListView.builder(
                     itemCount: tiles.length,
-                    // separatorBuilder: (context, index) =>
-                    //     const SizedBox(height: 5),
                     itemBuilder: (BuildContext context, int index) {
                       final ConversationTile tile = tiles[index];
 
@@ -231,6 +229,7 @@ class _ConversationsListPanel extends StatelessWidget {
                         isSelected:
                             tile.conversation.conversationId ==
                             selectedConversationId,
+                        currentUserId: state.currentUserId,
                         isCompact: isCompact,
                         onTap: () {
                           GoRouter.of(context).go(

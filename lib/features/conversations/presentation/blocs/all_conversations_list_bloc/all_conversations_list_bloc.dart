@@ -14,11 +14,11 @@ class AllConversationsListBloc
     extends Bloc<AllConversationsListEvent, AllConversationsListState> {
   AllConversationsListBloc({
     required ConversationsListInteractor conversationsListInteractor,
+    required UserInteractor userInteractor,
     required ILogger logger,
-    required IConversationsListRepo conversationsListRepo,
   }) : _conversationsListInteractor = conversationsListInteractor,
+       _userInteractor = userInteractor,
        _logger = logger,
-       _conversationsListRepo = conversationsListRepo,
        super(const AllConversationsListInitial()) {
     on<AllConversationsListLoadEvent>(_onLoad);
     on<AllConversationsListLoadMoreEvent>(_onLoadMore);
@@ -26,13 +26,13 @@ class AllConversationsListBloc
     on<AllConversationsListConversationUpdatedEvent>(_onConversationUpdated);
     on<AllConversationsListConversationDeletedEvent>(_onConversationDeleted);
 
-    _conversationsUpdatesSub = _conversationsListRepo.conversationsUpdates
+    _conversationsUpdatesSub = _conversationsListInteractor.conversationsUpdates
         .listen(_onIncomingChange);
   }
 
   final ConversationsListInteractor _conversationsListInteractor;
+  final UserInteractor _userInteractor;
   final ILogger _logger;
-  final IConversationsListRepo _conversationsListRepo;
 
   late final StreamSubscription<ConversationsListUpdateRec>
   _conversationsUpdatesSub;
@@ -57,10 +57,13 @@ class AllConversationsListBloc
 
       final AllConversationsListState currentState = state;
 
+      final cachedUser = await _userInteractor.getCachedUser();
+
       if (!isLoadMore || currentState is! AllConversationsListLoadedState) {
         emit(
           AllConversationsListLoadedState(
             conversationTiles: loadedConversations,
+            currentUserId: cachedUser.userId,
             page: page,
           ),
         );

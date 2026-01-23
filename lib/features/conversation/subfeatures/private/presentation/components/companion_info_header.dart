@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/features/conversation/presentation/presentation.dart';
 import 'package:locnet_app/uikit/buttons/buttons.dart';
 
 class CompanionInfoHeader extends StatelessWidget {
@@ -23,7 +24,10 @@ class CompanionInfoHeader extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(height: 6),
-              CompanionAvatar(user: companion, size: 86),
+              ConversationAvatar(
+                text: ProfileDataExtractor.extractUserInitials(companion),
+                size: 85,
+              ),
               const SizedBox(height: 10),
               Text(
                 companion.fullName,

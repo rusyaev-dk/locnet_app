@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/domain/utils/utils.dart';
+import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversation/presentation/presentation.dart';
 import 'package:locnet_app/features/conversations/subfeatures/unified_search/presentation/presentation.dart';
 
@@ -34,7 +35,13 @@ class UnifiedSearchResultTile extends StatelessWidget {
       case UnifiedSearchListItemType.conversation:
         title = item.conversation!.title;
         avatarText = item.conversation!.title.substring(0, 2);
-        icon = Icons.campaign;
+        if (item.conversation!.type == ConversationType.private) {
+          icon = Icons.person;
+        } else if (item.conversation!.type == ConversationType.group) {
+          icon = Icons.group;
+        } else {
+          icon = Icons.campaign;
+        }
         break;
     }
 

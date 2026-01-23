@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
@@ -16,10 +18,14 @@ class ConversationAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
-    final textScheme = context.textScheme;
+
+    final Gradient? backgroundGradient = url == null
+        ? _generateAvatarGradient(seed: text ?? 'default')
+        : null;
 
     final BoxDecoration decoration = BoxDecoration(
-      color: colorScheme.surfaceBright,
+      gradient: backgroundGradient,
+      color: backgroundGradient == null ? colorScheme.surfaceBright : null,
       shape: BoxShape.circle,
       border: Border.all(color: colorScheme.outlineVariant),
     );
@@ -39,42 +45,82 @@ class ConversationAvatar extends StatelessWidget {
       );
     }
 
-    return _Placeholder(
-      size: size,
-      decoration: decoration,
-      text: text,
-      textStyle: textScheme.label.copyWith(
-        color: colorScheme.onSurface,
-        fontWeight: FontWeight.w700,
-      ),
+    return _Placeholder(size: size, decoration: decoration, text: text);
+  }
+
+  Gradient _generateAvatarGradient({required String seed}) {
+    final int hash = seed.hashCode;
+    final Random random = Random(hash);
+
+    final double hue = random.nextDouble() * 360;
+    const double saturation = 0.55;
+    const double baseLightness = 0.68;
+
+    final HSLColor baseColor = HSLColor.fromAHSL(
+      1,
+      hue,
+      saturation,
+      baseLightness,
+    );
+
+    final Color topColor = baseColor
+        .withLightness((baseLightness + 0.08).clamp(0, 1))
+        .toColor();
+
+    final Color bottomColor = baseColor
+        .withLightness((baseLightness - 0.12).clamp(0, 1))
+        .toColor();
+
+    return LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: <Color>[topColor, bottomColor],
     );
   }
 }
 
 class _Placeholder extends StatelessWidget {
-  const _Placeholder({
-    required this.size,
-    required this.decoration,
-    this.text,
-    this.textStyle,
-  });
+  const _Placeholder({required this.size, required this.decoration, this.text});
 
   final double size;
   final BoxDecoration decoration;
   final String? text;
-  final TextStyle? textStyle;
 
   @override
   Widget build(BuildContext context) {
+    final String normalizedText = text != null ? _normalizeText(text!) : '';
+    final double fontSize = _calculateFontSize(
+      avatarSize: size,
+      textLength: normalizedText.length,
+    );
+
     return Container(
       width: size,
       height: size,
       decoration: decoration,
       alignment: Alignment.center,
-      child: text != null && text!.trim().isNotEmpty
-          ? Text(_normalizeText(text!), style: textStyle)
+      child: normalizedText.isNotEmpty
+          ? Text(
+              normalizedText,
+              style: TextStyle(
+                fontSize: fontSize,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+                height: 1,
+              ),
+            )
           : const SizedBox.shrink(),
     );
+  }
+
+  double _calculateFontSize({
+    required double avatarSize,
+    required int textLength,
+  }) {
+    final double baseRatio = textLength == 1 ? 0.50 : 0.34;
+    final double rawSize = avatarSize * baseRatio;
+
+    return rawSize.clamp(12.0, avatarSize * 0.6);
   }
 
   String _normalizeText(String value) {

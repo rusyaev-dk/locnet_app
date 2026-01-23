@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/features/conversation/presentation/presentation.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/presentation/modals/companion_info_modal_card.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/private.dart';
 
@@ -46,14 +47,11 @@ class _PrivateHeaderState extends State<PrivateHeader> {
           color: colorScheme.surfaceBright,
           child: Row(
             children: [
-              CircleAvatar(
-                radius: 19,
-                backgroundColor: colorScheme.primary.withAlpha(40),
-                child: Text(
-                  widget.companion.firstName[0],
-                  style: textScheme.label,
+              ConversationAvatar(
+                text: ProfileDataExtractor.extractUserInitials(
+                  widget.companion,
                 ),
-              ),
+              ), // TODO: passthrough real url
               const SizedBox(width: 12),
               Expanded(
                 child: Column(

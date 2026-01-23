@@ -16,7 +16,7 @@ class ConversationCreatorBloc
        _logger = logger,
        super(
          const ConversationCreatorState(
-           selectedConversationType: ConversationType.private,
+           selectedConversationType: ConversationType.group,
          ),
        ) {
     on<UpdateConversationTypeEvent>(_onUpdateType);

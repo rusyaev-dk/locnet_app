@@ -1,15 +1,13 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 final class DateTimeFormatter {
   static DateTime parse(Object? raw) {
-    // Accepts DateTime, ISO-8601 String, or Unix epoch (int seconds or milliseconds).
     if (raw is DateTime) return raw;
     if (raw is String && raw.isNotEmpty) {
-      // Preserves Z/offset. Use .toUtc() if you want to normalize.
       return DateTime.parse(raw);
     }
     if (raw is int) {
-      // Heuristic: >= 1e12 => milliseconds since epoch, else seconds.
       final bool isMillis = raw >= 1000000000000;
       return DateTime.fromMillisecondsSinceEpoch(
         isMillis ? raw : raw * 1000,
@@ -22,5 +20,22 @@ final class DateTimeFormatter {
   static String formatLocalized(DateTime dateTime, {String? locale}) {
     final DateFormat formatter = DateFormat('dd MMM yyyy, HH:mm', locale);
     return formatter.format(dateTime);
+  }
+
+  static String formatConversationTime({
+    required DateTime dateTime,
+    required DateTime now,
+    required Locale locale,
+    required MaterialLocalizations materialLocalizations,
+  }) {
+    final Duration difference = now.difference(dateTime);
+
+    if (difference.inHours >= 24) {
+      final DateFormat weekdayFormatter = DateFormat.E(locale.toLanguageTag());
+      return weekdayFormatter.format(dateTime);
+    }
+
+    final TimeOfDay timeOfDay = TimeOfDay.fromDateTime(dateTime);
+    return materialLocalizations.formatTimeOfDay(timeOfDay);
   }
 }

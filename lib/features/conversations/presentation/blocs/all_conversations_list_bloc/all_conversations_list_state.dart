@@ -28,6 +28,7 @@ final class AllConversationsListLoadingState extends AllConversationsListState {
 final class AllConversationsListLoadedState extends AllConversationsListState {
   const AllConversationsListLoadedState({
     required this.conversationTiles,
+    required this.currentUserId,
     this.page = 1,
     this.isLoadingMore = false,
     super.failure,
@@ -36,6 +37,7 @@ final class AllConversationsListLoadedState extends AllConversationsListState {
   final int page;
   final List<ConversationTile> conversationTiles;
   final bool isLoadingMore;
+  final String currentUserId;
 
   AllConversationsListLoadedState copyWith({
     int? page,
@@ -47,12 +49,14 @@ final class AllConversationsListLoadedState extends AllConversationsListState {
       conversationTiles: conversationTiles ?? this.conversationTiles,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       failure: failure,
+      currentUserId: currentUserId,
     );
   }
 
   @override
   List<Object?> get props => <Object?>[
     conversationTiles,
+    currentUserId,
     page,
     isLoadingMore,
     failure,

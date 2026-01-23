@@ -30,18 +30,24 @@ class ConversationTypeSelector extends StatelessWidget {
           style: textScheme.label.copyWith(color: colorScheme.onSurfaceVariant),
         ),
         const SizedBox(height: 8),
-        _ConversationTypeSegmentedCard(
+        ConversationTypeSegmentedControl(
           selectedConversationType: selectedConversationType,
           onTypeSelected: (ConversationType type) {
             bloc.add(UpdateConversationTypeEvent(conversationType: type));
           },
         ),
         const SizedBox(height: 8),
-        Text(
-          _resolveHintText(l10n, selectedConversationType),
-          style: textScheme.label.copyWith(
-            color: colorScheme.onSurfaceVariant,
-            fontSize: 13,
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 180),
+          switchInCurve: Curves.easeOut,
+          switchOutCurve: Curves.easeIn,
+          child: Text(
+            _resolveHintText(l10n, selectedConversationType),
+            key: ValueKey<ConversationType>(selectedConversationType),
+            style: textScheme.label.copyWith(
+              color: colorScheme.onSurfaceVariant,
+              fontSize: 13,
+            ),
           ),
         ),
       ],
@@ -60,45 +66,99 @@ class ConversationTypeSelector extends StatelessWidget {
   }
 }
 
-class _ConversationTypeSegmentedCard extends StatelessWidget {
-  const _ConversationTypeSegmentedCard({
+class ConversationTypeSegmentedControl extends StatelessWidget {
+  const ConversationTypeSegmentedControl({
     required this.selectedConversationType,
     required this.onTypeSelected,
+    super.key,
   });
 
   final ConversationType selectedConversationType;
   final ValueChanged<ConversationType> onTypeSelected;
+
+  static const Duration _moveDuration = Duration(milliseconds: 260);
+  static const Curve _moveCurve = Curves.easeOutCubic;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final l10n = context.l10n;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colorScheme.outlineVariant),
-      ),
-      padding: const EdgeInsets.all(4),
-      child: Row(
-        children: [
-          Expanded(
-            child: _ConversationTypeSegmentItem(
-              title: l10n.conversationTypeGroup,
-              icon: Icons.group_outlined,
-              isSelected: selectedConversationType == ConversationType.group,
-              onPressed: () => onTypeSelected(ConversationType.group),
-            ),
+    final bool isGroupSelected =
+        selectedConversationType == ConversationType.group;
+    final Alignment indicatorAlignment = isGroupSelected
+        ? Alignment.centerLeft
+        : Alignment.centerRight;
+
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        final double segmentWidth = (constraints.maxWidth - 4) / 2;
+
+        return Container(
+          height: 52,
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: colorScheme.outlineVariant),
           ),
-          const SizedBox(width: 4),
-          Expanded(
-            child: _ConversationTypeSegmentItem(
-              title: l10n.conversationTypeChannel,
-              icon: Icons.campaign_outlined,
-              isSelected: selectedConversationType == ConversationType.channel,
-              onPressed: () => onTypeSelected(ConversationType.channel),
-            ),
+          child: Stack(
+            children: [
+              AnimatedAlign(
+                duration: _moveDuration,
+                curve: _moveCurve,
+                alignment: indicatorAlignment,
+                child: _SegmentIndicator(width: segmentWidth),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: _SegmentButton(
+                      title: l10n.conversationTypeGroup,
+                      icon: Icons.group_outlined,
+                      isSelected: isGroupSelected,
+                      onPressed: () => onTypeSelected(ConversationType.group),
+                    ),
+                  ),
+                  Expanded(
+                    child: _SegmentButton(
+                      title: l10n.conversationTypeChannel,
+                      icon: Icons.campaign_outlined,
+                      isSelected: !isGroupSelected,
+                      onPressed: () => onTypeSelected(ConversationType.channel),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _SegmentIndicator extends StatelessWidget {
+  const _SegmentIndicator({required this.width});
+
+  final double width;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+
+    return Container(
+      width: width,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: colorScheme.primary.withAlpha(0x14),
+        border: Border.all(color: colorScheme.primary.withAlpha(0x3D)),
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 12,
+            spreadRadius: -6,
+            offset: const Offset(0, 4),
+            color: colorScheme.primary.withAlpha(0x22),
           ),
         ],
       ),
@@ -106,8 +166,8 @@ class _ConversationTypeSegmentedCard extends StatelessWidget {
   }
 }
 
-class _ConversationTypeSegmentItem extends StatelessWidget {
-  const _ConversationTypeSegmentItem({
+class _SegmentButton extends StatelessWidget {
+  const _SegmentButton({
     required this.title,
     required this.icon,
     required this.isSelected,
@@ -119,45 +179,47 @@ class _ConversationTypeSegmentItem extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onPressed;
 
+  static const Duration _styleDuration = Duration(milliseconds: 220);
+  static const Curve _styleCurve = Curves.easeOutCubic;
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
 
-    final Color backgroundColor = isSelected
-        ? colorScheme.surfaceBright
-        : Colors.transparent;
-
-    final Color foregroundColor = isSelected
-        ? colorScheme.onSurface
+    final Color targetForegroundColor = isSelected
+        ? colorScheme.primary
         : colorScheme.onSurfaceVariant;
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(12),
-        child: Ink(
-          height: 44,
-          decoration: BoxDecoration(
-            color: backgroundColor,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 20, color: foregroundColor),
-              const SizedBox(width: 8),
-              Text(
-                title,
-                style: textScheme.label.copyWith(
-                  color: foregroundColor,
-                  fontSize: 15,
-                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+    return InkWell(
+      onTap: onPressed,
+      borderRadius: BorderRadius.circular(12),
+      child: Center(
+        child: TweenAnimationBuilder<Color?>(
+          duration: _styleDuration,
+          curve: _styleCurve,
+          tween: ColorTween(end: targetForegroundColor),
+          builder: (BuildContext context, Color? animatedColor, Widget? child) {
+            final Color resolvedColor = animatedColor ?? targetForegroundColor;
+
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, size: 20, color: resolvedColor),
+                const SizedBox(width: 8),
+                AnimatedDefaultTextStyle(
+                  duration: _styleDuration,
+                  curve: _styleCurve,
+                  style: textScheme.label.copyWith(
+                    color: resolvedColor,
+                    fontSize: 15,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                  ),
+                  child: Text(title),
                 ),
-              ),
-            ],
-          ),
+              ],
+            );
+          },
         ),
       ),
     );

@@ -8,6 +8,9 @@ final class ConversationsListInteractor {
 
   final IConversationsListRepo _conversationsListRepo;
 
+  Stream<ConversationsListUpdateRec> get conversationsUpdates =>
+      _conversationsListRepo.conversationsUpdates;
+
   Future<List<ConversationTile>> loadConversations({int page = 1}) async {
     final List<ConversationTile> conversations = await _conversationsListRepo
         .loadConversationsList(page: page);

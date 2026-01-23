@@ -297,5 +297,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "username": MessageLookupByLibrary.simpleMessage("Юзернейм"),
     "users": MessageLookupByLibrary.simpleMessage("Пользователи"),
     "yesLabel": MessageLookupByLibrary.simpleMessage("Да"),
+    "you": MessageLookupByLibrary.simpleMessage("Вы"),
   };
 }

@@ -1328,6 +1328,11 @@ class S {
       args: [],
     );
   }
+
+  /// `Вы`
+  String get you {
+    return Intl.message('Вы', name: 'you', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
