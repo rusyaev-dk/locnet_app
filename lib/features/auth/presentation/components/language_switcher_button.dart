@@ -26,6 +26,7 @@ class LanguageSwitcherButton extends StatelessWidget {
       onSelected: (Locale locale) async {
         await context.read<SettingsCubit>().changeLanguageCode(locale);
       },
+      borderRadius: BorderRadius.circular(14),
       itemBuilder: (BuildContext context) {
         return const <PopupMenuEntry<Locale>>[
           PopupMenuItem<Locale>(
@@ -45,7 +46,7 @@ class LanguageSwitcherButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(14),
           border: Border.all(color: colorScheme.outline.withOpacity(0.4)),
           color: colorScheme.surface.withOpacity(0.9),
         ),

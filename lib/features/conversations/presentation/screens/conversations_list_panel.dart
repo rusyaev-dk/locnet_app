@@ -62,7 +62,6 @@ class _ConversationsPanelState extends State<ConversationsPanel> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
-    final textScheme = context.textScheme;
 
     final bool isCompact = _panelWidth <= _panelMinWidth;
 
@@ -133,10 +132,36 @@ class _ConversationsPanelState extends State<ConversationsPanel> {
             color: colorScheme.surface,
             child: widget.selectedConversationId == null
                 ? Center(
-                    child: Text(
-                      'Select a conversation to start chatting',
-                      style: textScheme.label,
-                      textAlign: TextAlign.center,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.chat_bubble_outline,
+                            size: 36,
+                            color: context.colorScheme.onSurfaceVariant,
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            context.l10n.selectConversation,
+                            style: context.textScheme.display.copyWith(
+                              fontSize: 16,
+                              color: context.colorScheme.onSurface,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            context.l10n.selectConversationSubtitle,
+                            style: context.textScheme.label.copyWith(
+                              color: context.colorScheme.onSurfaceVariant,
+                              fontSize: 12,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
                     ),
                   )
                 : PrivateConversationScreenWrapper(

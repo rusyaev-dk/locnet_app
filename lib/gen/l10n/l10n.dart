@@ -390,10 +390,10 @@ class S {
   }
 
   /// `Не зарегистрированы?`
-  String get registrationQuestion {
+  String get notRegisteredYetQuestion {
     return Intl.message(
       'Не зарегистрированы?',
-      name: 'registrationQuestion',
+      name: 'notRegisteredYetQuestion',
       desc: '',
       args: [],
     );
@@ -1229,11 +1229,101 @@ class S {
     );
   }
 
-  /// `Попробуйте изменить запрос.`
+  /// `Попробуйте изменить запрос`
   String get tryAnotherQuery {
     return Intl.message(
-      'Попробуйте изменить запрос.',
+      'Попробуйте изменить запрос',
       name: 'tryAnotherQuery',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Выберите чат`
+  String get selectConversation {
+    return Intl.message(
+      'Выберите чат',
+      name: 'selectConversation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Выберите пользователя, группу или канал, чтобы начать переписку`
+  String get selectConversationSubtitle {
+    return Intl.message(
+      'Выберите пользователя, группу или канал, чтобы начать переписку',
+      name: 'selectConversationSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Требования к паролю`
+  String get passwordRequirementsTitle {
+    return Intl.message(
+      'Требования к паролю',
+      name: 'passwordRequirementsTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Не менее ${min} символов`
+  String passwordRequirementMinLength(Object min) {
+    return Intl.message(
+      'Не менее \$$min символов',
+      name: 'passwordRequirementMinLength',
+      desc: '',
+      args: [min],
+    );
+  }
+
+  /// `Хотя бы одна заглавная буква (A–Z)`
+  String get passwordRequirementUppercase {
+    return Intl.message(
+      'Хотя бы одна заглавная буква (A–Z)',
+      name: 'passwordRequirementUppercase',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Хотя бы одна строчная буква (a–z)`
+  String get passwordRequirementLowercase {
+    return Intl.message(
+      'Хотя бы одна строчная буква (a–z)',
+      name: 'passwordRequirementLowercase',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Хотя бы одна цифра (0–9)`
+  String get passwordRequirementDigit {
+    return Intl.message(
+      'Хотя бы одна цифра (0–9)',
+      name: 'passwordRequirementDigit',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Хотя бы один специальный символ (!?@#$%^&*()_-{})`
+  String get passwordRequirementSpecial {
+    return Intl.message(
+      'Хотя бы один специальный символ (!?@#\$%^&*()_-{})',
+      name: 'passwordRequirementSpecial',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Допустимы только буквы, цифры и символы !?@#$%^&*()_-{}`
+  String get passwordRequirementAllowedChars {
+    return Intl.message(
+      'Допустимы только буквы, цифры и символы !?@#\$%^&*()_-{}',
+      name: 'passwordRequirementAllowedChars',
       desc: '',
       args: [],
     );

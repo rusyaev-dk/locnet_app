@@ -113,7 +113,7 @@ class LogInCard extends StatelessWidget {
               ),
               children: [
                 TextSpan(
-                  text: '${l10n.registrationQuestion} ',
+                  text: '${l10n.notRegisteredYetQuestion} ',
                   style: textScheme.label.copyWith(fontSize: 18),
                 ),
                 TextSpan(

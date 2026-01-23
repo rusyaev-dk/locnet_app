@@ -25,6 +25,7 @@ class ChipsBar extends StatelessWidget {
                 icon: Icons.add,
                 label: l10n.create,
                 backgroundColor: colorScheme.surfaceBright,
+                borderRadius: BorderRadius.circular(9),
                 onPressed: () {
                   showGeneralDialog(
                     context: context,
@@ -42,6 +43,7 @@ class ChipsBar extends StatelessWidget {
                 icon: Icons.search,
                 label: l10n.search,
                 backgroundColor: colorScheme.surfaceBright,
+                borderRadius: BorderRadius.circular(9),
                 onPressed: () {
                   showGeneralDialog(
                     context: context,
@@ -55,13 +57,14 @@ class ChipsBar extends StatelessWidget {
                 },
               ),
               const SizedBox(width: 8),
-              ChipButton(
-                icon: Icons.filter_alt_outlined,
-                label: l10n.filters,
-                backgroundColor: colorScheme.surfaceBright,
-                onPressed: () {},
-              ),
-              const SizedBox(width: 8),
+              // ChipButton(
+              //   icon: Icons.filter_alt_outlined,
+              //   label: l10n.filters,
+              //   backgroundColor: colorScheme.surfaceBright,
+              //   borderRadius: BorderRadius.circular(14),
+              //   onPressed: () {},
+              // ),
+              // const SizedBox(width: 8),
             ],
           ),
         ),

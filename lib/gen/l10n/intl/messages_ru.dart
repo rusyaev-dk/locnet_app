@@ -20,6 +20,8 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'ru';
 
+  static String m0(min) => "Не менее ${min} символов";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "accountStatus": MessageLookupByLibrary.simpleMessage("Статус аккаунта"),
@@ -187,10 +189,32 @@ class MessageLookup extends MessageLookupByLibrary {
     "meta": MessageLookupByLibrary.simpleMessage("Мета"),
     "next": MessageLookupByLibrary.simpleMessage("Далее"),
     "noLabel": MessageLookupByLibrary.simpleMessage("Нет"),
+    "notRegisteredYetQuestion": MessageLookupByLibrary.simpleMessage(
+      "Не зарегистрированы?",
+    ),
     "notSpecified": MessageLookupByLibrary.simpleMessage("Не задано"),
     "nothingFound": MessageLookupByLibrary.simpleMessage("Ничего не найдено"),
     "ok": MessageLookupByLibrary.simpleMessage("ОК"),
     "password": MessageLookupByLibrary.simpleMessage("Пароль"),
+    "passwordRequirementAllowedChars": MessageLookupByLibrary.simpleMessage(
+      "Допустимы только буквы, цифры и символы !?@#\$%^&*()_-{}",
+    ),
+    "passwordRequirementDigit": MessageLookupByLibrary.simpleMessage(
+      "Хотя бы одна цифра (0–9)",
+    ),
+    "passwordRequirementLowercase": MessageLookupByLibrary.simpleMessage(
+      "Хотя бы одна строчная буква (a–z)",
+    ),
+    "passwordRequirementMinLength": m0,
+    "passwordRequirementSpecial": MessageLookupByLibrary.simpleMessage(
+      "Хотя бы один специальный символ (!?@#\$%^&*()_-{})",
+    ),
+    "passwordRequirementUppercase": MessageLookupByLibrary.simpleMessage(
+      "Хотя бы одна заглавная буква (A–Z)",
+    ),
+    "passwordRequirementsTitle": MessageLookupByLibrary.simpleMessage(
+      "Требования к паролю",
+    ),
     "passwordTooWeakException": MessageLookupByLibrary.simpleMessage(
       "Пароль слишком слабый",
     ),
@@ -205,9 +229,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "Редактирование профиля",
     ),
     "registration": MessageLookupByLibrary.simpleMessage("Регистрация"),
-    "registrationQuestion": MessageLookupByLibrary.simpleMessage(
-      "Не зарегистрированы?",
-    ),
     "repeatPassword": MessageLookupByLibrary.simpleMessage("Повторите пароль"),
     "requiredValueNotProvidedException": MessageLookupByLibrary.simpleMessage(
       "Обязательно для заполнения",
@@ -218,7 +239,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "search": MessageLookupByLibrary.simpleMessage("Поиск"),
     "searchEmoji": MessageLookupByLibrary.simpleMessage("Поиск эмодзи"),
     "searchUsersAndChatsHint": MessageLookupByLibrary.simpleMessage(
-      "Введите имя пользователя или название группы или канала.",
+      "Введите имя пользователя или название группы/канала.",
+    ),
+    "selectConversation": MessageLookupByLibrary.simpleMessage("Выберите чат"),
+    "selectConversationSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Выберите пользователя, группу или канал, чтобы начать переписку",
     ),
     "selectInterfaceLanguage": MessageLookupByLibrary.simpleMessage(
       "Выберите язык интерфейса",
@@ -266,7 +291,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Включить уведомления",
     ),
     "tryAnotherQuery": MessageLookupByLibrary.simpleMessage(
-      "Попробуйте изменить запрос.",
+      "Попробуйте изменить запрос",
     ),
     "unknownValue": MessageLookupByLibrary.simpleMessage("Неизвестно"),
     "username": MessageLookupByLibrary.simpleMessage("Юзернейм"),

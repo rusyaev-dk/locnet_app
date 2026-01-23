@@ -158,6 +158,15 @@ class RegistrationCard extends StatelessWidget {
                       )
                     : null,
               ),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.only(left: 10),
+                child: PasswordRequirementsHint(
+                  password:
+                      context.watch<RegistrationCubit>().state.password ?? '',
+                  isActive: !isLoading,
+                ),
+              ),
               const SizedBox(height: 16),
               CustomTextField(
                 isActive: !isLoading,
