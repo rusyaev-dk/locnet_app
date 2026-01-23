@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/presentation/presentation.dart';
 import 'package:locnet_app/features/conversation/subfeatures/conversation_creator/presentation/modals/conversation_creator_modal_card.dart';
+import 'package:locnet_app/features/conversations/subfeatures/unified_search/presentation/presentation.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
 class ChipsBar extends StatelessWidget {
@@ -15,7 +16,6 @@ class ChipsBar extends StatelessWidget {
     return SizedBox(
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 5),
           child: Row(
@@ -42,7 +42,17 @@ class ChipsBar extends StatelessWidget {
                 icon: Icons.search,
                 label: l10n.search,
                 backgroundColor: colorScheme.surfaceBright,
-                onPressed: () {},
+                onPressed: () {
+                  showGeneralDialog(
+                    context: context,
+                    transitionBuilder: slideFadeDialogTransition,
+                    pageBuilder: (_, _, _) {
+                      return const UnifiedSearchModalCardWrapper(
+                        child: UnifiedSearchModalCard(),
+                      );
+                    },
+                  );
+                },
               ),
               const SizedBox(width: 8),
               ChipButton(

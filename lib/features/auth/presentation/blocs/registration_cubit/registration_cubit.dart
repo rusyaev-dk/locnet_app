@@ -28,7 +28,7 @@ class RegistrationCubit extends Cubit<RegistrationState> {
       }
 
       try {
-        ProfileDataFormatter.validateName(newFirstName);
+        ProfileDataValidator.validateName(newFirstName);
       } catch (e) {
         emit(state.copyWith(firstName: newFirstName, firstNameException: e));
         return;
@@ -63,7 +63,7 @@ class RegistrationCubit extends Cubit<RegistrationState> {
       }
 
       try {
-        ProfileDataFormatter.validateName(newLastName);
+        ProfileDataValidator.validateName(newLastName);
       } catch (e) {
         emit(state.copyWith(lastName: newLastName, lastNameException: e));
         return;
@@ -91,7 +91,7 @@ class RegistrationCubit extends Cubit<RegistrationState> {
       }
 
       try {
-        ProfileDataFormatter.validateUserDescription(newUserDescription);
+        ProfileDataValidator.validateUserDescription(newUserDescription);
       } catch (e) {
         return emit(
           state.copyWith(
@@ -135,7 +135,7 @@ class RegistrationCubit extends Cubit<RegistrationState> {
       }
 
       try {
-        ProfileDataFormatter.validateUsername(newUsername);
+        ProfileDataValidator.validateUsername(newUsername);
       } catch (e) {
         emit(state.copyWith(username: newUsername, usernameException: e));
         return;
@@ -201,7 +201,7 @@ class RegistrationCubit extends Cubit<RegistrationState> {
       }
 
       try {
-        ProfileDataFormatter.validatePassword(newPassword);
+        PasswordValidator.validatePassword(newPassword);
       } catch (e) {
         emit(state.copyWith(password: newPassword, passwordException: e));
         return;

@@ -39,7 +39,7 @@ class ProfileEditorCubit extends Cubit<ProfileEditorState> {
       }
 
       try {
-        ProfileDataFormatter.validateName(newFirstName);
+        ProfileDataValidator.validateName(newFirstName);
       } catch (e) {
         emit(
           prevState.copyWith(newFirstName: newFirstName, firstNameException: e),
@@ -88,7 +88,7 @@ class ProfileEditorCubit extends Cubit<ProfileEditorState> {
       }
 
       try {
-        ProfileDataFormatter.validateName(newLastName);
+        ProfileDataValidator.validateName(newLastName);
       } catch (e) {
         emit(
           prevState.copyWith(newLastName: newLastName, lastNameException: e),
@@ -134,7 +134,7 @@ class ProfileEditorCubit extends Cubit<ProfileEditorState> {
       }
 
       try {
-        ProfileDataFormatter.validateUsername(newUsername);
+        ProfileDataValidator.validateUsername(newUsername);
       } catch (e) {
         emit(
           prevState.copyWith(newUsername: newUsername, usernameException: e),

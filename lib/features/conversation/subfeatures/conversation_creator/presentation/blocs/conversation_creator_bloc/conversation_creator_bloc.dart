@@ -62,7 +62,7 @@ class ConversationCreatorBloc
       }
 
       try {
-        ConversationDataFormatter.validateTitle(event.title!);
+        ConversationDataValidator.validateTitle(event.title!);
       } catch (e) {
         return emit(state.copyWith(titleException: e));
       }
@@ -90,7 +90,7 @@ class ConversationCreatorBloc
       }
 
       try {
-        ConversationDataFormatter.validateDescription(event.description!);
+        ConversationDataValidator.validateDescription(event.description!);
       } catch (e) {
         return emit(state.copyWith(descriptionException: e));
       }

@@ -7,7 +7,6 @@ import 'package:locnet_app/features/home/presentation/presentation.dart';
 import 'package:locnet_app/features/root/root_screen.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
 import 'package:locnet_app/features/splash/splash_screen.dart';
-import 'package:locnet_app/features/storage/presentation/presentation.dart';
 
 class AppRouter {
   AppRouter();
@@ -154,14 +153,6 @@ class AppRouter {
                   ],
                 ),
               ],
-            ),
-
-            GoRoute(
-              path: '/storage',
-              name: 'storage',
-              pageBuilder: buildNoTransitionPage((context, state) {
-                return const StorageScreen();
-              }),
             ),
 
             GoRoute(
