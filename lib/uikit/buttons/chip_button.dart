@@ -3,8 +3,8 @@ import 'package:locnet_app/app/app.dart';
 
 class ChipButton extends StatelessWidget {
   const ChipButton({
-    required this.label,
     required this.onPressed,
+    this.label,
     this.icon,
     this.iconSize,
     this.iconColor,
@@ -19,7 +19,7 @@ class ChipButton extends StatelessWidget {
     super.key,
   });
 
-  final String label;
+  final String? label;
   final VoidCallback onPressed;
 
   final IconData? icon;
@@ -45,8 +45,10 @@ class ChipButton extends StatelessWidget {
     final BorderRadius resolvedBorderRadius =
         borderRadius ?? BorderRadius.circular(14);
 
+    final bool hasLabel = label != null;
+
     final EdgeInsetsGeometry resolvedPadding =
-        padding ?? const EdgeInsets.symmetric(horizontal: 12);
+        padding ?? EdgeInsets.symmetric(horizontal: hasLabel ? 12 : 10);
 
     final Color resolvedBackground =
         backgroundColor ?? colorScheme.surfaceContainer;
@@ -81,15 +83,13 @@ class ChipButton extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (icon != null)
-              Padding(
-                padding: const EdgeInsets.only(right: 6),
-                child: Icon(
-                  icon,
-                  size: iconSize ?? 16,
-                  color: iconColor ?? resolvedTextColor,
-                ),
+              Icon(
+                icon,
+                size: iconSize ?? 16,
+                color: iconColor ?? resolvedTextColor,
               ),
-            Text(label, style: resolvedTextStyle),
+            if (icon != null && hasLabel) const SizedBox(width: 6),
+            if (hasLabel) Text(label!, style: resolvedTextStyle),
           ],
         ),
       ),

@@ -217,7 +217,7 @@ class _ConversationsListPanel extends StatelessWidget {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (!isCompact) const ChipsBar(),
+                ChipsBar(isCompact: isCompact),
                 Expanded(
                   child: ListView.builder(
                     itemCount: tiles.length,
