@@ -62,15 +62,6 @@ class SettingsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
-    final textScheme = context.textScheme;
-    final l10n = context.l10n;
-
-    final TextStyle sectionTitleStyle = textScheme.label.copyWith(
-      color: colorScheme.primary,
-      fontWeight: FontWeight.w600,
-      letterSpacing: 0.2,
-      fontSize: 15,
-    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,81 +70,22 @@ class SettingsView extends StatelessWidget {
         Divider(height: 1, color: colorScheme.outlineVariant),
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(l10n.appearance, style: sectionTitleStyle),
-                const SizedBox(height: 8),
-                SettingsGroupCard(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.themeMode,
-                        style: textScheme.label.copyWith(fontSize: 14),
-                      ),
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ThemeModeSelectorChips(
-                          selectedThemeMode: settingsState.themeMode,
-                        ),
-                      ),
-                    ],
-                  ),
+                const SizedBox(height: 15),
+                ThemeModeSelector(
+                  selectedThemeMode: settingsState.themeMode,
                 ),
-                const SizedBox(height: 16),
-                Text(l10n.language, style: sectionTitleStyle),
-                const SizedBox(height: 8),
-                SettingsGroupCard(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.selectInterfaceLanguage,
-                        style: textScheme.label.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      LanguageSelector(selectedLocale: settingsState.locale),
-                    ],
-                  ),
-                ),
+                const SizedBox(height: 15),
+                LanguageSelector(selectedLocale: settingsState.locale),
+                const SizedBox(height: 15),
               ],
             ),
           ),
         ),
       ],
-    );
-  }
-}
-
-/// Shared group card used in settings modal.
-class SettingsGroupCard extends StatelessWidget {
-  const SettingsGroupCard({required this.child, super.key});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = context.colorScheme;
-    final textScheme = context.textScheme;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: DefaultTextStyle(
-          style: textScheme.label.copyWith(color: colorScheme.onSurface),
-          child: child,
-        ),
-      ),
     );
   }
 }

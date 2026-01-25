@@ -28,14 +28,13 @@ class SessionInfo extends StatelessWidget {
       session: session,
     );
 
-    return Center(
-      child: Column(
-        children: [
-          _SessionStatusChip(label: status.label, color: status.color),
-          const SizedBox(height: 16),
-          SessionInfoCard(items: items),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SessionStatusChip(label: status.label, color: status.color),
+        const SizedBox(height: 15),
+        SessionInfoCard(items: items),
+      ],
     );
   }
 
@@ -160,19 +159,36 @@ class SessionInfoCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colorScheme.outlineVariant.withAlpha(0x6A)),
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colorScheme.outlineVariant),
       ),
       child: Column(
         children: items
+            .asMap()
+            .entries
             .map(
-              (SessionInfoItem item) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                child: SessionInfoRow(item: item),
-              ),
+              (entry) {
+                final int index = entry.key;
+                final SessionInfoItem item = entry.value;
+                final bool isLast = index == items.length - 1;
+                
+                return Column(
+                  children: [
+                    SessionInfoRow(item: item),
+                    if (!isLast) ...[
+                      const SizedBox(height: 12),
+                      Divider(
+                        height: 1,
+                        color: colorScheme.outlineVariant,
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                  ],
+                );
+              },
             )
             .toList(),
       ),
@@ -185,8 +201,6 @@ class SessionInfoRow extends StatelessWidget {
 
   final SessionInfoItem item;
 
-  static const double _titleColumnWidth = 140;
-
   @override
   Widget build(BuildContext context) {
     final textScheme = context.textScheme;
@@ -195,20 +209,26 @@ class SessionInfoRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          width: _titleColumnWidth,
+        Expanded(
+          flex: 2,
           child: Text(
             item.title,
             style: textScheme.label.copyWith(
               color: colorScheme.onSurfaceVariant,
+              fontSize: 13,
             ),
           ),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 12),
         Expanded(
+          flex: 3,
           child: Text(
             item.value,
-            style: textScheme.label.copyWith(color: colorScheme.onSurface),
+            style: textScheme.label.copyWith(
+              color: colorScheme.onSurface,
+              fontSize: 14,
+            ),
+            textAlign: TextAlign.end,
           ),
         ),
       ],

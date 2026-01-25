@@ -24,7 +24,7 @@ class ProfileActionTile extends StatelessWidget {
 
     final Color accentColor = isDestructive
         ? colorScheme.error
-        : colorScheme.onSurface;
+        : colorScheme.primary;
 
     final Color iconColor = isDisabled
         ? colorScheme.onSurfaceVariant
@@ -32,32 +32,43 @@ class ProfileActionTile extends StatelessWidget {
 
     final Color titleColor = isDisabled
         ? colorScheme.onSurfaceVariant.withAlpha(0x7A)
-        : colorScheme.onSurface;
+        : (isDestructive ? colorScheme.error : colorScheme.onSurface);
 
-    return InkWell(
-      onTap: onPressed,
-      borderRadius: BorderRadius.circular(14),
-      child: Container(
-        decoration: BoxDecoration(
-          color: colorScheme.secondaryContainer,
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-          child: Row(
-            children: [
-              Icon(icon, color: iconColor, size: 21),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Text(
-                  title,
-                  style: textScheme.label.copyWith(
-                    color: titleColor,
-                    fontSize: 16,
+    return Container(
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colorScheme.outlineVariant),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            child: Row(
+              children: [
+                Icon(icon, color: iconColor, size: 20),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: textScheme.label.copyWith(
+                      color: titleColor,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
-              ),
-            ],
+                if (!isDisabled)
+                  Icon(
+                    Icons.chevron_right,
+                    color: colorScheme.onSurfaceVariant,
+                    size: 20,
+                  ),
+              ],
+            ),
           ),
         ),
       ),

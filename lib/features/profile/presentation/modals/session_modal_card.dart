@@ -21,8 +21,15 @@ class SessionModalCard extends StatelessWidget {
           Divider(height: 1, color: colorScheme.outlineVariant),
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: SessionInfo(session: session),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 15),
+                  SessionInfo(session: session),
+                  const SizedBox(height: 15),
+                ],
+              ),
             ),
           ),
         ],

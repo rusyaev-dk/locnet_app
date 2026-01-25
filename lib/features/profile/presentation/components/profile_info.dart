@@ -18,8 +18,9 @@ class ProfileGeneralInfo extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        color: colorScheme.secondaryContainer,
+        borderRadius: BorderRadius.circular(16),
+        color: colorScheme.surface,
+        border: Border.all(color: colorScheme.outlineVariant),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -28,7 +29,7 @@ class ProfileGeneralInfo extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 40,
-                backgroundColor: colorScheme.tertiary,
+                backgroundColor: colorScheme.primaryContainer,
                 child: Text(
                   initials,
                   style: textScheme.headline.copyWith(
@@ -37,64 +38,65 @@ class ProfileGeneralInfo extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    user.fullName,
-                    textAlign: TextAlign.start,
-                    style: textScheme.display.copyWith(
-                      color: colorScheme.onSurface,
-                      fontSize: 22,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      user.fullName,
+                      textAlign: TextAlign.start,
+                      style: textScheme.display.copyWith(
+                        color: colorScheme.onSurface,
+                        fontSize: 22,
+                      ),
                     ),
-                  ),
-
-                  const SizedBox(height: 4),
-                  Text(
-                    '@${user.username}',
-                    textAlign: TextAlign.start,
-                    style: textScheme.label.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                      fontSize: 14,
+                    const SizedBox(height: 4),
+                    Text(
+                      '@${user.username}',
+                      textAlign: TextAlign.start,
+                      style: textScheme.label.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                        fontSize: 14,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 10),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (user.description != null) ...[
-                Text(
-                  '${l10n.description}:',
-                  textAlign: TextAlign.start,
-                  style: textScheme.label.copyWith(
-                    fontSize: 14,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
+          if (user.description != null || user.languageCode.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            if (user.description != null) ...[
+              Text(
+                l10n.description,
+                style: textScheme.label.copyWith(
+                  fontSize: 13,
+                  color: colorScheme.onSurfaceVariant,
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  user.description!,
-                  maxLines: 4,
-                  textAlign: TextAlign.start,
-                  overflow: TextOverflow.ellipsis,
-                  style: textScheme.label.copyWith(fontSize: 14),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                user.description!,
+                maxLines: 4,
+                textAlign: TextAlign.start,
+                overflow: TextOverflow.ellipsis,
+                style: textScheme.label.copyWith(
+                  fontSize: 14,
+                  color: colorScheme.onSurface,
                 ),
-                const SizedBox(height: 8),
-              ],
+              ),
+              if (user.languageCode.isNotEmpty) const SizedBox(height: 12),
+            ],
+            if (user.languageCode.isNotEmpty)
               Text(
                 '${l10n.language}: ${user.languageCode}',
                 textAlign: TextAlign.start,
                 style: textScheme.label.copyWith(
                   color: colorScheme.onSurfaceVariant,
-                  fontSize: 14,
+                  fontSize: 13,
                 ),
               ),
-            ],
-          ),
+          ],
         ],
       ),
     );
