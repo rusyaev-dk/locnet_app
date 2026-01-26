@@ -219,27 +219,57 @@ class _ConversationsListPanel extends StatelessWidget {
               children: [
                 ChipsBar(isCompact: isCompact),
                 Expanded(
-                  child: ListView.builder(
-                    itemCount: tiles.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final ConversationTile tile = tiles[index];
+                  child: NotificationListener<ScrollNotification>(
+                    onNotification: (ScrollNotification scrollInfo) {
+                      if (!state.hasMore || state.isLoadingMore) {
+                        return false;
+                      }
 
-                      return ConversationListTile(
-                        conversationTile: tile,
-                        isSelected:
-                            tile.conversation.conversationId ==
-                            selectedConversationId,
-                        currentUserId: state.currentUserId,
-                        isCompact: isCompact,
-                        onTap: () {
-                          GoRouter.of(context).go(
-                            AppRoutes.conversation(
-                              tile.conversation.conversationId,
+                      // Load more when user scrolls to 80% of the list
+                      if (scrollInfo.metrics.pixels >=
+                          scrollInfo.metrics.maxScrollExtent * 0.8) {
+                        final int nextPage = state.page + 1;
+                        context.read<AllConversationsListBloc>().add(
+                              AllConversationsListLoadMoreEvent(page: nextPage),
+                            );
+                      }
+
+                      return false;
+                    },
+                    child: ListView.builder(
+                      itemCount: tiles.length + (state.isLoadingMore ? 1 : 0),
+                      itemBuilder: (BuildContext context, int index) {
+                        // Show loading indicator at the bottom
+                        if (index == tiles.length) {
+                          return Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                color: colorScheme.primary,
+                              ),
                             ),
                           );
-                        },
-                      );
-                    },
+                        }
+
+                        final ConversationTile tile = tiles[index];
+
+                        return ConversationListTile(
+                          conversationTile: tile,
+                          isSelected:
+                              tile.conversation.conversationId ==
+                              selectedConversationId,
+                          currentUserId: state.currentUserId,
+                          isCompact: isCompact,
+                          onTap: () {
+                            GoRouter.of(context).go(
+                              AppRoutes.conversation(
+                                tile.conversation.conversationId,
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
                   ),
                 ),
               ],

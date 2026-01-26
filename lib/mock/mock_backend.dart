@@ -43,6 +43,8 @@ final class MockInMemoryBackend {
   _conversationParticipants = {};
   final Map<String, List<MessageDto>> _conversationsMessages =
       {}; // conversationId: List<MessageDto>[]
+  final Map<String, List<String>> _channelAdmins =
+      {}; // conversationId: List<String> adminIds
 
   // --------------------- USERS
 
@@ -239,7 +241,7 @@ final class MockInMemoryBackend {
       pageSize: _conversationMessagesPageSize,
     );
   }
-  
+
   // --------------------- Conversation participants
 
   List<ConversationParticipantDto> getAllParticipants({
@@ -260,54 +262,53 @@ final class MockInMemoryBackend {
   // --------------------- UNIFIED SEARCH
 
   UnifiedSearchResultDto unifiedSearch({required String query, int page = 1}) {
-  final String normalizedQuery = query.trim().toLowerCase();
-  if (normalizedQuery.isEmpty) {
-    return const UnifiedSearchResultDto(
-      users: <UserDto>[],
-      conversations: <ConversationDto>[],
+    final String normalizedQuery = query.trim().toLowerCase();
+    if (normalizedQuery.isEmpty) {
+      return const UnifiedSearchResultDto(
+        users: <UserDto>[],
+        conversations: <ConversationDto>[],
+      );
+    }
+
+    final List<UserDto> matchedUsers = MockUnifiedSearchHelper.filterUsers(
+      users: _users.values,
+      normalizedQuery: normalizedQuery,
+    );
+
+    final List<ConversationDto> matchedConversations =
+        MockUnifiedSearchHelper.filterConversations(
+          conversations: _conversations.values,
+          normalizedQuery: normalizedQuery,
+        );
+
+    final List<UserDto> rankedUsers = MockUnifiedSearchHelper.rankUsers(
+      items: matchedUsers,
+      normalizedQuery: normalizedQuery,
+    );
+
+    final List<ConversationDto> rankedConversations =
+        MockUnifiedSearchHelper.rankConversations(
+          items: matchedConversations,
+          normalizedQuery: normalizedQuery,
+        );
+
+    final List<UserDto> pagedUsers = _paginateList(
+      items: rankedUsers,
+      page: page,
+      pageSize: _usersPageSize,
+    );
+
+    final List<ConversationDto> pagedConversations = _paginateList(
+      items: rankedConversations,
+      page: page,
+      pageSize: _conversationsPageSize,
+    );
+
+    return UnifiedSearchResultDto(
+      users: pagedUsers,
+      conversations: pagedConversations,
     );
   }
-
-  final List<UserDto> matchedUsers = MockUnifiedSearchHelper.filterUsers(
-    users: _users.values,
-    normalizedQuery: normalizedQuery,
-  );
-
-  final List<ConversationDto> matchedConversations =
-      MockUnifiedSearchHelper.filterConversations(
-    conversations: _conversations.values,
-    normalizedQuery: normalizedQuery,
-  );
-
-  final List<UserDto> rankedUsers = MockUnifiedSearchHelper.rankUsers(
-    items: matchedUsers,
-    normalizedQuery: normalizedQuery,
-  );
-
-  final List<ConversationDto> rankedConversations =
-      MockUnifiedSearchHelper.rankConversations(
-    items: matchedConversations,
-    normalizedQuery: normalizedQuery,
-  );
-
-  final List<UserDto> pagedUsers = _paginateList(
-    items: rankedUsers,
-    page: page,
-    pageSize: _usersPageSize,
-  );
-
-  final List<ConversationDto> pagedConversations = _paginateList(
-    items: rankedConversations,
-    page: page,
-    pageSize: _conversationsPageSize,
-  );
-
-  return UnifiedSearchResultDto(
-    users: pagedUsers,
-    conversations: pagedConversations,
-  );
-}
-
 
   List<T> _paginateList<T>({
     required List<T> items,
@@ -354,6 +355,7 @@ final class MockInMemoryBackend {
       final privateConversation =
           MockConversations.createRandomPrivateConversation(
             initiatorId: adminUser.userId,
+            companionName: '${randomUser.firstName} ${randomUser.lastName}',
           );
       _conversations[privateConversation.conversationId] = privateConversation;
 
@@ -483,6 +485,21 @@ final class MockInMemoryBackend {
 
       _conversationParticipants[channelConversation.conversationId] =
           participants;
+
+      // Select random admins (5-6) from all participants including owner
+      final List<String> allParticipantIds =
+          participants.map((p) => p.userId).toList()..shuffle(_random);
+
+      final int adminCount = 5 + _random.nextInt(2); // 5 or 6
+      final int actualAdminCount = adminCount > allParticipantIds.length
+          ? allParticipantIds.length
+          : adminCount;
+
+      final List<String> channelAdminIds = allParticipantIds
+          .take(actualAdminCount)
+          .toList();
+
+      _channelAdmins[channelConversation.conversationId] = channelAdminIds;
     }
   }
 
@@ -527,21 +544,19 @@ final class MockInMemoryBackend {
               _conversationParticipants[conversationDto.conversationId] ?? [];
           if (participants.isEmpty) {
             throw StateError(
-              "Invalid group conversation participants count: ${participants.length}",
+              "Invalid channel participants count: ${participants.length}",
+            );
+          }
+          final List<String> adminIds =
+              _channelAdmins[conversationDto.conversationId] ?? [];
+          if (adminIds.isEmpty) {
+            throw StateError(
+              "Channel ${conversationDto.conversationId} has no admins assigned",
             );
           }
           final List<MessageDto> messages = MockMessages.getRandomChannelScript(
             conversationId: conversationDto.conversationId,
-            adminIds: participants
-                .where(
-                  (ConversationParticipantDto participantDto) =>
-                      participantDto.role == 'admin',
-                )
-                .map(
-                  (ConversationParticipantDto participantDto) =>
-                      participantDto.userId,
-                )
-                .toList(),
+            adminIds: adminIds,
           );
           _conversationsMessages[conversationDto.conversationId] = messages;
         default:

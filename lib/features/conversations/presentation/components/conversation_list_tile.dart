@@ -29,15 +29,19 @@ class ConversationListTile extends StatelessWidget {
     final l10n = context.l10n;
 
     if (isCompact) {
+      final String avatarText = conversationTile.companion != null
+          ? ProfileDataExtractor.extractUserInitials(
+              conversationTile.companion!,
+            )
+          : conversationTile.conversation.title;
+
       return Material(
         color: isSelected ? colorScheme.surfaceContainer : Colors.transparent,
         child: InkWell(
           onTap: onTap,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            child: ConversationAvatar(
-              text: conversationTile.conversation.title,
-            ),
+            child: ConversationAvatar(text: avatarText),
           ),
         ),
       );
@@ -106,7 +110,6 @@ class ConversationListTile extends StatelessWidget {
       color: isSelected
           ? colorScheme.surfaceContainer
           : colorScheme.surfaceBright,
-
       child: InkWell(
         onTap: onTap,
         child: Padding(
@@ -114,7 +117,11 @@ class ConversationListTile extends StatelessWidget {
           child: Row(
             children: [
               ConversationAvatar(
-                text: conversationTile.conversation.title,
+                text: conversationTile.companion != null
+                    ? ProfileDataExtractor.extractUserInitials(
+                        conversationTile.companion!,
+                      )
+                    : conversationTile.conversation.title,
               ), // TODO: passthrouth real url
               const SizedBox(width: 12),
               Expanded(
@@ -128,15 +135,29 @@ class ConversationListTile extends StatelessWidget {
                           Icon(icon, color: colorScheme.onSurface, size: 15),
                           const SizedBox(width: 4),
                         ],
-                        Text(
-                          titleText,
-                          style: textScheme.headline.copyWith(
-                            fontSize: 16.5,
-                            fontWeight: FontWeight.w400,
+                        Expanded(
+                          child: Text(
+                            titleText,
+                            style: textScheme.headline.copyWith(
+                              fontSize: 16.5,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                         ),
+                        if (timeText != null) ...[
+                          const SizedBox(width: 8),
+                          Text(
+                            timeText,
+                            style: textScheme.label.copyWith(
+                              color: colorScheme.onSurface.withAlpha(0x99),
+                              fontSize: 13,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
                       ],
                     ),
                     if (subtitleSpan != null) ...[
@@ -150,15 +171,6 @@ class ConversationListTile extends StatelessWidget {
                   ],
                 ),
               ),
-              if (timeText != null) ...[
-                const SizedBox(width: 8),
-                Text(
-                  timeText,
-                  style: textScheme.label.copyWith(
-                    color: colorScheme.onSurface.withAlpha(0x99),
-                  ),
-                ),
-              ],
             ],
           ),
         ),

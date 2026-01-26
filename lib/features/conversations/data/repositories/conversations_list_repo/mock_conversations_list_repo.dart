@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/conversation/data/data.dart';
 import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversations/data/data.dart';
@@ -42,14 +43,14 @@ final class MockConversationsListRepo implements IConversationsListRepo {
 
       final Conversation conversation = Conversation.fromDto(dto);
 
-      final ({Message? lastMessage, String? companionId}) lastMessageData =
+      final ({Message? lastMessage, User? companion}) lastMessageData =
           _getLastMessageAndCompanionForConversation(conversation);
 
       result.add(
         ConversationTile(
           conversation: conversation,
           lastMessage: lastMessageData.lastMessage,
-          companionId: lastMessageData.companionId,
+          companion: lastMessageData.companion,
         ),
       );
     }
@@ -150,7 +151,7 @@ final class MockConversationsListRepo implements IConversationsListRepo {
   //   ));
   // }
 
-  ({Message? lastMessage, String? companionId})
+  ({Message? lastMessage, User? companion})
   _getLastMessageAndCompanionForConversation(Conversation conversation) {
     final List<MessageDto> messageDtos = _backendStorage
         .getAllMessagesByConversationId(
@@ -158,12 +159,12 @@ final class MockConversationsListRepo implements IConversationsListRepo {
         );
 
     if (messageDtos.isEmpty) {
-      return (lastMessage: null, companionId: null);
+      return (lastMessage: null, companion: null);
     }
 
     if (conversation.type != ConversationType.private) {
       final MessageDto lastDto = messageDtos.last;
-      return (lastMessage: Message.fromDto(lastDto), companionId: null);
+      return (lastMessage: Message.fromDto(lastDto), companion: null);
     }
 
     final Set<String> senderIds = <String>{};
@@ -173,14 +174,14 @@ final class MockConversationsListRepo implements IConversationsListRepo {
 
     if (senderIds.isEmpty) {
       final MessageDto lastDto = messageDtos.last;
-      return (lastMessage: Message.fromDto(lastDto), companionId: null);
+      return (lastMessage: Message.fromDto(lastDto), companion: null);
     }
 
-    final String companionId = senderIds.first;
+    final String companionUserId = senderIds.first;
 
     MessageDto? lastCompanionMessageDto;
     for (final MessageDto dto in messageDtos.reversed) {
-      if (dto.senderId == companionId) {
+      if (dto.senderId == companionUserId) {
         lastCompanionMessageDto = dto;
         break;
       }
@@ -189,9 +190,20 @@ final class MockConversationsListRepo implements IConversationsListRepo {
     final MessageDto effectiveLastDto =
         lastCompanionMessageDto ?? messageDtos.last;
 
+    User? companion;
+    try {
+      final UserDto companionDto = _backendStorage.getUserById(
+        userId: companionUserId,
+      );
+      companion = User.fromDto(companionDto);
+    } catch (e) {
+      // User not found, companion will be null
+      companion = null;
+    }
+
     return (
       lastMessage: Message.fromDto(effectiveLastDto),
-      companionId: companionId,
+      companion: companion,
     );
   }
 

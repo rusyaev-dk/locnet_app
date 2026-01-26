@@ -1,6 +1,7 @@
 // ignore_for_file: sort_constructors_first
 
 import 'package:equatable/equatable.dart';
+import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversations/data/data.dart';
 import 'package:locnet_app/features/message/domain/domain.dart';
@@ -9,11 +10,11 @@ class ConversationTile extends Equatable {
   const ConversationTile({
     required this.conversation,
     this.lastMessage,
-    this.companionId,
+    this.companion,
   });
 
   final Conversation conversation;
-  final String? companionId;
+  final User? companion;
   final Message? lastMessage;
 
   factory ConversationTile.fromDto(ConversationTileDto dto) {
@@ -22,22 +23,22 @@ class ConversationTile extends Equatable {
       lastMessage: dto.lastMessage != null
           ? Message.fromDto(dto.lastMessage!)
           : null,
-      companionId: dto.companionId,
+      companion: dto.companion != null ? User.fromDto(dto.companion!) : null,
     );
   }
 
   ConversationTile copyWith({
     Conversation? conversation,
     Message? lastMessage,
-    String? companionId,
+    User? companion,
   }) {
     return ConversationTile(
       conversation: conversation ?? this.conversation,
       lastMessage: lastMessage ?? this.lastMessage,
-      companionId: companionId ?? this.companionId,
+      companion: companion ?? this.companion,
     );
   }
 
   @override
-  List<Object?> get props => <Object?>[conversation, lastMessage, companionId];
+  List<Object?> get props => <Object?>[conversation, lastMessage, companion];
 }

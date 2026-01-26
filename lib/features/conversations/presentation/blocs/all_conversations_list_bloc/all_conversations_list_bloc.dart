@@ -37,6 +37,8 @@ class AllConversationsListBloc
   late final StreamSubscription<ConversationsListUpdateRec>
   _conversationsUpdatesSub;
 
+  static const int _pageSize = 20;
+
   Future<void> _safeLoadConversations({
     required int page,
     required Emitter<AllConversationsListState> emit,
@@ -59,12 +61,16 @@ class AllConversationsListBloc
 
       final cachedUser = await _userInteractor.getCachedUser();
 
+      // Determine if there are more pages to load
+      final bool hasMore = loadedConversations.length >= _pageSize;
+
       if (!isLoadMore || currentState is! AllConversationsListLoadedState) {
         emit(
           AllConversationsListLoadedState(
             conversationTiles: loadedConversations,
             currentUserId: cachedUser.userId,
             page: page,
+            hasMore: hasMore,
           ),
         );
         return;
@@ -76,6 +82,7 @@ class AllConversationsListBloc
         loadedState.copyWith(
           page: page,
           isLoadingMore: false,
+          hasMore: hasMore,
           conversationTiles: <ConversationTile>[
             ...loadedState.conversationTiles,
             ...loadedConversations,

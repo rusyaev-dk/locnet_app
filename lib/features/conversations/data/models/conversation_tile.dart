@@ -1,6 +1,7 @@
 // ignore_for_file: sort_constructors_first
 
 import 'package:equatable/equatable.dart';
+import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/conversation/data/data.dart';
 import 'package:locnet_app/features/message/data/data.dart';
 
@@ -8,11 +9,11 @@ class ConversationTileDto extends Equatable {
   const ConversationTileDto({
     required this.conversation,
     this.lastMessage,
-    this.companionId,
+    this.companion,
   });
 
   final ConversationDto conversation;
-  final String? companionId;
+  final UserDto? companion;
   final MessageDto? lastMessage;
 
   factory ConversationTileDto.fromJson(Map<String, dynamic> json) {
@@ -23,28 +24,30 @@ class ConversationTileDto extends Equatable {
       lastMessage: json['lastMsg'] != null
           ? MessageDto.fromJson(json['lastMsg'] as Map<String, dynamic>)
           : null,
-      companionId: json['companionId'] as String?,
+      companion: json['companion'] != null
+          ? UserDto.fromJson(json['companion'] as Map<String, dynamic>)
+          : null,
     );
   }
 
   Map<String, dynamic> toJson() => <String, dynamic>{
     'conversation': conversation.toJson(),
     'lastMsg': lastMessage?.toJson(),
-    'companionId': companionId,
+    'companion': companion?.toJson(),
   };
 
   ConversationTileDto copyWith({
     ConversationDto? conversation,
     MessageDto? lastMessage,
-    String? companionId,
+    UserDto? companion,
   }) {
     return ConversationTileDto(
       conversation: conversation ?? this.conversation,
       lastMessage: lastMessage ?? this.lastMessage,
-      companionId: companionId ?? this.companionId,
+      companion: companion ?? this.companion,
     );
   }
 
   @override
-  List<Object?> get props => <Object?>[conversation, lastMessage, companionId];
+  List<Object?> get props => <Object?>[conversation, lastMessage, companion];
 }

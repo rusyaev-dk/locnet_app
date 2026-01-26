@@ -11,15 +11,15 @@ final class MockConversations {
 
   static ConversationDto createRandomPrivateConversation({
     required String initiatorId,
+    required String companionName,
   }) {
     final conversationId = _generateConversationId();
-    final title = _MockConversationsNamesRegistry.getRandomPrivateTitle();
 
     return ConversationDto(
       conversationId: conversationId,
       initiatorId: initiatorId,
       type: 'private',
-      title: title,
+      title: companionName,
       isDeleted: false,
       createdAt: _now.subtract(Duration(days: _random.nextInt(20))),
       updatedAt: _now.subtract(Duration(hours: _random.nextInt(40))),
@@ -50,7 +50,7 @@ final class MockConversations {
     return ConversationDto(
       conversationId: conversationId,
       initiatorId: initiatorId,
-      type: 'group',
+      type: 'channel',
       title: title,
       isDeleted: false,
       createdAt: _now.subtract(Duration(days: _random.nextInt(20))),
@@ -66,10 +66,6 @@ final class MockConversations {
 abstract class _MockConversationsNamesRegistry {
   static final Random _random = Random(42);
 
-  static String getRandomPrivateTitle() {
-    return _privateTitles[_random.nextInt(_privateTitles.length)];
-  }
-
   static String getRandomGroupTitle() {
     return _groupTitles[_random.nextInt(_groupTitles.length)];
   }
@@ -77,23 +73,6 @@ abstract class _MockConversationsNamesRegistry {
   static String getRandomChannelTitle() {
     return _channelTitles[_random.nextInt(_channelTitles.length)];
   }
-
-  static const List<String> _privateTitles = <String>[
-    'Chat with Alex',
-    'Meeting Notes',
-    'Follow Up',
-    'Work Discussion',
-    'Daily Sync',
-    'Project Talk',
-    'Private Dialogue',
-
-    'Личное общение',
-    'Разговор с Иваном',
-    'Заметки',
-    'Обсуждение проекта',
-    'Переписка',
-    'Личное сообщение',
-  ];
 
   static const List<String> _groupTitles = <String>[
     'Team Chat',

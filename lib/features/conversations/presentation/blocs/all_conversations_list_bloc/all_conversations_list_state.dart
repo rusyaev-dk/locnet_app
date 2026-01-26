@@ -31,23 +31,27 @@ final class AllConversationsListLoadedState extends AllConversationsListState {
     required this.currentUserId,
     this.page = 1,
     this.isLoadingMore = false,
+    this.hasMore = true,
     super.failure,
   });
 
   final int page;
   final List<ConversationTile> conversationTiles;
   final bool isLoadingMore;
+  final bool hasMore;
   final String currentUserId;
 
   AllConversationsListLoadedState copyWith({
     int? page,
     List<ConversationTile>? conversationTiles,
     bool? isLoadingMore,
+    bool? hasMore,
   }) {
     return AllConversationsListLoadedState(
       page: page ?? this.page,
       conversationTiles: conversationTiles ?? this.conversationTiles,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+      hasMore: hasMore ?? this.hasMore,
       failure: failure,
       currentUserId: currentUserId,
     );
@@ -59,6 +63,7 @@ final class AllConversationsListLoadedState extends AllConversationsListState {
     currentUserId,
     page,
     isLoadingMore,
+    hasMore,
     failure,
   ];
 }
