@@ -1,5 +1,6 @@
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/conversation/domain/domain.dart';
+import 'package:locnet_app/features/message/domain/domain.dart';
 
 abstract interface class IGroupConversationRepo {
   Future<Conversation> createGroup({
@@ -33,5 +34,20 @@ abstract interface class IGroupConversationRepo {
   Future<bool> deleteUserFromGroup({
     required String groupConversationId,
     required String userId,
+  });
+
+  Future<List<Message>> loadMessagesPage({
+    required String conversationId,
+    int page = 1,
+  });
+
+  Future<Message> sendMessage({
+    required Message message,
+  });
+
+  Future<Message> editMessage({required Message updatedMessage});
+
+  Future<bool> deleteMessage({
+    required Message message,
   });
 }

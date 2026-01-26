@@ -3,8 +3,8 @@ import 'package:locnet_app/core/data/data.dart';
 import 'package:locnet_app/di/di.dart';
 import 'package:locnet_app/features/auth/data/data.dart';
 import 'package:locnet_app/features/conversation/data/repositories/repositories.dart';
-import 'package:locnet_app/features/conversation/subfeatures/channel/data/repositories/channel_repo/i_channel_repo.dart';
-import 'package:locnet_app/features/conversation/subfeatures/group/data/repositories/group_conversation_repo/i_group_conversation_repo.dart';
+import 'package:locnet_app/features/conversation/subfeatures/channel/data/data.dart';
+import 'package:locnet_app/features/conversation/subfeatures/group/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/data/data.dart';
 import 'package:locnet_app/features/conversations/data/data.dart';
 import 'package:locnet_app/features/conversations/subfeatures/unified_search/data/repositories/repositories.dart';
@@ -55,7 +55,7 @@ final class DevEnvPreset implements IAppEnvPreset {
 
   @override
   IChannelRepo createChannelRepo() {
-    throw UnimplementedError();
+    return MockChannelRepo(backendStorage: _mockInMemoryBackend);
   }
 
   @override
@@ -65,7 +65,7 @@ final class DevEnvPreset implements IAppEnvPreset {
 
   @override
   IGroupConversationRepo createGroupConversationRepo() {
-    throw UnimplementedError();
+    return MockGroupConversationRepo(backendStorage: _mockInMemoryBackend);
   }
 
   @override

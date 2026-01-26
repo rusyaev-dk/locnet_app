@@ -6,6 +6,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/features/conversation/domain/domain.dart';
+import 'package:locnet_app/features/conversation/subfeatures/channel/presentation/presentation.dart';
+import 'package:locnet_app/features/conversation/subfeatures/group/presentation/presentation.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/presentation/presentation.dart';
 import 'package:locnet_app/features/conversations/data/data.dart';
 import 'package:locnet_app/features/conversations/domain/domain.dart';
@@ -164,12 +167,63 @@ class _ConversationsPanelState extends State<ConversationsPanel> {
                       ),
                     ),
                   )
-                : PrivateConversationScreenWrapper(
-                    key: ValueKey<String>(widget.selectedConversationId!),
-                    conversationId: widget.selectedConversationId!,
-                    child: PrivateConversationScreen(
-                      conversationId: widget.selectedConversationId!,
-                    ),
+                : BlocBuilder<
+                    AllConversationsListBloc,
+                    AllConversationsListState
+                  >(
+                    builder: (context, state) {
+                      if (state is! AllConversationsListLoadedState) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+
+                      final ConversationTile
+                      selectedTile = state.conversationTiles.firstWhere(
+                        (tile) =>
+                            tile.conversation.conversationId ==
+                            widget.selectedConversationId,
+                        orElse: () => throw StateError(
+                          'Conversation ${widget.selectedConversationId} not found',
+                        ),
+                      );
+
+                      final ConversationType conversationType =
+                          selectedTile.conversation.type;
+
+                      switch (conversationType) {
+                        case ConversationType.private:
+                          return PrivateConversationScreenWrapper(
+                            key: ValueKey<String>(
+                              widget.selectedConversationId!,
+                            ),
+                            conversationId: widget.selectedConversationId!,
+                            child: PrivateConversationScreen(
+                              conversationId: widget.selectedConversationId!,
+                            ),
+                          );
+
+                        case ConversationType.group:
+                          return GroupConversationScreenWrapper(
+                            key: ValueKey<String>(
+                              widget.selectedConversationId!,
+                            ),
+                            conversationId: widget.selectedConversationId!,
+                            child: GroupConversationScreen(
+                              conversationId: widget.selectedConversationId!,
+                            ),
+                          );
+
+                        case ConversationType.channel:
+                          return ChannelConversationScreenWrapper(
+                            key: ValueKey<String>(
+                              widget.selectedConversationId!,
+                            ),
+                            conversationId: widget.selectedConversationId!,
+                            child: ChannelConversationScreen(
+                              conversationId: widget.selectedConversationId!,
+                            ),
+                          );
+                      }
+                    },
                   ),
           ),
         ),
@@ -230,8 +284,8 @@ class _ConversationsListPanel extends StatelessWidget {
                           scrollInfo.metrics.maxScrollExtent * 0.8) {
                         final int nextPage = state.page + 1;
                         context.read<AllConversationsListBloc>().add(
-                              AllConversationsListLoadMoreEvent(page: nextPage),
-                            );
+                          AllConversationsListLoadMoreEvent(page: nextPage),
+                        );
                       }
 
                       return false;

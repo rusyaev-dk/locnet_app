@@ -17,12 +17,18 @@ class MessageBubble extends StatefulWidget {
     required this.onSelect,
     required this.onCopy,
     this.isLast = false,
+    this.forceLeft = false,
+    this.sender,
+    this.showDeliveryStatus = true,
     super.key,
   });
 
   final Message message;
   final String companionId;
   final bool isLast;
+  final bool forceLeft;
+  final String? sender;
+  final bool showDeliveryStatus;
 
   final VoidCallback onReply;
   final VoidCallback onForward;
@@ -122,7 +128,9 @@ class _MessageBubbleState extends State<MessageBubble> {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
 
-    final bool isMine = widget.message.senderId != widget.companionId;
+    final bool isMine = widget.forceLeft
+        ? false
+        : widget.message.senderId != widget.companionId;
 
     final Alignment alignment = isMine
         ? Alignment.centerRight
@@ -198,6 +206,23 @@ class _MessageBubbleState extends State<MessageBubble> {
                 crossAxisAlignment: crossAxisAlignment,
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
+                  if (widget.sender != null)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          widget.sender!,
+                          style: textScheme.label.copyWith(
+                            color: isMine
+                                ? colorScheme.onPrimary.withAlpha(200)
+                                : colorScheme.primary,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
                   if (messageMarkdown.isNotEmpty)
                     TextSelectionTheme(
                       data: TextSelectionThemeData(
@@ -223,16 +248,14 @@ class _MessageBubbleState extends State<MessageBubble> {
                           ),
                         ),
                       Text(timeText, style: metaTextStyle),
-                      const SizedBox(width: 6),
-                      MessageDeliveryStatusIndicator(
-                        deliveryStatus: widget.message.deliveryStatus,
-                        color:
-                            metaTextStyle.color ??
-                            (isMine
-                                ? colorScheme.onPrimary
-                                : colorScheme.onSurface),
-                        size: 14,
-                      ),
+                      if (widget.showDeliveryStatus && isMine) ...[
+                        const SizedBox(width: 6),
+                        MessageDeliveryStatusIndicator(
+                          deliveryStatus: widget.message.deliveryStatus,
+                          color: metaTextStyle.color ?? colorScheme.onPrimary,
+                          size: 14,
+                        ),
+                      ],
                     ],
                   ),
                 ],

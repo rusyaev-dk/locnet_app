@@ -2,6 +2,7 @@ import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/conversation/data/data.dart';
 import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/group/data/data.dart';
+import 'package:locnet_app/features/message/domain/domain.dart';
 
 final class GroupConversationInteractor {
   GroupConversationInteractor({
@@ -107,6 +108,24 @@ final class GroupConversationInteractor {
   }) async {
     return await _groupConversationRepo.deleteGroup(
       groupConversationId: groupConversationId,
+    );
+  }
+
+  Future<Conversation> getConversationById({
+    required String conversationId,
+  }) async {
+    return await _conversationRepo.getConversationById(
+      conversationId: conversationId,
+    );
+  }
+
+  Future<List<Message>> loadMessagesPage({
+    required String conversationId,
+    int page = 1,
+  }) async {
+    return await _groupConversationRepo.loadMessagesPage(
+      conversationId: conversationId,
+      page: page,
     );
   }
 }

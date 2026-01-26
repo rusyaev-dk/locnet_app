@@ -2,6 +2,7 @@ import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/conversation/data/data.dart';
 import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/channel/data/data.dart';
+import 'package:locnet_app/features/message/domain/domain.dart';
 
 final class ChannelInteractor {
   ChannelInteractor({
@@ -104,6 +105,24 @@ final class ChannelInteractor {
     return _channelRepo.deleteUserFromChannel(
       channelId: channelId,
       userId: userId,
+    );
+  }
+
+  Future<Conversation> getConversationById({
+    required String conversationId,
+  }) async {
+    return await _conversationRepo.getConversationById(
+      conversationId: conversationId,
+    );
+  }
+
+  Future<List<Message>> loadMessagesPage({
+    required String channelId,
+    int page = 1,
+  }) async {
+    return await _channelRepo.loadMessagesPage(
+      conversationId: channelId,
+      page: page,
     );
   }
 }
