@@ -57,7 +57,7 @@ class LanguageSelector extends StatelessWidget {
           style: textScheme.label.copyWith(color: colorScheme.onSurfaceVariant),
         ),
         const SizedBox(height: 8),
-        LanguageSegmentedControl(
+        LanguageList(
           selectedLocale: value,
           supportedLocales: _supportedLocales,
           onLocaleSelected: (Locale locale) {
@@ -71,8 +71,8 @@ class LanguageSelector extends StatelessWidget {
   }
 }
 
-class LanguageSegmentedControl extends StatelessWidget {
-  const LanguageSegmentedControl({
+class LanguageList extends StatelessWidget {
+  const LanguageList({
     required this.selectedLocale,
     required this.supportedLocales,
     required this.onLocaleSelected,
@@ -87,115 +87,62 @@ class LanguageSegmentedControl extends StatelessWidget {
   final String Function(Locale) localeToLabel;
   final IconData Function(Locale) localeToIcon;
 
-  static const Duration _moveDuration = Duration(milliseconds: 260);
-  static const Curve _moveCurve = Curves.easeOutCubic;
-
-  Alignment _getIndicatorAlignment(Locale locale) {
-    final int index = supportedLocales.indexWhere(
-      (l) => l.languageCode == locale.languageCode,
-    );
-    if (index == -1) return Alignment.centerLeft;
-
-    switch (index) {
-      case 0:
-        return Alignment.centerLeft;
-      case 1:
-        return Alignment.center;
-      case 2:
-        return Alignment.centerRight;
-      default:
-        return Alignment.centerLeft;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = context.colorScheme;
-
-    final Alignment indicatorAlignment = _getIndicatorAlignment(selectedLocale);
-
-    return LayoutBuilder(
-      builder: (BuildContext context, BoxConstraints constraints) {
-        final double segmentWidth = (constraints.maxWidth - 8) / 3;
-
-        return Container(
-          height: 52,
-          padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            color: colorScheme.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: colorScheme.outlineVariant),
-          ),
-          child: Stack(
-            children: [
-              AnimatedAlign(
-                duration: _moveDuration,
-                curve: _moveCurve,
-                alignment: indicatorAlignment,
-                child: _SegmentIndicator(width: segmentWidth),
-              ),
-              Row(
-                children: supportedLocales.map((locale) {
-                  final bool isSelected =
-                      locale.languageCode == selectedLocale.languageCode;
-                  return Expanded(
-                    child: _SegmentButton(
-                      title: localeToLabel(locale),
-                      icon: localeToIcon(locale),
-                      isSelected: isSelected,
-                      onPressed: () => onLocaleSelected(locale),
-                    ),
-                  );
-                }).toList(),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _SegmentIndicator extends StatelessWidget {
-  const _SegmentIndicator({required this.width});
-
-  final double width;
-
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
 
     return Container(
-      width: width,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: colorScheme.primary.withAlpha(0x14),
-        border: Border.all(color: colorScheme.primary.withAlpha(0x3D)),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 12,
-            spreadRadius: -6,
-            offset: const Offset(0, 4),
-            color: colorScheme.primary.withAlpha(0x22),
-          ),
-        ],
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colorScheme.outlineVariant),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: supportedLocales.asMap().entries.map((entry) {
+          final int index = entry.key;
+          final Locale locale = entry.value;
+          final bool isSelected =
+              locale.languageCode == selectedLocale.languageCode;
+          final bool isLast = index == supportedLocales.length - 1;
+
+          return Column(
+            children: [
+              _LanguageItem(
+                locale: locale,
+                isSelected: isSelected,
+                onPressed: () => onLocaleSelected(locale),
+                localeToLabel: localeToLabel,
+                localeToIcon: localeToIcon,
+              ),
+              if (!isLast)
+                Divider(
+                  height: 1,
+                  indent: 48,
+                  color: colorScheme.outlineVariant,
+                ),
+            ],
+          );
+        }).toList(),
       ),
     );
   }
 }
 
-class _SegmentButton extends StatelessWidget {
-  const _SegmentButton({
-    required this.title,
-    required this.icon,
+class _LanguageItem extends StatelessWidget {
+  const _LanguageItem({
+    required this.locale,
     required this.isSelected,
     required this.onPressed,
+    required this.localeToLabel,
+    required this.localeToIcon,
   });
 
-  final String title;
-  final IconData icon;
+  final Locale locale;
   final bool isSelected;
   final VoidCallback onPressed;
+  final String Function(Locale) localeToLabel;
+  final IconData Function(Locale) localeToIcon;
 
   static const Duration _styleDuration = Duration(milliseconds: 220);
   static const Curve _styleCurve = Curves.easeOutCubic;
@@ -205,47 +152,65 @@ class _SegmentButton extends StatelessWidget {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
 
-    final Color targetForegroundColor = isSelected
-        ? colorScheme.primary
-        : colorScheme.onSurfaceVariant;
+    final Color targetIconColor =
+        isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant;
+    final Color targetTextColor =
+        isSelected ? colorScheme.primary : colorScheme.onSurface;
 
-    return InkWell(
-      onTap: onPressed,
-      borderRadius: BorderRadius.circular(12),
-      child: Center(
-        child: TweenAnimationBuilder<Color?>(
-          duration: _styleDuration,
-          curve: _styleCurve,
-          tween: ColorTween(end: targetForegroundColor),
-          builder: (BuildContext context, Color? animatedColor, Widget? child) {
-            final Color resolvedColor = animatedColor ?? targetForegroundColor;
-
-            return Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(icon, size: 20, color: resolvedColor),
-                const SizedBox(width: 8),
-                Flexible(
-                  child: AnimatedDefaultTextStyle(
-                    duration: _styleDuration,
-                    curve: _styleCurve,
-                    style: textScheme.label.copyWith(
-                      color: resolvedColor,
-                      fontSize: 15,
-                      fontWeight: isSelected
-                          ? FontWeight.w700
-                          : FontWeight.w500,
-                    ),
-                    child: Text(
-                      title,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
-                  ),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              TweenAnimationBuilder<Color?>(
+                duration: _styleDuration,
+                curve: _styleCurve,
+                tween: ColorTween(end: targetIconColor),
+                builder: (context, animatedColor, child) {
+                  return Icon(
+                    localeToIcon(locale),
+                    size: 20,
+                    color: animatedColor ?? targetIconColor,
+                  );
+                },
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: TweenAnimationBuilder<Color?>(
+                  duration: _styleDuration,
+                  curve: _styleCurve,
+                  tween: ColorTween(end: targetTextColor),
+                  builder: (context, animatedColor, child) {
+                    return AnimatedDefaultTextStyle(
+                      duration: _styleDuration,
+                      curve: _styleCurve,
+                      style: textScheme.label.copyWith(
+                        color: animatedColor ?? targetTextColor,
+                        fontSize: 15,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.w500,
+                      ),
+                      child: Text(localeToLabel(locale)),
+                    );
+                  },
                 ),
-              ],
-            );
-          },
+              ),
+              const SizedBox(width: 8),
+              AnimatedOpacity(
+                duration: _styleDuration,
+                opacity: isSelected ? 1.0 : 0.0,
+                child: Icon(
+                  Icons.check_circle,
+                  size: 20,
+                  color: colorScheme.primary,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

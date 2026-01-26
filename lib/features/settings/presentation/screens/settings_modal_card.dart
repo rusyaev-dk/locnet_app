@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
@@ -81,11 +82,36 @@ class SettingsView extends StatelessWidget {
                 const SizedBox(height: 15),
                 LanguageSelector(selectedLocale: settingsState.locale),
                 const SizedBox(height: 15),
+                const AppVersionWidget(),
+                const SizedBox(height: 15),
               ],
             ),
           ),
         ),
       ],
+    );
+  }
+}
+
+class AppVersionWidget extends StatelessWidget {
+  const AppVersionWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final textScheme = context.textScheme;
+
+    final String? version = dotenv.env['VERSION'];
+    final String displayVersion = version ?? 'Unknown';
+
+    return Center(
+      child: Text(
+        'Version $displayVersion',
+        style: textScheme.label.copyWith(
+          color: colorScheme.onSurfaceVariant,
+          fontSize: 13,
+        ),
+      ),
     );
   }
 }
