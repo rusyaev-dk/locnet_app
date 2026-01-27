@@ -28,22 +28,76 @@ class AppMessageText extends StatelessWidget {
     }
 
     final List<Widget> children = <Widget>[];
+    final List<InlineSpan> allParagraphSpans = <InlineSpan>[];
+    bool hasCodeBlocks = false;
 
     for (final MessageMarkdownBlock block in document.blocks) {
       if (block is MessageMarkdownParagraph) {
-        children.add(
-          _ParagraphBlock(
-            text: block.text,
-            ranges: block.ranges,
-            textStyle: textStyle,
-            linkColor: linkColor,
-            onLinkTap: onLinkTap,
-          ),
+        if (block.text.isEmpty) {
+          // Empty paragraph - add spacing
+          allParagraphSpans.add(const TextSpan(text: '\n'));
+          continue;
+        }
+
+        final TextStyle linkStyle = textStyle.copyWith(
+          color: linkColor,
+          decoration: TextDecoration.none,
         );
+
+        final TextStyle boldStyle = textStyle.copyWith(fontWeight: FontWeight.w700);
+        final TextStyle italicStyle = textStyle.copyWith(
+          fontStyle: FontStyle.italic,
+        );
+        final TextStyle underlineStyle = textStyle.copyWith(
+          decoration: TextDecoration.underline,
+        );
+        final TextStyle codeStyle = textStyle.copyWith(
+          fontFamily: 'monospace',
+          backgroundColor: (textStyle.color ?? Colors.black).withAlpha(18),
+        );
+        final TextStyle strikeStyle = textStyle.copyWith(
+          decoration: TextDecoration.lineThrough,
+        );
+
+        final List<InlineSpan> paragraphSpans = MessageInlineSpanBuilder.build(
+          plainText: block.text,
+          ranges: block.ranges,
+          baseStyle: textStyle,
+          boldStyle: boldStyle,
+          italicStyle: italicStyle,
+          underlineStyle: underlineStyle,
+          codeStyle: codeStyle,
+          strikeStyle: strikeStyle,
+          linkStyle: linkStyle,
+          codeBlockStyle: null,
+          onLinkTap: onLinkTap,
+          autoDetectLinks: true,
+        );
+
+        allParagraphSpans.addAll(paragraphSpans);
+        // Add newline between paragraphs for visual separation
+        allParagraphSpans.add(const TextSpan(text: '\n'));
         continue;
       }
 
       if (block is MessageMarkdownCodeBlock) {
+        hasCodeBlocks = true;
+        // If we have accumulated paragraphs, add them first
+        if (allParagraphSpans.isNotEmpty) {
+          // Remove the last newline before code block
+          if (allParagraphSpans.length > 1 &&
+              allParagraphSpans.last is TextSpan &&
+              (allParagraphSpans.last as TextSpan).text == '\n') {
+            allParagraphSpans.removeLast();
+          }
+          children.add(
+            SelectableText.rich(
+              TextSpan(children: allParagraphSpans),
+              style: textStyle,
+            ),
+          );
+          allParagraphSpans.clear();
+        }
         children.add(
           _CodeBlock(
             code: block.code,
@@ -55,71 +109,33 @@ class AppMessageText extends StatelessWidget {
       }
     }
 
+    // Add remaining paragraphs if any
+    if (allParagraphSpans.isNotEmpty) {
+      // Remove the last newline if present
+      if (allParagraphSpans.length > 1 &&
+          allParagraphSpans.last is TextSpan &&
+          (allParagraphSpans.last as TextSpan).text == '\n') {
+        allParagraphSpans.removeLast();
+      }
+      children.add(
+        SelectableText.rich(
+          TextSpan(children: allParagraphSpans),
+          style: textStyle,
+        ),
+      );
+    }
+
+    // If we have only paragraphs (no code blocks), return single SelectableText
+    if (!hasCodeBlocks && children.length == 1) {
+      return children.first;
+    }
+
+    // If we have code blocks mixed with paragraphs, use Column
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: children,
     );
-  }
-}
-
-final class _ParagraphBlock extends StatelessWidget {
-  const _ParagraphBlock({
-    required this.text,
-    required this.ranges,
-    required this.textStyle,
-    required this.linkColor,
-    required this.onLinkTap,
-  });
-
-  final String text;
-  final List<MessageInlineStyleRange> ranges;
-  final TextStyle textStyle;
-  final Color linkColor;
-  final void Function(Uri uri)? onLinkTap;
-
-  @override
-  Widget build(BuildContext context) {
-    if (text.isEmpty) {
-      return const SizedBox(height: 6);
-    }
-
-    final TextStyle linkStyle = textStyle.copyWith(
-      color: linkColor,
-      decoration: TextDecoration.none,
-    );
-
-    final TextStyle boldStyle = textStyle.copyWith(fontWeight: FontWeight.w700);
-    final TextStyle italicStyle = textStyle.copyWith(
-      fontStyle: FontStyle.italic,
-    );
-    final TextStyle underlineStyle = textStyle.copyWith(
-      decoration: TextDecoration.underline,
-    );
-    final TextStyle codeStyle = textStyle.copyWith(
-      fontFamily: 'monospace',
-      backgroundColor: (textStyle.color ?? Colors.black).withAlpha(18),
-    );
-    final TextStyle strikeStyle = textStyle.copyWith(
-      decoration: TextDecoration.lineThrough,
-    );
-
-    final List<InlineSpan> spans = MessageInlineSpanBuilder.build(
-      plainText: text,
-      ranges: ranges,
-      baseStyle: textStyle,
-      boldStyle: boldStyle,
-      italicStyle: italicStyle,
-      underlineStyle: underlineStyle,
-      codeStyle: codeStyle,
-      strikeStyle: strikeStyle,
-      linkStyle: linkStyle,
-      codeBlockStyle: null,
-      onLinkTap: onLinkTap,
-      autoDetectLinks: true,
-    );
-
-    return SelectableText.rich(TextSpan(children: spans), style: textStyle);
   }
 }
 

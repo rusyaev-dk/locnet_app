@@ -57,17 +57,21 @@ class AllConversationsListBloc
       final List<ConversationTile> loadedConversations =
           await _conversationsListInteractor.loadConversations(page: page);
 
+      // Sort conversations by last message time (most recent first)
+      final List<ConversationTile> sortedConversations =
+          _sortConversationsByLastMessage(loadedConversations);
+
       final AllConversationsListState currentState = state;
 
       final cachedUser = await _userInteractor.getCachedUser();
 
       // Determine if there are more pages to load
-      final bool hasMore = loadedConversations.length >= _pageSize;
+      final bool hasMore = sortedConversations.length >= _pageSize;
 
       if (!isLoadMore || currentState is! AllConversationsListLoadedState) {
         emit(
           AllConversationsListLoadedState(
-            conversationTiles: loadedConversations,
+            conversationTiles: sortedConversations,
             currentUserId: cachedUser.userId,
             page: page,
             hasMore: hasMore,
@@ -78,15 +82,20 @@ class AllConversationsListBloc
 
       final AllConversationsListLoadedState loadedState = currentState;
 
+      // Combine and sort all conversations
+      final List<ConversationTile> combinedConversations = <ConversationTile>[
+        ...loadedState.conversationTiles,
+        ...sortedConversations,
+      ];
+      final List<ConversationTile> sortedCombined =
+          _sortConversationsByLastMessage(combinedConversations);
+
       emit(
         loadedState.copyWith(
           page: page,
           isLoadingMore: false,
           hasMore: hasMore,
-          conversationTiles: <ConversationTile>[
-            ...loadedState.conversationTiles,
-            ...loadedConversations,
-          ],
+          conversationTiles: sortedCombined,
         ),
       );
     } catch (e, st) {
@@ -175,7 +184,11 @@ class AllConversationsListBloc
       ...currentState.conversationTiles,
     ];
 
-    emit(currentState.copyWith(conversationTiles: updatedConversations));
+    // Sort conversations by last message time
+    final List<ConversationTile> sortedConversations =
+        _sortConversationsByLastMessage(updatedConversations);
+
+    emit(currentState.copyWith(conversationTiles: sortedConversations));
   }
 
   Future<void> _onConversationUpdated(
@@ -199,7 +212,11 @@ class AllConversationsListBloc
         })
         .toList();
 
-    emit(currentState.copyWith(conversationTiles: updatedConversations));
+    // Sort conversations by last message time
+    final List<ConversationTile> sortedConversations =
+        _sortConversationsByLastMessage(updatedConversations);
+
+    emit(currentState.copyWith(conversationTiles: sortedConversations));
   }
 
   Future<void> _onConversationDeleted(
@@ -221,6 +238,25 @@ class AllConversationsListBloc
         .toList();
 
     emit(currentState.copyWith(conversationTiles: updatedConversations));
+  }
+
+  List<ConversationTile> _sortConversationsByLastMessage(
+    List<ConversationTile> conversations,
+  ) {
+    final List<ConversationTile> sorted =
+        List<ConversationTile>.from(conversations)
+          ..sort((ConversationTile a, ConversationTile b) {
+            // Get timestamp for last message or conversation update
+            final DateTime aTime =
+                a.lastMessage?.createdAt ?? a.conversation.updatedAt;
+            final DateTime bTime =
+                b.lastMessage?.createdAt ?? b.conversation.updatedAt;
+
+            // Sort in descending order (most recent first)
+            return bTime.compareTo(aTime);
+          });
+
+    return sorted;
   }
 
   @override
