@@ -6,10 +6,10 @@ import 'package:locnet_app/di/di.dart';
 import 'package:locnet_app/features/auth/data/data.dart';
 import 'package:locnet_app/features/auth/domain/domain.dart';
 import 'package:locnet_app/features/auth/presentation/presentation.dart';
-import 'package:locnet_app/features/conversation/data/data.dart';
-import 'package:locnet_app/features/conversations/data/data.dart';
-import 'package:locnet_app/features/conversations/subfeatures/unified_search/data/data.dart';
-import 'package:locnet_app/features/conversations/subfeatures/unified_search/domain/domain.dart';
+import 'package:locnet_app/features/conversations_list/data/data.dart';
+import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/data/data.dart';
+import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/domain/domain.dart';
+import 'package:locnet_app/features/message/data/data.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
 import 'package:locnet_app/features/settings/domain/domain.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
@@ -52,9 +52,6 @@ class AppProvidersWrapper extends StatelessWidget {
           RepositoryProvider<IAuthRepo>(
             create: (context) => envPreset.createAuthRepo(),
           ),
-          RepositoryProvider<IConversationRepo>(
-            create: (context) => envPreset.createConversationRepo(),
-          ),
           RepositoryProvider<IConversationsListRepo>(
             create: (context) => envPreset.createConversationsListRepo(),
           ),
@@ -69,6 +66,15 @@ class AppProvidersWrapper extends StatelessWidget {
           ),
           RepositoryProvider<IUnifiedSearchRepo>(
             create: (context) => envPreset.createUnifiedSearchRepo(),
+          ),
+          RepositoryProvider<IPrivateMessageRepo>(
+            create: (context) => envPreset.createPrivateMessageRepo(),
+          ),
+          RepositoryProvider<IGroupMessageRepo>(
+            create: (context) => envPreset.createGroupMessageRepo(),
+          ),
+          RepositoryProvider<IChannelPublicationRepo>(
+            create: (context) => envPreset.createChannelPublicationRepo(),
           ),
           RepositoryProvider<IUserCacheRepo>(
             create: (context) => LocalUserCacheRepo(

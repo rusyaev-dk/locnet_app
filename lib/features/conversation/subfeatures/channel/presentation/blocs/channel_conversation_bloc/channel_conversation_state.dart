@@ -22,14 +22,14 @@ final class ChannelConversationLoadedState extends ChannelConversationState {
     super.failure,
   });
 
-  final List<Message> messages;
-  final Conversation conversation;
+  final List<ChannelPublication> messages;
+  final Channel conversation;
   final List<User> subscribers;
   final int page;
 
   ChannelConversationLoadedState copyWith({
-    List<Message>? messages,
-    Conversation? conversation,
+    List<ChannelPublication>? messages,
+    Channel? conversation,
     List<User>? subscribers,
     int? page,
     Object? failure,

@@ -23,15 +23,15 @@ final class PrivateConversationLoadedState extends PrivateConversationState {
     super.failure,
   });
 
-  final List<Message> messages;
-  final Conversation conversation;
+  final List<PrivateMessage> messages;
+  final PrivateConversation conversation;
   final User companion;
   final String companionId;
   final int page;
 
   PrivateConversationLoadedState copyWith({
-    List<Message>? messages,
-    Conversation? conversation,
+    List<PrivateMessage>? messages,
+    PrivateConversation? conversation,
     String? companionId,
     User? companion,
     int? page,

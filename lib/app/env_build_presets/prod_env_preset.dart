@@ -2,13 +2,13 @@ import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/data/data.dart';
 import 'package:locnet_app/di/di.dart';
 import 'package:locnet_app/features/auth/data/data.dart';
-import 'package:locnet_app/features/conversation/data/repositories/conversation_repo/i_conversation_repo.dart';
 import 'package:locnet_app/features/conversation/subfeatures/channel/data/repositories/channel_repo/i_channel_repo.dart';
-import 'package:locnet_app/features/conversation/subfeatures/group/data/repositories/group_conversation_repo/i_group_conversation_repo.dart';
+import 'package:locnet_app/features/conversation/subfeatures/group/data/repositories/group_repo/i_group_repo.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/data/repositories/private_conversation_repo/i_private_conversation_repo.dart';
-import 'package:locnet_app/features/conversations/data/repositories/conversations_list_repo/i_conversations_list_repo.dart';
-import 'package:locnet_app/features/conversations/subfeatures/unified_search/data/data.dart';
-import 'package:locnet_app/features/message/data/repositories/message_repo/i_message_repo.dart';
+import 'package:locnet_app/features/conversations_list/data/repositories/conversations_list_repo/i_conversations_list_repo.dart';
+import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/data/data.dart';
+import 'package:locnet_app/features/message/data/data.dart';
+import 'package:locnet_app/mock/mock.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
 import 'package:locnet_app/features/theme_editor/data/data.dart';
 
@@ -57,21 +57,24 @@ final class ProdEnvPreset implements IAppEnvPreset {
   }
 
   @override
-  IConversationRepo createConversationRepo() {
-    // TODO: implement createConversationRepo
-    throw UnimplementedError();
-  }
-
-  @override
-  IGroupConversationRepo createGroupConversationRepo() {
+  IGroupRepo createGroupConversationRepo() {
     // TODO: implement createGroupConversationRepo
     throw UnimplementedError();
   }
 
   @override
-  IMessageRepo createMessageRepo() {
-    // TODO: implement createMessageRepo
-    throw UnimplementedError();
+  IPrivateMessageRepo createPrivateMessageRepo() {
+    return MockPrivateMessageRepo(backendStorage: MockInMemoryBackend());
+  }
+
+  @override
+  IGroupMessageRepo createGroupMessageRepo() {
+    return MockGroupMessageRepo(backendStorage: MockInMemoryBackend());
+  }
+
+  @override
+  IChannelPublicationRepo createChannelPublicationRepo() {
+    return MockChannelPublicationRepo(backendStorage: MockInMemoryBackend());
   }
 
   @override

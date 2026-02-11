@@ -3,11 +3,9 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/conversation/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/presentation/presentation.dart';
-import 'package:locnet_app/features/message/domain/domain.dart';
 import 'package:locnet_app/features/message/subfeatures/message_input/presentation/presentation.dart';
 
 class PrivateConversationScreenWrapper extends StatelessWidget {
@@ -31,7 +29,6 @@ class PrivateConversationScreenWrapper extends StatelessWidget {
         RepositoryProvider<PrivateConversationInteractor>(
           create: (BuildContext context) => PrivateConversationInteractor(
             privateConversationRepo: context.read<IPrivateConversationRepo>(),
-            conversationRepo: context.read<IConversationRepo>(),
           ),
         ),
       ],
@@ -108,7 +105,7 @@ class PrivateConversationScreen extends StatelessWidget {
                   );
 
                 case PrivateConversationLoadedState():
-                  final List<Message> messages = state.messages;
+                  final List<PrivateMessage> messages = state.messages;
 
                   if (messages.isEmpty) {
                     return const Text("Empty here...");

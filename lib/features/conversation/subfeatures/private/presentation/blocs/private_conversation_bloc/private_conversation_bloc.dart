@@ -4,9 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/private.dart';
-import 'package:locnet_app/features/message/domain/domain.dart';
 
 part 'private_conversation_event.dart';
 part 'private_conversation_state.dart';
@@ -46,11 +44,13 @@ class PrivateConversationBloc
     try {
       emit(const PrivateConversationLoadingState());
 
-      final List<Message> messages = await _privateConversationInteractor
+      final List<PrivateMessage> messages = await _privateConversationInteractor
           .loadMessagesPage(conversationId: event.conversationId);
 
-      final Conversation conversation = await _privateConversationInteractor
-          .getConversationById(conversationId: event.conversationId);
+      final PrivateConversation conversation =
+          await _privateConversationInteractor.getConversationById(
+        conversationId: event.conversationId,
+      );
 
       final User companion = await _privateConversationInteractor.getCompanion(
         conversationId: event.conversationId,
@@ -91,16 +91,14 @@ class PrivateConversationBloc
 
       final PrivateConversationLoadedState loadedState = currentState;
 
-      final Message incomingMessage = event.update.message;
+      final PrivateMessage incomingMessage = event.update.message;
 
-      if (incomingMessage.conversationId !=
-          loadedState.conversation.conversationId) {
+      if (incomingMessage.conversationId != loadedState.conversation.id) {
         return;
       }
 
-      final List<Message> updatedMessages = List<Message>.from(
-        loadedState.messages,
-      );
+      final List<PrivateMessage> updatedMessages =
+          List<PrivateMessage>.from(loadedState.messages);
 
       switch (event.update.updateType) {
         case PrivateConversationMessageUpdateType.created:
@@ -141,11 +139,11 @@ class PrivateConversationBloc
   }
 
   void _upsertIncomingMessage({
-    required List<Message> messages,
-    required Message incomingMessage,
+    required List<PrivateMessage> messages,
+    required PrivateMessage incomingMessage,
   }) {
     final int serverIdIndex = messages.indexWhere(
-      (Message message) => message.messageId == incomingMessage.messageId,
+      (PrivateMessage message) => message.id == incomingMessage.id,
     );
 
     if (serverIdIndex != -1) {
@@ -154,7 +152,7 @@ class PrivateConversationBloc
     }
 
     final int clientIdIndex = messages.indexWhere(
-      (Message message) =>
+      (PrivateMessage message) =>
           message.clientMessageId == incomingMessage.clientMessageId,
     );
 
@@ -167,18 +165,18 @@ class PrivateConversationBloc
   }
 
   void _removeIncomingMessage({
-    required List<Message> messages,
-    required Message incomingMessage,
+    required List<PrivateMessage> messages,
+    required PrivateMessage incomingMessage,
   }) {
     messages.removeWhere(
-      (Message message) =>
-          message.messageId == incomingMessage.messageId ||
+      (PrivateMessage message) =>
+          message.id == incomingMessage.id ||
           message.clientMessageId == incomingMessage.clientMessageId,
     );
   }
 
-  void _sortMessagesByTime(List<Message> messages) {
-    messages.sort((Message first, Message second) {
+  void _sortMessagesByTime(List<PrivateMessage> messages) {
+    messages.sort((PrivateMessage first, PrivateMessage second) {
       final int createdCompare = second.createdAt.compareTo(first.createdAt);
       if (createdCompare != 0) {
         return createdCompare;

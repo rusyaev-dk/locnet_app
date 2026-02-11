@@ -60,7 +60,7 @@ final class PrivateMessageActionOperation extends Equatable {
 
   /// For send: pending message that was created locally.
   /// For edit/delete: optional.
-  final Message? message;
+  final PrivateMessage? message;
 
   /// For edit/delete: server message id.
   final String? messageId;
@@ -72,7 +72,7 @@ final class PrivateMessageActionOperation extends Equatable {
     String? conversationId,
     PrivateMessageActionType? type,
     PrivateMessageActionStatus? status,
-    Message? message,
+    PrivateMessage? message,
     String? messageId,
     Object? failure,
   }) {

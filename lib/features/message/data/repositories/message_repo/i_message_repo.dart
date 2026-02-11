@@ -1,13 +1,9 @@
-import 'package:locnet_app/features/message/domain/domain.dart';
-
-abstract interface class IMessageRepo {
-  Future<bool> sendMessage({required Message message});
-  Future<bool> editMessage({required Message newMessage});
-  Future<bool> deleteMessage({required String messageId});
-  Future<bool> pinMessage({required String messageId});
-
-  Future<List<MessageRead>> loadMessageReads({
-    required String conversationId,
-    required String messageId,
-  });
-}
+/// Legacy generic message repo is no longer used.
+///
+/// Message logic has been split into:
+/// - private_message (IPrivateMessageRepo)
+/// - group_message (IGroupMessageRepo)
+/// - channel_publication (IChannelPublicationRepo)
+///
+/// This interface is kept only to avoid breaking imports.
+abstract interface class IMessageRepo {}

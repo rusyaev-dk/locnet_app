@@ -22,14 +22,14 @@ final class GroupConversationLoadedState extends GroupConversationState {
     super.failure,
   });
 
-  final List<Message> messages;
-  final Conversation conversation;
+  final List<GroupMessage> messages;
+  final Group conversation;
   final List<User> participants;
   final int page;
 
   GroupConversationLoadedState copyWith({
-    List<Message>? messages,
-    Conversation? conversation,
+    List<GroupMessage>? messages,
+    Group? conversation,
     List<User>? participants,
     int? page,
     Object? failure,

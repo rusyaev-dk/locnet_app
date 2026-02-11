@@ -3,10 +3,7 @@
 import 'dart:async';
 
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/conversation/data/data.dart';
-import 'package:locnet_app/features/conversation/domain/domain.dart';
-import 'package:locnet_app/features/conversation/subfeatures/channel/data/data.dart';
-import 'package:locnet_app/features/message/data/data.dart';
+import 'package:locnet_app/features/conversation/subfeatures/channel/channel.dart';
 import 'package:locnet_app/features/message/domain/domain.dart';
 import 'package:locnet_app/mock/mock.dart';
 
@@ -17,7 +14,14 @@ final class MockChannelRepo implements IChannelRepo {
   final MockInMemoryBackend _backendStorage;
 
   @override
-  Future<Conversation> createChannel({
+  Future<Channel> getChannel({required String channelId}) async {
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+    final dto = _backendStorage.getChannelById(channelId);
+    return Channel.fromDto(dto);
+  }
+
+  @override
+  Future<Channel> createChannel({
     required String creatorId,
     required List<String> subscribersIds,
     required String title,
@@ -30,41 +34,32 @@ final class MockChannelRepo implements IChannelRepo {
   }
 
   @override
-  Future<Conversation> updateChannel({
-    required Conversation updatedChannel,
-  }) async {
+  Future<Channel> updateChannel({required Channel updatedChannel}) async {
     await Future<void>.delayed(const Duration(milliseconds: 200));
-    final ConversationDto updatedDto = _backendStorage.updateConversation(
-      updatedChannel,
-    );
-    return Conversation.fromDto(updatedDto);
+    final updatedDto = _backendStorage.updateChannel(updatedChannel);
+    return Channel.fromDto(updatedDto);
   }
 
   @override
   Future<bool> deleteChannel({required String channelId}) async {
     await Future<void>.delayed(const Duration(milliseconds: 200));
-    return _backendStorage.deleteConversation(
-      conversationId: channelId,
-    );
+    return _backendStorage.deleteChannel(channelId: channelId);
+  }
+
+  @override
+  Future<bool> toggleNotifications({
+    required String channelId,
+    required bool newNotificationsStatus,
+  }) async {
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+    return true;
   }
 
   @override
   Future<List<User>> loadChannelSubscribers({required String channelId}) async {
     await Future<void>.delayed(const Duration(milliseconds: 200));
-    final List<ConversationParticipantDto> participants =
-        _backendStorage.getAllParticipants(
-      conversationId: channelId,
-    );
-
-    final List<User> result = <User>[];
-    for (final ConversationParticipantDto participantDto in participants) {
-      final UserDto userDto = _backendStorage.getUserById(
-        userId: participantDto.userId,
-      );
-      result.add(User.fromDto(userDto));
-    }
-
-    return result;
+    final userDtos = _backendStorage.getChannelSubscribers(channelId: channelId);
+    return userDtos.map(User.fromDto).toList();
   }
 
   @override
@@ -100,66 +95,69 @@ final class MockChannelRepo implements IChannelRepo {
   }
 
   @override
-  Future<List<Message>> loadMessagesPage({
-    required String conversationId,
+  Future<List<ChannelPublication>> loadPublications({
+    required String channelId,
     int page = 1,
   }) async {
     await Future<void>.delayed(const Duration(milliseconds: 200));
 
     final int safePage = page <= 0 ? 1 : page;
 
-    final List<MessageDto> messageDtos = _backendStorage
-        .getAllMessagesByConversationId(
-          conversationId: conversationId,
+    final List<ChannelPublicationDto> dtos = _backendStorage
+        .getAllChannelPublicationsByChannelId(
+          channelId: channelId,
           page: safePage,
         );
 
-    final List<Message> result = <Message>[];
+    final List<ChannelPublication> result = <ChannelPublication>[];
 
-    for (final MessageDto dto in messageDtos) {
-      if (dto.isDeleted == true) {
+    for (final ChannelPublicationDto dto in dtos) {
+      if (dto.isDeleted) {
         continue;
       }
-      result.add(Message.fromDto(dto));
+      result.add(ChannelPublication.fromDto(dto));
     }
 
     return result;
   }
 
   @override
-  Future<Message> sendMessage({required Message message}) async {
+  Future<ChannelPublication> sendPublication({
+    required ChannelPublication publication,
+  }) async {
     await Future<void>.delayed(const Duration(milliseconds: 1000));
 
-    final resMsg = _backendStorage.addMessage(newMessage: message);
+    final resDto = _backendStorage.addChannelPublication(
+      newPublication: publication,
+    );
 
-    return message.copyWith(
+    return publication.copyWith(
+      publicationId: resDto.publicationId,
       deliveryStatus: MessageDeliveryStatus.sent,
-      messageId: resMsg.messageId,
-      attachments: message.attachments
+      attachments: publication.attachments
           .map(
-            (attachment) => attachment.copyWith(
-              messageId: resMsg.messageId,
-            ),
+            (a) => a.copyWith(publicationId: resDto.publicationId),
           )
           .toList(),
     );
   }
 
   @override
-  Future<Message> editMessage({required Message updatedMessage}) async {
+  Future<ChannelPublication> editPublication({
+    required ChannelPublication updatedPublication,
+  }) async {
     await Future<void>.delayed(const Duration(milliseconds: 200));
-    final MessageDto stored = _backendStorage.updateMessage(
-      updatedMessage: updatedMessage,
+    final storedDto = _backendStorage.updateChannelPublication(
+      updatedPublication: updatedPublication,
     );
-    return Message.fromDto(stored);
+    return ChannelPublication.fromDto(storedDto);
   }
 
   @override
-  Future<bool> deleteMessage({required Message message}) async {
+  Future<bool> deletePublication({
+    required ChannelPublication publication,
+  }) async {
     await Future.delayed(const Duration(milliseconds: 200));
-
-    final deleteSuccess = _backendStorage.deleteMessage(message: message);
-
-    return deleteSuccess;
+    return _backendStorage.deleteChannelPublication(publication: publication);
   }
 }

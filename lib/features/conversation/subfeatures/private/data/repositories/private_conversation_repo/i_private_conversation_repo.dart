@@ -1,11 +1,11 @@
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/message/domain/domain.dart';
+import 'package:locnet_app/features/conversation/subfeatures/private/domain/domain.dart';
 
 enum PrivateConversationMessageUpdateType { created, updated, deleted }
 
 typedef PrivateConversationMessageUpdateRec = ({
   PrivateConversationMessageUpdateType updateType,
-  Message message,
+  PrivateMessage message,
 });
 
 abstract interface class IPrivateConversationRepo {
@@ -20,21 +20,32 @@ abstract interface class IPrivateConversationRepo {
     required bool deleteAtRecipient,
   });
 
+  Future<PrivateConversation> getPrivateConversation({
+    required String conversationId,
+  });
+
   Future<User> getCompanion({required String conversationId});
 
-  Future<List<Message>> loadMessagesPage({
+  Future<bool> toggleNotifications({
+    required String conversationId,
+    required bool newNotificationsStatus,
+  });
+
+  Future<List<PrivateMessage>> loadMessagesPage({
     required String conversationId,
     int page = 1,
   });
 
-  Future<Message> sendMessage({
-    required Message message,
+  Future<PrivateMessage> sendMessage({
+    required PrivateMessage message,
   });
 
-  Future<Message> editMessage({required Message updatedMessage});
+  Future<PrivateMessage> editMessage({
+    required PrivateMessage updatedMessage,
+  });
 
   Future<bool> deleteMessage({
-    required Message message,
+    required PrivateMessage message,
     required bool deleteAtRecipient,
   });
 

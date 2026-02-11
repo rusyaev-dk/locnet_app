@@ -3,11 +3,9 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/conversation/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/group/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/group/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/group/presentation/presentation.dart';
-import 'package:locnet_app/features/message/domain/domain.dart';
 import 'package:locnet_app/features/message/subfeatures/message_input/presentation/presentation.dart';
 
 class GroupConversationScreenWrapper extends StatelessWidget {
@@ -24,30 +22,27 @@ class GroupConversationScreenWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider<IGroupConversationRepo>(
+        RepositoryProvider<IGroupRepo>(
           create: (context) =>
               context.read<IAppEnvPreset>().createGroupConversationRepo(),
         ),
         RepositoryProvider<GroupConversationInteractor>(
           create: (BuildContext context) => GroupConversationInteractor(
-            groupConversationRepo: context.read<IGroupConversationRepo>(),
-            conversationRepo: context.read<IConversationRepo>(),
+            groupConversationRepo: context.read<IGroupRepo>(),
           ),
         ),
       ],
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (context) => GroupConversationBloc(
-              groupConversationInteractor:
-                  context.read<GroupConversationInteractor>(),
-              conversationRepo: context.read<IConversationRepo>(),
-              logger: context.read<ILogger>(),
-            )..add(
-                GroupConversationStartedEvent(
-                  conversationId: conversationId,
+            create: (context) =>
+                GroupConversationBloc(
+                  groupConversationInteractor: context
+                      .read<GroupConversationInteractor>(),
+                  logger: context.read<ILogger>(),
+                )..add(
+                  GroupConversationStartedEvent(conversationId: conversationId),
                 ),
-              ),
           ),
           BlocProvider(create: (context) => MessageAttachmentsCubit()),
         ],
@@ -84,15 +79,15 @@ class GroupConversationScreen extends StatelessWidget {
                     buttonText: l10n.retry,
                     onButtonPressed: () =>
                         context.read<GroupConversationBloc>().add(
-                              GroupConversationStartedEvent(
-                                conversationId: conversationId,
-                              ),
-                            ),
+                          GroupConversationStartedEvent(
+                            conversationId: conversationId,
+                          ),
+                        ),
                     iconAnimationEffect: const ShakeEffect(),
                   );
 
                 case GroupConversationLoadedState():
-                  final List<Message> messages = state.messages;
+                  final List<GroupMessage> messages = state.messages;
 
                   if (messages.isEmpty) {
                     return const Text("Empty here...");
@@ -108,24 +103,24 @@ class GroupConversationScreen extends StatelessWidget {
                       final currentUserId = snapshot.data!.userId;
 
                       return Column(
-                    children: [
-                      GroupHeader(
-                        conversation: state.conversation,
-                        participantsCount: state.participants.length,
-                      ),
-                      Divider(
-                        height: 1,
-                        thickness: 1,
-                        color: colorScheme.surfaceContainer.withAlpha(80),
-                      ),
-                      Expanded(
-                        child: GroupMessagesList(
-                          messages: messages,
-                          currentUserId: currentUserId,
-                          participants: state.participants,
-                        ),
-                      ),
-                    ],
+                        children: [
+                          GroupHeader(
+                            conversation: state.conversation,
+                            participantsCount: state.participants.length,
+                          ),
+                          Divider(
+                            height: 1,
+                            thickness: 1,
+                            color: colorScheme.surfaceContainer.withAlpha(80),
+                          ),
+                          Expanded(
+                            child: GroupMessagesList(
+                              messages: messages,
+                              currentUserId: currentUserId,
+                              participants: state.participants,
+                            ),
+                          ),
+                        ],
                       );
                     },
                   );

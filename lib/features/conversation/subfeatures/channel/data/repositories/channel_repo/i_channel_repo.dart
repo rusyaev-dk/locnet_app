@@ -1,9 +1,10 @@
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/conversation/domain/domain.dart';
-import 'package:locnet_app/features/message/domain/domain.dart';
+import 'package:locnet_app/features/conversation/subfeatures/channel/channel.dart';
 
 abstract interface class IChannelRepo {
-  Future<Conversation> createChannel({
+  Future<Channel> getChannel({required String channelId});
+
+  Future<Channel> createChannel({
     required String creatorId,
     required List<String> subscribersIds,
     required String title,
@@ -11,9 +12,14 @@ abstract interface class IChannelRepo {
     String? avatarFileId,
   });
 
-  Future<Conversation> updateChannel({required Conversation updatedChannel});
+  Future<Channel> updateChannel({required Channel updatedChannel});
 
   Future<bool> deleteChannel({required String channelId});
+
+  Future<bool> toggleNotifications({
+    required String channelId,
+    required bool newNotificationsStatus,
+  });
 
   Future<List<User>> loadChannelSubscribers({required String channelId});
 
@@ -34,18 +40,18 @@ abstract interface class IChannelRepo {
     required String userId,
   });
 
-  Future<List<Message>> loadMessagesPage({
-    required String conversationId,
+  Future<List<ChannelPublication>> loadPublications({
+    required String channelId,
     int page = 1,
   });
 
-  Future<Message> sendMessage({
-    required Message message,
+  Future<ChannelPublication> sendPublication({
+    required ChannelPublication publication,
   });
 
-  Future<Message> editMessage({required Message updatedMessage});
-
-  Future<bool> deleteMessage({
-    required Message message,
+  Future<ChannelPublication> editPublication({
+    required ChannelPublication updatedPublication,
   });
+
+  Future<bool> deletePublication({required ChannelPublication publication});
 }

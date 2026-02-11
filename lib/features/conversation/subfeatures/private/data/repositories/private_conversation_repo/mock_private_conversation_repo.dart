@@ -3,9 +3,8 @@
 import 'dart:async';
 
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/conversation/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/data/data.dart';
-import 'package:locnet_app/features/message/data/data.dart';
+import 'package:locnet_app/features/conversation/subfeatures/private/domain/domain.dart';
 import 'package:locnet_app/features/message/domain/domain.dart';
 import 'package:locnet_app/mock/mock.dart';
 
@@ -34,19 +33,31 @@ final class MockPrivateConversationRepo implements IPrivateConversationRepo {
   }
 
   @override
+  Future<PrivateConversation> getPrivateConversation({
+    required String conversationId,
+  }) async {
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+    final dto = _backendStorage.getPrivateConversationById(conversationId);
+    return PrivateConversation.fromDto(dto);
+  }
+
+  @override
+  Future<bool> toggleNotifications({
+    required String conversationId,
+    required bool newNotificationsStatus,
+  }) async {
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+    return true;
+  }
+
+  @override
   Future<User> getCompanion({required String conversationId}) async {
-    final participants = _backendStorage.getAllParticipants(
-      conversationId: conversationId,
-    );
-    final participantDto = participants
-        .where(
-          (ConversationParticipantDto participant) =>
-              participant.userId != MockUsers.adminUser.userId,
-        )
-        .first;
-    final companionDto = _backendStorage.getUserById(
-      userId: participantDto.userId,
-    );
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+    final conv = _backendStorage.getPrivateConversationById(conversationId);
+    final companionId = conv.user1Id == MockUsers.adminUser.userId
+        ? conv.user2Id
+        : conv.user1Id;
+    final companionDto = _backendStorage.getUserById(userId: companionId);
     return User.fromDto(companionDto);
   }
 
@@ -56,16 +67,13 @@ final class MockPrivateConversationRepo implements IPrivateConversationRepo {
     required bool deleteAtRecipient,
   }) async {
     await Future<void>.delayed(const Duration(milliseconds: 200));
-
-    final deleteSuccess = _backendStorage.deleteConversation(
-      conversationId: conversationId,
+    return _backendStorage.deletePrivateConversation(
+      privateConversationId: conversationId,
     );
-
-    return deleteSuccess;
   }
 
   @override
-  Future<List<Message>> loadMessagesPage({
+  Future<List<PrivateMessage>> loadMessagesPage({
     required String conversationId,
     int page = 1,
   }) async {
@@ -73,26 +81,26 @@ final class MockPrivateConversationRepo implements IPrivateConversationRepo {
 
     final int safePage = page <= 0 ? 1 : page;
 
-    final List<MessageDto> messageDtos = _backendStorage
-        .getAllMessagesByConversationId(
+    final List<PrivateMessageDto> dtos = _backendStorage
+        .getAllPrivateMessagesByConversationId(
           conversationId: conversationId,
           page: safePage,
         );
 
-    final List<Message> result = <Message>[];
+    final List<PrivateMessage> result = <PrivateMessage>[];
 
-    for (final MessageDto dto in messageDtos) {
-      if (dto.isDeleted == true) {
+    for (final PrivateMessageDto dto in dtos) {
+      if (dto.isDeleted) {
         continue;
       }
-      result.add(Message.fromDto(dto));
+      result.add(PrivateMessage.fromDto(dto));
     }
 
     return result;
   }
 
   @override
-  Future<Message> sendMessage({required Message message}) async {
+  Future<PrivateMessage> sendMessage({required PrivateMessage message}) async {
     _updatesController.add((
       updateType: PrivateConversationMessageUpdateType.created,
       message: message,
@@ -100,33 +108,32 @@ final class MockPrivateConversationRepo implements IPrivateConversationRepo {
 
     await Future<void>.delayed(const Duration(milliseconds: 1000));
 
-    final resMsg = _backendStorage.addMessage(newMessage: message);
+    final resDto = _backendStorage.addPrivateMessage(newMessage: message);
+
+    final sentMessage = message.copyWith(
+      id: resDto.id,
+      deliveryStatus: MessageDeliveryStatus.sent,
+      attachments: message.attachments
+          .map((a) => a.copyWith(messageId: resDto.id))
+          .toList(),
+    );
 
     _updatesController.add((
       updateType: PrivateConversationMessageUpdateType.created,
-      message: message.copyWith(
-        deliveryStatus: MessageDeliveryStatus.sent,
-        messageId: resMsg.messageId,
-        attachments: message.attachments
-            .map(
-              (attachment) => attachment.copyWith(
-                messageId: resMsg.messageId,
-                // attachmentId: "test",
-              ),
-            )
-            .toList(),
-      ),
+      message: sentMessage,
     ));
-    return message;
+    return sentMessage;
   }
 
   @override
-  Future<Message> editMessage({required Message updatedMessage}) async {
+  Future<PrivateMessage> editMessage({
+    required PrivateMessage updatedMessage,
+  }) async {
     await Future<void>.delayed(const Duration(milliseconds: 200));
-    final MessageDto stored = _backendStorage.updateMessage(
+    final storedDto = _backendStorage.updatePrivateMessage(
       updatedMessage: updatedMessage,
     );
-    final Message storedMessage = Message.fromDto(stored);
+    final storedMessage = PrivateMessage.fromDto(storedDto);
 
     _updatesController.add((
       updateType: PrivateConversationMessageUpdateType.updated,
@@ -138,12 +145,12 @@ final class MockPrivateConversationRepo implements IPrivateConversationRepo {
 
   @override
   Future<bool> deleteMessage({
-    required Message message,
+    required PrivateMessage message,
     required bool deleteAtRecipient,
   }) async {
     await Future.delayed(const Duration(milliseconds: 200));
 
-    final deleteSuccess = _backendStorage.deleteMessage(message: message);
+    final deleteSuccess = _backendStorage.deletePrivateMessage(message: message);
 
     if (!deleteSuccess) {
       return false;

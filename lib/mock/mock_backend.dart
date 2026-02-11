@@ -1,11 +1,10 @@
 import 'dart:math';
 
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/conversation/data/data.dart';
-import 'package:locnet_app/features/conversation/domain/domain.dart';
-import 'package:locnet_app/features/conversations/subfeatures/unified_search/data/data.dart';
-import 'package:locnet_app/features/message/data/data.dart';
-import 'package:locnet_app/features/message/domain/domain.dart';
+import 'package:locnet_app/features/conversation/subfeatures/channel/channel.dart';
+import 'package:locnet_app/features/conversation/subfeatures/group/group.dart';
+import 'package:locnet_app/features/conversation/subfeatures/private/private.dart';
+import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/data/data.dart';
 import 'package:locnet_app/mock/mock.dart';
 import 'package:uuid/uuid.dart';
 
@@ -17,7 +16,7 @@ final class MockInMemoryBackend {
     int channelsCount = 5,
   }) {
     _seedUsers(usersCount);
-    _seedConversations(
+    _seedChats(
       privateCount: privatesCount,
       groupCount: groupsCount,
       channelCount: channelsCount,
@@ -32,19 +31,26 @@ final class MockInMemoryBackend {
 
   final int _usersPageSize = 20;
   final int _conversationsPageSize = 20;
-  final int _conversationParticipantsPageSize = 20;
+  final int _groupMessagesPageSize = 20;
+  final int _channelPublicationsPageSize = 20;
   final int _conversationMessagesPageSize = 20;
 
   // Storage
 
   final Map<String, UserDto> _users = {};
-  final Map<String, ConversationDto> _conversations = {};
-  final Map<String, List<ConversationParticipantDto>>
-  _conversationParticipants = {};
-  final Map<String, List<MessageDto>> _conversationsMessages =
-      {}; // conversationId: List<MessageDto>[]
-  final Map<String, List<String>> _channelAdmins =
-      {}; // conversationId: List<String> adminIds
+
+  final Map<String, PrivateConversationDto> _privateConversations = {};
+  final Map<String, List<PrivateMessageDto>> _privateMessages = {};
+
+  final Map<String, GroupDto> _groups = {};
+  final Map<String, List<GroupMessageDto>> _groupsMessages = {};
+  final Map<String, List<GroupAdminDto>> _groupsAdmins = {};
+  final Map<String, List<GroupParticipantDto>> _groupsParticipants = {};
+
+  final Map<String, ChannelDto> _channels = {};
+  final Map<String, List<ChannelPublicationDto>> _channelsPublications = {};
+  final Map<String, List<ChannelAdminDto>> _channelsAdmins = {};
+  final Map<String, List<ChannelSubscriberDto>> _channelSubscribers = {};
 
   // --------------------- USERS
 
@@ -87,153 +93,303 @@ final class MockInMemoryBackend {
     return updatedDto;
   }
 
-  // --------------------- CONVERSATIONS
+  // --------------------- PRIVATE CONVERSATIONS
 
-  ConversationDto getConversationById(String conversationId) {
-    if (!_conversations.containsKey(conversationId)) {
+  PrivateConversationDto getPrivateConversationById(String conversationId) {
+    if (!_privateConversations.containsKey(conversationId)) {
       throw StateError("Conversation $conversationId not found");
     }
-    return _conversations[conversationId]!;
+    return _privateConversations[conversationId]!;
   }
 
-  List<ConversationDto> getAllConversations({int page = 1}) {
-    final List<ConversationDto> allConversations = _conversations.values.toList(
-      growable: false,
-    );
+  List<PrivateConversationDto> getAllPrivateConversations({int page = 1}) {
+    final List<PrivateConversationDto> allPrivateConversations =
+        _privateConversations.values.toList(growable: false);
     return _paginateList(
-      items: allConversations,
+      items: allPrivateConversations,
       page: page,
       pageSize: _conversationsPageSize,
     );
   }
 
-  ConversationDto updateConversation(Conversation updatedConversation) {
-    final ConversationDto? existingDto =
-        _conversations[updatedConversation.conversationId];
+  PrivateConversationDto updatePrivateConversation(
+    PrivateConversation updatedConversation,
+  ) {
+    final PrivateConversationDto? existingDto =
+        _privateConversations[updatedConversation.id];
     if (existingDto == null) {
       throw StateError(
-        "Couldn't update conversation: conversation with id ${updatedConversation.conversationId} not  found",
+        "Couldn't update conversation: conversation with id ${updatedConversation.id} not  found",
       );
     }
 
-    final ConversationDto updatedDto = existingDto.copyWith(
-      conversationId: updatedConversation.conversationId,
-      initiatorId: updatedConversation.initiatorId,
-      type: updatedConversation.type.value,
-      title: updatedConversation.title,
-      description: updatedConversation.description,
-      avatarFileId: updatedConversation.avatarFileId,
-      isDeleted: updatedConversation.isDeleted,
-      deletedAt: updatedConversation.deletedAt,
-      deletedBy: updatedConversation.deletedByUserId,
+    final PrivateConversationDto updatedDto = existingDto.copyWith(
+      conversationId: updatedConversation.id,
+      user1Id: updatedConversation.user1Id,
+      user2Id: updatedConversation.user2Id,
       createdAt: updatedConversation.createdAt,
       updatedAt: updatedConversation.updatedAt,
+      isDeleted: updatedConversation.isDeleted,
     );
 
-    _conversations[updatedConversation.conversationId] = updatedDto;
+    _privateConversations[updatedConversation.id] = updatedDto;
     return updatedDto;
   }
 
-  bool deleteConversation({required String conversationId}) {
-    if (_conversations[conversationId] == null) {
+  bool deletePrivateConversation({required String privateConversationId}) {
+    if (_privateConversations[privateConversationId] == null) {
       return false;
     }
-    _conversations.remove(conversationId);
+    _privateConversations.remove(privateConversationId);
     return true;
   }
 
-  // --------------------- MESSAGES
+  // --------------------- GROUPS
 
-  MessageDto addMessage({required Message newMessage}) {
-    if (!_conversationsMessages.containsKey(newMessage.conversationId)) {
+  GroupDto getGroupById(String groupId) {
+    final group = _groups[groupId];
+    if (group == null) {
+      throw StateError("Group $groupId not found");
+    }
+    return group;
+  }
+
+  List<GroupDto> getAllGroups({int page = 1}) {
+    final List<GroupDto> allGroups = _groups.values.toList(growable: false);
+    return _paginateList(
+      items: allGroups,
+      page: page,
+      pageSize: _conversationsPageSize,
+    );
+  }
+
+  GroupDto updateGroup(Group updatedGroup) {
+    final GroupDto? existingDto = _groups[updatedGroup.groupId];
+    if (existingDto == null) {
       throw StateError(
-        "Failed to add message: no conversation with id = ${newMessage.conversationId}",
+        "Couldn't update group: group with id ${updatedGroup.groupId} not  found",
       );
     }
 
-    final messageId = const Uuid().v4();
+    final GroupDto updatedDto = existingDto.copyWith(
+      groupId: updatedGroup.groupId,
+      createdById: updatedGroup.createdById,
+      title: updatedGroup.title,
+      description: updatedGroup.description,
+      createdAt: updatedGroup.createdAt,
+      updatedAt: updatedGroup.updatedAt,
+      avatarFileId: updatedGroup.avatarFileId,
+      isDeleted: updatedGroup.isDeleted,
+      deletedAt: updatedGroup.deletedAt,
+      isPublic: updatedGroup.isPublic,
+    );
 
-    final messageDto = MessageDto(
-      messageId: messageId,
-      clientMessageId: newMessage.clientMessageId,
-      deliveryStatus: MessageDeliveryStatus.sent.toString(),
-      attachments: newMessage.attachments
-          .map(
-            (attachment) => MessageAttachmentDto(
-              clientAttachmentId: attachment.clientAttachmentId,
-              attachmentId: const Uuid().v4(),
-              createdAt: attachment.createdAt,
-              updatedAt: attachment.updatedAt,
-              messageId: messageId,
-            ),
-          )
-          .toList(),
+    _groups[updatedGroup.groupId] = updatedDto;
+    return updatedDto;
+  }
+
+  bool deleteGroup({required String groupId}) {
+    if (_groups[groupId] == null) {
+      return false;
+    }
+    _groups.remove(groupId);
+    return true;
+  }
+
+  List<UserDto> getGroupParticipants({required String groupId}) {
+    final participants = _groupsParticipants[groupId];
+    if (participants == null || participants.isEmpty) {
+      return <UserDto>[];
+    }
+    return participants
+        .map((GroupParticipantDto p) => getUserById(userId: p.userId))
+        .toList();
+  }
+
+  // --------------------- CHANNELS
+
+  ChannelDto getChannelById(String channelId) {
+    final channel = _channels[channelId];
+    if (channel == null) {
+      throw StateError("Channel $channelId not found");
+    }
+    return channel;
+  }
+
+  List<ChannelDto> getAllChannels({int page = 1}) {
+    final List<ChannelDto> allChannels = _channels.values.toList(
+      growable: false,
+    );
+    return _paginateList(
+      items: allChannels,
+      page: page,
+      pageSize: _conversationsPageSize,
+    );
+  }
+
+  ChannelDto updateChannel(Channel updatedChannel) {
+    final ChannelDto? existingDto = _channels[updatedChannel.channelId];
+    if (existingDto == null) {
+      throw StateError(
+        "Couldn't update channel: channel with id ${updatedChannel.channelId} not  found",
+      );
+    }
+
+    final ChannelDto updatedDto = ChannelDto(
+      channelId: updatedChannel.channelId,
+      ownerId: updatedChannel.ownerId,
+      title: updatedChannel.title,
+      description: updatedChannel.description,
+      createdAt: updatedChannel.createdAt,
+      updatedAt: updatedChannel.updatedAt,
+      avatarFileId: updatedChannel.avatarFileId,
+      isDeleted: updatedChannel.isDeleted,
+      deletedAt: updatedChannel.deletedAt,
+      isPublic: updatedChannel.isPublic,
+    );
+
+    _channels[updatedChannel.channelId] = updatedDto;
+    return updatedDto;
+  }
+
+  bool deleteChannel({required String channelId}) {
+    if (_channels[channelId] == null) {
+      return false;
+    }
+    _channels.remove(channelId);
+    return true;
+  }
+
+  List<UserDto> getChannelSubscribers({required String channelId}) {
+    final subscribers = _channelSubscribers[channelId];
+    if (subscribers == null || subscribers.isEmpty) {
+      return <UserDto>[];
+    }
+    return subscribers
+        .map((ChannelSubscriberDto s) => getUserById(userId: s.userId))
+        .toList();
+  }
+
+  // --------------------- PRIVATE MESSAGES
+
+  PrivateMessageDto addPrivateMessage({required PrivateMessage newMessage}) {
+    if (!_privateMessages.containsKey(newMessage.conversationId)) {
+      _privateMessages[newMessage.conversationId] = <PrivateMessageDto>[];
+    }
+
+    final String messageId = newMessage.id.isEmpty
+        ? const Uuid().v4()
+        : newMessage.id;
+
+    int attachmentOrder = 0;
+
+    final PrivateMessageDto messageDto = PrivateMessageDto(
+      id: messageId,
       conversationId: newMessage.conversationId,
       senderId: newMessage.senderId,
-      hasAttachments: newMessage.hasAttachments,
+      text: newMessage.text,
+      attachments: newMessage.attachments.map((
+        PrivateMessageAttachment attachment,
+      ) {
+        attachmentOrder++;
+        return PrivateMessageAttachmentDto(
+          id: const Uuid().v4(),
+          messageId: messageId,
+          fileId: attachment.fileId,
+          order: attachmentOrder,
+          createdAt: attachment.createdAt,
+        );
+      }).toList(),
       createdAt: newMessage.createdAt,
       updatedAt: newMessage.updatedAt,
+      isDeleted: newMessage.isDeleted,
+      deletedById: newMessage.deletedById,
+      replyToMessageId: newMessage.replyToMessageId,
+      deliveryStatus: newMessage.deliveryStatus.value,
+      clientMessageId: newMessage.clientMessageId,
+      isPinned: newMessage.isPinned,
+      editedAt: newMessage.editedAt,
     );
-    _conversationsMessages[newMessage.conversationId]!.add(messageDto);
+
+    _privateMessages[newMessage.conversationId]!.add(messageDto);
     return messageDto;
   }
 
-  MessageDto updateMessage({required Message updatedMessage}) {
-    final conversationId = updatedMessage.conversationId;
+  PrivateMessageDto updatePrivateMessage({
+    required PrivateMessage updatedMessage,
+  }) {
+    final String conversationId = updatedMessage.conversationId;
 
-    if (!_conversationsMessages.containsKey(conversationId) ||
-        !_conversationsMessages[conversationId]!.contains(updatedMessage)) {
-      throw StateError("Failed to update message ${updatedMessage.messageId}");
+    final List<PrivateMessageDto>? list = _privateMessages[conversationId];
+    if (list == null || list.isEmpty) {
+      throw StateError(
+        "Failed to update private message ${updatedMessage.id}: no messages for conversation $conversationId",
+      );
     }
 
-    final index = _conversationsMessages[conversationId]!.indexWhere(
-      (convMessage) => convMessage.messageId == updatedMessage.messageId,
+    final int index = list.indexWhere(
+      (PrivateMessageDto dto) => dto.id == updatedMessage.id,
     );
-    final MessageDto existingDto =
-        _conversationsMessages[conversationId]![index];
+    if (index == -1) {
+      throw StateError(
+        "Failed to update private message ${updatedMessage.id}: message not found",
+      );
+    }
 
-    final MessageDto updatedDto = existingDto.copyWith(
-      messageId: updatedMessage.messageId,
+    int attachmentOrder = 0;
+
+    final PrivateMessageDto updatedDto = PrivateMessageDto(
+      id: updatedMessage.id,
       conversationId: updatedMessage.conversationId,
       senderId: updatedMessage.senderId,
       text: updatedMessage.text,
-      hasAttachments: updatedMessage.hasAttachments,
-      replyToMessageId: updatedMessage.replyToMessageId,
-      isPinned: updatedMessage.isPinned,
-      editedAt: updatedMessage.editedAt,
-      isDeleted: updatedMessage.isDeleted,
-      deletedAt: updatedMessage.deletedAt,
+      attachments: updatedMessage.attachments.map((
+        PrivateMessageAttachment attachment,
+      ) {
+        attachmentOrder++;
+        return PrivateMessageAttachmentDto(
+          id: const Uuid().v4(),
+          messageId: updatedMessage.id,
+          fileId: attachment.fileId,
+          order: attachmentOrder,
+          createdAt: attachment.createdAt,
+        );
+      }).toList(),
       createdAt: updatedMessage.createdAt,
       updatedAt: updatedMessage.updatedAt,
+      isDeleted: updatedMessage.isDeleted,
+      deletedById: updatedMessage.deletedById,
+      replyToMessageId: updatedMessage.replyToMessageId,
+      deliveryStatus: updatedMessage.deliveryStatus.value,
+      clientMessageId: updatedMessage.clientMessageId,
+      isPinned: updatedMessage.isPinned,
+      editedAt: updatedMessage.editedAt,
     );
 
-    _conversationsMessages[conversationId]!.replaceRange(index, index, [
-      updatedDto,
-    ]);
-
+    list[index] = updatedDto;
     return updatedDto;
   }
 
-  bool deleteMessage({required Message message}) {
-    final conversationId = message.conversationId;
+  bool deletePrivateMessage({required PrivateMessage message}) {
+    final String conversationId = message.conversationId;
 
-    if (!_conversationsMessages.containsKey(conversationId) ||
-        !_conversationsMessages[conversationId]!.contains(message)) {
+    final List<PrivateMessageDto>? list = _privateMessages[conversationId];
+    if (list == null || list.isEmpty) {
       return false;
     }
-    _conversationsMessages[conversationId]!.removeWhere(
-      (convMessage) => convMessage.messageId == message.messageId,
-    );
-    return true;
+
+    final int beforeLength = list.length;
+    list.removeWhere((PrivateMessageDto dto) => dto.id == message.id);
+    return list.length != beforeLength;
   }
 
-  List<MessageDto> getAllMessagesByConversationId({
+  List<PrivateMessageDto> getAllPrivateMessagesByConversationId({
     required String conversationId,
     int page = 1,
   }) {
-    final List<MessageDto> messages =
-        _conversationsMessages[conversationId]?.toList(growable: false) ??
-        <MessageDto>[];
+    final List<PrivateMessageDto> messages =
+        _privateMessages[conversationId]?.toList(growable: false) ??
+        <PrivateMessageDto>[];
 
     return _paginateList(
       items: messages,
@@ -242,21 +398,309 @@ final class MockInMemoryBackend {
     );
   }
 
-  // --------------------- Conversation participants
-
-  List<ConversationParticipantDto> getAllParticipants({
+  PrivateMessageDto? getLastPrivateMessage({
     required String conversationId,
+  }) {
+    final List<PrivateMessageDto>? messages = _privateMessages[conversationId];
+    if (messages == null || messages.isEmpty) {
+      return null;
+    }
+    for (final PrivateMessageDto dto in messages.reversed) {
+      if (!dto.isDeleted) {
+        return dto;
+      }
+    }
+    return null;
+  }
+
+  // --------------------- GROUP MESSAGES
+
+  GroupMessageDto addGroupMessage({required GroupMessage newMessage}) {
+    if (!_groupsMessages.containsKey(newMessage.groupId)) {
+      _groupsMessages[newMessage.groupId] = <GroupMessageDto>[];
+    }
+
+    final String messageId = newMessage.id.isEmpty
+        ? const Uuid().v4()
+        : newMessage.id;
+
+    int attachmentOrder = 0;
+
+    final GroupMessageDto messageDto = GroupMessageDto(
+      id: messageId,
+      senderId: newMessage.senderId,
+      groupId: newMessage.groupId,
+      text: newMessage.text,
+      attachments: newMessage.attachments.map((
+        GroupMessageAttachment attachment,
+      ) {
+        attachmentOrder++;
+        return GroupMessageAttachmentDto(
+          id: const Uuid().v4(),
+          messageId: messageId,
+          fileId: attachment.fileId,
+          order: attachmentOrder,
+          createdAt: attachment.createdAt,
+        );
+      }).toList(),
+      createdAt: newMessage.createdAt,
+      updatedAt: newMessage.updatedAt,
+      isDeleted: newMessage.isDeleted,
+      deletedById: newMessage.deletedById,
+      replyToMessageId: newMessage.replyToMessageId,
+      deliveryStatus: newMessage.deliveryStatus.value,
+      clientMessageId: newMessage.clientMessageId,
+      isPinned: newMessage.isPinned,
+      editedAt: newMessage.editedAt,
+    );
+
+    _groupsMessages[newMessage.groupId]!.add(messageDto);
+    return messageDto;
+  }
+
+  GroupMessageDto updateGroupMessage({required GroupMessage updatedMessage}) {
+    final String groupId = updatedMessage.groupId;
+
+    final List<GroupMessageDto>? list = _groupsMessages[groupId];
+    if (list == null || list.isEmpty) {
+      throw StateError(
+        "Failed to update group message ${updatedMessage.id}: no messages for group $groupId",
+      );
+    }
+
+    final int index = list.indexWhere(
+      (GroupMessageDto dto) => dto.id == updatedMessage.id,
+    );
+    if (index == -1) {
+      throw StateError(
+        "Failed to update group message ${updatedMessage.id}: message not found",
+      );
+    }
+
+    int attachmentOrder = 0;
+
+    final GroupMessageDto updatedDto = GroupMessageDto(
+      id: updatedMessage.id,
+      senderId: updatedMessage.senderId,
+      groupId: updatedMessage.groupId,
+      text: updatedMessage.text,
+      attachments: updatedMessage.attachments.map((
+        GroupMessageAttachment attachment,
+      ) {
+        attachmentOrder++;
+        return GroupMessageAttachmentDto(
+          id: const Uuid().v4(),
+          messageId: updatedMessage.id,
+          fileId: attachment.fileId,
+          order: attachmentOrder,
+          createdAt: attachment.createdAt,
+        );
+      }).toList(),
+      createdAt: updatedMessage.createdAt,
+      updatedAt: updatedMessage.updatedAt,
+      isDeleted: updatedMessage.isDeleted,
+      deletedById: updatedMessage.deletedById,
+      replyToMessageId: updatedMessage.replyToMessageId,
+      deliveryStatus: updatedMessage.deliveryStatus.value,
+      clientMessageId: updatedMessage.clientMessageId,
+      isPinned: updatedMessage.isPinned,
+      editedAt: updatedMessage.editedAt,
+    );
+
+    list[index] = updatedDto;
+    return updatedDto;
+  }
+
+  bool deleteGroupMessage({required GroupMessage message}) {
+    final String groupId = message.groupId;
+    final List<GroupMessageDto>? list = _groupsMessages[groupId];
+    if (list == null || list.isEmpty) {
+      return false;
+    }
+
+    final int beforeLength = list.length;
+    list.removeWhere((GroupMessageDto dto) => dto.id == message.id);
+    return list.length != beforeLength;
+  }
+
+  List<GroupMessageDto> getAllGroupMessagesByGroupId({
+    required String groupId,
     int page = 1,
   }) {
-    final List<ConversationParticipantDto> participants =
-        _conversationParticipants[conversationId]?.toList(growable: false) ??
-        <ConversationParticipantDto>[];
+    final List<GroupMessageDto> messages =
+        _groupsMessages[groupId]?.toList(growable: false) ??
+        <GroupMessageDto>[];
 
     return _paginateList(
-      items: participants,
+      items: messages,
       page: page,
-      pageSize: _conversationParticipantsPageSize,
+      pageSize: _groupMessagesPageSize,
     );
+  }
+
+  GroupMessageDto? getLastGroupMessage({required String groupId}) {
+    final List<GroupMessageDto>? messages = _groupsMessages[groupId];
+    if (messages == null || messages.isEmpty) {
+      return null;
+    }
+    for (final GroupMessageDto dto in messages.reversed) {
+      if (!dto.isDeleted) {
+        return dto;
+      }
+    }
+    return null;
+  }
+
+  // --------------------- CHANNEL PUBLICATIONS
+
+  ChannelPublicationDto addChannelPublication({
+    required ChannelPublication newPublication,
+  }) {
+    if (!_channelsPublications.containsKey(newPublication.channelId)) {
+      _channelsPublications[newPublication.channelId] =
+          <ChannelPublicationDto>[];
+    }
+
+    final String publicationId = newPublication.publicationId.isEmpty
+        ? const Uuid().v4()
+        : newPublication.publicationId;
+
+    int attachmentOrder = 0;
+
+    final ChannelPublicationDto publicationDto = ChannelPublicationDto(
+      publicationId: publicationId,
+      channelId: newPublication.channelId,
+      publishedById: newPublication.publishedById,
+      text: newPublication.text,
+      attachments: newPublication.attachments.map((
+        ChannelPublicationAttachment attachment,
+      ) {
+        attachmentOrder++;
+        return ChannelPublicationAttachmentDto(
+          id: const Uuid().v4(),
+          publicationId: publicationId,
+          fileId: attachment.fileId,
+          order: attachmentOrder,
+          createdAt: attachment.createdAt,
+        );
+      }).toList(),
+      avatarFileId: newPublication.avatarFileId,
+      replyToPublicationId: newPublication.replyToPublicationId,
+      isDeleted: newPublication.isDeleted,
+      deletedById: newPublication.deletedById,
+      createdAt: newPublication.createdAt,
+      updatedAt: newPublication.updatedAt,
+      deliveryStatus: newPublication.deliveryStatus.value,
+      clientPublicationId: newPublication.clientPublicationId,
+      isPinned: newPublication.isPinned,
+      editedAt: newPublication.editedAt,
+    );
+
+    _channelsPublications[newPublication.channelId]!.add(publicationDto);
+    return publicationDto;
+  }
+
+  ChannelPublicationDto updateChannelPublication({
+    required ChannelPublication updatedPublication,
+  }) {
+    final String channelId = updatedPublication.channelId;
+
+    final List<ChannelPublicationDto>? list = _channelsPublications[channelId];
+    if (list == null || list.isEmpty) {
+      throw StateError(
+        "Failed to update channel publication ${updatedPublication.publicationId}: no publications for channel $channelId",
+      );
+    }
+
+    final int index = list.indexWhere(
+      (ChannelPublicationDto dto) =>
+          dto.publicationId == updatedPublication.publicationId,
+    );
+    if (index == -1) {
+      throw StateError(
+        "Failed to update channel publication ${updatedPublication.publicationId}: publication not found",
+      );
+    }
+
+    int attachmentOrder = 0;
+
+    final ChannelPublicationDto updatedDto = ChannelPublicationDto(
+      publicationId: updatedPublication.publicationId,
+      channelId: updatedPublication.channelId,
+      publishedById: updatedPublication.publishedById,
+      text: updatedPublication.text,
+      attachments: updatedPublication.attachments.map((
+        ChannelPublicationAttachment attachment,
+      ) {
+        attachmentOrder++;
+        return ChannelPublicationAttachmentDto(
+          id: const Uuid().v4(),
+          publicationId: updatedPublication.publicationId,
+          fileId: attachment.fileId,
+          order: attachmentOrder,
+          createdAt: attachment.createdAt,
+        );
+      }).toList(),
+      avatarFileId: updatedPublication.avatarFileId,
+      replyToPublicationId: updatedPublication.replyToPublicationId,
+      isDeleted: updatedPublication.isDeleted,
+      deletedById: updatedPublication.deletedById,
+      createdAt: updatedPublication.createdAt,
+      updatedAt: updatedPublication.updatedAt,
+      deliveryStatus: updatedPublication.deliveryStatus.value,
+      clientPublicationId: updatedPublication.clientPublicationId,
+      isPinned: updatedPublication.isPinned,
+      editedAt: updatedPublication.editedAt,
+    );
+
+    list[index] = updatedDto;
+    return updatedDto;
+  }
+
+  bool deleteChannelPublication({required ChannelPublication publication}) {
+    final String channelId = publication.channelId;
+    final List<ChannelPublicationDto>? list = _channelsPublications[channelId];
+    if (list == null || list.isEmpty) {
+      return false;
+    }
+
+    final int beforeLength = list.length;
+    list.removeWhere(
+      (ChannelPublicationDto dto) =>
+          dto.publicationId == publication.publicationId,
+    );
+    return list.length != beforeLength;
+  }
+
+  List<ChannelPublicationDto> getAllChannelPublicationsByChannelId({
+    required String channelId,
+    int page = 1,
+  }) {
+    final List<ChannelPublicationDto> publications =
+        _channelsPublications[channelId]?.toList(growable: false) ??
+        <ChannelPublicationDto>[];
+
+    return _paginateList(
+      items: publications,
+      page: page,
+      pageSize: _channelPublicationsPageSize,
+    );
+  }
+
+  ChannelPublicationDto? getLastChannelPublication({
+    required String channelId,
+  }) {
+    final List<ChannelPublicationDto>? publications =
+        _channelsPublications[channelId];
+    if (publications == null || publications.isEmpty) {
+      return null;
+    }
+    for (final ChannelPublicationDto dto in publications.reversed) {
+      if (!dto.isDeleted) {
+        return dto;
+      }
+    }
+    return null;
   }
 
   // --------------------- UNIFIED SEARCH
@@ -266,7 +710,7 @@ final class MockInMemoryBackend {
     if (normalizedQuery.isEmpty) {
       return const UnifiedSearchResultDto(
         users: <UserDto>[],
-        conversations: <ConversationDto>[],
+        conversations: <UnifiedSearchConversationDto>[],
       );
     }
 
@@ -275,9 +719,40 @@ final class MockInMemoryBackend {
       normalizedQuery: normalizedQuery,
     );
 
-    final List<ConversationDto> matchedConversations =
+    final Iterable<UnifiedSearchConversationDto> allConversations =
+        <UnifiedSearchConversationDto>[
+          // Private conversations. Title is generic as companion name
+          // is not available on PrivateConversationDto.
+          ..._privateConversations.values.map(
+            (PrivateConversationDto dto) => UnifiedSearchConversationDto(
+              id: dto.conversationId,
+              type: 'private',
+              title: 'Private chat',
+            ),
+          ),
+          // Groups
+          ..._groups.values.map(
+            (GroupDto dto) => UnifiedSearchConversationDto(
+              id: dto.groupId,
+              type: 'group',
+              title: dto.title,
+              description: dto.description,
+            ),
+          ),
+          // Channels
+          ..._channels.values.map(
+            (ChannelDto dto) => UnifiedSearchConversationDto(
+              id: dto.channelId,
+              type: 'channel',
+              title: dto.title,
+              description: dto.description,
+            ),
+          ),
+        ];
+
+    final List<UnifiedSearchConversationDto> matchedConversations =
         MockUnifiedSearchHelper.filterConversations(
-          conversations: _conversations.values,
+          conversations: allConversations,
           normalizedQuery: normalizedQuery,
         );
 
@@ -286,7 +761,7 @@ final class MockInMemoryBackend {
       normalizedQuery: normalizedQuery,
     );
 
-    final List<ConversationDto> rankedConversations =
+    final List<UnifiedSearchConversationDto> rankedConversations =
         MockUnifiedSearchHelper.rankConversations(
           items: matchedConversations,
           normalizedQuery: normalizedQuery,
@@ -298,7 +773,7 @@ final class MockInMemoryBackend {
       pageSize: _usersPageSize,
     );
 
-    final List<ConversationDto> pagedConversations = _paginateList(
+    final List<UnifiedSearchConversationDto> pagedConversations = _paginateList(
       items: rankedConversations,
       page: page,
       pageSize: _conversationsPageSize,
@@ -338,232 +813,67 @@ final class MockInMemoryBackend {
     }
   }
 
-  void _seedConversations({
+  void _seedChats({
     int privateCount = 20,
     int groupCount = 10,
     int channelCount = 5,
   }) {
-    final adminUser = MockUsers.adminUser;
-    for (int i = 0; i < privateCount; i++) {
-      final List<String> usersKeys = _users.keys
-          .where((String id) => id != adminUser.userId)
-          .toList();
-
-      final String randomKey = usersKeys[_random.nextInt(usersKeys.length)];
-      final randomUser = _users[randomKey]!;
-
-      final privateConversation =
-          MockConversations.createRandomPrivateConversation(
-            initiatorId: adminUser.userId,
-            companionName: '${randomUser.firstName} ${randomUser.lastName}',
-          );
-      _conversations[privateConversation.conversationId] = privateConversation;
-
-      _conversationParticipants[privateConversation.conversationId] = [
-        ConversationParticipantDto(
-          id: '${privateConversation.conversationId}-${adminUser.userId}',
-          conversationId: privateConversation.conversationId,
-          userId: adminUser.userId,
-          role: 'companion',
-          joinedAt: DateTime.now(),
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-        ),
-        ConversationParticipantDto(
-          id: '${privateConversation.conversationId}-${randomUser.userId}',
-          conversationId: privateConversation.conversationId,
-          userId: randomUser.userId,
-          role: 'companion',
-          joinedAt: DateTime.now(),
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-        ),
-      ];
-    }
-
-    for (int i = 0; i < groupCount; i++) {
-      final List<String> availableUserIds = _users.keys
-          .where((String id) => id != adminUser.userId)
-          .toList();
-
-      if (availableUserIds.length < 5) {
-        throw StateError('Not enough users to form group participants');
-      }
-
-      availableUserIds.shuffle(_random);
-
-      final List<UserDto> randomUsers = availableUserIds
-          .take(5)
-          .map((String id) => _users[id]!)
-          .toList();
-
-      final groupConversation = MockConversations.createRandomGroupConversation(
-        initiatorId: adminUser.userId,
-      );
-
-      _conversations[groupConversation.conversationId] = groupConversation;
-
-      final List<ConversationParticipantDto> participants =
-          <ConversationParticipantDto>[
-            ConversationParticipantDto(
-              id: '${groupConversation.conversationId}-${adminUser.userId}',
-              conversationId: groupConversation.conversationId,
-              userId: adminUser.userId,
-              role: 'owner',
-              joinedAt: DateTime.now(),
-              createdAt: DateTime.now(),
-              updatedAt: DateTime.now(),
-            ),
-          ];
-
-      for (final UserDto user in randomUsers) {
-        participants.add(
-          ConversationParticipantDto(
-            id: '${groupConversation.conversationId}-${user.userId}',
-            conversationId: groupConversation.conversationId,
-            userId: user.userId,
-            role: 'companion',
-            joinedAt: DateTime.now(),
-            createdAt: DateTime.now(),
-            updatedAt: DateTime.now(),
-          ),
+    final Map<String, PrivateConversationDto> privateSeed =
+        ChatsSeeder.seedPrivateConversations(
+          random: _random,
+          count: privateCount,
+          users: _users,
         );
-      }
+    _privateConversations.addAll(privateSeed);
 
-      _conversationParticipants[groupConversation.conversationId] =
-          participants;
-    }
+    final ({
+      Map<String, GroupDto> groups,
+      Map<String, List<GroupParticipantDto>> groupsParticipants,
+      Map<String, List<GroupAdminDto>> groupsAdmins,
+    })
+    groupSeed = ChatsSeeder.seedGroups(
+      random: _random,
+      count: groupCount,
+      users: _users,
+    );
+    _groups.addAll(groupSeed.groups);
+    _groupsParticipants.addAll(groupSeed.groupsParticipants);
+    _groupsAdmins.addAll(groupSeed.groupsAdmins);
 
-    for (int i = 0; i < channelCount; i++) {
-      final List<String> availableUserIds = _users.keys
-          .where((String id) => id != adminUser.userId)
-          .toList();
-
-      if (availableUserIds.length < 5) {
-        throw StateError('Not enough users to form channel subscribers');
-      }
-
-      availableUserIds.shuffle(_random);
-
-      final List<UserDto> randomUsers = availableUserIds
-          .take(5)
-          .map((String id) => _users[id]!)
-          .toList();
-
-      final channelConversation = MockConversations.createRandomChannel(
-        initiatorId: adminUser.userId,
-      );
-
-      _conversations[channelConversation.conversationId] = channelConversation;
-
-      final List<ConversationParticipantDto> participants =
-          <ConversationParticipantDto>[
-            ConversationParticipantDto(
-              id: '${channelConversation.conversationId}-${adminUser.userId}',
-              conversationId: channelConversation.conversationId,
-              userId: adminUser.userId,
-              role: 'owner',
-              joinedAt: DateTime.now(),
-              createdAt: DateTime.now(),
-              updatedAt: DateTime.now(),
-            ),
-          ];
-
-      for (final UserDto user in randomUsers) {
-        participants.add(
-          ConversationParticipantDto(
-            id: '${channelConversation.conversationId}-${user.userId}',
-            conversationId: channelConversation.conversationId,
-            userId: user.userId,
-            role: 'companion',
-            joinedAt: DateTime.now(),
-            createdAt: DateTime.now(),
-            updatedAt: DateTime.now(),
-          ),
-        );
-      }
-
-      _conversationParticipants[channelConversation.conversationId] =
-          participants;
-
-      // Select random admins (5-6) from all participants including owner
-      final List<String> allParticipantIds =
-          participants.map((p) => p.userId).toList()..shuffle(_random);
-
-      final int adminCount = 5 + _random.nextInt(2); // 5 or 6
-      final int actualAdminCount = adminCount > allParticipantIds.length
-          ? allParticipantIds.length
-          : adminCount;
-
-      final List<String> channelAdminIds = allParticipantIds
-          .take(actualAdminCount)
-          .toList();
-
-      _channelAdmins[channelConversation.conversationId] = channelAdminIds;
-    }
+    final ({
+      Map<String, ChannelDto> channels,
+      Map<String, List<ChannelSubscriberDto>> channelSubscribers,
+      Map<String, List<ChannelAdminDto>> channelAdmins,
+    })
+    channelSeed = ChatsSeeder.seedChannels(
+      random: _random,
+      count: channelCount,
+      users: _users,
+    );
+    _channels.addAll(channelSeed.channels);
+    _channelSubscribers.addAll(channelSeed.channelSubscribers);
+    _channelsAdmins.addAll(channelSeed.channelAdmins);
   }
 
   void _seedConversationsScripts() {
-    for (final ConversationDto conversationDto in _conversations.values) {
-      switch (conversationDto.type) {
-        case 'private':
-          final participants =
-              _conversationParticipants[conversationDto.conversationId] ?? [];
-          if (participants.length != 2) {
-            throw StateError(
-              "Invalid private conversation participants count: ${participants.length}",
-            );
-          }
-          final List<MessageDto> messages = MockMessages.getRandomPrivateScript(
-            conversationId: conversationDto.conversationId,
-            firstCompanionId: participants[0].userId,
-            secondCompanionId: participants[1].userId,
-          );
-          _conversationsMessages[conversationDto.conversationId] = messages;
+    _privateMessages.addAll(
+      ChatsSeeder.seedPrivateConversationScripts(
+        conversations: _privateConversations.values,
+      ),
+    );
 
-        case 'group':
-          final participants =
-              _conversationParticipants[conversationDto.conversationId] ?? [];
-          if (participants.isEmpty) {
-            throw StateError(
-              "Invalid group conversation participants count: ${participants.length}",
-            );
-          }
-          final List<MessageDto> messages = MockMessages.getRandomGroupScript(
-            conversationId: conversationDto.conversationId,
-            participantIds: participants
-                .map(
-                  (ConversationParticipantDto participantDto) =>
-                      participantDto.userId,
-                )
-                .toList(),
-          );
-          _conversationsMessages[conversationDto.conversationId] = messages;
-        case 'channel':
-          final participants =
-              _conversationParticipants[conversationDto.conversationId] ?? [];
-          if (participants.isEmpty) {
-            throw StateError(
-              "Invalid channel participants count: ${participants.length}",
-            );
-          }
-          final List<String> adminIds =
-              _channelAdmins[conversationDto.conversationId] ?? [];
-          if (adminIds.isEmpty) {
-            throw StateError(
-              "Channel ${conversationDto.conversationId} has no admins assigned",
-            );
-          }
-          final List<MessageDto> messages = MockMessages.getRandomChannelScript(
-            conversationId: conversationDto.conversationId,
-            adminIds: adminIds,
-          );
-          _conversationsMessages[conversationDto.conversationId] = messages;
-        default:
-          throw StateError(
-            "Unknown conversation type: ${conversationDto.type}",
-          );
-      }
-    }
+    _groupsMessages.addAll(
+      ChatsSeeder.seedGroupConversationScripts(
+        conversations: _groups.values,
+        groupsParticipants: _groupsParticipants,
+      ),
+    );
+
+    _channelsPublications.addAll(
+      ChatsSeeder.seedChannelConversationScripts(
+        conversations: _channels.values,
+        channelAdmins: _channelsAdmins,
+      ),
+    );
   }
 }

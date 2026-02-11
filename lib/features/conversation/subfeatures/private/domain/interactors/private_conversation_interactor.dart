@@ -1,18 +1,13 @@
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/conversation/data/data.dart';
-import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/data/data.dart';
-import 'package:locnet_app/features/message/domain/domain.dart';
+import 'package:locnet_app/features/conversation/subfeatures/private/domain/domain.dart';
 
 final class PrivateConversationInteractor {
   PrivateConversationInteractor({
     required IPrivateConversationRepo privateConversationRepo,
-    required IConversationRepo conversationRepo,
-  }) : _privateConversationRepo = privateConversationRepo,
-       _conversationRepo = conversationRepo;
+  }) : _privateConversationRepo = privateConversationRepo;
 
   final IPrivateConversationRepo _privateConversationRepo;
-  final IConversationRepo _conversationRepo;
 
   Stream<PrivateConversationMessageUpdateRec> get messagesUpdates =>
       _privateConversationRepo.messagesUpdates;
@@ -21,7 +16,7 @@ final class PrivateConversationInteractor {
     required String conversationId,
     required bool newNotificationsStatus,
   }) async {
-    return await _conversationRepo.toggleNotifications(
+    return await _privateConversationRepo.toggleNotifications(
       conversationId: conversationId,
       newNotificationsStatus: newNotificationsStatus,
     );
@@ -55,15 +50,15 @@ final class PrivateConversationInteractor {
     );
   }
 
-  Future<Conversation> getConversationById({
+  Future<PrivateConversation> getConversationById({
     required String conversationId,
   }) async {
-    return await _conversationRepo.getConversationById(
+    return await _privateConversationRepo.getPrivateConversation(
       conversationId: conversationId,
     );
   }
 
-  Future<List<Message>> loadMessagesPage({
+  Future<List<PrivateMessage>> loadMessagesPage({
     required String conversationId,
     int page = 1,
   }) async {
@@ -73,18 +68,22 @@ final class PrivateConversationInteractor {
     );
   }
 
-  Future<Message> sendMessage({required Message message}) async {
+  Future<PrivateMessage> sendMessage({
+    required PrivateMessage message,
+  }) async {
     return await _privateConversationRepo.sendMessage(message: message);
   }
 
-  Future<Message> editMessage({required Message newMessage}) async {
+  Future<PrivateMessage> editMessage({
+    required PrivateMessage newMessage,
+  }) async {
     return await _privateConversationRepo.editMessage(
       updatedMessage: newMessage,
     );
   }
 
   Future<bool> deleteMessage({
-    required Message message,
+    required PrivateMessage message,
     required bool deleteAtRecipient,
   }) async {
     return await _privateConversationRepo.deleteMessage(

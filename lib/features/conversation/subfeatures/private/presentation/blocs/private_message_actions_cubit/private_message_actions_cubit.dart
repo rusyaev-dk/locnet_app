@@ -41,26 +41,35 @@ class PrivateMessageActionsCubit extends Cubit<PrivateMessageActionsState> {
     try {
       final User user = await _userInteractor.getCachedUser();
 
-      final Message localMessage = Message(
+      int order = 0;
+      final List<PrivateMessageAttachment> attachments =
+          (attachedFiles ?? <UploadableFile>[])
+              .map(
+                (UploadableFile f) => PrivateMessageAttachment(
+                  id: 'local-attach-${const Uuid().v4()}',
+                  messageId: '',
+                  fileId: 'pending-${const Uuid().v4()}',
+                  order: order++,
+                  createdAt: now,
+                ),
+              )
+              .toList();
+
+      final PrivateMessage localMessage = PrivateMessage(
+        id: '',
         clientMessageId: clientMessageId,
         senderId: user.userId,
         conversationId: conversationId,
-        attachments:
-            attachedFiles
-                ?.map(
-                  (attachedFile) => MessageAttachment(
-                    clientAttachmentId: 'local-attach-${const Uuid().v4()}',
-                    createdAt: now,
-                    updatedAt: now,
-                  ),
-                )
-                .toList() ??
-            [],
+        attachments: attachments,
         text: normalizedText,
-        hasAttachments: false,
         createdAt: now,
         updatedAt: now,
+        isDeleted: false,
+        deletedById: null,
+        replyToMessageId: null,
         deliveryStatus: MessageDeliveryStatus.sending,
+        isPinned: false,
+        editedAt: null,
       );
 
       _upsertOperation(
@@ -107,13 +116,16 @@ class PrivateMessageActionsCubit extends Cubit<PrivateMessageActionsState> {
       return;
     }
 
+    final PrivateMessage? msg = existingOperation.message;
     _upsertOperation(
       existingOperation.copyWith(
         status: PrivateMessageActionStatus.success,
-        message: existingOperation.message?.copyWith(
-          deliveryStatus: MessageDeliveryStatus.sent,
-          updatedAt: DateTime.now(),
-        ),
+        message: msg != null
+            ? msg.copyWith(
+                deliveryStatus: MessageDeliveryStatus.sent,
+                updatedAt: DateTime.now(),
+              )
+            : null,
       ),
     );
   }
@@ -128,14 +140,17 @@ class PrivateMessageActionsCubit extends Cubit<PrivateMessageActionsState> {
       return;
     }
 
+    final PrivateMessage? msg = existingOperation.message;
     _upsertOperation(
       existingOperation.copyWith(
         status: PrivateMessageActionStatus.failure,
         failure: failure,
-        message: existingOperation.message?.copyWith(
-          deliveryStatus: MessageDeliveryStatus.failed,
-          updatedAt: DateTime.now(),
-        ),
+        message: msg != null
+            ? msg.copyWith(
+                deliveryStatus: MessageDeliveryStatus.failed,
+                updatedAt: DateTime.now(),
+              )
+            : null,
       ),
     );
   }

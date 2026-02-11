@@ -1,20 +1,12 @@
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/conversation/data/data.dart';
-import 'package:locnet_app/features/conversation/domain/domain.dart';
-import 'package:locnet_app/features/conversation/subfeatures/channel/data/data.dart';
-import 'package:locnet_app/features/message/domain/domain.dart';
+import 'package:locnet_app/features/conversation/subfeatures/channel/channel.dart';
 
 final class ChannelInteractor {
-  ChannelInteractor({
-    required IChannelRepo channelRepo,
-    required IConversationRepo conversationRepo,
-  }) : _channelRepo = channelRepo,
-       _conversationRepo = conversationRepo;
+  ChannelInteractor({required IChannelRepo channelRepo}) : _channelRepo = channelRepo;
 
   final IChannelRepo _channelRepo;
-  final IConversationRepo _conversationRepo;
 
-  Future<Conversation> createChannel({
+  Future<Channel> createChannel({
     required String creatorId,
     required List<String> subscribersIds,
     required String title,
@@ -30,9 +22,11 @@ final class ChannelInteractor {
     );
   }
 
-  Future<Conversation> updateChannel({
-    required Conversation updatedChannel,
-  }) async {
+  Future<Channel> getChannel({required String channelId}) async {
+    return await _channelRepo.getChannel(channelId: channelId);
+  }
+
+  Future<Channel> updateChannel({required Channel updatedChannel}) async {
     return await _channelRepo.updateChannel(updatedChannel: updatedChannel);
   }
 
@@ -40,8 +34,8 @@ final class ChannelInteractor {
     required String channelId,
     required bool newNotificationsStatus,
   }) async {
-    return await _conversationRepo.toggleNotifications(
-      conversationId: channelId,
+    return await _channelRepo.toggleNotifications(
+      channelId: channelId,
       newNotificationsStatus: newNotificationsStatus,
     );
   }
@@ -108,20 +102,12 @@ final class ChannelInteractor {
     );
   }
 
-  Future<Conversation> getConversationById({
-    required String conversationId,
-  }) async {
-    return await _conversationRepo.getConversationById(
-      conversationId: conversationId,
-    );
-  }
-
-  Future<List<Message>> loadMessagesPage({
+  Future<List<ChannelPublication>> loadPublications({
     required String channelId,
     int page = 1,
   }) async {
-    return await _channelRepo.loadMessagesPage(
-      conversationId: channelId,
+    return await _channelRepo.loadPublications(
+      channelId: channelId,
       page: page,
     );
   }

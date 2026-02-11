@@ -1,20 +1,14 @@
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/conversation/data/data.dart';
-import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/group/data/data.dart';
-import 'package:locnet_app/features/message/domain/domain.dart';
+import 'package:locnet_app/features/conversation/subfeatures/group/domain/domain.dart';
 
 final class GroupConversationInteractor {
-  GroupConversationInteractor({
-    required IGroupConversationRepo groupConversationRepo,
-    required IConversationRepo conversationRepo,
-  }) : _groupConversationRepo = groupConversationRepo,
-       _conversationRepo = conversationRepo;
+  GroupConversationInteractor({required IGroupRepo groupConversationRepo})
+    : _groupConversationRepo = groupConversationRepo;
 
-  final IGroupConversationRepo _groupConversationRepo;
-  final IConversationRepo _conversationRepo;
+  final IGroupRepo _groupConversationRepo;
 
-  Future<Conversation> createGroup({
+  Future<Group> createGroup({
     required String creatorId,
     required List<String> recipientsIds,
     required String title,
@@ -25,77 +19,75 @@ final class GroupConversationInteractor {
       creatorId: creatorId,
       recipientsIds: recipientsIds,
       title: title,
-      description: creatorId,
+      description: description,
       avatarFileId: avatarFileId,
     );
   }
 
+  Future<Group> getGroup({required String groupId}) async {
+    return await _groupConversationRepo.getGroup(groupId: groupId);
+  }
+
   Future<bool> joinToGroup({
-    required String groupConversationId,
+    required String groupId,
     required String userId,
   }) async {
     return await _groupConversationRepo.addUserToGroup(
-      groupConversationId: groupConversationId,
+      groupId: groupId,
       userId: userId,
     );
   }
 
-  Future<Conversation> updateGroup({required Conversation updatedGroup}) async {
+  Future<Group> updateGroup({required Group updatedGroup}) async {
     return await _groupConversationRepo.updateGroup(updatedGroup: updatedGroup);
   }
 
   Future<bool> toggleNotifications({
-    required String groupConversationId,
+    required String groupId,
     required bool newNotificationsStatus,
   }) async {
-    return await _conversationRepo.toggleNotifications(
-      conversationId: groupConversationId,
+    return await _groupConversationRepo.toggleNotifications(
+      groupId: groupId,
       newNotificationsStatus: newNotificationsStatus,
     );
   }
 
-  Future<bool> deleteGroup({required String groupConversationId}) async {
-    return _groupConversationRepo.deleteGroup(
-      groupConversationId: groupConversationId,
-    );
+  Future<bool> deleteGroup({required String groupId}) async {
+    return _groupConversationRepo.deleteGroup(groupId: groupId);
   }
 
-  Future<List<User>> loadGroupParticipants({
-    required String groupConversationId,
-  }) async {
-    return _groupConversationRepo.loadGroupParticipants(
-      groupConversationId: groupConversationId,
-    );
+  Future<List<User>> loadGroupParticipants({required String groupId}) async {
+    return _groupConversationRepo.loadGroupParticipants(groupId: groupId);
   }
 
   Future<bool> leaveGroup({
-    required String groupConversationId,
+    required String groupId,
     required String userId,
   }) async {
     return await _groupConversationRepo.deleteUserFromGroup(
-      groupConversationId: groupConversationId,
+      groupId: groupId,
       userId: userId,
     );
   }
 
   Future<bool> addUserToGroup({
-    required String groupConversationId,
+    required String groupId,
     required String userId,
   }) async {
     return _groupConversationRepo.addUserToGroup(
-      groupConversationId: groupConversationId,
+      groupId: groupId,
       userId: userId,
     );
   }
 
   Future<bool> banUserFromGroup({
-    required String groupConversationId,
+    required String groupId,
     required String reason,
     required String userId,
     required String bannedByUserId,
   }) async {
     return _groupConversationRepo.banUserFromGroup(
-      groupConversationId: groupConversationId,
+      groupId: groupId,
       reason: reason,
       userId: userId,
       bannedByUserId: bannedByUserId,
@@ -103,28 +95,25 @@ final class GroupConversationInteractor {
   }
 
   Future<bool> deleteUserFromGroup({
-    required String groupConversationId,
+    required String groupId,
     required String userId,
   }) async {
-    return await _groupConversationRepo.deleteGroup(
-      groupConversationId: groupConversationId,
+    return await _groupConversationRepo.deleteUserFromGroup(
+      groupId: groupId,
+      userId: userId,
     );
   }
 
-  Future<Conversation> getConversationById({
-    required String conversationId,
-  }) async {
-    return await _conversationRepo.getConversationById(
-      conversationId: conversationId,
-    );
+  Future<Group> getGroupById({required String groupId}) async {
+    return await _groupConversationRepo.getGroup(groupId: groupId);
   }
 
-  Future<List<Message>> loadMessagesPage({
-    required String conversationId,
+  Future<List<GroupMessage>> loadMessagesPage({
+    required String groupId,
     int page = 1,
   }) async {
     return await _groupConversationRepo.loadMessagesPage(
-      conversationId: conversationId,
+      groupId: groupId,
       page: page,
     );
   }

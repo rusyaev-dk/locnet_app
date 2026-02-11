@@ -3,7 +3,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/conversation/data/data.dart';
 import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/conversation_creator/presentation/presentation.dart';
 import 'package:locnet_app/uikit/uikit.dart';
@@ -16,10 +15,8 @@ class ConversationCreatorModalWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RepositoryProvider<ConversationCreatorInteractor>(
-      create: (context) => ConversationCreatorInteractor(
-        conversationRepo: context.read<IConversationRepo>(),
-        logger: context.read<ILogger>(),
-      ),
+      create: (context) =>
+          ConversationCreatorInteractor(logger: context.read<ILogger>()),
       child: BlocProvider<ConversationCreatorBloc>(
         create: (BuildContext context) {
           return ConversationCreatorBloc(

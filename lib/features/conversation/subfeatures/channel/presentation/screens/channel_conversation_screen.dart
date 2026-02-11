@@ -3,11 +3,9 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/conversation/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/channel/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/channel/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/channel/presentation/presentation.dart';
-import 'package:locnet_app/features/message/domain/domain.dart';
 import 'package:locnet_app/features/message/subfeatures/message_input/presentation/presentation.dart';
 
 class ChannelConversationScreenWrapper extends StatelessWidget {
@@ -31,22 +29,21 @@ class ChannelConversationScreenWrapper extends StatelessWidget {
         RepositoryProvider<ChannelInteractor>(
           create: (BuildContext context) => ChannelInteractor(
             channelRepo: context.read<IChannelRepo>(),
-            conversationRepo: context.read<IConversationRepo>(),
           ),
         ),
       ],
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (context) => ChannelConversationBloc(
-              channelInteractor: context.read<ChannelInteractor>(),
-              conversationRepo: context.read<IConversationRepo>(),
-              logger: context.read<ILogger>(),
-            )..add(
-                ChannelConversationStartedEvent(
-                  conversationId: conversationId,
+            create: (context) =>
+                ChannelConversationBloc(
+                  channelInteractor: context.read<ChannelInteractor>(),
+                  logger: context.read<ILogger>(),
+                )..add(
+                  ChannelConversationStartedEvent(
+                    conversationId: conversationId,
+                  ),
                 ),
-              ),
           ),
           BlocProvider(create: (context) => MessageAttachmentsCubit()),
         ],
@@ -83,15 +80,15 @@ class ChannelConversationScreen extends StatelessWidget {
                     buttonText: l10n.retry,
                     onButtonPressed: () =>
                         context.read<ChannelConversationBloc>().add(
-                              ChannelConversationStartedEvent(
-                                conversationId: conversationId,
-                              ),
-                            ),
+                          ChannelConversationStartedEvent(
+                            conversationId: conversationId,
+                          ),
+                        ),
                     iconAnimationEffect: const ShakeEffect(),
                   );
 
                 case ChannelConversationLoadedState():
-                  final List<Message> messages = state.messages;
+                  final List<ChannelPublication> messages = state.messages;
 
                   if (messages.isEmpty) {
                     return const Text("Empty here...");
@@ -108,11 +105,7 @@ class ChannelConversationScreen extends StatelessWidget {
                         thickness: 1,
                         color: colorScheme.surfaceContainer.withAlpha(80),
                       ),
-                      Expanded(
-                        child: ChannelMessagesList(
-                          messages: messages,
-                        ),
-                      ),
+                      Expanded(child: ChannelMessagesList(messages: messages)),
                     ],
                   );
               }

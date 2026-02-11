@@ -96,7 +96,7 @@ class ConversationCreatorBloc
       }
 
       emit(
-        state.copyWith(title: event.description, descriptionException: null),
+        state.copyWith(description: event.description, descriptionException: null),
       );
     } catch (e, st) {
       _logger.exception(e, st);

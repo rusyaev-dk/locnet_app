@@ -2,59 +2,66 @@
 
 import 'dart:math';
 
-import 'package:locnet_app/features/conversation/data/data.dart';
+import 'package:locnet_app/features/conversation/subfeatures/private/private.dart';
+import 'package:locnet_app/features/conversation/subfeatures/group/group.dart';
+import 'package:locnet_app/features/conversation/subfeatures/channel/channel.dart';
 import 'package:uuid/uuid.dart';
 
 final class MockConversations {
   static final Random _random = Random(42);
   static final DateTime _now = DateTime.now();
 
-  static ConversationDto createRandomPrivateConversation({
+  static PrivateConversationDto createRandomPrivateConversation({
     required String initiatorId,
-    required String companionName,
+    required String companionId,
   }) {
     final conversationId = _generateConversationId();
 
-    return ConversationDto(
+    return PrivateConversationDto(
       conversationId: conversationId,
-      initiatorId: initiatorId,
-      type: 'private',
-      title: companionName,
-      isDeleted: false,
+      user1Id: initiatorId,
+      user2Id: companionId,
       createdAt: _now.subtract(Duration(days: _random.nextInt(20))),
       updatedAt: _now.subtract(Duration(hours: _random.nextInt(40))),
+      isDeleted: false,
     );
   }
 
-  static ConversationDto createRandomGroupConversation({
+  static GroupDto createRandomGroupConversation({
     required String initiatorId,
   }) {
-    final conversationId = _generateConversationId();
+    final groupId = _generateConversationId();
     final title = _MockConversationsNamesRegistry.getRandomGroupTitle();
 
-    return ConversationDto(
-      conversationId: conversationId,
-      initiatorId: initiatorId,
-      type: 'group',
+    return GroupDto(
+      groupId: groupId,
+      createdById: initiatorId,
       title: title,
+      description: null,
+      avatarFileId: null,
       isDeleted: false,
       createdAt: _now.subtract(Duration(days: _random.nextInt(20))),
       updatedAt: _now.subtract(Duration(hours: _random.nextInt(40))),
+      deletedAt: null,
+      isPublic: true,
     );
   }
 
-  static ConversationDto createRandomChannel({required String initiatorId}) {
-    final conversationId = _generateConversationId();
+  static ChannelDto createRandomChannel({required String initiatorId}) {
+    final channelId = _generateConversationId();
     final title = _MockConversationsNamesRegistry.getRandomChannelTitle();
 
-    return ConversationDto(
-      conversationId: conversationId,
-      initiatorId: initiatorId,
-      type: 'channel',
+    return ChannelDto(
+      channelId: channelId,
+      ownerId: initiatorId,
       title: title,
+      description: null,
+      avatarFileId: null,
       isDeleted: false,
       createdAt: _now.subtract(Duration(days: _random.nextInt(20))),
       updatedAt: _now.subtract(Duration(hours: _random.nextInt(40))),
+      deletedAt: null,
+      isPublic: true,
     );
   }
 

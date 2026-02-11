@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/conversation/domain/domain.dart';
+import 'package:locnet_app/features/conversation/subfeatures/group/group.dart';
 import 'package:locnet_app/features/conversation/presentation/presentation.dart';
 import 'package:locnet_app/features/conversation/subfeatures/group/presentation/modals/group_info_modal_card.dart';
 
@@ -19,7 +19,7 @@ class GroupHeader extends StatefulWidget {
     super.key,
   });
 
-  final Conversation conversation;
+  final Group conversation;
   final int participantsCount;
 
   @override

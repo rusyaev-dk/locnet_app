@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/auth/presentation/presentation.dart';
-import 'package:locnet_app/features/conversations/presentation/presentation.dart';
+import 'package:locnet_app/features/conversations_list/presentation/presentation.dart';
 import 'package:locnet_app/features/home/presentation/presentation.dart';
 import 'package:locnet_app/features/root/root_screen.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';

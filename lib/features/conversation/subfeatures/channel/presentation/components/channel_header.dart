@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/conversation/domain/domain.dart';
+import 'package:locnet_app/features/conversation/subfeatures/channel/channel.dart';
 import 'package:locnet_app/features/conversation/presentation/presentation.dart';
 import 'package:locnet_app/features/conversation/subfeatures/channel/presentation/modals/channel_info_modal_card.dart';
 
@@ -18,7 +18,7 @@ class ChannelHeader extends StatefulWidget {
     super.key,
   });
 
-  final Conversation conversation;
+  final Channel conversation;
   final int subscribersCount;
 
   @override

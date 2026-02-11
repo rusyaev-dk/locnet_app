@@ -2,13 +2,12 @@ import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/data/data.dart';
 import 'package:locnet_app/di/di.dart';
 import 'package:locnet_app/features/auth/data/data.dart';
-import 'package:locnet_app/features/conversation/data/repositories/repositories.dart';
 import 'package:locnet_app/features/conversation/subfeatures/channel/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/group/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/data/data.dart';
-import 'package:locnet_app/features/conversations/data/data.dart';
-import 'package:locnet_app/features/conversations/subfeatures/unified_search/data/repositories/repositories.dart';
-import 'package:locnet_app/features/message/data/repositories/message_repo/i_message_repo.dart';
+import 'package:locnet_app/features/conversations_list/data/data.dart';
+import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/data/repositories/repositories.dart';
+import 'package:locnet_app/features/message/data/data.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
 import 'package:locnet_app/features/theme_editor/data/data.dart';
 import 'package:locnet_app/mock/mock.dart';
@@ -59,18 +58,23 @@ final class DevEnvPreset implements IAppEnvPreset {
   }
 
   @override
-  IConversationRepo createConversationRepo() {
-    return MockConversationRepo(backendStorage: _mockInMemoryBackend);
+  IGroupRepo createGroupConversationRepo() {
+    return MockGroupRepo(backendStorage: _mockInMemoryBackend);
   }
 
   @override
-  IGroupConversationRepo createGroupConversationRepo() {
-    return MockGroupConversationRepo(backendStorage: _mockInMemoryBackend);
+  IPrivateMessageRepo createPrivateMessageRepo() {
+    return MockPrivateMessageRepo(backendStorage: _mockInMemoryBackend);
   }
 
   @override
-  IMessageRepo createMessageRepo() {
-    throw UnimplementedError();
+  IGroupMessageRepo createGroupMessageRepo() {
+    return MockGroupMessageRepo(backendStorage: _mockInMemoryBackend);
+  }
+
+  @override
+  IChannelPublicationRepo createChannelPublicationRepo() {
+    return MockChannelPublicationRepo(backendStorage: _mockInMemoryBackend);
   }
 
   @override

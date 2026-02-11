@@ -2,12 +2,11 @@ import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/di/di.dart';
 import 'package:locnet_app/features/auth/data/data.dart';
-import 'package:locnet_app/features/conversation/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/channel/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/group/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/data/data.dart';
-import 'package:locnet_app/features/conversations/data/data.dart';
-import 'package:locnet_app/features/conversations/subfeatures/unified_search/data/data.dart';
+import 'package:locnet_app/features/conversations_list/data/data.dart';
+import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/data/data.dart';
 import 'package:locnet_app/features/message/data/data.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
 import 'package:locnet_app/features/theme_editor/data/data.dart';
@@ -19,15 +18,16 @@ abstract interface class IAppEnvPreset {
   IUserCacheRepo createUserCacheRepo();
   ISessionCacheRepo createSessionCacheRepo();
 
-  IConversationRepo createConversationRepo();
   IChannelRepo createChannelRepo();
   IPrivateConversationRepo createPrivateConversationRepo();
-  IGroupConversationRepo createGroupConversationRepo();
+  IGroupRepo createGroupConversationRepo();
   IConversationsListRepo createConversationsListRepo();
 
   IUnifiedSearchRepo createUnifiedSearchRepo();
 
-  IMessageRepo createMessageRepo();
+  IPrivateMessageRepo createPrivateMessageRepo();
+  IGroupMessageRepo createGroupMessageRepo();
+  IChannelPublicationRepo createChannelPublicationRepo();
 
   ISettingsRepo createSettingsRepo();
   IThemeEditorRepo createThemeEditorRepo();

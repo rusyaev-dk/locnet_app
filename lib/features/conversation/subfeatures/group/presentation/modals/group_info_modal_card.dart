@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/conversation/domain/domain.dart';
+import 'package:locnet_app/features/conversation/subfeatures/group/group.dart';
 import 'package:locnet_app/features/conversation/presentation/presentation.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
 class GroupInfoModalCard extends StatelessWidget {
   const GroupInfoModalCard({required this.conversation, super.key});
 
-  final Conversation conversation;
+  final Group conversation;
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +75,7 @@ class GroupInfoModalCard extends StatelessWidget {
 class GroupInfoHeader extends StatelessWidget {
   const GroupInfoHeader({required this.conversation, super.key});
 
-  final Conversation conversation;
+  final Group conversation;
 
   @override
   Widget build(BuildContext context) {

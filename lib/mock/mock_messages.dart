@@ -2,15 +2,17 @@
 
 import 'dart:math';
 
-import 'package:locnet_app/features/message/data/data.dart';
 import 'package:locnet_app/features/message/domain/domain.dart';
+import 'package:locnet_app/features/conversation/subfeatures/private/private.dart';
+import 'package:locnet_app/features/conversation/subfeatures/group/group.dart';
+import 'package:locnet_app/features/conversation/subfeatures/channel/channel.dart';
 import 'package:uuid/uuid.dart';
 
 final class MockMessages {
   static final Random _random = Random(42);
   static final DateTime _now = DateTime.now();
 
-  static List<MessageDto> getRandomPrivateScript({
+  static List<PrivateMessageDto> getRandomPrivateScript({
     required String conversationId,
     required String firstCompanionId,
     required String secondCompanionId,
@@ -19,7 +21,7 @@ final class MockMessages {
     final List<_MockMessageTemplate> script =
         _MockConversationsMessagesRegistry.getRandomPrivateScript();
 
-    final List<MessageDto> messages = <MessageDto>[];
+    final List<PrivateMessageDto> messages = <PrivateMessageDto>[];
 
     final DateTime conversationStart = _now.subtract(
       Duration(minutes: _random.nextInt(60 * 24 * 7)),
@@ -66,11 +68,11 @@ final class MockMessages {
 
       String? replyToMessageId;
       if (messages.isNotEmpty && _shouldReplyToPrevious()) {
-        final MessageDto target = _pickReplyTarget(
+        final PrivateMessageDto target = _pickReplyTargetPrivate(
           messages: messages,
           currentSenderId: senderId,
         );
-        replyToMessageId = target.messageId;
+        replyToMessageId = target.id;
       }
 
       DateTime? editedAt;
@@ -80,20 +82,21 @@ final class MockMessages {
       }
 
       messages.add(
-        MessageDto(
-          messageId: messageId,
-          clientMessageId: const Uuid().v4(),
-          deliveryStatus: MessageDeliveryStatus.sent.toString(),
+        PrivateMessageDto(
+          id: messageId,
           conversationId: conversationId,
           senderId: senderId,
           text: template.text,
-          hasAttachments: false,
-          replyToMessageId: replyToMessageId,
-          isPinned: false,
-          isDeleted: false,
-          editedAt: editedAt,
+          attachments: const <PrivateMessageAttachmentDto>[],
           createdAt: createdAt,
           updatedAt: updatedAt,
+          isDeleted: false,
+          deletedById: null,
+          replyToMessageId: replyToMessageId,
+          deliveryStatus: MessageDeliveryStatus.sent.value,
+          clientMessageId: const Uuid().v4(),
+          editedAt: editedAt,
+          isPinned: false,
         ),
       );
 
@@ -111,7 +114,7 @@ final class MockMessages {
     return messages.reversed.toList();
   }
 
-  static List<MessageDto> getRandomGroupScript({
+  static List<GroupMessageDto> getRandomGroupScript({
     required String conversationId,
     required List<String> participantIds,
     int messagesCount = 40,
@@ -123,7 +126,7 @@ final class MockMessages {
     final List<_MockMessageTemplate> script =
         _MockConversationsMessagesRegistry.getRandomGroupScript();
 
-    final List<MessageDto> messages = <MessageDto>[];
+    final List<GroupMessageDto> messages = <GroupMessageDto>[];
 
     final DateTime conversationStart = _now.subtract(
       Duration(minutes: _random.nextInt(60 * 24 * 7)),
@@ -171,11 +174,11 @@ final class MockMessages {
 
       String? replyToMessageId;
       if (messages.isNotEmpty && _shouldReplyToPrevious()) {
-        final MessageDto target = _pickReplyTarget(
+        final GroupMessageDto target = _pickReplyTargetGroup(
           messages: messages,
           currentSenderId: senderId,
         );
-        replyToMessageId = target.messageId;
+        replyToMessageId = target.id;
       }
 
       DateTime? editedAt;
@@ -185,20 +188,21 @@ final class MockMessages {
       }
 
       messages.add(
-        MessageDto(
-          messageId: messageId,
-          clientMessageId: const Uuid().v4(),
-          deliveryStatus: MessageDeliveryStatus.sent.toString(),
-          conversationId: conversationId,
+        GroupMessageDto(
+          id: messageId,
           senderId: senderId,
+          groupId: conversationId,
           text: template.text,
-          hasAttachments: false,
-          replyToMessageId: replyToMessageId,
-          isPinned: false,
-          isDeleted: false,
-          editedAt: editedAt,
+          attachments: const <GroupMessageAttachmentDto>[],
           createdAt: createdAt,
           updatedAt: updatedAt,
+          isDeleted: false,
+          deletedById: null,
+          replyToMessageId: replyToMessageId,
+          deliveryStatus: MessageDeliveryStatus.sent.value,
+          clientMessageId: const Uuid().v4(),
+          isPinned: false,
+          editedAt: editedAt,
         ),
       );
 
@@ -216,7 +220,7 @@ final class MockMessages {
     return messages.reversed.toList();
   }
 
-  static List<MessageDto> getRandomChannelScript({
+  static List<ChannelPublicationDto> getRandomChannelScript({
     required String conversationId,
     required List<String> adminIds,
     int messagesCount = 20,
@@ -228,7 +232,7 @@ final class MockMessages {
     final List<_MockMessageTemplate> script =
         _MockConversationsMessagesRegistry.getRandomChannelScript();
 
-    final List<MessageDto> messages = <MessageDto>[];
+    final List<ChannelPublicationDto> messages = <ChannelPublicationDto>[];
 
     final DateTime conversationStart = _now.subtract(
       Duration(minutes: _random.nextInt(60 * 24 * 30)),
@@ -248,27 +252,30 @@ final class MockMessages {
 
       String? replyToMessageId;
       if (messages.isNotEmpty && _shouldReplyToPrevious()) {
-        final MessageDto target = _pickReplyTarget(
+        final ChannelPublicationDto target = _pickReplyTargetChannel(
           messages: messages,
           currentSenderId: senderId,
         );
-        replyToMessageId = target.messageId;
+        replyToMessageId = target.publicationId;
       }
 
       messages.add(
-        MessageDto(
-          messageId: messageId,
-          clientMessageId: const Uuid().v4(),
-          deliveryStatus: MessageDeliveryStatus.sent.toString(),
-          conversationId: conversationId,
-          senderId: senderId,
+        ChannelPublicationDto(
+          publicationId: messageId,
+          channelId: conversationId,
+          publishedById: senderId,
           text: template.text,
-          hasAttachments: false,
-          replyToMessageId: replyToMessageId,
-          isPinned: false,
+          attachments: const <ChannelPublicationAttachmentDto>[],
+          avatarFileId: null,
+          replyToPublicationId: replyToMessageId,
           isDeleted: false,
+          deletedById: null,
           createdAt: createdAt,
           updatedAt: updatedAt,
+          deliveryStatus: MessageDeliveryStatus.sent.value,
+          clientPublicationId: const Uuid().v4(),
+          isPinned: false,
+          editedAt: null,
         ),
       );
 
@@ -283,12 +290,42 @@ final class MockMessages {
     return _random.nextInt(100) < 30; // about 30% messages are replies
   }
 
-  static MessageDto _pickReplyTarget({
-    required List<MessageDto> messages,
+  static PrivateMessageDto _pickReplyTargetPrivate({
+    required List<PrivateMessageDto> messages,
     required String currentSenderId,
   }) {
-    final List<MessageDto> otherSenderMessages = messages
-        .where((MessageDto m) => m.senderId != currentSenderId)
+    final List<PrivateMessageDto> otherSenderMessages = messages
+        .where((PrivateMessageDto m) => m.senderId != currentSenderId)
+        .toList();
+
+    if (otherSenderMessages.isNotEmpty) {
+      return otherSenderMessages[_random.nextInt(otherSenderMessages.length)];
+    }
+
+    return messages[_random.nextInt(messages.length)];
+  }
+
+  static GroupMessageDto _pickReplyTargetGroup({
+    required List<GroupMessageDto> messages,
+    required String currentSenderId,
+  }) {
+    final List<GroupMessageDto> otherSenderMessages = messages
+        .where((GroupMessageDto m) => m.senderId != currentSenderId)
+        .toList();
+
+    if (otherSenderMessages.isNotEmpty) {
+      return otherSenderMessages[_random.nextInt(otherSenderMessages.length)];
+    }
+
+    return messages[_random.nextInt(messages.length)];
+  }
+
+  static ChannelPublicationDto _pickReplyTargetChannel({
+    required List<ChannelPublicationDto> messages,
+    required String currentSenderId,
+  }) {
+    final List<ChannelPublicationDto> otherSenderMessages = messages
+        .where((ChannelPublicationDto m) => m.publishedById != currentSenderId)
         .toList();
 
     if (otherSenderMessages.isNotEmpty) {

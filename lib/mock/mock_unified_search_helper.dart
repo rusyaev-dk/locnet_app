@@ -1,5 +1,5 @@
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/conversation/data/data.dart';
+import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/data/data.dart';
 
 final class MockUnifiedSearchHelper {
   static List<UserDto> filterUsers({
@@ -14,12 +14,12 @@ final class MockUnifiedSearchHelper {
         .toList(growable: false);
   }
 
-  static List<ConversationDto> filterConversations({
-    required Iterable<ConversationDto> conversations,
+  static List<UnifiedSearchConversationDto> filterConversations({
+    required Iterable<UnifiedSearchConversationDto> conversations,
     required String normalizedQuery,
   }) {
     return conversations
-        .where((ConversationDto conversationDto) {
+        .where((UnifiedSearchConversationDto conversationDto) {
           final List<String> tokens = conversationTokens(conversationDto);
           return tokens.any((String value) => value.contains(normalizedQuery));
         })
@@ -36,7 +36,9 @@ final class MockUnifiedSearchHelper {
     ].map((String value) => value.toLowerCase()).toList(growable: false);
   }
 
-  static List<String> conversationTokens(ConversationDto conversationDto) {
+  static List<String> conversationTokens(
+    UnifiedSearchConversationDto conversationDto,
+  ) {
     return <String>[
       conversationDto.title,
       conversationDto.description ?? '',
@@ -106,12 +108,14 @@ final class MockUnifiedSearchHelper {
     return userDto.username;
   }
 
-  static List<ConversationDto> rankConversations({
-    required List<ConversationDto> items,
+  static List<UnifiedSearchConversationDto> rankConversations({
+    required List<UnifiedSearchConversationDto> items,
     required String normalizedQuery,
   }) {
-    final List<ConversationDto> sorted = items.toList(growable: true)
-      ..sort((ConversationDto left, ConversationDto right) {
+    final List<UnifiedSearchConversationDto> sorted =
+        items.toList(growable: true)
+          ..sort((UnifiedSearchConversationDto left,
+              UnifiedSearchConversationDto right) {
         final int leftScore = scoreConversation(
           conversationDto: left,
           normalizedQuery: normalizedQuery,
@@ -134,7 +138,7 @@ final class MockUnifiedSearchHelper {
   }
 
   static int scoreConversation({
-    required ConversationDto conversationDto,
+    required UnifiedSearchConversationDto conversationDto,
     required String normalizedQuery,
   }) {
     final String title = conversationDto.title.toLowerCase();
