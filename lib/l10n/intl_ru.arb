@@ -151,5 +151,6 @@
     "passwordRequirementDigit": "Хотя бы одна цифра (0–9)",
     "passwordRequirementSpecial": "Хотя бы один специальный символ (!?@#$%^&*()_-{})",
     "passwordRequirementAllowedChars": "Допустимы только буквы, цифры и символы !?@#$%^&*()_-{}",
-    "you": "Вы"
+    "you": "Вы",
+    "loading": "Загрузка"
 }

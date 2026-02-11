@@ -1333,6 +1333,11 @@ class S {
   String get you {
     return Intl.message('Вы', name: 'you', desc: '', args: []);
   }
+
+  /// `Загрузка`
+  String get loading {
+    return Intl.message('Загрузка', name: 'loading', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

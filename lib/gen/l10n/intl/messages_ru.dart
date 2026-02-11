@@ -138,6 +138,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "lastUpdated": MessageLookupByLibrary.simpleMessage(
       "Дата последнего обновления",
     ),
+    "loading": MessageLookupByLibrary.simpleMessage("Загрузка"),
     "logOut": MessageLookupByLibrary.simpleMessage("Выход"),
     "logOutConfirmation": MessageLookupByLibrary.simpleMessage(
       "Вы действительно хотите выйти?",
