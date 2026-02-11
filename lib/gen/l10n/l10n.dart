@@ -1319,10 +1319,10 @@ class S {
     );
   }
 
-  /// `Допустимы только буквы, цифры и символы !?@#$%^&*()_-{}`
+  /// `Допустимы только буквы, цифры и спец. символы`
   String get passwordRequirementAllowedChars {
     return Intl.message(
-      'Допустимы только буквы, цифры и символы !?@#\$%^&*()_-{}',
+      'Допустимы только буквы, цифры и спец. символы',
       name: 'passwordRequirementAllowedChars',
       desc: '',
       args: [],

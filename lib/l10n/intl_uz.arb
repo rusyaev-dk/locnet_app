@@ -145,12 +145,12 @@
   "selectConversation": "Выберите чат",
   "selectConversationSubtitle": "Выберите пользователя, группу или канал, чтобы начать переписку",
   "passwordRequirementsTitle": "Требования к паролю",
-  "passwordRequirementMinLength": "Не менее {min} символов",
+  "passwordRequirementMinLength": "Не менее ${min} символов",
   "passwordRequirementUppercase": "Хотя бы одна заглавная буква (A–Z)",
   "passwordRequirementLowercase": "Хотя бы одна строчная буква (a–z)",
   "passwordRequirementDigit": "Хотя бы одна цифра (0–9)",
   "passwordRequirementSpecial": "Хотя бы один специальный символ (!?@#$%^&*()_-{})",
-  "passwordRequirementAllowedChars": "Допустимы только буквы, цифры и символы !?@#$%^&*()_-{}",
+  "passwordRequirementAllowedChars": "Допустимы только буквы, цифры и спец. символы",
   "you": "Вы",
   "loading": "Загрузка"
 }

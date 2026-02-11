@@ -29,8 +29,11 @@ class UnifiedSearchModalCard extends StatefulWidget {
   State<UnifiedSearchModalCard> createState() => _UnifiedSearchModalCardState();
 }
 
+enum _UnifiedSearchTab { users, groups, channels }
+
 class _UnifiedSearchModalCardState extends State<UnifiedSearchModalCard> {
   late final TextEditingController _queryController;
+  _UnifiedSearchTab _selectedTab = _UnifiedSearchTab.users;
 
   @override
   void initState() {
@@ -99,7 +102,6 @@ class _UnifiedSearchModalCardState extends State<UnifiedSearchModalCard> {
                       );
                     },
                   ),
-                  const SizedBox(height: 12),
                   Expanded(
                     child: BlocBuilder<UnifiedSearchBloc, UnifiedSearchState>(
                       builder:
@@ -118,7 +120,54 @@ class _UnifiedSearchModalCardState extends State<UnifiedSearchModalCard> {
                               );
                             }
 
-                            return _UnifiedSearchBody(state: state);
+                            final bool hasResults = switch (state) {
+                              final UnifiedSearchLoadedState s =>
+                                s.result.users.isNotEmpty ||
+                                s.result.conversations.isNotEmpty,
+                              _ => false,
+                            };
+
+                            final Widget body = _UnifiedSearchBody(
+                              state: state,
+                              selectedTab: _selectedTab,
+                            );
+
+                            if (!hasResults) {
+                              return body;
+                            }
+
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 10),
+                                SegmentedControl(
+                                  compact: true,
+                                  segments: [
+                                    SegmentedControlSegment(
+                                      title: l10n.users,
+                                      icon: Icons.person_outline,
+                                    ),
+                                    SegmentedControlSegment(
+                                      title: l10n.conversationTypeGroup,
+                                      icon: Icons.group_outlined,
+                                    ),
+                                    SegmentedControlSegment(
+                                      title: l10n.conversationTypeChannel,
+                                      icon: Icons.campaign_outlined,
+                                    ),
+                                  ],
+                                  selectedIndex: _selectedTab.index,
+                                  onSelected: (int index) {
+                                    setState(() {
+                                      _selectedTab =
+                                          _UnifiedSearchTab.values[index];
+                                    });
+                                  },
+                                ),
+                                const SizedBox(height: 10),
+                                Expanded(child: body),
+                              ],
+                            );
                           },
                     ),
                   ),
@@ -133,9 +182,36 @@ class _UnifiedSearchModalCardState extends State<UnifiedSearchModalCard> {
 }
 
 class _UnifiedSearchBody extends StatelessWidget {
-  const _UnifiedSearchBody({required this.state});
+  const _UnifiedSearchBody({
+    required this.state,
+    required this.selectedTab,
+  });
 
   final UnifiedSearchState state;
+  final _UnifiedSearchTab selectedTab;
+
+  List<UnifiedSearchListItem> _itemsForTab(
+    UnifiedSearchLoadedState loadedState,
+  ) {
+    switch (selectedTab) {
+      case _UnifiedSearchTab.users:
+        return loadedState.result.users
+            .map(UnifiedSearchListItem.user)
+            .toList();
+      case _UnifiedSearchTab.groups:
+        return loadedState.result.conversations
+            .where((UnifiedSearchConversation c) =>
+                c.type == UnifiedSearchConversationType.group)
+            .map(UnifiedSearchListItem.conversation)
+            .toList();
+      case _UnifiedSearchTab.channels:
+        return loadedState.result.conversations
+            .where((UnifiedSearchConversation c) =>
+                c.type == UnifiedSearchConversationType.channel)
+            .map(UnifiedSearchListItem.conversation)
+            .toList();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -165,13 +241,7 @@ class _UnifiedSearchBody extends StatelessWidget {
     final UnifiedSearchLoadedState loadedState =
         state as UnifiedSearchLoadedState;
 
-    final List<UnifiedSearchListItem> items = <UnifiedSearchListItem>[
-      ...loadedState.result.users.map(UnifiedSearchListItem.user),
-      ...loadedState.result.conversations.map(
-        UnifiedSearchListItem.conversation,
-      ),
-    ];
-
+    final List<UnifiedSearchListItem> items = _itemsForTab(loadedState);
     final bool isEmpty = items.isEmpty;
 
     if (isEmpty) {

@@ -20,7 +20,7 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'ru';
 
-  static String m0(min) => "Не менее ${min} символов";
+  static String m0(min) => "Не менее \$${min} символов";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -198,7 +198,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "ok": MessageLookupByLibrary.simpleMessage("ОК"),
     "password": MessageLookupByLibrary.simpleMessage("Пароль"),
     "passwordRequirementAllowedChars": MessageLookupByLibrary.simpleMessage(
-      "Допустимы только буквы, цифры и символы !?@#\$%^&*()_-{}",
+      "Допустимы только буквы, цифры и спец. символы",
     ),
     "passwordRequirementDigit": MessageLookupByLibrary.simpleMessage(
       "Хотя бы одна цифра (0–9)",
