@@ -111,7 +111,7 @@ class AppRunner {
     required TimerRunner timerRunner,
   }) async {
     // TODO: remove the delay
-    await Future.delayed(const Duration(milliseconds: 1500));
+    // await Future.delayed(const Duration(milliseconds: 1500));
     logger.log('Build type: ${env.name}');
 
     final dio = Dio();
