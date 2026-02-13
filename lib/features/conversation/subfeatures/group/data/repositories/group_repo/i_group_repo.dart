@@ -45,6 +45,8 @@ abstract interface class IGroupRepo {
     int page = 1,
   });
 
+  Stream<GroupConversationMessageUpdateRec> get messagesUpdates;
+
   Future<GroupMessage> sendMessage({required GroupMessage message});
 
   Future<GroupMessage> editMessage({required GroupMessage updatedMessage});

@@ -3,9 +3,13 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/channel/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/channel/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/channel/presentation/presentation.dart';
+import 'package:locnet_app/features/message/data/data.dart';
+import 'package:locnet_app/features/message/subfeatures/channel_publication/domain/domain.dart';
+import 'package:locnet_app/features/message/subfeatures/channel_publication/presentation/presentation.dart';
 import 'package:locnet_app/features/message/subfeatures/message_input/presentation/presentation.dart';
 
 class ChannelConversationScreenWrapper extends StatelessWidget {
@@ -31,6 +35,11 @@ class ChannelConversationScreenWrapper extends StatelessWidget {
             channelRepo: context.read<IChannelRepo>(),
           ),
         ),
+        RepositoryProvider<ChannelPublicationInteractor>(
+          create: (BuildContext context) => ChannelPublicationInteractor(
+            publicationRepo: context.read<IChannelPublicationRepo>(),
+          ),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -46,6 +55,14 @@ class ChannelConversationScreenWrapper extends StatelessWidget {
                 ),
           ),
           BlocProvider(create: (context) => MessageAttachmentsCubit()),
+          BlocProvider(
+            create: (context) => ChannelPublicationActionsCubit(
+              channelPublicationInteractor: context
+                  .read<ChannelPublicationInteractor>(),
+              userInteractor: context.read<UserInteractor>(),
+              logger: context.read<ILogger>(),
+            ),
+          ),
         ],
         child: child,
       ),
@@ -112,7 +129,10 @@ class ChannelConversationScreen extends StatelessWidget {
             },
           ),
         ),
-        MessageInputBar(conversationId: conversationId),
+        MessageInputBar(
+          conversationId: conversationId,
+          conversationType: ConversationType.channel,
+        ),
       ],
     );
   }

@@ -3,10 +3,14 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/presentation/presentation.dart';
+import 'package:locnet_app/features/message/data/data.dart';
 import 'package:locnet_app/features/message/subfeatures/message_input/presentation/presentation.dart';
+import 'package:locnet_app/features/message/subfeatures/private_message/domain/domain.dart';
+import 'package:locnet_app/features/message/subfeatures/private_message/presentation/presentation.dart';
 
 class PrivateConversationScreenWrapper extends StatelessWidget {
   const PrivateConversationScreenWrapper({
@@ -29,6 +33,11 @@ class PrivateConversationScreenWrapper extends StatelessWidget {
         RepositoryProvider<PrivateConversationInteractor>(
           create: (BuildContext context) => PrivateConversationInteractor(
             privateConversationRepo: context.read<IPrivateConversationRepo>(),
+          ),
+        ),
+        RepositoryProvider<PrivateMessageInteractor>(
+          create: (BuildContext context) => PrivateMessageInteractor(
+            messageRepo: context.read<IPrivateMessageRepo>(),
           ),
         ),
       ],
@@ -57,8 +66,7 @@ class PrivateConversationScreenWrapper extends StatelessWidget {
           ),
           BlocProvider(
             create: (context) => PrivateMessageActionsCubit(
-              privateConversationInteractor: context
-                  .read<PrivateConversationInteractor>(),
+              privateMessageInteractor: context.read<PrivateMessageInteractor>(),
               userInteractor: context.read<UserInteractor>(),
               logger: context.read<ILogger>(),
             ),
@@ -131,7 +139,10 @@ class PrivateConversationScreen extends StatelessWidget {
             },
           ),
         ),
-        MessageInputBar(conversationId: conversationId),
+        MessageInputBar(
+          conversationId: conversationId,
+          conversationType: ConversationType.private,
+        ),
       ],
     );
   }

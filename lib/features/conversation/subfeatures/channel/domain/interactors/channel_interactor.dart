@@ -111,4 +111,7 @@ final class ChannelInteractor {
       page: page,
     );
   }
+
+  Stream<ChannelPublicationUpdateRec> get publicationsUpdates =>
+      _channelRepo.publicationsUpdates;
 }

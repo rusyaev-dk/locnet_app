@@ -15,3 +15,15 @@ final class ChannelConversationStartedEvent extends ChannelConversationEvent {
   @override
   List<Object> get props => [conversationId];
 }
+
+final class ChannelConversationPublicationUpdateReceivedEvent
+    extends ChannelConversationEvent {
+  const ChannelConversationPublicationUpdateReceivedEvent({
+    required this.update,
+  });
+
+  final ChannelPublicationUpdateRec update;
+
+  @override
+  List<Object> get props => [update];
+}

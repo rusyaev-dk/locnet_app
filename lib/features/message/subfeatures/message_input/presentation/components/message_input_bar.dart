@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
-import 'package:locnet_app/features/conversation/subfeatures/private/presentation/presentation.dart';
+import 'package:locnet_app/features/conversation/domain/domain.dart';
+import 'package:locnet_app/features/message/subfeatures/channel_publication/presentation/presentation.dart';
 import 'package:locnet_app/features/message/subfeatures/emoji_selector/presentation/presentation.dart';
+import 'package:locnet_app/features/message/subfeatures/group_message/presentation/presentation.dart';
 import 'package:locnet_app/features/message/subfeatures/message_input/domain/domain.dart';
 import 'package:locnet_app/features/message/subfeatures/message_input/presentation/presentation.dart';
+import 'package:locnet_app/features/message/subfeatures/private_message/presentation/presentation.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
 class MessageInputBar extends StatefulWidget {
-  const MessageInputBar({required this.conversationId, super.key});
+  const MessageInputBar({
+    required this.conversationId,
+    required this.conversationType,
+    super.key,
+  });
 
   final String conversationId;
+  final ConversationType conversationType;
 
   @override
   State<MessageInputBar> createState() => _MessageInputBarState();
@@ -101,11 +109,29 @@ class _MessageInputBarState extends State<MessageInputBar> {
       return;
     }
 
-    context.read<PrivateMessageActionsCubit>().sendMessage(
-      conversationId: widget.conversationId,
-      attachedFiles: context.read<MessageAttachmentsCubit>().state.files,
-      text: markdown,
-    );
+    final List<UploadableFile> files =
+        context.read<MessageAttachmentsCubit>().state.files;
+
+    switch (widget.conversationType) {
+      case ConversationType.private:
+        context.read<PrivateMessageActionsCubit>().sendMessage(
+          conversationId: widget.conversationId,
+          attachedFiles: files,
+          text: markdown,
+        );
+      case ConversationType.group:
+        context.read<GroupMessageActionsCubit>().sendMessage(
+          groupId: widget.conversationId,
+          attachedFiles: files,
+          text: markdown,
+        );
+      case ConversationType.channel:
+        context.read<ChannelPublicationActionsCubit>().sendPublication(
+          channelId: widget.conversationId,
+          attachedFiles: files,
+          text: markdown,
+        );
+    }
 
     final MessageRichInputController _ = _textEditingController!
       ..clear()

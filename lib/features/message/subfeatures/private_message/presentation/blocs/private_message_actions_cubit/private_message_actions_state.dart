@@ -5,7 +5,8 @@ part of 'private_message_actions_cubit.dart';
 enum PrivateMessageActionType {
   send('send'),
   edit('edit'),
-  delete('delete');
+  delete('delete'),
+  pin('pin');
 
   const PrivateMessageActionType(this.value);
 
@@ -24,6 +25,9 @@ enum PrivateMessageActionType {
 
 enum PrivateMessageActionStatus {
   sending('sending'),
+  editing('editing'),
+  deleting('deleting'),
+  togglingPin('toggling_pin'),
   success('success'),
   failure('failure');
 

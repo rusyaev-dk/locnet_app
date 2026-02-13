@@ -117,4 +117,7 @@ final class GroupConversationInteractor {
       page: page,
     );
   }
+
+  Stream<GroupConversationMessageUpdateRec> get messagesUpdates =>
+      _groupConversationRepo.messagesUpdates;
 }

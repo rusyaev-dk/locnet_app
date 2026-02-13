@@ -5,22 +5,23 @@ import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/domain/domain.dart';
 import 'package:locnet_app/features/message/domain/domain.dart';
 import 'package:locnet_app/features/message/subfeatures/message_input/domain/domain.dart';
+import 'package:locnet_app/features/message/subfeatures/private_message/domain/domain.dart';
 import 'package:uuid/uuid.dart';
 
 part 'private_message_actions_state.dart';
 
 class PrivateMessageActionsCubit extends Cubit<PrivateMessageActionsState> {
   PrivateMessageActionsCubit({
-    required PrivateConversationInteractor privateConversationInteractor,
+    required PrivateMessageInteractor privateMessageInteractor,
     required UserInteractor userInteractor,
     required ILogger logger,
-  }) : _privateConversationInteractor = privateConversationInteractor,
+  }) : _privateMessageInteractor = privateMessageInteractor,
        _userInteractor = userInteractor,
        _logger = logger,
 
        super(const PrivateMessageActionsState(operations: {}));
 
-  final PrivateConversationInteractor _privateConversationInteractor;
+  final PrivateMessageInteractor _privateMessageInteractor;
   final UserInteractor _userInteractor;
   final ILogger _logger;
 
@@ -82,7 +83,7 @@ class PrivateMessageActionsCubit extends Cubit<PrivateMessageActionsState> {
         ),
       );
 
-      await _privateConversationInteractor.sendMessage(message: localMessage);
+      await _privateMessageInteractor.sendMessage(message: localMessage);
 
       _markSuccess(clientMessageId: clientMessageId);
     } catch (e, st) {
@@ -97,6 +98,115 @@ class PrivateMessageActionsCubit extends Cubit<PrivateMessageActionsState> {
             );
 
       _markFailure(clientMessageId: clientMessageId, failure: appException);
+    }
+  }
+
+  Future<void> editMessage({
+    required PrivateMessage message,
+    required String newText,
+  }) async {
+    final String normalizedText = newText.trim();
+    if (normalizedText.isEmpty) return;
+
+    final String operationKey = message.id;
+
+    _upsertOperation(
+      PrivateMessageActionOperation(
+        clientMessageId: operationKey,
+        conversationId: message.conversationId,
+        type: PrivateMessageActionType.edit,
+        status: PrivateMessageActionStatus.editing,
+        message: message,
+        messageId: message.id,
+      ),
+    );
+
+    try {
+      final PrivateMessage updatedMessage = message.copyWith(
+        text: normalizedText,
+        updatedAt: DateTime.now(),
+        editedAt: DateTime.now(),
+      );
+      await _privateMessageInteractor.editMessage(
+        updatedMessage: updatedMessage,
+      );
+      _markSuccess(clientMessageId: operationKey);
+    } catch (e, st) {
+      _logger.exception(e, st);
+      final AppException appException = e is AppException
+          ? e
+          : AppUnknownException(
+              message: e.toString(),
+              error: e,
+              stackTrace: st,
+            );
+      _markFailure(clientMessageId: operationKey, failure: appException);
+    }
+  }
+
+  Future<void> deleteMessage({required PrivateMessage message}) async {
+    final String operationKey = message.id;
+
+    _upsertOperation(
+      PrivateMessageActionOperation(
+        clientMessageId: operationKey,
+        conversationId: message.conversationId,
+        type: PrivateMessageActionType.delete,
+        status: PrivateMessageActionStatus.deleting,
+        message: message,
+        messageId: message.id,
+      ),
+    );
+
+    try {
+      await _privateMessageInteractor.deleteMessage(message: message);
+      _markSuccess(clientMessageId: operationKey);
+    } catch (e, st) {
+      _logger.exception(e, st);
+      final AppException appException = e is AppException
+          ? e
+          : AppUnknownException(
+              message: e.toString(),
+              error: e,
+              stackTrace: st,
+            );
+      _markFailure(clientMessageId: operationKey, failure: appException);
+    }
+  }
+
+  Future<void> toggleMessagePin({
+    required PrivateMessage message,
+    required bool isPinned,
+  }) async {
+    final String operationKey = message.id;
+
+    _upsertOperation(
+      PrivateMessageActionOperation(
+        clientMessageId: operationKey,
+        conversationId: message.conversationId,
+        type: PrivateMessageActionType.pin,
+        status: PrivateMessageActionStatus.togglingPin,
+        message: message,
+        messageId: message.id,
+      ),
+    );
+
+    try {
+      await _privateMessageInteractor.toggleMessagePin(
+        message: message,
+        isPinned: isPinned,
+      );
+      _markSuccess(clientMessageId: operationKey);
+    } catch (e, st) {
+      _logger.exception(e, st);
+      final AppException appException = e is AppException
+          ? e
+          : AppUnknownException(
+              message: e.toString(),
+              error: e,
+              stackTrace: st,
+            );
+      _markFailure(clientMessageId: operationKey, failure: appException);
     }
   }
 

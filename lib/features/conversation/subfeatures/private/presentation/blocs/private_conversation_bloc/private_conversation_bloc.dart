@@ -20,8 +20,7 @@ class PrivateConversationBloc
     on<PrivateConversationStartedEvent>(_onStarted);
     on<PrivateConversationMessageUpdateReceivedEvent>(_onMessageUpdateReceived);
 
-    _messagesUpdatesSubscription = _privateConversationInteractor
-        .messagesUpdates
+    _messagesUpdatesSubscription = _privateConversationInteractor.messagesUpdates
         .listen(_onMessagesUpdatesStreamEvent);
   }
 

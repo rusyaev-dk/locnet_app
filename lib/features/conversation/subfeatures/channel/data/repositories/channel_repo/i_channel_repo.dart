@@ -45,6 +45,8 @@ abstract interface class IChannelRepo {
     int page = 1,
   });
 
+  Stream<ChannelPublicationUpdateRec> get publicationsUpdates;
+
   Future<ChannelPublication> sendPublication({
     required ChannelPublication publication,
   });

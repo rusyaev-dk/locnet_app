@@ -3,9 +3,13 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/group/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/group/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/group/presentation/presentation.dart';
+import 'package:locnet_app/features/message/data/data.dart';
+import 'package:locnet_app/features/message/subfeatures/group_message/domain/domain.dart';
+import 'package:locnet_app/features/message/subfeatures/group_message/presentation/presentation.dart';
 import 'package:locnet_app/features/message/subfeatures/message_input/presentation/presentation.dart';
 
 class GroupConversationScreenWrapper extends StatelessWidget {
@@ -31,6 +35,11 @@ class GroupConversationScreenWrapper extends StatelessWidget {
             groupConversationRepo: context.read<IGroupRepo>(),
           ),
         ),
+        RepositoryProvider<GroupMessageInteractor>(
+          create: (BuildContext context) => GroupMessageInteractor(
+            messageRepo: context.read<IGroupMessageRepo>(),
+          ),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -45,6 +54,13 @@ class GroupConversationScreenWrapper extends StatelessWidget {
                 ),
           ),
           BlocProvider(create: (context) => MessageAttachmentsCubit()),
+          BlocProvider(
+            create: (context) => GroupMessageActionsCubit(
+              groupMessageInteractor: context.read<GroupMessageInteractor>(),
+              userInteractor: context.read<UserInteractor>(),
+              logger: context.read<ILogger>(),
+            ),
+          ),
         ],
         child: child,
       ),
@@ -128,7 +144,10 @@ class GroupConversationScreen extends StatelessWidget {
             },
           ),
         ),
-        MessageInputBar(conversationId: conversationId),
+        MessageInputBar(
+          conversationId: conversationId,
+          conversationType: ConversationType.group,
+        ),
       ],
     );
   }

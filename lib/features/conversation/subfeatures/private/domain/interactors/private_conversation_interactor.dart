@@ -9,9 +9,6 @@ final class PrivateConversationInteractor {
 
   final IPrivateConversationRepo _privateConversationRepo;
 
-  Stream<PrivateConversationMessageUpdateRec> get messagesUpdates =>
-      _privateConversationRepo.messagesUpdates;
-
   Future<bool> toggleNotifications({
     required String conversationId,
     required bool newNotificationsStatus,
@@ -68,27 +65,6 @@ final class PrivateConversationInteractor {
     );
   }
 
-  Future<PrivateMessage> sendMessage({
-    required PrivateMessage message,
-  }) async {
-    return await _privateConversationRepo.sendMessage(message: message);
-  }
-
-  Future<PrivateMessage> editMessage({
-    required PrivateMessage newMessage,
-  }) async {
-    return await _privateConversationRepo.editMessage(
-      updatedMessage: newMessage,
-    );
-  }
-
-  Future<bool> deleteMessage({
-    required PrivateMessage message,
-    required bool deleteAtRecipient,
-  }) async {
-    return await _privateConversationRepo.deleteMessage(
-      message: message,
-      deleteAtRecipient: deleteAtRecipient,
-    );
-  }
+  Stream<PrivateConversationMessageUpdateRec> get messagesUpdates =>
+      _privateConversationRepo.messagesUpdates;
 }

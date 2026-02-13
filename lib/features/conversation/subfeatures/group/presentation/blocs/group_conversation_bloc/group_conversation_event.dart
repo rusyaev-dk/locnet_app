@@ -15,3 +15,13 @@ final class GroupConversationStartedEvent extends GroupConversationEvent {
   @override
   List<Object> get props => [conversationId];
 }
+
+final class GroupConversationMessageUpdateReceivedEvent
+    extends GroupConversationEvent {
+  const GroupConversationMessageUpdateReceivedEvent({required this.update});
+
+  final GroupConversationMessageUpdateRec update;
+
+  @override
+  List<Object> get props => [update];
+}

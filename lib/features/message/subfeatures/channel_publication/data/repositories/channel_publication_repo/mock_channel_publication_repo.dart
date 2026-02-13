@@ -3,24 +3,42 @@
 import 'dart:async';
 
 import 'package:locnet_app/features/conversation/subfeatures/channel/domain/domain.dart';
+import 'package:locnet_app/features/message/domain/domain.dart';
 import 'package:locnet_app/features/message/subfeatures/channel_publication/data/repositories/channel_publication_repo/i_channel_publication_repo.dart';
 import 'package:locnet_app/mock/mock.dart';
 
 final class MockChannelPublicationRepo implements IChannelPublicationRepo {
-  MockChannelPublicationRepo({required MockInMemoryBackend backendStorage})
-    : _backendStorage = backendStorage;
+  MockChannelPublicationRepo({
+    required MockInMemoryBackend backendStorage,
+    required StreamController<ChannelPublicationUpdateRec>
+        publicationsUpdatesController,
+  }) : _backendStorage = backendStorage,
+       _publicationsUpdatesController = publicationsUpdatesController;
 
   final MockInMemoryBackend _backendStorage;
+  final StreamController<ChannelPublicationUpdateRec>
+      _publicationsUpdatesController;
 
   @override
   Future<ChannelPublication> sendPublication({
     required ChannelPublication publication,
   }) async {
+    _publicationsUpdatesController.add((
+      updateType: ChannelPublicationUpdateType.created,
+      publication: publication,
+    ));
     await Future<void>.delayed(const Duration(milliseconds: 200));
-
     final dto = _backendStorage.addChannelPublication(
       newPublication: publication,
     );
+    final sentPublication = publication.copyWith(
+      publicationId: dto.publicationId,
+      deliveryStatus: MessageDeliveryStatus.sent,
+    );
+    _publicationsUpdatesController.add((
+      updateType: ChannelPublicationUpdateType.created,
+      publication: sentPublication,
+    ));
     return ChannelPublication.fromDto(dto);
   }
 
@@ -29,11 +47,15 @@ final class MockChannelPublicationRepo implements IChannelPublicationRepo {
     required ChannelPublication updatedPublication,
   }) async {
     await Future<void>.delayed(const Duration(milliseconds: 200));
-
     final dto = _backendStorage.updateChannelPublication(
       updatedPublication: updatedPublication,
     );
-    return ChannelPublication.fromDto(dto);
+    final storedPublication = ChannelPublication.fromDto(dto);
+    _publicationsUpdatesController.add((
+      updateType: ChannelPublicationUpdateType.updated,
+      publication: storedPublication,
+    ));
+    return storedPublication;
   }
 
   @override
@@ -41,7 +63,14 @@ final class MockChannelPublicationRepo implements IChannelPublicationRepo {
     required ChannelPublication publication,
   }) async {
     await Future<void>.delayed(const Duration(milliseconds: 200));
-    return _backendStorage.deleteChannelPublication(publication: publication);
+    final ok = _backendStorage.deleteChannelPublication(publication: publication);
+    if (ok) {
+      _publicationsUpdatesController.add((
+        updateType: ChannelPublicationUpdateType.deleted,
+        publication: publication.copyWith(isDeleted: true),
+      ));
+    }
+    return ok;
   }
 
   @override
