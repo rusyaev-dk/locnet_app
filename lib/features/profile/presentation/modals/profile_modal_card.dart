@@ -103,7 +103,6 @@ class _ProfileView extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
               child: ProfileHeader(user: user, popsOnClose: 2),
             ),
-            Divider(height: 1, color: colorScheme.outlineVariant),
             Expanded(child: ProfileBodyContent(user: user)),
           ],
         ),

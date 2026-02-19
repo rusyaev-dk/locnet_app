@@ -149,7 +149,6 @@ class _EmojiSelectorPanelState extends State<_EmojiSelectorPanel> {
                 controller: _searchController,
                 onClose: widget.onDismiss,
               ),
-              Divider(height: 1, color: colorScheme.outlineVariant),
               Expanded(
                 child: RepaintBoundary(
                   child: _EmojiCategoryScroll(

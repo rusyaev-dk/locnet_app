@@ -4,9 +4,14 @@ import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
 
 class LanguageSelector extends StatelessWidget {
-  const LanguageSelector({required this.selectedLocale, super.key});
+  const LanguageSelector({
+    required this.selectedLocale,
+    super.key,
+    this.onLocaleSelected,
+  });
 
   final Locale selectedLocale;
+  final ValueChanged<Locale>? onLocaleSelected;
 
   List<Locale> get _supportedLocales {
     return <Locale>[const Locale('en'), const Locale('ru'), const Locale('uz')];
@@ -61,7 +66,11 @@ class LanguageSelector extends StatelessWidget {
           selectedLocale: value,
           supportedLocales: _supportedLocales,
           onLocaleSelected: (Locale locale) {
-            context.read<SettingsCubit>().changeLanguageCode(locale);
+            if (onLocaleSelected != null) {
+              onLocaleSelected!(locale);
+            } else {
+              context.read<SettingsCubit>().changeLanguageCode(locale);
+            }
           },
           localeToLabel: _mapLocaleToLabel,
           localeToIcon: _mapLocaleToIcon,

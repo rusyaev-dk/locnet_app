@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:locnet_app/uikit/uikit.dart';
+import 'package:locnet_app/app/app.dart';
 
+/// Primary action button; uses design tokens (small radius, spacing).
 class AppPrimaryButton extends StatelessWidget {
   const AppPrimaryButton({
     required this.text,
@@ -13,7 +14,7 @@ class AppPrimaryButton extends StatelessWidget {
     this.borderRadius,
     this.padding,
     this.width,
-    this.height = 46,
+    this.height,
   });
 
   final String text;
@@ -25,26 +26,29 @@ class AppPrimaryButton extends StatelessWidget {
   final BorderRadius? borderRadius;
   final EdgeInsets? padding;
   final double? width;
-  final double height;
+  final double? height;
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = AppColorScheme.of(context);
-    final textScheme = AppTextScheme.of(context);
+    final colorScheme = context.colorScheme;
+    final textScheme = context.textScheme;
+    final radii = context.radii;
 
     final Color background = !isActive
         ? colorScheme.outline
         : (buttonColor ?? colorScheme.primary);
 
+    final double buttonHeight = height ?? 40;
+
     return SizedBox(
       width: width,
-      height: height,
+      height: buttonHeight,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: background,
           disabledBackgroundColor: colorScheme.outline,
           shape: RoundedRectangleBorder(
-            borderRadius: borderRadius ?? BorderRadius.circular(12),
+            borderRadius: borderRadius ?? radii.defaultRadiusValue,
           ),
           padding: padding ?? const EdgeInsets.symmetric(horizontal: 16),
           elevation: 0,
@@ -62,7 +66,7 @@ class AppPrimaryButton extends StatelessWidget {
                   child: CircularProgressIndicator(
                     strokeWidth: 2.6,
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      textColor ?? colorScheme.surface,
+                      textColor ?? colorScheme.onPrimary,
                     ),
                   ),
                 )
@@ -70,10 +74,9 @@ class AppPrimaryButton extends StatelessWidget {
                   key: const ValueKey('text'),
                   text,
                   textAlign: TextAlign.center,
-                  style: textScheme.label.copyWith(
-                    fontSize: 18,
+                  style: textScheme.title.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: textColor ?? colorScheme.surface,
+                    color: textColor ?? colorScheme.onPrimary,
                   ),
                 ),
         ),

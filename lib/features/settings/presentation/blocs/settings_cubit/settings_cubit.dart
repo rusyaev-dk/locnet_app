@@ -103,17 +103,20 @@ class SettingsCubit extends Cubit<SettingsState> {
         _settingsInteractor.getCurrentLanguageCode(),
         _settingsInteractor.getCurrentThemeMode(),
         _themeConstructorInteractor.loadAppTheme(),
+        _settingsInteractor.getCurrentThemeType(),
       ]);
 
       final String localeCode = results[0] as String;
       final String themeCode = results[1] as String;
       final AppTheme appTheme = results[2] as AppTheme;
+      final AppThemeType themeType = results[3] as AppThemeType;
 
       emit(
         SettingsLoadedState(
           locale: Locale(localeCode),
           themeMode: _decodeThemeMode(themeCode),
           appTheme: appTheme,
+          themeType: themeType,
         ),
       );
     } catch (e, st) {
@@ -125,6 +128,62 @@ class SettingsCubit extends Cubit<SettingsState> {
               : AppUnknownException(message: e.toString(), stackTrace: st),
         ),
       );
+    }
+  }
+
+  Future<void> changeThemeType(AppThemeType newType) async {
+    try {
+      if (state is! SettingsLoadedState) return;
+      final prevState = state as SettingsLoadedState;
+
+      final bool success = await _settingsInteractor.setThemeType(newType);
+      if (!success) {
+        final failure = AppUnknownException(message: 'Failed to save theme');
+        emit(prevState.copyWith(failure: failure));
+        _logger.exception(failure, StackTrace.current);
+        return;
+      }
+      emit(prevState.copyWith(themeType: newType));
+    } catch (e, st) {
+      _logger.exception(e, st);
+      if (state is SettingsLoadedState) {
+        emit(
+          (state as SettingsLoadedState).copyWith(
+            failure: e is AppException
+                ? e
+                : AppUnknownException(message: e.toString(), stackTrace: st),
+          ),
+        );
+      } else {
+        emit(
+          SettingsFailureState(
+            failure: e is AppException
+                ? e
+                : AppUnknownException(message: e.toString(), stackTrace: st),
+          ),
+        );
+      }
+    }
+  }
+
+  /// Updates theme type in loaded state (e.g. after subfeature cubit persisted).
+  void updateThemeType(AppThemeType type) {
+    if (state is SettingsLoadedState) {
+      emit((state as SettingsLoadedState).copyWith(themeType: type));
+    }
+  }
+
+  /// Updates locale in loaded state (e.g. after subfeature cubit persisted).
+  void updateLocale(Locale locale) {
+    if (state is SettingsLoadedState) {
+      emit((state as SettingsLoadedState).copyWith(locale: locale));
+    }
+  }
+
+  /// Updates theme mode in loaded state (e.g. after subfeature cubit persisted).
+  void updateThemeMode(ThemeMode mode) {
+    if (state is SettingsLoadedState) {
+      emit((state as SettingsLoadedState).copyWith(themeMode: mode));
     }
   }
 

@@ -101,10 +101,7 @@ class SegmentedControl extends StatelessWidget {
 }
 
 class _SegmentIndicator extends StatelessWidget {
-  const _SegmentIndicator({
-    required this.width,
-    this.borderRadius = 12,
-  });
+  const _SegmentIndicator({required this.width, this.borderRadius = 12});
 
   final double width;
   final double borderRadius;
@@ -190,15 +187,10 @@ class _SegmentButton extends StatelessWidget {
                   child: TweenAnimationBuilder<double>(
                     duration: _styleDuration,
                     curve: _styleCurve,
-                    tween: Tween<double>(
-                      end: isSelected ? 1.0 : 0.0,
-                    ),
-                    builder: (
-                      BuildContext context,
-                      double t,
-                      Widget? child,
-                    ) {
-                      final FontWeight fontWeight = FontWeight.lerp(
+                    tween: Tween<double>(end: isSelected ? 1.0 : 0.0),
+                    builder: (BuildContext context, double t, Widget? child) {
+                      final FontWeight fontWeight =
+                          FontWeight.lerp(
                             FontWeight.w500,
                             FontWeight.w700,
                             t,

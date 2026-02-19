@@ -34,6 +34,7 @@ class CompanionInfoHeader extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: textScheme.headline.copyWith(
                   color: colorScheme.onSurface,
+                  fontSize: 17,
                 ),
               ),
               const SizedBox(height: 6),

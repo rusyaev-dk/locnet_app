@@ -14,6 +14,7 @@ import 'package:locnet_app/features/conversations_list/data/repositories/convers
 import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/data/data.dart';
 import 'package:locnet_app/features/message/data/data.dart';
 import 'package:locnet_app/mock/mock.dart';
+import 'package:locnet_app/features/settings/domain/domain.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
 import 'package:locnet_app/features/theme_editor/data/data.dart';
 
@@ -60,6 +61,13 @@ final class StageEnvPreset implements IAppEnvPreset {
   @override
   ISettingsRepo createSettingsRepo() {
     return LocalSettingsRepo(
+      storage: _appScope.storageAggregator.localKeyValueStorage,
+    );
+  }
+
+  @override
+  IThemeRepository createThemeRepo() {
+    return LocalThemeRepository(
       storage: _appScope.storageAggregator.localKeyValueStorage,
     );
   }

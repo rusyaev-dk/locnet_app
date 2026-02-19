@@ -2,6 +2,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:locnet_app/app/app.dart';
+import 'package:locnet_app/features/settings/domain/domain.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
 import 'package:locnet_app/features/theme_editor/domain/domain.dart';
 import 'package:mocktail/mocktail.dart';
@@ -53,6 +54,9 @@ void main() {
           when(
             () => mockThemeEditorInteractor.loadAppTheme(),
           ).thenAnswer((_) async => appTheme);
+          when(
+            () => mockSettingsInteractor.getCurrentThemeType(),
+          ).thenAnswer((_) async => AppThemeType.dark);
 
           return buildCubit();
         },
@@ -63,6 +67,7 @@ void main() {
             locale: const Locale('en'),
             themeMode: ThemeMode.dark,
             appTheme: appTheme,
+            themeType: AppThemeType.dark,
           ),
         ],
         verify: (_) {
@@ -71,6 +76,7 @@ void main() {
           ).called(1);
           verify(() => mockSettingsInteractor.getCurrentThemeMode()).called(1);
           verify(() => mockThemeEditorInteractor.loadAppTheme()).called(1);
+          verify(() => mockSettingsInteractor.getCurrentThemeType()).called(1);
           verifyNever(() => mockLogger.exception(any(), any()));
         },
       );
@@ -87,6 +93,9 @@ void main() {
           when(
             () => mockThemeEditorInteractor.loadAppTheme(),
           ).thenAnswer((_) async => appTheme);
+          when(
+            () => mockSettingsInteractor.getCurrentThemeType(),
+          ).thenAnswer((_) async => AppThemeType.light);
 
           return buildCubit();
         },
@@ -100,12 +109,14 @@ void main() {
             locale: const Locale('en'),
             themeMode: ThemeMode.system,
             appTheme: appTheme,
+            themeType: AppThemeType.light,
           ),
           const SettingsLoadingState(),
           SettingsLoadedState(
             locale: const Locale('en'),
             themeMode: ThemeMode.system,
             appTheme: appTheme,
+            themeType: AppThemeType.light,
           ),
         ],
         verify: (_) {
@@ -114,6 +125,7 @@ void main() {
           ).called(2);
           verify(() => mockSettingsInteractor.getCurrentThemeMode()).called(2);
           verify(() => mockThemeEditorInteractor.loadAppTheme()).called(2);
+          verify(() => mockSettingsInteractor.getCurrentThemeType()).called(2);
         },
       );
 
@@ -129,6 +141,9 @@ void main() {
           when(
             () => mockThemeEditorInteractor.loadAppTheme(),
           ).thenAnswer((_) async => appTheme);
+          when(
+            () => mockSettingsInteractor.getCurrentThemeType(),
+          ).thenAnswer((_) async => AppThemeType.light);
 
           return buildCubit();
         },
@@ -158,6 +173,9 @@ void main() {
           when(
             () => mockThemeEditorInteractor.loadAppTheme(),
           ).thenAnswer((_) async => appTheme);
+          when(
+            () => mockSettingsInteractor.getCurrentThemeType(),
+          ).thenAnswer((_) async => AppThemeType.light);
 
           return buildCubit();
         },
@@ -187,6 +205,9 @@ void main() {
           when(
             () => mockThemeEditorInteractor.loadAppTheme(),
           ).thenThrow(Exception('boom'));
+          when(
+            () => mockSettingsInteractor.getCurrentThemeType(),
+          ).thenAnswer((_) async => AppThemeType.light);
 
           return buildCubit();
         },
@@ -216,6 +237,9 @@ void main() {
           when(
             () => mockThemeEditorInteractor.loadAppTheme(),
           ).thenAnswer((_) async => appTheme);
+          when(
+            () => mockSettingsInteractor.getCurrentThemeType(),
+          ).thenAnswer((_) async => AppThemeType.light);
 
           return buildCubit();
         },
@@ -245,6 +269,9 @@ void main() {
           when(
             () => mockThemeEditorInteractor.loadAppTheme(),
           ).thenAnswer((_) async => appTheme);
+          when(
+            () => mockSettingsInteractor.getCurrentThemeType(),
+          ).thenAnswer((_) async => AppThemeType.light);
 
           return buildCubit();
         },
@@ -255,6 +282,7 @@ void main() {
             locale: const Locale('en'),
             themeMode: ThemeMode.system,
             appTheme: appTheme,
+            themeType: AppThemeType.light,
           ),
         ],
       );
@@ -296,6 +324,9 @@ void main() {
           when(
             () => mockThemeEditorInteractor.loadAppTheme(),
           ).thenAnswer((_) async => appTheme);
+          when(
+            () => mockSettingsInteractor.getCurrentThemeType(),
+          ).thenAnswer((_) async => AppThemeType.light);
 
           when(
             () => mockSettingsInteractor.changeLanguage(newLanguageCode: 'ru'),
@@ -313,11 +344,13 @@ void main() {
             locale: const Locale('en'),
             themeMode: ThemeMode.system,
             appTheme: appTheme,
+            themeType: AppThemeType.light,
           ),
           SettingsLoadedState(
             locale: const Locale('ru'),
             themeMode: ThemeMode.system,
             appTheme: appTheme,
+            themeType: AppThemeType.light,
           ),
         ],
         verify: (_) {
@@ -340,6 +373,9 @@ void main() {
           when(
             () => mockThemeEditorInteractor.loadAppTheme(),
           ).thenAnswer((_) async => appTheme);
+          when(
+            () => mockSettingsInteractor.getCurrentThemeType(),
+          ).thenAnswer((_) async => AppThemeType.light);
 
           when(
             () => mockSettingsInteractor.changeLanguage(newLanguageCode: 'en'),
@@ -357,6 +393,7 @@ void main() {
             locale: const Locale('en'),
             themeMode: ThemeMode.system,
             appTheme: appTheme,
+            themeType: AppThemeType.light,
           ),
         ],
         verify: (_) {
@@ -379,6 +416,9 @@ void main() {
           when(
             () => mockThemeEditorInteractor.loadAppTheme(),
           ).thenAnswer((_) async => appTheme);
+          when(
+            () => mockSettingsInteractor.getCurrentThemeType(),
+          ).thenAnswer((_) async => AppThemeType.light);
 
           when(
             () => mockSettingsInteractor.changeLanguage(newLanguageCode: 'ru'),
@@ -421,6 +461,9 @@ void main() {
           when(
             () => mockThemeEditorInteractor.loadAppTheme(),
           ).thenAnswer((_) async => appTheme);
+          when(
+            () => mockSettingsInteractor.getCurrentThemeType(),
+          ).thenAnswer((_) async => AppThemeType.light);
 
           when(
             () => mockSettingsInteractor.changeLanguage(newLanguageCode: 'ru'),
@@ -458,6 +501,9 @@ void main() {
           when(
             () => mockThemeEditorInteractor.loadAppTheme(),
           ).thenAnswer((_) async => appTheme);
+          when(
+            () => mockSettingsInteractor.getCurrentThemeType(),
+          ).thenAnswer((_) async => AppThemeType.light);
 
           when(
             () => mockSettingsInteractor.changeLanguage(newLanguageCode: 'ru'),
@@ -520,6 +566,9 @@ void main() {
           when(
             () => mockThemeEditorInteractor.loadAppTheme(),
           ).thenAnswer((_) async => appTheme);
+          when(
+            () => mockSettingsInteractor.getCurrentThemeType(),
+          ).thenAnswer((_) async => AppThemeType.light);
 
           when(
             () => mockSettingsInteractor.changeThemeMode(newThemeCode: 'dark'),
@@ -537,11 +586,13 @@ void main() {
             locale: const Locale('en'),
             themeMode: ThemeMode.system,
             appTheme: appTheme,
+            themeType: AppThemeType.light,
           ),
           SettingsLoadedState(
             locale: const Locale('en'),
             themeMode: ThemeMode.dark,
             appTheme: appTheme,
+            themeType: AppThemeType.light,
           ),
         ],
         verify: (_) {
@@ -564,6 +615,9 @@ void main() {
           when(
             () => mockThemeEditorInteractor.loadAppTheme(),
           ).thenAnswer((_) async => appTheme);
+          when(
+            () => mockSettingsInteractor.getCurrentThemeType(),
+          ).thenAnswer((_) async => AppThemeType.dark);
 
           when(
             () => mockSettingsInteractor.changeThemeMode(newThemeCode: 'dark'),
@@ -581,6 +635,7 @@ void main() {
             locale: const Locale('en'),
             themeMode: ThemeMode.dark,
             appTheme: appTheme,
+            themeType: AppThemeType.dark,
           ),
         ],
         verify: (_) {
@@ -603,6 +658,9 @@ void main() {
           when(
             () => mockThemeEditorInteractor.loadAppTheme(),
           ).thenAnswer((_) async => appTheme);
+          when(
+            () => mockSettingsInteractor.getCurrentThemeType(),
+          ).thenAnswer((_) async => AppThemeType.dark);
 
           when(
             () =>
@@ -621,11 +679,13 @@ void main() {
             locale: const Locale('en'),
             themeMode: ThemeMode.dark,
             appTheme: appTheme,
+            themeType: AppThemeType.dark,
           ),
           SettingsLoadedState(
             locale: const Locale('en'),
             themeMode: ThemeMode.system,
             appTheme: appTheme,
+            themeType: AppThemeType.dark,
           ),
         ],
         verify: (_) {
@@ -648,6 +708,9 @@ void main() {
           when(
             () => mockThemeEditorInteractor.loadAppTheme(),
           ).thenAnswer((_) async => appTheme);
+          when(
+            () => mockSettingsInteractor.getCurrentThemeType(),
+          ).thenAnswer((_) async => AppThemeType.light);
 
           when(
             () => mockSettingsInteractor.changeThemeMode(newThemeCode: 'dark'),
@@ -690,6 +753,9 @@ void main() {
           when(
             () => mockThemeEditorInteractor.loadAppTheme(),
           ).thenAnswer((_) async => appTheme);
+          when(
+            () => mockSettingsInteractor.getCurrentThemeType(),
+          ).thenAnswer((_) async => AppThemeType.light);
 
           when(
             () => mockSettingsInteractor.changeThemeMode(newThemeCode: 'dark'),
@@ -727,6 +793,9 @@ void main() {
           when(
             () => mockThemeEditorInteractor.loadAppTheme(),
           ).thenAnswer((_) async => appTheme);
+          when(
+            () => mockSettingsInteractor.getCurrentThemeType(),
+          ).thenAnswer((_) async => AppThemeType.light);
 
           when(
             () => mockSettingsInteractor.changeThemeMode(newThemeCode: 'dark'),

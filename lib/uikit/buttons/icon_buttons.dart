@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
 
+/// Icon button with small radius (Telegram-like); supports tooltip for desktop.
 class RoundedIconButton extends StatelessWidget {
   const RoundedIconButton({
     required this.icon,
@@ -10,8 +11,8 @@ class RoundedIconButton extends StatelessWidget {
     this.backgroundColor,
     this.foregroundColor,
     this.borderRadius,
-    this.buttonSize = 38,
-    this.iconSize = 23,
+    this.buttonSize = 32,
+    this.iconSize = 20,
   });
 
   final IconData icon;
@@ -26,22 +27,20 @@ class RoundedIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
-    final borderRadius =
-        this.borderRadius ?? BorderRadius.circular(buttonSize! / 2.5);
+    final radii = context.radii;
+    final br = borderRadius ?? radii.defaultRadiusValue;
 
-    return Material(
+    Widget button = Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () {
-          onPressed();
-        },
-        borderRadius: borderRadius,
+        onTap: onPressed,
+        borderRadius: br,
         child: Container(
           height: buttonSize,
           width: buttonSize,
           decoration: BoxDecoration(
             color: backgroundColor ?? Colors.transparent,
-            borderRadius: borderRadius,
+            borderRadius: br,
           ),
           child: Icon(
             icon,
@@ -51,5 +50,13 @@ class RoundedIconButton extends StatelessWidget {
         ),
       ),
     );
+
+    if (tooltip != null && tooltip!.isNotEmpty) {
+      button = Tooltip(
+        message: tooltip!,
+        child: button,
+      );
+    }
+    return button;
   }
 }

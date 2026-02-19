@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
-import 'package:locnet_app/features/settings/presentation/presentation.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
+/// Theme mode selector (system / light / dark). Used inside theme subfeature.
 class ThemeModeSelector extends StatelessWidget {
   const ThemeModeSelector({
     required this.selectedThemeMode,
+    required this.onThemeModeSelected,
     super.key,
   });
 
   final ThemeMode selectedThemeMode;
+  final ValueChanged<ThemeMode> onThemeModeSelected;
 
   static const List<ThemeMode> _segmentModes = [
     ThemeMode.system,
@@ -52,7 +53,7 @@ class ThemeModeSelector extends StatelessWidget {
           segments: segments,
           selectedIndex: selectedIndex >= 0 ? selectedIndex : 0,
           onSelected: (int index) {
-            context.read<SettingsCubit>().changeThemeMode(_segmentModes[index]);
+            onThemeModeSelected(_segmentModes[index]);
           },
         ),
       ],

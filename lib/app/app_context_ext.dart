@@ -12,6 +12,10 @@ extension AppContextExt on BuildContext {
   AppColorScheme get colorScheme => AppColorScheme.of(this);
   AppTextScheme get textScheme => AppTextScheme.of(this);
 
+  AppRadii get radii => Theme.of(this).extension<AppRadii>() ?? AppRadii.standard();
+  AppBorders get borders => Theme.of(this).extension<AppBorders>() ?? AppBorders.standard();
+  AppDesignTokens get designTokens => AppDesignTokens.of(this);
+
   String get languageCode => Localizations.localeOf(this).languageCode;
   S get l10n => S.of(this);
 }

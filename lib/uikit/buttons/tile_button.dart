@@ -1,24 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
 
+/// Card container for grouped tile buttons; uses design tokens.
+/// Set [backgroundColor] to transparent for minimal list style.
 class AppTileButtonGroupCard extends StatelessWidget {
   const AppTileButtonGroupCard({
     required this.children,
     super.key,
-    this.borderRadius = 16,
-    this.dividerIndent = 48,
+    this.borderRadius,
+    this.dividerIndent,
     this.padding = EdgeInsets.zero,
+    this.backgroundColor,
   });
 
   final List<Widget> children;
-  final double borderRadius;
-  final double dividerIndent;
+  final BorderRadius? borderRadius;
+  final double? dividerIndent;
   final EdgeInsetsGeometry padding;
+  final Color? backgroundColor;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
+    final radii = context.radii;
 
+    final double indent = dividerIndent ?? 56;
     final List<Widget> columnChildren = <Widget>[];
 
     for (int index = 0; index < children.length; index += 1) {
@@ -27,31 +33,28 @@ class AppTileButtonGroupCard extends StatelessWidget {
       final bool isLast = index == children.length - 1;
       if (!isLast) {
         columnChildren.add(
-          Divider(
-            height: 1,
-            indent: dividerIndent,
-            color: colorScheme.outlineVariant,
-          ),
+          Divider(height: 1, indent: indent, color: colorScheme.outlineVariant),
         );
       }
     }
 
+    final Color bg = backgroundColor ?? colorScheme.surface;
+
     return Container(
       decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(borderRadius),
+        color: bg,
+        borderRadius: borderRadius ?? radii.defaultRadiusValue,
       ),
       child: Padding(
         padding: padding,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: columnChildren,
-        ),
+        child: Column(mainAxisSize: MainAxisSize.min, children: columnChildren),
       ),
     );
   }
 }
 
+/// List-tile style button with icon, title, optional value; desktop hover/focus.
+/// If [value] is empty, minimal style is used.
 class AppTileButton extends StatelessWidget {
   const AppTileButton({
     required this.title,
@@ -70,43 +73,49 @@ class AppTileButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
+    final radii = context.radii;
+    final bool hasValue = value.isNotEmpty;
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onPressed,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: radii.defaultRadiusValue,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           child: Row(
             children: [
-              Icon(icon, color: colorScheme.onSurfaceVariant),
+              Icon(icon, size: 20, color: colorScheme.onSurfaceVariant),
               const SizedBox(width: 12),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: textScheme.label.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                        fontSize: 12,
+                child: hasValue
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            title,
+                            style: textScheme.caption.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            value,
+                            style: textScheme.subtitle.copyWith(
+                              color: colorScheme.onSurface,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      )
+                    : Text(
+                        title,
+                        style: textScheme.subtitle.copyWith(
+                          color: colorScheme.onSurface,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      value,
-                      style: textScheme.label.copyWith(
-                        color: colorScheme.onSurface,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
               ),
-              const SizedBox(width: 10),
-              Icon(Icons.chevron_right, color: colorScheme.onSurfaceVariant),
             ],
           ),
         ),

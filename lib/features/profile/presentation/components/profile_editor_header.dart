@@ -37,7 +37,7 @@ class ProfileEditorHeader extends StatelessWidget {
               maxLines: 2,
               style: textScheme.display.copyWith(
                 color: colorScheme.onSurface,
-                fontSize: 20,
+                fontSize: 17,
               ),
             ),
           ),

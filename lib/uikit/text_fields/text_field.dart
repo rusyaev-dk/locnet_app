@@ -79,8 +79,11 @@ class CustomTextField extends StatelessWidget {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
 
+    final radii = context.radii;
+    final borders = context.borders;
+
     final BorderRadius resolvedBorderRadius =
-        borderRadius ?? BorderRadius.circular(14);
+        borderRadius ?? radii.defaultRadiusValue;
 
     final Color resolvedBackgroundColor =
         backgroundColor ?? colorScheme.surface;
@@ -92,7 +95,7 @@ class CustomTextField extends StatelessWidget {
 
     final EdgeInsetsGeometry resolvedContentPadding =
         contentPadding ??
-        const EdgeInsets.symmetric(horizontal: 16, vertical: 14);
+        const EdgeInsets.symmetric(horizontal: 16, vertical: 12);
 
     final List<TextInputFormatter> inputFormatters = maxSymbols != null
         ? <TextInputFormatter>[LengthLimitingTextInputFormatter(maxSymbols)]
@@ -152,9 +155,8 @@ class CustomTextField extends StatelessWidget {
           : null,
       style:
           textStyle ??
-          textScheme.label.copyWith(
+          textScheme.body.copyWith(
             color: colorScheme.onSurface,
-            fontSize: 16.5,
           ),
       decoration: InputDecoration(
         labelText: labelText,
@@ -163,13 +165,12 @@ class CustomTextField extends StatelessWidget {
         errorText: errorText,
         labelStyle:
             labelStyle ??
-            textScheme.label.copyWith(
+            textScheme.subtitle.copyWith(
               color: colorScheme.onSurfaceVariant,
-              fontSize: 16,
             ),
         hintStyle:
             hintStyle ??
-            textScheme.label.copyWith(
+            textScheme.body.copyWith(
               color: colorScheme.onSurfaceVariant.withAlpha(179),
             ),
         filled: true,
@@ -179,23 +180,23 @@ class CustomTextField extends StatelessWidget {
         suffixIcon: suffixIcon,
         enabledBorder: OutlineInputBorder(
           borderRadius: resolvedBorderRadius,
-          borderSide: BorderSide(color: resolvedBorderColor),
+          borderSide: BorderSide(color: resolvedBorderColor, width: borders.thin),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: resolvedBorderRadius,
-          borderSide: BorderSide(color: resolvedFocusedBorderColor, width: 1.6),
+          borderSide: BorderSide(color: resolvedFocusedBorderColor, width: borders.medium),
         ),
         disabledBorder: OutlineInputBorder(
           borderRadius: resolvedBorderRadius,
-          borderSide: BorderSide(color: resolvedBorderColor.withAlpha(120)),
+          borderSide: BorderSide(color: resolvedBorderColor.withAlpha(120), width: borders.thin),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: resolvedBorderRadius,
-          borderSide: BorderSide(color: colorScheme.error),
+          borderSide: BorderSide(color: colorScheme.error, width: borders.thin),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: resolvedBorderRadius,
-          borderSide: BorderSide(color: colorScheme.error, width: 1.6),
+          borderSide: BorderSide(color: colorScheme.error, width: borders.medium),
         ),
       ),
     );

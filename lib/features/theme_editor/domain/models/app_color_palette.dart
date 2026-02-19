@@ -41,6 +41,8 @@ final class AppColorPalette extends Equatable {
     required this.inversePrimary,
     required this.surfaceTint,
     required this.approval,
+    required this.hoverOverlay,
+    required this.pressedOverlay,
   });
 
   factory AppColorPalette.fromColorScheme(AppColorScheme scheme) {
@@ -80,6 +82,8 @@ final class AppColorPalette extends Equatable {
       inversePrimary: scheme.inversePrimary,
       surfaceTint: scheme.surfaceTint,
       approval: scheme.approval,
+      hoverOverlay: scheme.hoverOverlay,
+      pressedOverlay: scheme.pressedOverlay,
     );
   }
 
@@ -120,6 +124,8 @@ final class AppColorPalette extends Equatable {
       inversePrimary: inversePrimary,
       surfaceTint: surfaceTint,
       approval: approval,
+      hoverOverlay: hoverOverlay,
+      pressedOverlay: pressedOverlay,
     );
   }
 
@@ -158,6 +164,8 @@ final class AppColorPalette extends Equatable {
   final Color inversePrimary;
   final Color surfaceTint;
   final Color approval;
+  final Color hoverOverlay;
+  final Color pressedOverlay;
 
   AppColorPalette copyWith({
     Color? primary,
@@ -194,6 +202,8 @@ final class AppColorPalette extends Equatable {
     Color? onInverseSurface,
     Color? inversePrimary,
     Color? surfaceTint,
+    Color? hoverOverlay,
+    Color? pressedOverlay,
     Color? activatedFilterButtonColor,
     Color? inActivatedFilterButtonColor,
     Color? activatedThemeButtonColor,
@@ -240,6 +250,8 @@ final class AppColorPalette extends Equatable {
       inversePrimary: inversePrimary ?? this.inversePrimary,
       surfaceTint: surfaceTint ?? this.surfaceTint,
       approval: approval ?? this.approval,
+      hoverOverlay: hoverOverlay ?? this.hoverOverlay,
+      pressedOverlay: pressedOverlay ?? this.pressedOverlay,
     );
   }
 
@@ -280,6 +292,8 @@ final class AppColorPalette extends Equatable {
     inversePrimary,
     surfaceTint,
     approval,
+    hoverOverlay,
+    pressedOverlay,
   ];
 }
 
@@ -331,11 +345,18 @@ extension AppColorPaletteSerialization on AppColorPalette {
       'inversePrimary': inversePrimary.toArgb32(),
       'surfaceTint': surfaceTint.toArgb32(),
       'approval': approval.toArgb32(),
+      'hoverOverlay': hoverOverlay.toArgb32(),
+      'pressedOverlay': pressedOverlay.toArgb32(),
     };
   }
 
   static AppColorPalette fromJson(Map<String, dynamic> json) {
     Color color(String key) => ColorArgb32.fromArgb32(json[key] as int);
+    Color? optColor(String key) {
+      final value = json[key];
+      if (value == null) return null;
+      return ColorArgb32.fromArgb32(value as int);
+    }
 
     return AppColorPalette(
       primary: color('primary'),
@@ -373,6 +394,8 @@ extension AppColorPaletteSerialization on AppColorPalette {
       inversePrimary: color('inversePrimary'),
       surfaceTint: color('surfaceTint'),
       approval: color('approval'),
+      hoverOverlay: optColor('hoverOverlay') ?? const Color(0x0D020617),
+      pressedOverlay: optColor('pressedOverlay') ?? const Color(0x1A020617),
     );
   }
 }

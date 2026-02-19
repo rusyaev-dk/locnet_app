@@ -25,7 +25,6 @@ class CompanionInfoModalCard extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
               child: CompanionInfoHeader(companion: companion),
             ),
-            Divider(height: 1, color: context.colorScheme.outlineVariant),
             Expanded(
               child: Container(
                 color: colorScheme.surface,

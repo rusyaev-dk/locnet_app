@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
 
+/// Sidebar navigation item with small-radius highlight; desktop hover/focus.
 class SidebarItem extends StatelessWidget {
   const SidebarItem({
     required this.label,
@@ -26,7 +27,7 @@ class SidebarItem extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: AnimatedContainer(
-          duration: kThemeChangeDuration,
+          duration: const Duration(milliseconds: 250),
           curve: Curves.easeOutCubic,
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
           decoration: BoxDecoration(
@@ -38,17 +39,12 @@ class SidebarItem extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                width: 28,
-                height: 28,
-                padding: const EdgeInsets.all(2),
-                child: Icon(
-                  icon,
-                  size: 22,
-                  color: isSelected
-                      ? colorScheme.primary
-                      : colorScheme.onSurfaceVariant,
-                ),
+              Icon(
+                icon,
+                size: 22,
+                color: isSelected
+                    ? colorScheme.primary
+                    : colorScheme.onSurfaceVariant,
               ),
               const SizedBox(height: 6),
               Text(
@@ -57,11 +53,11 @@ class SidebarItem extends StatelessWidget {
                 softWrap: false,
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.fade,
-                style: textScheme.label.copyWith(
+                style: textScheme.caption.copyWith(
                   color: isSelected
                       ? colorScheme.primary
                       : colorScheme.onSurfaceVariant,
-                  fontSize: 13.5,
+                  fontSize: 12,
                 ),
               ),
             ],

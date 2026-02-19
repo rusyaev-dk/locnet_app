@@ -77,7 +77,7 @@ class _ConversationsPanelState extends State<ConversationsPanel> {
           ),
         ),
         SizedBox(
-          width: 2,
+          width: context.borders.thin + 1,
           child: MouseRegion(
             cursor: SystemMouseCursors.resizeLeftRight,
             child: GestureDetector(
@@ -147,8 +147,7 @@ class _ConversationsPanelState extends State<ConversationsPanel> {
                           const SizedBox(height: 12),
                           Text(
                             context.l10n.selectConversation,
-                            style: context.textScheme.display.copyWith(
-                              fontSize: 16,
+                            style: context.textScheme.title.copyWith(
                               color: context.colorScheme.onSurface,
                             ),
                             textAlign: TextAlign.center,
@@ -156,9 +155,8 @@ class _ConversationsPanelState extends State<ConversationsPanel> {
                           const SizedBox(height: 6),
                           Text(
                             context.l10n.selectConversationSubtitle,
-                            style: context.textScheme.label.copyWith(
+                            style: context.textScheme.caption.copyWith(
                               color: context.colorScheme.onSurfaceVariant,
-                              fontSize: 12,
                             ),
                             textAlign: TextAlign.center,
                           ),

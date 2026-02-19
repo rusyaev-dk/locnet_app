@@ -449,6 +449,55 @@ class S {
     );
   }
 
+  String get colorSchemeTitle {
+    return Intl.message(
+      'Цветовое оформление',
+      name: 'colorSchemeTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  String get colorSchemeDefault {
+    return Intl.message(
+      'По умолчанию',
+      name: 'colorSchemeDefault',
+      desc: '',
+      args: [],
+    );
+  }
+
+  String get colorSchemeBlue {
+    return Intl.message('Синий', name: 'colorSchemeBlue', desc: '', args: []);
+  }
+
+  String get colorSchemeGreen {
+    return Intl.message(
+      'Зелёный',
+      name: 'colorSchemeGreen',
+      desc: '',
+      args: [],
+    );
+  }
+
+  String get colorSchemePurple {
+    return Intl.message(
+      'Фиолетовый',
+      name: 'colorSchemePurple',
+      desc: '',
+      args: [],
+    );
+  }
+
+  String get brightnessTitle {
+    return Intl.message(
+      'Светлая / тёмная тема',
+      name: 'brightnessTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Выберите язык интерфейса`
   String get selectInterfaceLanguage {
     return Intl.message(
@@ -1404,6 +1453,16 @@ class S {
     return Intl.message(
       'Настройка уведомлений и звуков',
       name: 'settingsNotificationsPlaceholder',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Звук`
+  String get settingsSound {
+    return Intl.message(
+      'Звук',
+      name: 'settingsSound',
       desc: '',
       args: [],
     );

@@ -166,14 +166,7 @@ class _MessageInputBarState extends State<MessageInputBar> {
               top: false,
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceBright,
-                  border: Border(
-                    top: BorderSide(
-                      color: colorScheme.surfaceContainer.withAlpha(80),
-                    ),
-                  ),
-                ),
+                color: colorScheme.surfaceBright,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[

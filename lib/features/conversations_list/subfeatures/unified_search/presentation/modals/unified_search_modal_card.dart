@@ -73,7 +73,6 @@ class _UnifiedSearchModalCardState extends State<UnifiedSearchModalCard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const UnifiedSearchHeader(),
-          Divider(height: 1, color: context.colorScheme.outlineVariant),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),

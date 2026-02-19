@@ -31,7 +31,7 @@ class _PanelSidebarState extends State<PanelSidebar> {
     final l10n = context.l10n;
 
     return AnimatedContainer(
-      duration: kThemeChangeDuration,
+      duration: const Duration(milliseconds: 250),
       curve: Curves.easeOutCubic,
       decoration: BoxDecoration(color: colorScheme.secondary),
       child: IntrinsicWidth(
@@ -39,7 +39,7 @@ class _PanelSidebarState extends State<PanelSidebar> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 30),
+            const SizedBox(height: 42),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(

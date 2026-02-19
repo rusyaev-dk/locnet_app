@@ -25,7 +25,6 @@ class ChannelInfoModalCard extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
               child: ChannelInfoHeader(conversation: conversation),
             ),
-            Divider(height: 1, color: context.colorScheme.outlineVariant),
             Expanded(
               child: Container(
                 color: colorScheme.surface,
@@ -98,6 +97,7 @@ class ChannelInfoHeader extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: textScheme.headline.copyWith(
                   color: colorScheme.onSurface,
+                  fontSize: 17,
                 ),
               ),
               if ((conversation.description ?? '').trim().isNotEmpty) ...[

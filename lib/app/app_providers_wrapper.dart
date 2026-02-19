@@ -61,6 +61,9 @@ class AppProvidersWrapper extends StatelessWidget {
           RepositoryProvider<ISettingsRepo>(
             create: (context) => envPreset.createSettingsRepo(),
           ),
+          RepositoryProvider<IThemeRepository>(
+            create: (context) => envPreset.createThemeRepo(),
+          ),
           RepositoryProvider<IThemeEditorRepo>(
             create: (context) => envPreset.createThemeEditorRepo(),
           ),
@@ -112,8 +115,10 @@ class _InteractorProviders extends StatelessWidget {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider<SettingsInteractor>(
-          create: (context) =>
-              SettingsInteractor(settingsRepo: context.read<ISettingsRepo>()),
+          create: (context) => SettingsInteractor(
+            settingsRepo: context.read<ISettingsRepo>(),
+            themeRepository: context.read<IThemeRepository>(),
+          ),
         ),
         RepositoryProvider<ThemeEditorInteractor>(
           create: (context) => ThemeEditorInteractor(

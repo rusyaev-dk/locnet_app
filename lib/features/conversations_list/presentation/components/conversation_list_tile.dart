@@ -62,17 +62,15 @@ class ConversationListTile extends StatelessWidget {
           children: <InlineSpan>[
             TextSpan(
               text: '${l10n.you}: ',
-              style: textScheme.label.copyWith(
+              style: textScheme.body.copyWith(
                 color: colorScheme.primary,
-                fontSize: 14,
                 fontWeight: FontWeight.w500,
               ),
             ),
             TextSpan(
               text: lastMessageText,
-              style: textScheme.label.copyWith(
+              style: textScheme.body.copyWith(
                 color: colorScheme.onSurface.withAlpha(0x99),
-                fontSize: 14,
               ),
             ),
           ],
@@ -80,9 +78,8 @@ class ConversationListTile extends StatelessWidget {
       } else {
         subtitleSpan = TextSpan(
           text: lastMessageText,
-          style: textScheme.label.copyWith(
+          style: textScheme.body.copyWith(
             color: colorScheme.onSurface.withAlpha(0x99),
-            fontSize: 14,
           ),
         );
       }
@@ -138,8 +135,7 @@ class ConversationListTile extends StatelessWidget {
                         Expanded(
                           child: Text(
                             titleText,
-                            style: textScheme.headline.copyWith(
-                              fontSize: 16.5,
+                            style: textScheme.title.copyWith(
                               fontWeight: FontWeight.w400,
                             ),
                             maxLines: 1,
@@ -150,9 +146,8 @@ class ConversationListTile extends StatelessWidget {
                           const SizedBox(width: 8),
                           Text(
                             timeText,
-                            style: textScheme.label.copyWith(
+                            style: textScheme.caption.copyWith(
                               color: colorScheme.onSurface.withAlpha(0x99),
-                              fontSize: 13,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,

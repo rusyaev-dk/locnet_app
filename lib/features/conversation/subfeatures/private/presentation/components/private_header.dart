@@ -59,7 +59,7 @@ class _PrivateHeaderState extends State<PrivateHeader> {
                   children: [
                     Text(
                       "${widget.companion.firstName} ${widget.companion.lastName}",
-                      style: textScheme.headline.copyWith(fontSize: 18),
+                      style: textScheme.headline.copyWith(fontSize: 15),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),

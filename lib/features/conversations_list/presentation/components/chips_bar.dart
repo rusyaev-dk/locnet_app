@@ -15,8 +15,9 @@ class ChipsBar extends StatelessWidget {
     final colorScheme = context.colorScheme;
     final l10n = context.l10n;
 
-    final double horizontalPadding = isCompact ? 2 : 8;
-    final BorderRadius borderRadius = BorderRadius.circular(isCompact ? 10 : 9);
+    final radii = context.radii;
+    final double horizontalPadding = isCompact ? 4 : 8;
+    final BorderRadius br = radii.smallRadius;
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -29,7 +30,7 @@ class ChipsBar extends StatelessWidget {
               icon: Icons.add,
               label: isCompact ? null : l10n.create,
               backgroundColor: colorScheme.surfaceBright,
-              borderRadius: borderRadius,
+              borderRadius: br,
               onPressed: () {
                 showGeneralDialog(
                   context: context,
@@ -47,7 +48,7 @@ class ChipsBar extends StatelessWidget {
               icon: Icons.search,
               label: isCompact ? null : l10n.search,
               backgroundColor: colorScheme.surfaceBright,
-              borderRadius: borderRadius,
+              borderRadius: br,
               onPressed: () {
                 showGeneralDialog(
                   context: context,

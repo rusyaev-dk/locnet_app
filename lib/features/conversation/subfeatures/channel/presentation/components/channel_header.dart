@@ -62,7 +62,7 @@ class _ChannelHeaderState extends State<ChannelHeader> {
                   children: [
                     Text(
                       widget.conversation.title,
-                      style: textScheme.headline.copyWith(fontSize: 18),
+                      style: textScheme.headline.copyWith(fontSize: 15),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),

@@ -129,7 +129,6 @@ class _ConversationCreatorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = context.colorScheme;
     final l10n = context.l10n;
 
     final ConversationCreatorBloc bloc = context
@@ -141,7 +140,6 @@ class _ConversationCreatorView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const ConversationCreatorHeader(),
-        Divider(height: 1, color: colorScheme.outlineVariant),
         Expanded(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16),

@@ -152,7 +152,6 @@ class _ProfileEditorView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const ProfileEditorHeader(),
-        Divider(height: 1, color: colorScheme.outlineVariant),
         if (isLoading)
           Container(
             width: double.infinity,
