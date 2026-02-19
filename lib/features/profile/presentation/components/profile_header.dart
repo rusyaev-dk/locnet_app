@@ -10,9 +10,18 @@ import 'package:locnet_app/features/profile/presentation/presentation.dart';
 import 'package:locnet_app/uikit/buttons/buttons.dart';
 
 class ProfileHeader extends StatelessWidget {
-  const ProfileHeader({required this.user, super.key});
+  const ProfileHeader({
+    required this.user,
+    this.showCloseButton = true,
+    this.showBackButton = true,
+    this.popsOnClose = 1,
+    super.key,
+  });
 
   final User user;
+  final bool showCloseButton;
+  final bool showBackButton;
+  final int popsOnClose;
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +58,15 @@ class ProfileHeader extends StatelessWidget {
             ],
           ),
         ),
+        if (showBackButton)
+          Align(
+            alignment: Alignment.topLeft,
+            child: RoundedIconButton(
+              onPressed: () => GoRouter.of(context).pop(),
+              icon: Icons.chevron_left,
+              backgroundColor: Colors.transparent,
+            ),
+          ),
         Align(
           alignment: Alignment.topRight,
           child: Row(
@@ -80,12 +98,17 @@ class ProfileHeader extends StatelessWidget {
                 tooltip: 'Edit',
               ),
               const SizedBox(width: 8),
-              RoundedIconButton(
-                icon: Icons.close,
-                foregroundColor: colorScheme.onSurfaceVariant,
-                onPressed: () => GoRouter.of(context).pop(),
-                tooltip: 'Close',
-              ),
+              if (showCloseButton)
+                RoundedIconButton(
+                  icon: Icons.close,
+                  foregroundColor: colorScheme.onSurfaceVariant,
+                  onPressed: () {
+                    for (int i = 0; i < popsOnClose; i++) {
+                      if (context.mounted) GoRouter.of(context).pop();
+                    }
+                  },
+                  tooltip: 'Close',
+                ),
             ],
           ),
         ),

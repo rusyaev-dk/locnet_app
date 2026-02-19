@@ -53,7 +53,7 @@ class AppRouter {
           if (location == '/' ||
               location == AppRoutes.login ||
               location == AppRoutes.registration) {
-            return AppRoutes.home;
+            return AppRoutes.conversations;
           }
 
           final bool isAppRoute =
@@ -69,7 +69,7 @@ class AppRouter {
             return null;
           }
 
-          return AppRoutes.home;
+          return AppRoutes.conversations;
         }
 
         return null;

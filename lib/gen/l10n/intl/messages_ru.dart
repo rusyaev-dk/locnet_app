@@ -299,5 +299,31 @@ class MessageLookup extends MessageLookupByLibrary {
     "users": MessageLookupByLibrary.simpleMessage("Пользователи"),
     "yesLabel": MessageLookupByLibrary.simpleMessage("Да"),
     "you": MessageLookupByLibrary.simpleMessage("Вы"),
+    "aboutApp": MessageLookupByLibrary.simpleMessage("О приложении"),
+    "settingsMyProfile": MessageLookupByLibrary.simpleMessage("Мой профиль"),
+    "settingsNotificationsAndSounds": MessageLookupByLibrary.simpleMessage(
+      "Уведомления и звуки",
+    ),
+    "settingsPrivacy": MessageLookupByLibrary.simpleMessage("Конфиденциальность"),
+    "settingsChats": MessageLookupByLibrary.simpleMessage("Настройки чатов"),
+    "settingsLanguage": MessageLookupByLibrary.simpleMessage("Язык"),
+    "settingsMyProfileDescription": MessageLookupByLibrary.simpleMessage(
+      "Просмотр и редактирование профиля",
+    ),
+    "settingsNotificationsPlaceholder": MessageLookupByLibrary.simpleMessage(
+      "Настройка уведомлений и звуков",
+    ),
+    "settingsPrivacyPlaceholder": MessageLookupByLibrary.simpleMessage(
+      "Сессия и безопасность",
+    ),
+    "settingsChatsAppearance": MessageLookupByLibrary.simpleMessage(
+      "Внешний вид",
+    ),
+    "settingsChatsShortcuts": MessageLookupByLibrary.simpleMessage(
+      "Сочетания клавиш",
+    ),
+    "settingsChatsShortcutsDescription": MessageLookupByLibrary.simpleMessage(
+      "Сочетания клавиш будут доступны в следующем обновлении.",
+    ),
   };
 }

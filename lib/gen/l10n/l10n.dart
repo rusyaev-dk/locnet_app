@@ -1338,6 +1338,116 @@ class S {
   String get loading {
     return Intl.message('Загрузка', name: 'loading', desc: '', args: []);
   }
+
+  /// `О приложении`
+  String get aboutApp {
+    return Intl.message('О приложении', name: 'aboutApp', desc: '', args: []);
+  }
+
+  /// `Мой профиль`
+  String get settingsMyProfile {
+    return Intl.message(
+      'Мой профиль',
+      name: 'settingsMyProfile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Уведомления и звуки`
+  String get settingsNotificationsAndSounds {
+    return Intl.message(
+      'Уведомления и звуки',
+      name: 'settingsNotificationsAndSounds',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Конфиденциальность`
+  String get settingsPrivacy {
+    return Intl.message(
+      'Конфиденциальность',
+      name: 'settingsPrivacy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Настройки чатов`
+  String get settingsChats {
+    return Intl.message(
+      'Настройки чатов',
+      name: 'settingsChats',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Язык`
+  String get settingsLanguage {
+    return Intl.message('Язык', name: 'settingsLanguage', desc: '', args: []);
+  }
+
+  /// `Просмотр и редактирование профиля`
+  String get settingsMyProfileDescription {
+    return Intl.message(
+      'Просмотр и редактирование профиля',
+      name: 'settingsMyProfileDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Настройка уведомлений и звуков`
+  String get settingsNotificationsPlaceholder {
+    return Intl.message(
+      'Настройка уведомлений и звуков',
+      name: 'settingsNotificationsPlaceholder',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Сессия и безопасность`
+  String get settingsPrivacyPlaceholder {
+    return Intl.message(
+      'Сессия и безопасность',
+      name: 'settingsPrivacyPlaceholder',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Внешний вид`
+  String get settingsChatsAppearance {
+    return Intl.message(
+      'Внешний вид',
+      name: 'settingsChatsAppearance',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Сочетания клавиш`
+  String get settingsChatsShortcuts {
+    return Intl.message(
+      'Сочетания клавиш',
+      name: 'settingsChatsShortcuts',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Сочетания клавиш будут доступны в следующем обновлении.`
+  String get settingsChatsShortcutsDescription {
+    return Intl.message(
+      'Сочетания клавиш будут доступны в следующем обновлении.',
+      name: 'settingsChatsShortcutsDescription',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

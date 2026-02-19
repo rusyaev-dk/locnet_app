@@ -20,275 +20,326 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'uz';
 
+  static String m0(min) => "Kamida \$${min} ta belgi";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-    "accountStatus": MessageLookupByLibrary.simpleMessage("Hisob holati"),
+    "accountStatus": MessageLookupByLibrary.simpleMessage("Profil holati"),
     "alreadyRegisteredQuestion": MessageLookupByLibrary.simpleMessage(
-      "Ro‘yxatdan o‘tganmisiz?",
-    ),
-    "apiConnectionException": MessageLookupByLibrary.simpleMessage(
-      "Ulanish xatosi, internet aloqasini tekshiring",
+      "Allaqachon roʻyxatdan oʻtgansizmi?",
     ),
     "apiForbiddenException": MessageLookupByLibrary.simpleMessage(
-      "Ruxsat etilmagan amal, sizda bu harakatni bajarish huquqi yo‘q",
+      "Ruxsat etilmagan, sizda ushbu amalni bajarish huquqi yoʻq",
     ),
     "apiNotFoundException": MessageLookupByLibrary.simpleMessage(
-      "So‘ralgan ma’lumot topilmadi",
+      "Soʻralgan resurs topilmadi",
     ),
     "apiServerException": MessageLookupByLibrary.simpleMessage(
-      "Server xatosi, keyinroq urinib ko‘ring",
+      "Server xatosi, keyinroq qayta urinib koʻring",
     ),
     "apiTimeoutException": MessageLookupByLibrary.simpleMessage(
-      "So‘rov vaqti tugadi, qayta urinib ko‘ring",
+      "Soʻrov vaqti tugadi, iltimos, qayta urinib koʻring",
     ),
     "apiUnauthorizedException": MessageLookupByLibrary.simpleMessage(
-      "Avtorizatsiya xatosi, iltimos qayta tizimga kiring",
-    ),
-    "apiUnknownException": MessageLookupByLibrary.simpleMessage(
-      "Server bilan bog‘lanishda noma’lum xato yuz berdi",
+      "Avtorizatsiya xatosi, iltimos, qayta kiring",
     ),
     "apiValidationException": MessageLookupByLibrary.simpleMessage(
-      "Ma’lumotlarni tekshirishda xato, kiritilgan ma’lumotlarni tekshiring",
+      "Tekshiruv xatosi, kiritilgan maʼlumotlarni tekshiring",
     ),
     "appException": MessageLookupByLibrary.simpleMessage(
       "Ilovada xatolik yuz berdi",
     ),
-    "appearance": MessageLookupByLibrary.simpleMessage("Ko\'rinish"),
-    "apply": MessageLookupByLibrary.simpleMessage("Qo‘llash"),
-    "authExpiredSessionException": MessageLookupByLibrary.simpleMessage(
-      "Sessiya muddati tugagan, iltimos qayta tizimga kiring",
+    "appUnknownException": MessageLookupByLibrary.simpleMessage(
+      "Nomaʼlum xatolik yuz berdi",
+    ),
+    "appearance": MessageLookupByLibrary.simpleMessage("Koʻrinishi"),
+    "apply": MessageLookupByLibrary.simpleMessage("Qoʻllash"),
+    "authException": MessageLookupByLibrary.simpleMessage(
+      "Autentifikatsiya xatosi",
     ),
     "authInvalidCredentialsException": MessageLookupByLibrary.simpleMessage(
-      "Kiritilgan ma’lumotlar noto‘g‘ri, login yoki parolni tekshiring",
+      "Login yoki parol notoʻgʻri, maʼlumotlarni tekshiring",
     ),
     "authUnauthorizedException": MessageLookupByLibrary.simpleMessage(
-      "Siz tizimga kirmagansiz, iltimos qayta tizimga kiring",
-    ),
-    "authUnknownException": MessageLookupByLibrary.simpleMessage(
-      "Avtorizatsiya jarayonida noma’lum xato yuz berdi",
+      "Siz tizimga kirmagansiz, iltimos, qayta kiring",
     ),
     "authorization": MessageLookupByLibrary.simpleMessage("Avtorizatsiya"),
     "back": MessageLookupByLibrary.simpleMessage("Orqaga"),
-    "blockCompanion": MessageLookupByLibrary.simpleMessage("Заблокировать"),
+    "blockCompanion": MessageLookupByLibrary.simpleMessage("Bloklash"),
     "cancel": MessageLookupByLibrary.simpleMessage("Bekor qilish"),
+    "charactersCountViolationException": MessageLookupByLibrary.simpleMessage(
+      "Belgilar soni notoʻgʻri",
+    ),
+    "chats": MessageLookupByLibrary.simpleMessage("Chatlar"),
     "chooseHowTheAppLooks": MessageLookupByLibrary.simpleMessage(
-      "Ilovaning ko\'rinishini tanlang",
+      "Ilova koʻrinishini tanlang",
     ),
     "clear": MessageLookupByLibrary.simpleMessage("Tozalash"),
     "close": MessageLookupByLibrary.simpleMessage("Yopish"),
+    "companionStatusOffline": MessageLookupByLibrary.simpleMessage("Oflayn"),
+    "companionStatusOnline": MessageLookupByLibrary.simpleMessage("Onlayn"),
     "confirm": MessageLookupByLibrary.simpleMessage("Tasdiqlash"),
-    "conversationCreateException": MessageLookupByLibrary.simpleMessage(
-      "Suhbatni yaratib bo‘lmadi",
-    ),
     "conversationCreating": MessageLookupByLibrary.simpleMessage(
-      "Создание переписки",
+      "Suhbat yaratish",
     ),
-    "conversationDataTooLongException": MessageLookupByLibrary.simpleMessage(
-      "Kiritilgan ma\'lumotlar juda uzun",
+    "conversationDescription": MessageLookupByLibrary.simpleMessage("Tavsif"),
+    "conversationTitle": MessageLookupByLibrary.simpleMessage("Sarlavha"),
+    "conversationType": MessageLookupByLibrary.simpleMessage("Turi"),
+    "conversationTypeChannel": MessageLookupByLibrary.simpleMessage("Kanal"),
+    "conversationTypeChannelHint": MessageLookupByLibrary.simpleMessage(
+      "Xabarlarni eʼlon qilish uchun ishlatiladi. Odatda faqat tanlangan foydalanuvchilar yozishi, boshqalar oʻqishi mumkin.",
     ),
-    "conversationDescription": MessageLookupByLibrary.simpleMessage("Описание"),
-    "conversationEmptyFieldException": MessageLookupByLibrary.simpleMessage(
-      "Maydon bo\'sh bo\'lishi mumkin emas",
+    "conversationTypeGroup": MessageLookupByLibrary.simpleMessage("Guruh"),
+    "conversationTypeGroupHint": MessageLookupByLibrary.simpleMessage(
+      "Guruh suhbatlari uchun mos. Barcha ishtirokchilar xabar yuborishi va tarixni koʻrishi mumkin.",
     ),
-    "conversationTitle": MessageLookupByLibrary.simpleMessage("Название"),
-    "conversationType": MessageLookupByLibrary.simpleMessage("Тип"),
-    "conversationTypeChannel": MessageLookupByLibrary.simpleMessage("Канал"),
-    "conversationTypeGroup": MessageLookupByLibrary.simpleMessage("Группа"),
-    "conversationTypePrivate": MessageLookupByLibrary.simpleMessage("Личная"),
-    "conversations": MessageLookupByLibrary.simpleMessage("Muloqotlar"),
-    "create": MessageLookupByLibrary.simpleMessage("Создать"),
+    "conversationTypePrivate": MessageLookupByLibrary.simpleMessage("Shaxsiy"),
+    "conversations": MessageLookupByLibrary.simpleMessage("Suhbatlar"),
+    "create": MessageLookupByLibrary.simpleMessage("Yaratish"),
     "currentSession": MessageLookupByLibrary.simpleMessage("Joriy sessiya"),
-    "delete": MessageLookupByLibrary.simpleMessage("O‘chirish"),
+    "delete": MessageLookupByLibrary.simpleMessage("Oʻchirish"),
     "deleteConversation": MessageLookupByLibrary.simpleMessage(
-      "Удалить переписку",
+      "Suhbatni oʻchirish",
     ),
-    "description": MessageLookupByLibrary.simpleMessage("Описание"),
+    "description": MessageLookupByLibrary.simpleMessage("Tavsif"),
     "deviceThemeMode": MessageLookupByLibrary.simpleMessage(
-      "Qurilma sozlamalariga mos",
+      "Qurilma sozlamalariga koʻra",
     ),
     "edit": MessageLookupByLibrary.simpleMessage("Tahrirlash"),
-    "edited": MessageLookupByLibrary.simpleMessage("Изменено"),
-    "filteringClearException": MessageLookupByLibrary.simpleMessage(
-      "Filtrlarni tozalab bo‘lmadi",
+    "edited": MessageLookupByLibrary.simpleMessage("Tahrirlangan"),
+    "emojiCategoryActivities": MessageLookupByLibrary.simpleMessage(
+      "Faoliyatlar",
     ),
-    "filteringSaveException": MessageLookupByLibrary.simpleMessage(
-      "Filtrlarni saqlab bo‘lmadi",
+    "emojiCategoryFlags": MessageLookupByLibrary.simpleMessage("Bayroqlar"),
+    "emojiCategoryFoodAndDrink": MessageLookupByLibrary.simpleMessage(
+      "Oziq-ovqat va ichimliklar",
     ),
-    "filteringUpdateException": MessageLookupByLibrary.simpleMessage(
-      "Filtrlarni yangilab bo‘lmadi",
+    "emojiCategoryNature": MessageLookupByLibrary.simpleMessage(
+      "Tabiat va hayvonlar",
     ),
-    "filters": MessageLookupByLibrary.simpleMessage("Фильтры"),
+    "emojiCategoryObjects": MessageLookupByLibrary.simpleMessage("Obyektlar"),
+    "emojiCategoryRecent": MessageLookupByLibrary.simpleMessage(
+      "Yaqinda ishlatilgan",
+    ),
+    "emojiCategorySmileysAndPeople": MessageLookupByLibrary.simpleMessage(
+      "Smayllar va odamlar",
+    ),
+    "emojiCategorySymbols": MessageLookupByLibrary.simpleMessage("Belgilar"),
+    "emojiCategoryTravelAndPlaces": MessageLookupByLibrary.simpleMessage(
+      "Sayohat va joylar",
+    ),
+    "emojiSearchResults": MessageLookupByLibrary.simpleMessage(
+      "Qidiruv natijalari",
+    ),
+    "filters": MessageLookupByLibrary.simpleMessage("Filtrlar"),
+    "firstName": MessageLookupByLibrary.simpleMessage("Ism"),
     "homePage": MessageLookupByLibrary.simpleMessage("Bosh sahifa"),
+    "invalidCharactersException": MessageLookupByLibrary.simpleMessage(
+      "Notoʻgʻri belgilar kiritildi",
+    ),
     "jobPosition": MessageLookupByLibrary.simpleMessage("Lavozim"),
-    "jobPositionInvalidCharactersException":
-        MessageLookupByLibrary.simpleMessage(
-          "Lavozim nomida ruxsat etilmagan belgilar mavjud",
-        ),
-    "joinedAt": MessageLookupByLibrary.simpleMessage("Qo\'shilgan sanasi"),
+    "joinedAt": MessageLookupByLibrary.simpleMessage("Qoʻshilgan sana"),
     "language": MessageLookupByLibrary.simpleMessage("Til"),
-    "lastUpdated": MessageLookupByLibrary.simpleMessage(
-      "Oxirgi yangilanish sanasi",
+    "lastName": MessageLookupByLibrary.simpleMessage("Familiya"),
+    "lastUpdated": MessageLookupByLibrary.simpleMessage("Oxirgi yangilanish"),
+    "loading": MessageLookupByLibrary.simpleMessage("Yuklanmoqda"),
+    "logOut": MessageLookupByLibrary.simpleMessage("Chiqish"),
+    "logOutConfirmation": MessageLookupByLibrary.simpleMessage(
+      "Haqiqatan ham tizimdan chiqmoqchimisiz?",
     ),
     "login": MessageLookupByLibrary.simpleMessage("Login"),
-    "message": MessageLookupByLibrary.simpleMessage("Сообщение"),
-    "meta": MessageLookupByLibrary.simpleMessage("Meta"),
-    "nameInvalidCharactersException": MessageLookupByLibrary.simpleMessage(
-      "Ismda ruxsat etilmagan belgilar mavjud",
+    "logout": MessageLookupByLibrary.simpleMessage("Chiqish"),
+    "message": MessageLookupByLibrary.simpleMessage("Xabar"),
+    "messageContextActionCopyText": MessageLookupByLibrary.simpleMessage(
+      "Matnni nusxalash",
     ),
+    "messageContextActionDelete": MessageLookupByLibrary.simpleMessage(
+      "Oʻchirish",
+    ),
+    "messageContextActionForward": MessageLookupByLibrary.simpleMessage(
+      "Yuborish",
+    ),
+    "messageContextActionReply": MessageLookupByLibrary.simpleMessage(
+      "Javob berish",
+    ),
+    "messageContextActionSelect": MessageLookupByLibrary.simpleMessage(
+      "Tanlash",
+    ),
+    "messageInputToolbarActionCopy": MessageLookupByLibrary.simpleMessage(
+      "Nusxalash",
+    ),
+    "messageInputToolbarActionCut": MessageLookupByLibrary.simpleMessage(
+      "Kesish",
+    ),
+    "messageInputToolbarActionDelete": MessageLookupByLibrary.simpleMessage(
+      "Oʻchirish",
+    ),
+    "messageInputToolbarActionFormatBold": MessageLookupByLibrary.simpleMessage(
+      "Qalin",
+    ),
+    "messageInputToolbarActionFormatCode": MessageLookupByLibrary.simpleMessage(
+      "Monospace",
+    ),
+    "messageInputToolbarActionFormatCodeBlock":
+        MessageLookupByLibrary.simpleMessage("Kod"),
+    "messageInputToolbarActionFormatItalic":
+        MessageLookupByLibrary.simpleMessage("Kursiv"),
+    "messageInputToolbarActionFormatLink": MessageLookupByLibrary.simpleMessage(
+      "Havola",
+    ),
+    "messageInputToolbarActionFormatStrike":
+        MessageLookupByLibrary.simpleMessage("Ustidan chizilgan"),
+    "messageInputToolbarActionFormatUnderline":
+        MessageLookupByLibrary.simpleMessage("Tagi chizilgan"),
+    "meta": MessageLookupByLibrary.simpleMessage("Meta"),
     "next": MessageLookupByLibrary.simpleMessage("Keyingi"),
     "noLabel": MessageLookupByLibrary.simpleMessage("Yoʻq"),
-    "notSpecified": MessageLookupByLibrary.simpleMessage("Ko\'rsatilmagan"),
+    "notRegisteredYetQuestion": MessageLookupByLibrary.simpleMessage(
+      "Roʻyxatdan oʻtmagansizmi?",
+    ),
+    "notSpecified": MessageLookupByLibrary.simpleMessage("Koʻrsatilmagan"),
+    "nothingFound": MessageLookupByLibrary.simpleMessage(
+      "Hech narsa topilmadi",
+    ),
     "ok": MessageLookupByLibrary.simpleMessage("OK"),
     "password": MessageLookupByLibrary.simpleMessage("Parol"),
-    "passwordInvalidCharactersException": MessageLookupByLibrary.simpleMessage(
-      "Parolda ruxsat etilmagan belgilar mavjud",
+    "passwordRequirementAllowedChars": MessageLookupByLibrary.simpleMessage(
+      "Faqat harflar, raqamlar va maxsus belgilar ruxsat etiladi",
     ),
-    "passwordNoDigitException": MessageLookupByLibrary.simpleMessage(
-      "Parolda kamida bitta raqam bo‘lishi kerak",
+    "passwordRequirementDigit": MessageLookupByLibrary.simpleMessage(
+      "Kamida bitta raqam (0–9)",
     ),
-    "passwordNoLowerCaseException": MessageLookupByLibrary.simpleMessage(
-      "Parolda kamida bitta kichik harf bo‘lishi kerak",
+    "passwordRequirementLowercase": MessageLookupByLibrary.simpleMessage(
+      "Kamida bitta kichik harf (a–z)",
     ),
-    "passwordNoUpperCaseException": MessageLookupByLibrary.simpleMessage(
-      "Parolda kamida bitta bosh harf bo‘lishi kerak",
+    "passwordRequirementMinLength": m0,
+    "passwordRequirementSpecial": MessageLookupByLibrary.simpleMessage(
+      "Kamida bitta maxsus belgi (!?@#\$%^&*()_-{})",
     ),
-    "passwordTooShortException": MessageLookupByLibrary.simpleMessage(
-      "Parol kamida 14 ta belgidan iborat bo‘lishi kerak",
+    "passwordRequirementUppercase": MessageLookupByLibrary.simpleMessage(
+      "Kamida bitta katta harf (A–Z)",
     ),
-    "passwordsMatchException": MessageLookupByLibrary.simpleMessage(
-      "Parollar mos emas",
+    "passwordRequirementsTitle": MessageLookupByLibrary.simpleMessage(
+      "Parol talablari",
+    ),
+    "passwordTooWeakException": MessageLookupByLibrary.simpleMessage(
+      "Parol juda zaif",
+    ),
+    "passwordsMismatchException": MessageLookupByLibrary.simpleMessage(
+      "Parollar mos kelmaydi",
     ),
     "personalInformation": MessageLookupByLibrary.simpleMessage(
-      "Shaxsiy ma\'lumotlar",
+      "Shaxsiy maʼlumotlar",
     ),
     "profile": MessageLookupByLibrary.simpleMessage("Profil"),
     "profileEditing": MessageLookupByLibrary.simpleMessage(
-      "Редактирование профиля",
+      "Profilni tahrirlash",
     ),
-    "registration": MessageLookupByLibrary.simpleMessage("Ro‘yxatdan o‘tish"),
-    "registrationEmptyFieldException": MessageLookupByLibrary.simpleMessage(
-      "Поле обязательно для заполнения",
-    ),
-    "registrationPasswordsDontMatchException":
-        MessageLookupByLibrary.simpleMessage("Parollar mos kelmayapti"),
-    "registrationQuestion": MessageLookupByLibrary.simpleMessage(
-      "Ro‘yxatdan o‘tmagansiz?",
-    ),
+    "registration": MessageLookupByLibrary.simpleMessage("Roʻyxatdan oʻtish"),
     "repeatPassword": MessageLookupByLibrary.simpleMessage(
       "Parolni takrorlang",
     ),
+    "requiredValueNotProvidedException": MessageLookupByLibrary.simpleMessage(
+      "Majburiy maydon",
+    ),
     "reset": MessageLookupByLibrary.simpleMessage("Tiklash"),
-    "retry": MessageLookupByLibrary.simpleMessage("Qayta urinib ko‘ring"),
+    "retry": MessageLookupByLibrary.simpleMessage("Qayta urinib koʻrish"),
     "save": MessageLookupByLibrary.simpleMessage("Saqlash"),
-    "search": MessageLookupByLibrary.simpleMessage("Поиск"),
-    "searchUnknownException": MessageLookupByLibrary.simpleMessage(
-      "Qidiruvda noma’lum xato yuz berdi",
+    "search": MessageLookupByLibrary.simpleMessage("Qidirish"),
+    "searchEmoji": MessageLookupByLibrary.simpleMessage("Emoji qidirish"),
+    "searchUsersAndChatsHint": MessageLookupByLibrary.simpleMessage(
+      "Foydalanuvchi nomi yoki guruh/kanal nomini kiriting.",
+    ),
+    "selectConversation": MessageLookupByLibrary.simpleMessage(
+      "Chatni tanlang",
+    ),
+    "selectConversationSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Suhbatni boshlash uchun foydalanuvchi, guruh yoki kanalni tanlang",
     ),
     "selectInterfaceLanguage": MessageLookupByLibrary.simpleMessage(
       "Interfeys tilini tanlang",
     ),
-    "sessionCreatedAt": MessageLookupByLibrary.simpleMessage(
-      "Yaratilgan vaqti",
-    ),
+    "sessionCreatedAt": MessageLookupByLibrary.simpleMessage("Yaratilgan vaqt"),
     "sessionDetails": MessageLookupByLibrary.simpleMessage(
       "Sessiya tafsilotlari",
     ),
     "sessionDeviceName": MessageLookupByLibrary.simpleMessage("Qurilma nomi"),
     "sessionDeviceType": MessageLookupByLibrary.simpleMessage("Qurilma turi"),
     "sessionExpiresAt": MessageLookupByLibrary.simpleMessage("Tugash vaqti"),
-    "sessionIpAddress": MessageLookupByLibrary.simpleMessage("IP-manzil"),
+    "sessionIpAddress": MessageLookupByLibrary.simpleMessage("IP manzil"),
     "sessionIsExpired": MessageLookupByLibrary.simpleMessage("Muddati tugagan"),
+    "sessionIsNotLoadedYet": MessageLookupByLibrary.simpleMessage(
+      "Sessiya maʼlumotlari hali yuklanmadi. Iltimos, qayta urinib koʻring",
+    ),
     "sessionIsTerminated": MessageLookupByLibrary.simpleMessage("Yakunlangan"),
-    "sessionMacAddress": MessageLookupByLibrary.simpleMessage("MAC-manzil"),
-    "sessionOs": MessageLookupByLibrary.simpleMessage("OS"),
+    "sessionMacAddress": MessageLookupByLibrary.simpleMessage("MAC manzil"),
+    "sessionOs": MessageLookupByLibrary.simpleMessage("OT"),
     "sessionSessionId": MessageLookupByLibrary.simpleMessage("Sessiya ID"),
     "sessionStatusActive": MessageLookupByLibrary.simpleMessage("Faol"),
     "sessionStatusExpired": MessageLookupByLibrary.simpleMessage(
       "Muddati tugagan",
     ),
     "sessionStatusTerminated": MessageLookupByLibrary.simpleMessage(
-      "Tugatildi",
+      "Yakunlangan",
     ),
     "sessionTerminatedAt": MessageLookupByLibrary.simpleMessage(
-      "Yakunlangan vaqti",
+      "Yakunlangan vaqt",
     ),
     "sessionUpdatedAt": MessageLookupByLibrary.simpleMessage(
-      "Yangilangan vaqti",
+      "Yangilangan vaqt",
     ),
     "sessionUserId": MessageLookupByLibrary.simpleMessage("Foydalanuvchi ID"),
     "settings": MessageLookupByLibrary.simpleMessage("Sozlamalar"),
-    "settingsLocaleChangeException": MessageLookupByLibrary.simpleMessage(
-      "Ilova tilini o‘zgartirib bo‘lmadi",
-    ),
-    "settingsRestoreLocaleException": MessageLookupByLibrary.simpleMessage(
-      "Ilova tilini tiklab bo‘lmadi",
-    ),
-    "settingsRestoreThemeModeException": MessageLookupByLibrary.simpleMessage(
-      "Ilova mavzusini tiklab bo‘lmadi",
-    ),
-    "settingsThemeModeChangeException": MessageLookupByLibrary.simpleMessage(
-      "Ilova mavzusini o‘zgartirib bo‘lmadi",
-    ),
-    "settingsUnknownException": MessageLookupByLibrary.simpleMessage(
-      "Sozlamalarda noma’lum xato yuz berdi",
-    ),
     "share": MessageLookupByLibrary.simpleMessage("Ulashish"),
     "signIn": MessageLookupByLibrary.simpleMessage("Kirish"),
-    "sortingClearException": MessageLookupByLibrary.simpleMessage(
-      "Saralashni tozalab bo‘lmadi",
-    ),
-    "sortingSaveException": MessageLookupByLibrary.simpleMessage(
-      "Saralashni saqlab bo‘lmadi",
-    ),
-    "sortingUpdateException": MessageLookupByLibrary.simpleMessage(
-      "Saralashni yangilab bo‘lmadi",
-    ),
     "storage": MessageLookupByLibrary.simpleMessage("Xotira"),
-    "storageDeleteException": MessageLookupByLibrary.simpleMessage(
-      "Ma’lumotni o‘chirishda xato yuz berdi",
-    ),
-    "storageNotFoundException": MessageLookupByLibrary.simpleMessage(
-      "Saqlangan ma’lumot topilmadi",
-    ),
-    "storageReadException": MessageLookupByLibrary.simpleMessage(
-      "Saqlangan ma’lumotni o‘qishda xato yuz berdi",
-    ),
-    "storageSerializationException": MessageLookupByLibrary.simpleMessage(
-      "Ma’lumotlarni saqlash formatida xato",
-    ),
-    "storageUnknownException": MessageLookupByLibrary.simpleMessage(
-      "Xotira bilan ishlashda noma’lum xato yuz berdi",
-    ),
-    "storageWriteException": MessageLookupByLibrary.simpleMessage(
-      "Ma’lumotni saqlashda xato yuz berdi",
+    "storageException": MessageLookupByLibrary.simpleMessage("Xotira xatosi"),
+    "storageIOException": MessageLookupByLibrary.simpleMessage(
+      "Xotiraga oʻqish/yozish xatosi",
     ),
     "themeMode": MessageLookupByLibrary.simpleMessage("Mavzu"),
-    "themeModeDark": MessageLookupByLibrary.simpleMessage("Qorong‘i"),
-    "themeModeLight": MessageLookupByLibrary.simpleMessage("Yorug‘"),
-    "themeModeSystem": MessageLookupByLibrary.simpleMessage("Tizimiy"),
+    "themeModeDark": MessageLookupByLibrary.simpleMessage("Qorongʻi"),
+    "themeModeLight": MessageLookupByLibrary.simpleMessage("Yorugʻ"),
+    "themeModeSystem": MessageLookupByLibrary.simpleMessage("Tizimniki"),
     "toggleNotificationsOff": MessageLookupByLibrary.simpleMessage(
-      "Выключить уведомления",
+      "Bildirishnomalarni oʻchirish",
     ),
     "toggleNotificationsOn": MessageLookupByLibrary.simpleMessage(
-      "Включить уведомления",
+      "Bildirishnomalarni yoqish",
+    ),
+    "tryAnotherQuery": MessageLookupByLibrary.simpleMessage(
+      "Boshqa soʻrovni sinab koʻring",
     ),
     "unknownValue": MessageLookupByLibrary.simpleMessage("Nomaʼlum"),
-    "userFavouritesAddException": MessageLookupByLibrary.simpleMessage(
-      "Sevimlilarga qo‘shib bo‘lmadi",
-    ),
-    "userFavouritesDeleteException": MessageLookupByLibrary.simpleMessage(
-      "Sevimlilardan o‘chirib bo‘lmadi",
-    ),
-    "userFavouritesLoadException": MessageLookupByLibrary.simpleMessage(
-      "Sevimlilarni yuklab bo‘lmadi",
-    ),
-    "userFavouritesUnknownException": MessageLookupByLibrary.simpleMessage(
-      "Sevimlilar bilan ishlashda noma’lum xato yuz berdi",
-    ),
-    "username": MessageLookupByLibrary.simpleMessage("Юзернейм"),
-    "usernameInvalidCharactersException": MessageLookupByLibrary.simpleMessage(
-      "Foydalanuvchi nomida ruxsat etilmagan belgilar mavjud",
-    ),
+    "username": MessageLookupByLibrary.simpleMessage("Foydalanuvchi nomi"),
+    "users": MessageLookupByLibrary.simpleMessage("Foydalanuvchilar"),
     "yesLabel": MessageLookupByLibrary.simpleMessage("Ha"),
+    "you": MessageLookupByLibrary.simpleMessage("Siz"),
+    "aboutApp": MessageLookupByLibrary.simpleMessage("Ilova haqida"),
+    "settingsMyProfile": MessageLookupByLibrary.simpleMessage("Mening profilim"),
+    "settingsNotificationsAndSounds": MessageLookupByLibrary.simpleMessage(
+      "Bildirishnomalar va tovushlar",
+    ),
+    "settingsPrivacy": MessageLookupByLibrary.simpleMessage("Maxfiylik"),
+    "settingsChats": MessageLookupByLibrary.simpleMessage("Chat sozlamalari"),
+    "settingsLanguage": MessageLookupByLibrary.simpleMessage("Til"),
+    "settingsMyProfileDescription": MessageLookupByLibrary.simpleMessage(
+      "Profilni koʻrish va tahrirlash",
+    ),
+    "settingsNotificationsPlaceholder": MessageLookupByLibrary.simpleMessage(
+      "Bildirishnomalar va tovushlarni sozlash",
+    ),
+    "settingsPrivacyPlaceholder": MessageLookupByLibrary.simpleMessage(
+      "Sessiya va xavfsizlik",
+    ),
+    "settingsChatsAppearance": MessageLookupByLibrary.simpleMessage(
+      "Koʻrinishi",
+    ),
+    "settingsChatsShortcuts": MessageLookupByLibrary.simpleMessage(
+      "Tugmalar birikmasi",
+    ),
+    "settingsChatsShortcutsDescription": MessageLookupByLibrary.simpleMessage(
+      "Tugmalar birikmasi keyingi yangilanishda qoʻshiladi.",
+    ),
   };
 }

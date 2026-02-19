@@ -7,7 +7,6 @@ class SidebarItem extends StatelessWidget {
     required this.label,
     required this.icon,
     required this.isSelected,
-    required this.isCollapsed,
     required this.onTap,
     super.key,
   });
@@ -15,7 +14,6 @@ class SidebarItem extends StatelessWidget {
   final String label;
   final IconData icon;
   final bool isSelected;
-  final bool isCollapsed;
   final VoidCallback onTap;
 
   @override
@@ -23,69 +21,50 @@ class SidebarItem extends StatelessWidget {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
 
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: isCollapsed ? 2 : 0,
-        vertical: 4,
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(14),
-          child: AnimatedContainer(
-            duration: kThemeChangeDuration,
-            curve: Curves.easeOutCubic,
-            padding: EdgeInsets.symmetric(
-              horizontal: isCollapsed ? 8 : 14,
-              vertical: isCollapsed ? 6 : 10,
-            ),
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? colorScheme.primary.withAlpha(26)
-                  : Colors.transparent,
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Row(
-              mainAxisAlignment: isCollapsed
-                  ? MainAxisAlignment.center
-                  : MainAxisAlignment.start,
-              children: [
-                Container(
-                  width: 28,
-                  height: 28,
-                  padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.transparent,
-                  ),
-                  child: Icon(
-                    icon,
-                    size: 22,
-                    color: isSelected
-                        ? colorScheme.primary
-                        : colorScheme.onSurfaceVariant,
-                  ),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: kThemeChangeDuration,
+          curve: Curves.easeOutCubic,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? colorScheme.primary.withAlpha(26)
+                : Colors.transparent,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 28,
+                height: 28,
+                padding: const EdgeInsets.all(2),
+                child: Icon(
+                  icon,
+                  size: 22,
+                  color: isSelected
+                      ? colorScheme.primary
+                      : colorScheme.onSurfaceVariant,
                 ),
-                if (!isCollapsed) ...[
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      label,
-                      maxLines: 1,
-                      softWrap: false,
-                      overflow: TextOverflow.fade,
-                      style: textScheme.label.copyWith(
-                        color: isSelected
-                            ? colorScheme.primary
-                            : colorScheme.onSurfaceVariant,
-                        fontSize: 16.5,
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                label,
+                maxLines: 2,
+                softWrap: false,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.fade,
+                style: textScheme.label.copyWith(
+                  color: isSelected
+                      ? colorScheme.primary
+                      : colorScheme.onSurfaceVariant,
+                  fontSize: 13.5,
+                ),
+              ),
+            ],
           ),
         ),
       ),

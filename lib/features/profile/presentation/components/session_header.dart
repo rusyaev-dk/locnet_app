@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
 class SessionHeader extends StatelessWidget {
-  const SessionHeader({super.key});
+  const SessionHeader({this.popsOnClose = 3, super.key});
+
+  /// Number of Navigator.pop() to run when close is pressed (e.g. 3 for Settings → Profile → Session).
+  final int popsOnClose;
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +19,7 @@ class SessionHeader extends StatelessWidget {
       child: Row(
         children: [
           RoundedIconButton(
-            onPressed: () {
-              GoRouter.of(context).pop();
-            },
+            onPressed: () => Navigator.of(context).pop(),
             icon: Icons.chevron_left,
             backgroundColor: Colors.transparent,
           ),
@@ -39,8 +39,9 @@ class SessionHeader extends StatelessWidget {
           const Spacer(),
           RoundedIconButton(
             onPressed: () {
-              GoRouter.of(context).pop();
-              GoRouter.of(context).pop();
+              for (int i = 0; i < popsOnClose; i++) {
+                if (context.mounted) Navigator.of(context).pop();
+              }
             },
             icon: Icons.close,
             backgroundColor: Colors.transparent,

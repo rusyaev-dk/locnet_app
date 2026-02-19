@@ -19,6 +19,7 @@ final class SettingsLoadingState extends SettingsState {
   @override
   List<Object?> get props => [failure];
 }
+
 final class SettingsLoadedState extends SettingsState {
   const SettingsLoadedState({
     required this.locale,
@@ -41,14 +42,13 @@ final class SettingsLoadedState extends SettingsState {
       locale: locale ?? this.locale,
       themeMode: themeMode ?? this.themeMode,
       appTheme: appTheme ?? this.appTheme,
-      failure: failure,
+      failure: failure ?? this.failure,
     );
   }
 
   @override
   List<Object?> get props => <Object?>[locale, themeMode, appTheme, failure];
 }
-
 
 final class SettingsFailureState extends SettingsState {
   const SettingsFailureState({required super.failure});

@@ -5,7 +5,10 @@ import 'package:locnet_app/features/profile/presentation/presentation.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
 class ProfileEditorHeader extends StatelessWidget {
-  const ProfileEditorHeader({super.key});
+  const ProfileEditorHeader({this.popsOnClose = 3, super.key});
+
+  /// Number of Navigator.pop() when close is pressed (e.g. 3 for Settings → Profile → Editor).
+  final int popsOnClose;
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +46,9 @@ class ProfileEditorHeader extends StatelessWidget {
             icon: Icons.close,
             onPressed: () {
               context.read<ProfileEditorCubit>().resetUpdates();
-              Navigator.of(context).pop();
-              Navigator.of(context).pop();
+              for (int i = 0; i < popsOnClose; i++) {
+                if (context.mounted) Navigator.of(context).pop();
+              }
             },
           ),
         ],

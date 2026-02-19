@@ -20,43 +20,42 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
+  static String m0(min) => "At least \$${min} characters";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "accountStatus": MessageLookupByLibrary.simpleMessage("Account status"),
     "alreadyRegisteredQuestion": MessageLookupByLibrary.simpleMessage(
       "Already registered?",
     ),
-    "apiConnectionException": MessageLookupByLibrary.simpleMessage(
-      "Connection error, please check your internet connection",
-    ),
     "apiForbiddenException": MessageLookupByLibrary.simpleMessage(
       "Access denied, you do not have permission to perform this action",
     ),
     "apiNotFoundException": MessageLookupByLibrary.simpleMessage(
-      "Requested resource not found",
+      "Requested resource was not found",
     ),
     "apiServerException": MessageLookupByLibrary.simpleMessage(
       "Server error, please try again later",
     ),
     "apiTimeoutException": MessageLookupByLibrary.simpleMessage(
-      "Request timeout exceeded, please try again",
+      "Request timed out, please try again",
     ),
     "apiUnauthorizedException": MessageLookupByLibrary.simpleMessage(
       "Authorization error, please sign in again",
     ),
-    "apiUnknownException": MessageLookupByLibrary.simpleMessage(
-      "Unknown error occurred while requesting the server",
-    ),
     "apiValidationException": MessageLookupByLibrary.simpleMessage(
-      "Data validation error, please check the entered information",
+      "Validation error, please check your input",
     ),
     "appException": MessageLookupByLibrary.simpleMessage(
-      "Application error occurred",
+      "An application error occurred",
+    ),
+    "appUnknownException": MessageLookupByLibrary.simpleMessage(
+      "An unknown error occurred",
     ),
     "appearance": MessageLookupByLibrary.simpleMessage("Appearance"),
     "apply": MessageLookupByLibrary.simpleMessage("Apply"),
-    "authExpiredSessionException": MessageLookupByLibrary.simpleMessage(
-      "Session expired, please sign in again",
+    "authException": MessageLookupByLibrary.simpleMessage(
+      "Authentication error",
     ),
     "authInvalidCredentialsException": MessageLookupByLibrary.simpleMessage(
       "Invalid credentials, please check your login or password",
@@ -64,96 +63,163 @@ class MessageLookup extends MessageLookupByLibrary {
     "authUnauthorizedException": MessageLookupByLibrary.simpleMessage(
       "You are not authorized, please sign in again",
     ),
-    "authUnknownException": MessageLookupByLibrary.simpleMessage(
-      "Unknown error occurred during authorization",
-    ),
     "authorization": MessageLookupByLibrary.simpleMessage("Authorization"),
     "back": MessageLookupByLibrary.simpleMessage("Back"),
-    "blockCompanion": MessageLookupByLibrary.simpleMessage("Заблокировать"),
+    "blockCompanion": MessageLookupByLibrary.simpleMessage("Block"),
     "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
+    "charactersCountViolationException": MessageLookupByLibrary.simpleMessage(
+      "Invalid number of characters",
+    ),
+    "chats": MessageLookupByLibrary.simpleMessage("Chats"),
     "chooseHowTheAppLooks": MessageLookupByLibrary.simpleMessage(
       "Choose how the app looks",
     ),
     "clear": MessageLookupByLibrary.simpleMessage("Clear"),
     "close": MessageLookupByLibrary.simpleMessage("Close"),
+    "companionStatusOffline": MessageLookupByLibrary.simpleMessage("Offline"),
+    "companionStatusOnline": MessageLookupByLibrary.simpleMessage("Online"),
     "confirm": MessageLookupByLibrary.simpleMessage("Confirm"),
-    "conversationCreateException": MessageLookupByLibrary.simpleMessage(
-      "Failed to create conversation",
-    ),
     "conversationCreating": MessageLookupByLibrary.simpleMessage(
-      "Создание переписки",
+      "Creating conversation",
     ),
-    "conversationDataTooLongException": MessageLookupByLibrary.simpleMessage(
-      "Provided data is too long",
+    "conversationDescription": MessageLookupByLibrary.simpleMessage(
+      "Description",
     ),
-    "conversationDescription": MessageLookupByLibrary.simpleMessage("Описание"),
-    "conversationEmptyFieldException": MessageLookupByLibrary.simpleMessage(
-      "This field cannot be empty",
+    "conversationTitle": MessageLookupByLibrary.simpleMessage("Title"),
+    "conversationType": MessageLookupByLibrary.simpleMessage("Type"),
+    "conversationTypeChannel": MessageLookupByLibrary.simpleMessage("Channel"),
+    "conversationTypeChannelHint": MessageLookupByLibrary.simpleMessage(
+      "Used for publishing messages. Usually only selected users can write, others can read.",
     ),
-    "conversationTitle": MessageLookupByLibrary.simpleMessage("Название"),
-    "conversationType": MessageLookupByLibrary.simpleMessage("Тип"),
-    "conversationTypeChannel": MessageLookupByLibrary.simpleMessage("Канал"),
-    "conversationTypeGroup": MessageLookupByLibrary.simpleMessage("Группа"),
-    "conversationTypePrivate": MessageLookupByLibrary.simpleMessage("Личная"),
+    "conversationTypeGroup": MessageLookupByLibrary.simpleMessage("Group"),
+    "conversationTypeGroupHint": MessageLookupByLibrary.simpleMessage(
+      "Suitable for group conversations. All participants can send messages and see the conversation history.",
+    ),
+    "conversationTypePrivate": MessageLookupByLibrary.simpleMessage("Private"),
     "conversations": MessageLookupByLibrary.simpleMessage("Conversations"),
     "create": MessageLookupByLibrary.simpleMessage("Create"),
     "currentSession": MessageLookupByLibrary.simpleMessage("Current session"),
     "delete": MessageLookupByLibrary.simpleMessage("Delete"),
     "deleteConversation": MessageLookupByLibrary.simpleMessage(
-      "Удалить переписку",
+      "Delete conversation",
     ),
     "description": MessageLookupByLibrary.simpleMessage("Description"),
     "deviceThemeMode": MessageLookupByLibrary.simpleMessage(
-      "Same as on device",
+      "Use device settings",
     ),
     "edit": MessageLookupByLibrary.simpleMessage("Edit"),
-    "edited": MessageLookupByLibrary.simpleMessage("Изменено"),
-    "filteringClearException": MessageLookupByLibrary.simpleMessage(
-      "Failed to reset filters",
+    "edited": MessageLookupByLibrary.simpleMessage("Edited"),
+    "emojiCategoryActivities": MessageLookupByLibrary.simpleMessage(
+      "Activities",
     ),
-    "filteringSaveException": MessageLookupByLibrary.simpleMessage(
-      "Failed to save filters",
+    "emojiCategoryFlags": MessageLookupByLibrary.simpleMessage("Flags"),
+    "emojiCategoryFoodAndDrink": MessageLookupByLibrary.simpleMessage(
+      "Food and drink",
     ),
-    "filteringUpdateException": MessageLookupByLibrary.simpleMessage(
-      "Failed to update filters",
+    "emojiCategoryNature": MessageLookupByLibrary.simpleMessage(
+      "Nature and animals",
     ),
-    "filters": MessageLookupByLibrary.simpleMessage("Фильтры"),
+    "emojiCategoryObjects": MessageLookupByLibrary.simpleMessage("Objects"),
+    "emojiCategoryRecent": MessageLookupByLibrary.simpleMessage("Recent"),
+    "emojiCategorySmileysAndPeople": MessageLookupByLibrary.simpleMessage(
+      "Smileys and people",
+    ),
+    "emojiCategorySymbols": MessageLookupByLibrary.simpleMessage("Symbols"),
+    "emojiCategoryTravelAndPlaces": MessageLookupByLibrary.simpleMessage(
+      "Travel and places",
+    ),
+    "emojiSearchResults": MessageLookupByLibrary.simpleMessage(
+      "Search results",
+    ),
+    "filters": MessageLookupByLibrary.simpleMessage("Filters"),
+    "firstName": MessageLookupByLibrary.simpleMessage("First name"),
     "homePage": MessageLookupByLibrary.simpleMessage("Home page"),
-    "jobPosition": MessageLookupByLibrary.simpleMessage("Job position"),
-    "jobPositionInvalidCharactersException":
-        MessageLookupByLibrary.simpleMessage(
-          "Job position contains invalid characters",
-        ),
+    "invalidCharactersException": MessageLookupByLibrary.simpleMessage(
+      "Invalid characters entered",
+    ),
+    "jobPosition": MessageLookupByLibrary.simpleMessage("Position"),
     "joinedAt": MessageLookupByLibrary.simpleMessage("Joined at"),
     "language": MessageLookupByLibrary.simpleMessage("Language"),
+    "lastName": MessageLookupByLibrary.simpleMessage("Last name"),
     "lastUpdated": MessageLookupByLibrary.simpleMessage("Last updated"),
-    "login": MessageLookupByLibrary.simpleMessage("Login"),
-    "message": MessageLookupByLibrary.simpleMessage("Сообщение"),
-    "meta": MessageLookupByLibrary.simpleMessage("Meta"),
-    "nameInvalidCharactersException": MessageLookupByLibrary.simpleMessage(
-      "Name contains invalid characters",
+    "loading": MessageLookupByLibrary.simpleMessage("Loading"),
+    "logOut": MessageLookupByLibrary.simpleMessage("Log out"),
+    "logOutConfirmation": MessageLookupByLibrary.simpleMessage(
+      "Are you sure you want to log out?",
     ),
+    "login": MessageLookupByLibrary.simpleMessage("Login"),
+    "logout": MessageLookupByLibrary.simpleMessage("Log out"),
+    "message": MessageLookupByLibrary.simpleMessage("Message"),
+    "messageContextActionCopyText": MessageLookupByLibrary.simpleMessage(
+      "Copy text",
+    ),
+    "messageContextActionDelete": MessageLookupByLibrary.simpleMessage(
+      "Delete",
+    ),
+    "messageContextActionForward": MessageLookupByLibrary.simpleMessage(
+      "Forward",
+    ),
+    "messageContextActionReply": MessageLookupByLibrary.simpleMessage("Reply"),
+    "messageContextActionSelect": MessageLookupByLibrary.simpleMessage(
+      "Select",
+    ),
+    "messageInputToolbarActionCopy": MessageLookupByLibrary.simpleMessage(
+      "Copy",
+    ),
+    "messageInputToolbarActionCut": MessageLookupByLibrary.simpleMessage("Cut"),
+    "messageInputToolbarActionDelete": MessageLookupByLibrary.simpleMessage(
+      "Delete",
+    ),
+    "messageInputToolbarActionFormatBold": MessageLookupByLibrary.simpleMessage(
+      "Bold",
+    ),
+    "messageInputToolbarActionFormatCode": MessageLookupByLibrary.simpleMessage(
+      "Monospace",
+    ),
+    "messageInputToolbarActionFormatCodeBlock":
+        MessageLookupByLibrary.simpleMessage("Code"),
+    "messageInputToolbarActionFormatItalic":
+        MessageLookupByLibrary.simpleMessage("Italic"),
+    "messageInputToolbarActionFormatLink": MessageLookupByLibrary.simpleMessage(
+      "Link",
+    ),
+    "messageInputToolbarActionFormatStrike":
+        MessageLookupByLibrary.simpleMessage("Strikethrough"),
+    "messageInputToolbarActionFormatUnderline":
+        MessageLookupByLibrary.simpleMessage("Underline"),
+    "meta": MessageLookupByLibrary.simpleMessage("Meta"),
     "next": MessageLookupByLibrary.simpleMessage("Next"),
     "noLabel": MessageLookupByLibrary.simpleMessage("No"),
+    "notRegisteredYetQuestion": MessageLookupByLibrary.simpleMessage(
+      "Not registered yet?",
+    ),
     "notSpecified": MessageLookupByLibrary.simpleMessage("Not specified"),
+    "nothingFound": MessageLookupByLibrary.simpleMessage("Nothing found"),
     "ok": MessageLookupByLibrary.simpleMessage("OK"),
     "password": MessageLookupByLibrary.simpleMessage("Password"),
-    "passwordInvalidCharactersException": MessageLookupByLibrary.simpleMessage(
-      "Password contains invalid characters",
+    "passwordRequirementAllowedChars": MessageLookupByLibrary.simpleMessage(
+      "Only letters, digits and special characters are allowed",
     ),
-    "passwordNoDigitException": MessageLookupByLibrary.simpleMessage(
-      "Password must contain a digit",
+    "passwordRequirementDigit": MessageLookupByLibrary.simpleMessage(
+      "At least one digit (0–9)",
     ),
-    "passwordNoLowerCaseException": MessageLookupByLibrary.simpleMessage(
-      "Password must contain a lowercase letter",
+    "passwordRequirementLowercase": MessageLookupByLibrary.simpleMessage(
+      "At least one lowercase letter (a–z)",
     ),
-    "passwordNoUpperCaseException": MessageLookupByLibrary.simpleMessage(
-      "Password must contain an uppercase letter",
+    "passwordRequirementMinLength": m0,
+    "passwordRequirementSpecial": MessageLookupByLibrary.simpleMessage(
+      "At least one special character (!?@#\$%^&*()_-{})",
     ),
-    "passwordTooShortException": MessageLookupByLibrary.simpleMessage(
-      "Password must be at least 14 characters long",
+    "passwordRequirementUppercase": MessageLookupByLibrary.simpleMessage(
+      "At least one uppercase letter (A–Z)",
     ),
-    "passwordsMatchException": MessageLookupByLibrary.simpleMessage(
+    "passwordRequirementsTitle": MessageLookupByLibrary.simpleMessage(
+      "Password requirements",
+    ),
+    "passwordTooWeakException": MessageLookupByLibrary.simpleMessage(
+      "Password is too weak",
+    ),
+    "passwordsMismatchException": MessageLookupByLibrary.simpleMessage(
       "Passwords do not match",
     ),
     "personalInformation": MessageLookupByLibrary.simpleMessage(
@@ -162,21 +228,21 @@ class MessageLookup extends MessageLookupByLibrary {
     "profile": MessageLookupByLibrary.simpleMessage("Profile"),
     "profileEditing": MessageLookupByLibrary.simpleMessage("Edit profile"),
     "registration": MessageLookupByLibrary.simpleMessage("Registration"),
-    "registrationEmptyFieldException": MessageLookupByLibrary.simpleMessage(
-      "Поле обязательно для заполнения",
-    ),
-    "registrationPasswordsDontMatchException":
-        MessageLookupByLibrary.simpleMessage("Passwords do not match"),
-    "registrationQuestion": MessageLookupByLibrary.simpleMessage(
-      "Not registered yet?",
-    ),
     "repeatPassword": MessageLookupByLibrary.simpleMessage("Repeat password"),
+    "requiredValueNotProvidedException": MessageLookupByLibrary.simpleMessage(
+      "Required field",
+    ),
     "reset": MessageLookupByLibrary.simpleMessage("Reset"),
     "retry": MessageLookupByLibrary.simpleMessage("Try again"),
     "save": MessageLookupByLibrary.simpleMessage("Save"),
-    "search": MessageLookupByLibrary.simpleMessage("Поиск"),
-    "searchUnknownException": MessageLookupByLibrary.simpleMessage(
-      "Unknown error occurred during search",
+    "search": MessageLookupByLibrary.simpleMessage("Search"),
+    "searchEmoji": MessageLookupByLibrary.simpleMessage("Search emoji"),
+    "searchUsersAndChatsHint": MessageLookupByLibrary.simpleMessage(
+      "Enter a username or group/channel name.",
+    ),
+    "selectConversation": MessageLookupByLibrary.simpleMessage("Select a chat"),
+    "selectConversationSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Select a user, group or channel to start chatting",
     ),
     "selectInterfaceLanguage": MessageLookupByLibrary.simpleMessage(
       "Select interface language",
@@ -187,10 +253,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "sessionDeviceType": MessageLookupByLibrary.simpleMessage("Device type"),
     "sessionExpiresAt": MessageLookupByLibrary.simpleMessage("Expires at"),
     "sessionIpAddress": MessageLookupByLibrary.simpleMessage("IP address"),
-    "sessionIsExpired": MessageLookupByLibrary.simpleMessage("Is expired"),
-    "sessionIsTerminated": MessageLookupByLibrary.simpleMessage(
-      "Is terminated",
+    "sessionIsExpired": MessageLookupByLibrary.simpleMessage("Expired"),
+    "sessionIsNotLoadedYet": MessageLookupByLibrary.simpleMessage(
+      "Session data has not been loaded yet. Please try again",
     ),
+    "sessionIsTerminated": MessageLookupByLibrary.simpleMessage("Terminated"),
     "sessionMacAddress": MessageLookupByLibrary.simpleMessage("MAC address"),
     "sessionOs": MessageLookupByLibrary.simpleMessage("OS"),
     "sessionSessionId": MessageLookupByLibrary.simpleMessage("Session ID"),
@@ -205,78 +272,56 @@ class MessageLookup extends MessageLookupByLibrary {
     "sessionUpdatedAt": MessageLookupByLibrary.simpleMessage("Updated at"),
     "sessionUserId": MessageLookupByLibrary.simpleMessage("User ID"),
     "settings": MessageLookupByLibrary.simpleMessage("Settings"),
-    "settingsLocaleChangeException": MessageLookupByLibrary.simpleMessage(
-      "Failed to change language",
-    ),
-    "settingsRestoreLocaleException": MessageLookupByLibrary.simpleMessage(
-      "Failed to load language",
-    ),
-    "settingsRestoreThemeModeException": MessageLookupByLibrary.simpleMessage(
-      "Failed to load theme",
-    ),
-    "settingsThemeModeChangeException": MessageLookupByLibrary.simpleMessage(
-      "Failed to change theme",
-    ),
-    "settingsUnknownException": MessageLookupByLibrary.simpleMessage(
-      "Unknown error occurred while accessing settings",
-    ),
     "share": MessageLookupByLibrary.simpleMessage("Share"),
     "signIn": MessageLookupByLibrary.simpleMessage("Sign in"),
-    "sortingClearException": MessageLookupByLibrary.simpleMessage(
-      "Failed to reset sorting",
-    ),
-    "sortingSaveException": MessageLookupByLibrary.simpleMessage(
-      "Failed to save sorting",
-    ),
-    "sortingUpdateException": MessageLookupByLibrary.simpleMessage(
-      "Failed to update sorting",
-    ),
     "storage": MessageLookupByLibrary.simpleMessage("Storage"),
-    "storageDeleteException": MessageLookupByLibrary.simpleMessage(
-      "Error deleting data from storage",
-    ),
-    "storageNotFoundException": MessageLookupByLibrary.simpleMessage(
-      "Data not found in storage",
-    ),
-    "storageReadException": MessageLookupByLibrary.simpleMessage(
-      "Error reading data from storage",
-    ),
-    "storageSerializationException": MessageLookupByLibrary.simpleMessage(
-      "Data serialization error",
-    ),
-    "storageUnknownException": MessageLookupByLibrary.simpleMessage(
-      "Unknown error occurred while accessing storage",
-    ),
-    "storageWriteException": MessageLookupByLibrary.simpleMessage(
-      "Error saving data to storage",
+    "storageException": MessageLookupByLibrary.simpleMessage("Storage error"),
+    "storageIOException": MessageLookupByLibrary.simpleMessage(
+      "Read/write storage error",
     ),
     "themeMode": MessageLookupByLibrary.simpleMessage("Theme"),
     "themeModeDark": MessageLookupByLibrary.simpleMessage("Dark"),
     "themeModeLight": MessageLookupByLibrary.simpleMessage("Light"),
     "themeModeSystem": MessageLookupByLibrary.simpleMessage("System"),
     "toggleNotificationsOff": MessageLookupByLibrary.simpleMessage(
-      "Выключить уведомления",
+      "Turn off notifications",
     ),
     "toggleNotificationsOn": MessageLookupByLibrary.simpleMessage(
-      "Включить уведомления",
+      "Turn on notifications",
+    ),
+    "tryAnotherQuery": MessageLookupByLibrary.simpleMessage(
+      "Try a different query",
     ),
     "unknownValue": MessageLookupByLibrary.simpleMessage("Unknown"),
-    "userFavouritesAddException": MessageLookupByLibrary.simpleMessage(
-      "Failed to add to favorites",
-    ),
-    "userFavouritesDeleteException": MessageLookupByLibrary.simpleMessage(
-      "Failed to remove from favorites",
-    ),
-    "userFavouritesLoadException": MessageLookupByLibrary.simpleMessage(
-      "Failed to load favorites",
-    ),
-    "userFavouritesUnknownException": MessageLookupByLibrary.simpleMessage(
-      "Unknown error occurred while accessing favorites",
-    ),
     "username": MessageLookupByLibrary.simpleMessage("Username"),
-    "usernameInvalidCharactersException": MessageLookupByLibrary.simpleMessage(
-      "Username contains invalid characters",
-    ),
+    "users": MessageLookupByLibrary.simpleMessage("Users"),
     "yesLabel": MessageLookupByLibrary.simpleMessage("Yes"),
+    "you": MessageLookupByLibrary.simpleMessage("You"),
+    "aboutApp": MessageLookupByLibrary.simpleMessage("About"),
+    "settingsMyProfile": MessageLookupByLibrary.simpleMessage("My profile"),
+    "settingsNotificationsAndSounds": MessageLookupByLibrary.simpleMessage(
+      "Notifications and sounds",
+    ),
+    "settingsPrivacy": MessageLookupByLibrary.simpleMessage("Privacy"),
+    "settingsChats": MessageLookupByLibrary.simpleMessage("Chats"),
+    "settingsLanguage": MessageLookupByLibrary.simpleMessage("Language"),
+    "settingsMyProfileDescription": MessageLookupByLibrary.simpleMessage(
+      "View and edit your profile",
+    ),
+    "settingsNotificationsPlaceholder": MessageLookupByLibrary.simpleMessage(
+      "Configure notifications and sounds",
+    ),
+    "settingsPrivacyPlaceholder": MessageLookupByLibrary.simpleMessage(
+      "Session and security",
+    ),
+    "settingsChatsAppearance": MessageLookupByLibrary.simpleMessage(
+      "Appearance",
+    ),
+    "settingsChatsShortcuts": MessageLookupByLibrary.simpleMessage(
+      "Keyboard shortcuts",
+    ),
+    "settingsChatsShortcutsDescription": MessageLookupByLibrary.simpleMessage(
+      "Shortcuts will be available in a future update.",
+    ),
   };
 }

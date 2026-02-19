@@ -152,5 +152,17 @@
     "passwordRequirementSpecial": "Хотя бы один специальный символ (!?@#$%^&*()_-{})",
     "passwordRequirementAllowedChars": "Допустимы только буквы, цифры и спец. символы",
     "you": "Вы",
-    "loading": "Загрузка"
+    "loading": "Загрузка",
+    "settingsMyProfile": "Мой профиль",
+    "settingsNotificationsAndSounds": "Уведомления и звуки",
+    "settingsPrivacy": "Конфиденциальность",
+    "settingsChats": "Настройки чатов",
+    "settingsLanguage": "Язык",
+    "settingsMyProfileDescription": "Просмотр и редактирование профиля",
+    "settingsNotificationsPlaceholder": "Настройка уведомлений и звуков",
+    "settingsPrivacyPlaceholder": "Сессия и безопасность",
+    "settingsChatsAppearance": "Внешний вид",
+    "settingsChatsShortcuts": "Сочетания клавиш",
+    "settingsChatsShortcutsDescription": "Сочетания клавиш будут доступны в следующем обновлении.",
+    "aboutApp": "О приложении"
 }
