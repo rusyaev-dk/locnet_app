@@ -1,2 +1,11 @@
 export 'language_selector.dart';
+export 'settings_action_tile.dart';
+export 'settings_group_card.dart';
 export 'settings_header.dart';
+export 'settings_info_card.dart';
+export 'settings_nav_tile.dart';
+export 'settings_section_header.dart';
+export 'settings_section_widget.dart';
+export 'settings_segmented_tile.dart';
+export 'settings_sidebar.dart';
+export 'settings_switch_tile.dart';

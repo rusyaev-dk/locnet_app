@@ -161,7 +161,7 @@ class _MessageBubbleState extends State<MessageBubble> {
 
     final Color bubbleColor = isMine
         ? colorScheme.surfaceContainerHigh
-        : colorScheme.primary;
+        : colorScheme.primaryContainer;
 
     final TextStyle messageTextStyle = isMine
         ? textScheme.label.copyWith(
@@ -169,7 +169,7 @@ class _MessageBubbleState extends State<MessageBubble> {
             fontSize: 14.5,
           )
         : textScheme.label.copyWith(
-            color: colorScheme.onPrimary,
+            color: colorScheme.onPrimaryContainer,
             fontSize: 14.5,
           );
 
@@ -177,7 +177,7 @@ class _MessageBubbleState extends State<MessageBubble> {
       fontSize: (messageTextStyle.fontSize!) * 0.8,
       color: isMine
           ? messageTextStyle.color!.withAlpha(150)
-          : colorScheme.onPrimary.withAlpha(150),
+          : colorScheme.onPrimaryContainer.withAlpha(150),
     );
 
     final BorderRadius borderRadius = BorderRadius.only(
@@ -192,11 +192,11 @@ class _MessageBubbleState extends State<MessageBubble> {
 
     final Color selectionColor = isMine
         ? colorScheme.onSurface.withAlpha(80)
-        : colorScheme.onPrimary.withAlpha(80);
+        : colorScheme.onPrimaryContainer.withAlpha(80);
 
     final Color linkColor = isMine
         ? colorScheme.primary
-        : colorScheme.onPrimary;
+        : colorScheme.onPrimaryContainer;
 
     final double maxBubbleWidth = MediaQuery.sizeOf(context).width * 0.7;
 
@@ -228,7 +228,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                           style: textScheme.label.copyWith(
                             color: isMine
                                 ? colorScheme.onSurface.withAlpha(200)
-                                : colorScheme.onPrimary.withAlpha(230),
+                                : colorScheme.onPrimaryContainer.withAlpha(230),
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                           ),

@@ -61,6 +61,7 @@ class RegistrationCard extends StatelessWidget {
               CustomTextField(
                 isActive: !isLoading,
                 controller: firstNameController,
+                backgroundColor: colorScheme.surfaceContainerLow,
                 labelText: l10n.firstName,
                 textInputAction: TextInputAction.next,
                 onChanged: (String? value) {
@@ -80,6 +81,7 @@ class RegistrationCard extends StatelessWidget {
               CustomTextField(
                 isActive: !isLoading,
                 controller: lastNameController,
+                backgroundColor: colorScheme.surfaceContainerLow,
                 labelText: l10n.lastName,
                 textInputAction: TextInputAction.next,
                 onChanged: (String? value) {
@@ -99,6 +101,7 @@ class RegistrationCard extends StatelessWidget {
               CustomTextField(
                 isActive: !isLoading,
                 controller: descriptionController,
+                backgroundColor: colorScheme.surfaceContainerLow,
                 labelText: l10n.description,
                 textInputAction: TextInputAction.next,
                 onChanged: (String? value) {
@@ -122,6 +125,7 @@ class RegistrationCard extends StatelessWidget {
               CustomTextField(
                 isActive: !isLoading,
                 controller: usernameController,
+                backgroundColor: colorScheme.surfaceContainerLow,
                 labelText: l10n.login,
                 keyboardType: TextInputType.emailAddress,
                 textInputAction: TextInputAction.next,
@@ -142,6 +146,7 @@ class RegistrationCard extends StatelessWidget {
               CustomTextField(
                 isActive: !isLoading,
                 controller: passwordController,
+                backgroundColor: colorScheme.surfaceContainerLow,
                 labelText: l10n.password,
                 obscureText: true,
                 textInputAction: TextInputAction.next,
@@ -171,6 +176,7 @@ class RegistrationCard extends StatelessWidget {
               CustomTextField(
                 isActive: !isLoading,
                 controller: repeatPasswordController,
+                backgroundColor: colorScheme.surfaceContainerLow,
                 labelText: l10n.repeatPassword,
                 obscureText: true,
                 textInputAction: TextInputAction.done,

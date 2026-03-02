@@ -88,11 +88,6 @@ class CustomTextField extends StatelessWidget {
     final Color resolvedBackgroundColor =
         backgroundColor ?? colorScheme.surface;
 
-    final Color resolvedBorderColor = borderColor ?? colorScheme.outlineVariant;
-
-    final Color resolvedFocusedBorderColor =
-        focusedBorderColor ?? colorScheme.primary;
-
     final EdgeInsetsGeometry resolvedContentPadding =
         contentPadding ??
         const EdgeInsets.symmetric(horizontal: 16, vertical: 12);
@@ -154,10 +149,7 @@ class CustomTextField extends StatelessWidget {
             }
           : null,
       style:
-          textStyle ??
-          textScheme.body.copyWith(
-            color: colorScheme.onSurface,
-          ),
+          textStyle ?? textScheme.body.copyWith(color: colorScheme.onSurface),
       decoration: InputDecoration(
         labelText: labelText,
         hintText: hintText,
@@ -165,9 +157,7 @@ class CustomTextField extends StatelessWidget {
         errorText: errorText,
         labelStyle:
             labelStyle ??
-            textScheme.subtitle.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
+            textScheme.subtitle.copyWith(color: colorScheme.onSurfaceVariant),
         hintStyle:
             hintStyle ??
             textScheme.body.copyWith(
@@ -180,15 +170,15 @@ class CustomTextField extends StatelessWidget {
         suffixIcon: suffixIcon,
         enabledBorder: OutlineInputBorder(
           borderRadius: resolvedBorderRadius,
-          borderSide: BorderSide(color: resolvedBorderColor, width: borders.thin),
+          borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: resolvedBorderRadius,
-          borderSide: BorderSide(color: resolvedFocusedBorderColor, width: borders.medium),
+          borderSide: BorderSide.none,
         ),
         disabledBorder: OutlineInputBorder(
           borderRadius: resolvedBorderRadius,
-          borderSide: BorderSide(color: resolvedBorderColor.withAlpha(120), width: borders.thin),
+          borderSide: BorderSide.none,
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: resolvedBorderRadius,
@@ -196,7 +186,10 @@ class CustomTextField extends StatelessWidget {
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: resolvedBorderRadius,
-          borderSide: BorderSide(color: colorScheme.error, width: borders.medium),
+          borderSide: BorderSide(
+            color: colorScheme.error,
+            width: borders.medium,
+          ),
         ),
       ),
     );

@@ -151,7 +151,7 @@
   "selectConversation": "Chatni tanlang",
   "selectConversationSubtitle": "Suhbatni boshlash uchun foydalanuvchi, guruh yoki kanalni tanlang",
   "passwordRequirementsTitle": "Parol talablari",
-  "passwordRequirementMinLength": "Kamida ${min} ta belgi",
+  "passwordRequirementMinLength": "Kamida {min} ta belgi",
   "passwordRequirementUppercase": "Kamida bitta katta harf (A–Z)",
   "passwordRequirementLowercase": "Kamida bitta kichik harf (a–z)",
   "passwordRequirementDigit": "Kamida bitta raqam (0–9)",

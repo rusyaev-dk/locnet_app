@@ -6,23 +6,19 @@ import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/conversation/subfeatures/group/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/group/domain/domain.dart';
 import 'package:locnet_app/features/message/domain/domain.dart';
+import 'package:locnet_app/features/message/subfeatures/group_message/data/repositories/group_message_repo/mock_group_message_repo.dart';
 import 'package:locnet_app/mock/mock.dart';
 
 final class MockGroupRepo implements IGroupRepo {
   MockGroupRepo({
     required MockInMemoryBackend backendStorage,
-    required StreamController<GroupConversationMessageUpdateRec>
-        messagesUpdatesController,
-  }) : _backendStorage = backendStorage,
-       _messagesUpdatesController = messagesUpdatesController;
+  }) : _backendStorage = backendStorage;
 
   final MockInMemoryBackend _backendStorage;
-  final StreamController<GroupConversationMessageUpdateRec>
-      _messagesUpdatesController;
 
   @override
   Stream<GroupConversationMessageUpdateRec> get messagesUpdates =>
-      _messagesUpdatesController.stream;
+      MockGroupMessageRepo.messagesUpdates;
 
   @override
   Future<Group> createGroup({

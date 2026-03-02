@@ -25,8 +25,6 @@ final class MockConversationsListRepo implements IConversationsListRepo {
 
   @override
   Future<List<ConversationTile>> loadConversationsList({int page = 1}) async {
-    await Future<void>.delayed(const Duration(milliseconds: 200));
-
     final int safePage = page <= 0 ? 1 : page;
 
     final List<ConversationTile> result = <ConversationTile>[];
@@ -54,8 +52,9 @@ final class MockConversationsListRepo implements IConversationsListRepo {
       User? companion;
       try {
         final adminId = MockUsers.adminUser.userId;
-        final String companionId =
-            dto.user1Id == adminId ? dto.user2Id : dto.user1Id;
+        final String companionId = dto.user1Id == adminId
+            ? dto.user2Id
+            : dto.user1Id;
         final UserDto companionDto = _backendStorage.getUserById(
           userId: companionId,
         );
@@ -84,8 +83,8 @@ final class MockConversationsListRepo implements IConversationsListRepo {
     for (final GroupDto dto in groupDtos) {
       if (dto.isDeleted) continue;
 
-      final GroupMessageDto? lastMessageDto =
-          _backendStorage.getLastGroupMessage(groupId: dto.groupId);
+      final GroupMessageDto? lastMessageDto = _backendStorage
+          .getLastGroupMessage(groupId: dto.groupId);
 
       String? lastText;
       String? lastSenderId;
@@ -116,10 +115,8 @@ final class MockConversationsListRepo implements IConversationsListRepo {
     for (final ChannelDto dto in channelDtos) {
       if (dto.isDeleted) continue;
 
-      final ChannelPublicationDto? lastPublicationDto =
-          _backendStorage.getLastChannelPublication(
-        channelId: dto.channelId,
-      );
+      final ChannelPublicationDto? lastPublicationDto = _backendStorage
+          .getLastChannelPublication(channelId: dto.channelId);
 
       String? lastText;
       String? lastSenderId;

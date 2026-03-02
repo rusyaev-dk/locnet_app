@@ -18,32 +18,30 @@ class ConversationInfoActionButton extends StatelessWidget {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
 
-    final Color backgroundColor = colorScheme.surfaceContainer.withAlpha(140);
-
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onPressed,
         borderRadius: BorderRadius.circular(12),
         child: Container(
-          height: 60,
+          height: 58,
           decoration: BoxDecoration(
-            color: backgroundColor,
+            color: colorScheme.surfaceContainerLow,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: colorScheme.outlineVariant),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Row(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 20, color: colorScheme.onSurface),
-              const SizedBox(width: 8),
+              Icon(icon, size: 20, color: colorScheme.primary),
+              const SizedBox(height: 5),
               Text(
                 label,
-                style: textScheme.label.copyWith(
+                style: textScheme.caption.copyWith(
                   color: colorScheme.onSurface,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),

@@ -10,14 +10,16 @@ import 'package:locnet_app/mock/mock.dart';
 final class MockChannelPublicationRepo implements IChannelPublicationRepo {
   MockChannelPublicationRepo({
     required MockInMemoryBackend backendStorage,
-    required StreamController<ChannelPublicationUpdateRec>
-        publicationsUpdatesController,
-  }) : _backendStorage = backendStorage,
-       _publicationsUpdatesController = publicationsUpdatesController;
+  }) : _backendStorage = backendStorage;
 
   final MockInMemoryBackend _backendStorage;
-  final StreamController<ChannelPublicationUpdateRec>
-      _publicationsUpdatesController;
+
+  static final StreamController<ChannelPublicationUpdateRec>
+      _publicationsUpdatesController =
+      StreamController<ChannelPublicationUpdateRec>.broadcast();
+
+  static Stream<ChannelPublicationUpdateRec> get publicationsUpdates =>
+      _publicationsUpdatesController.stream;
 
   @override
   Future<ChannelPublication> sendPublication({

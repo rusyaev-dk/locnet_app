@@ -253,6 +253,7 @@ class _ConversationsListPanel extends StatelessWidget {
             return InfoWidget(
               icon: Icons.error,
               text: state.failure.toString(),
+              useErrorStyle: true,
               iconAnimationEffect: const ShakeEffect(),
             );
 

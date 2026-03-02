@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/auth/presentation/presentation.dart';
 import 'package:locnet_app/features/conversations_list/presentation/presentation.dart';
-import 'package:locnet_app/features/home/presentation/presentation.dart';
+import 'package:locnet_app/features/side_panel/presentation/presentation.dart';
 import 'package:locnet_app/features/root/root_screen.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
 import 'package:locnet_app/features/splash/splash_screen.dart';
@@ -111,14 +111,6 @@ class AppRouter {
             return RootScreen(child: PanelScreen(child: child));
           }),
           routes: <RouteBase>[
-            GoRoute(
-              path: '/home',
-              name: 'home',
-              pageBuilder: buildNoTransitionPage((context, state) {
-                return const HomePageScreen();
-              }),
-            ),
-
             // Conversations branch (now top-level under the shell)
             ShellRoute(
               builder:

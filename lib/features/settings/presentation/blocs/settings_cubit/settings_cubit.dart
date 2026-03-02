@@ -166,27 +166,6 @@ class SettingsCubit extends Cubit<SettingsState> {
     }
   }
 
-  /// Updates theme type in loaded state (e.g. after subfeature cubit persisted).
-  void updateThemeType(AppThemeType type) {
-    if (state is SettingsLoadedState) {
-      emit((state as SettingsLoadedState).copyWith(themeType: type));
-    }
-  }
-
-  /// Updates locale in loaded state (e.g. after subfeature cubit persisted).
-  void updateLocale(Locale locale) {
-    if (state is SettingsLoadedState) {
-      emit((state as SettingsLoadedState).copyWith(locale: locale));
-    }
-  }
-
-  /// Updates theme mode in loaded state (e.g. after subfeature cubit persisted).
-  void updateThemeMode(ThemeMode mode) {
-    if (state is SettingsLoadedState) {
-      emit((state as SettingsLoadedState).copyWith(themeMode: mode));
-    }
-  }
-
   String _encodeThemeMode(ThemeMode mode) {
     switch (mode) {
       case ThemeMode.system:

@@ -3,216 +3,277 @@ import 'package:locnet_app/app/app.dart';
 
 /// Data for a single segment in [SegmentedControl].
 class SegmentedControlSegment {
-  const SegmentedControlSegment({required this.title, required this.icon});
+  const SegmentedControlSegment({
+    required this.title,
+    this.icon,
+    this.leading,
+  });
 
   final String title;
-  final IconData icon;
+
+  /// Icon shown before the label in horizontal mode, or as leading in vertical
+  /// mode when [leading] is not provided.
+  final IconData? icon;
+
+  /// Optional arbitrary leading widget (e.g. a color-swatch row).
+  /// Takes priority over [icon] in vertical mode.
+  final Widget? leading;
 }
 
-/// A horizontal segmented control (tabbar) with animated indicator.
-/// Use [segments] to define items and [selectedIndex] / [onSelected] for state.
-/// Set [compact] to true for a smaller variant (e.g. under search fields).
+/// A segmented picker that adapts to its [axis].
+///
+/// **Horizontal** (default) — compact pill-style tab bar:
+///   a `surfaceContainer` pill track with an `AnimatedContainer` indicator
+///   per segment.
+///
+/// **Vertical** — tile-list style matching the settings theme selector:
+///   a column of full-width [InkWell] rows with an optional [leading] widget,
+///   label text (primary color when selected) and a check-mark on the right.
 class SegmentedControl extends StatelessWidget {
   const SegmentedControl({
     required this.segments,
     required this.selectedIndex,
     required this.onSelected,
     this.compact = false,
+    this.axis = Axis.horizontal,
     super.key,
   });
 
   final List<SegmentedControlSegment> segments;
   final int selectedIndex;
   final ValueChanged<int> onSelected;
+
+  /// Enables a more compact sizing in horizontal mode.
   final bool compact;
 
-  static const Duration _moveDuration = Duration(milliseconds: 260);
-  static const Curve _moveCurve = Curves.easeOutCubic;
-
-  Alignment _indicatorAlignment(int index, int count) {
-    if (count <= 1) return Alignment.center;
-    return Alignment(2 * index / (count - 1) - 1, 0);
-  }
+  /// [Axis.horizontal] → pill tab bar, [Axis.vertical] → tile list.
+  final Axis axis;
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = context.colorScheme;
-    final textTheme = context.textScheme;
     final count = segments.length;
     if (count == 0) return const SizedBox.shrink();
 
-    final double height = compact ? 40 : 52;
-    final double padding = compact ? 3 : 4;
-    final double gap = compact ? 2 : 4;
-    final double containerRadius = compact ? 12 : 16;
-    final double indicatorRadius = compact ? 8 : 12;
-    final double iconSize = compact ? 16 : 20;
-    final double fontSize = compact ? 13 : 15;
-    final double iconGap = compact ? 6 : 8;
+    if (axis == Axis.vertical) {
+      return _VerticalSegmentedControl(
+        segments: segments,
+        selectedIndex: selectedIndex,
+        onSelected: onSelected,
+      );
+    }
 
-    return LayoutBuilder(
-      builder: (BuildContext context, BoxConstraints constraints) {
-        final double segmentWidth =
-            (constraints.maxWidth - (count - 1) * gap) / count;
-
-        return Container(
-          height: height,
-          padding: EdgeInsets.all(padding),
-          decoration: BoxDecoration(
-            color: colorScheme.surface,
-            borderRadius: BorderRadius.circular(containerRadius),
-            border: Border.all(color: colorScheme.outlineVariant),
-          ),
-          child: Stack(
-            children: [
-              AnimatedAlign(
-                duration: _moveDuration,
-                curve: _moveCurve,
-                alignment: _indicatorAlignment(selectedIndex, count),
-                child: _SegmentIndicator(
-                  width: segmentWidth,
-                  borderRadius: indicatorRadius,
-                ),
-              ),
-              Row(
-                children: List.generate(
-                  count,
-                  (int index) => Expanded(
-                    child: _SegmentButton(
-                      title: segments[index].title,
-                      icon: segments[index].icon,
-                      isSelected: selectedIndex == index,
-                      onPressed: () => onSelected(index),
-                      textStyle: textTheme.label,
-                      iconSize: iconSize,
-                      fontSize: fontSize,
-                      iconGap: iconGap,
-                      borderRadius: indicatorRadius,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _SegmentIndicator extends StatelessWidget {
-  const _SegmentIndicator({required this.width, this.borderRadius = 12});
-
-  final double width;
-  final double borderRadius;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    // ── Horizontal pill track ─────────────────────────────────────────────
+    final colorScheme = context.colorScheme;
+    final double outerPadding = compact ? 3.0 : 4.0;
+    final double outerRadius = compact ? 10.0 : 12.0;
+    final double innerRadius = compact ? 7.0 : 9.0;
 
     return Container(
-      width: width,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(borderRadius),
-        color: colorScheme.primary.withAlpha(0x14),
-        border: Border.all(color: colorScheme.primary.withAlpha(0x3D)),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 12,
-            spreadRadius: -6,
-            offset: const Offset(0, 4),
-            color: colorScheme.primary.withAlpha(0x22),
-          ),
+        color: colorScheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(outerRadius),
+      ),
+      padding: EdgeInsets.all(outerPadding),
+      child: Row(
+        children: [
+          for (int i = 0; i < count; i++)
+            Expanded(
+              child: _HorizontalSegmentButton(
+                title: segments[i].title,
+                icon: segments[i].icon,
+                isSelected: selectedIndex == i,
+                compact: compact,
+                innerRadius: innerRadius,
+                onTap: () => onSelected(i),
+              ),
+            ),
         ],
       ),
     );
   }
 }
 
-class _SegmentButton extends StatelessWidget {
-  const _SegmentButton({
-    required this.title,
-    required this.icon,
-    required this.isSelected,
-    required this.onPressed,
-    required this.textStyle,
-    this.iconSize = 20,
-    this.fontSize = 15,
-    this.iconGap = 8,
-    this.borderRadius = 12,
+// ── Vertical list ─────────────────────────────────────────────────────────────
+
+class _VerticalSegmentedControl extends StatelessWidget {
+  const _VerticalSegmentedControl({
+    required this.segments,
+    required this.selectedIndex,
+    required this.onSelected,
   });
 
-  final String title;
-  final IconData icon;
-  final bool isSelected;
-  final VoidCallback onPressed;
-  final TextStyle? textStyle;
-  final double iconSize;
-  final double fontSize;
-  final double iconGap;
-  final double borderRadius;
-
-  static const Duration _styleDuration = Duration(milliseconds: 220);
-  static const Curve _styleCurve = Curves.easeOutCubic;
+  final List<SegmentedControlSegment> segments;
+  final int selectedIndex;
+  final ValueChanged<int> onSelected;
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final baseStyle =
-        textStyle ??
-        Theme.of(context).textTheme.labelMedium ??
-        const TextStyle();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (int i = 0; i < segments.length; i++)
+          _VerticalSegmentTile(
+            title: segments[i].title,
+            icon: segments[i].icon,
+            leading: segments[i].leading,
+            isSelected: selectedIndex == i,
+            isLast: i == segments.length - 1,
+            onTap: () => onSelected(i),
+          ),
+      ],
+    );
+  }
+}
 
-    final Color targetForegroundColor = isSelected
-        ? colorScheme.primary
-        : colorScheme.onSurfaceVariant;
+class _VerticalSegmentTile extends StatelessWidget {
+  const _VerticalSegmentTile({
+    required this.title,
+    required this.isSelected,
+    required this.isLast,
+    required this.onTap,
+    this.icon,
+    this.leading,
+  });
 
-    return InkWell(
-      onTap: onPressed,
-      borderRadius: BorderRadius.circular(borderRadius),
-      child: Center(
-        child: TweenAnimationBuilder<Color?>(
-          duration: _styleDuration,
-          curve: _styleCurve,
-          tween: ColorTween(end: targetForegroundColor),
-          builder: (BuildContext context, Color? animatedColor, Widget? child) {
-            final Color resolvedColor = animatedColor ?? targetForegroundColor;
+  final String title;
+  final IconData? icon;
+  final Widget? leading;
+  final bool isSelected;
+  final bool isLast;
+  final VoidCallback onTap;
 
-            return Row(
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final textScheme = context.textScheme;
+
+    Widget? resolvedLeading;
+    if (leading != null) {
+      resolvedLeading = leading;
+    } else if (icon != null) {
+      resolvedLeading = Icon(
+        icon,
+        size: 18,
+        color: isSelected
+            ? colorScheme.primary
+            : colorScheme.onSurfaceVariant,
+      );
+    }
+
+    return Padding(
+      padding: EdgeInsets.only(bottom: isLast ? 0 : 4),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(8),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+            child: Row(
+              children: [
+                if (resolvedLeading != null) ...[
+                  resolvedLeading,
+                  const SizedBox(width: 12),
+                ],
+                Expanded(
+                  child: Text(
+                    title,
+                    style: textScheme.subtitle.copyWith(
+                      color: isSelected
+                          ? colorScheme.primary
+                          : colorScheme.onSurface,
+                      fontWeight:
+                          isSelected ? FontWeight.w600 : FontWeight.w400,
+                    ),
+                  ),
+                ),
+                if (isSelected)
+                  Icon(Icons.check_rounded, size: 18, color: colorScheme.primary),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Horizontal pill button ────────────────────────────────────────────────────
+
+class _HorizontalSegmentButton extends StatelessWidget {
+  const _HorizontalSegmentButton({
+    required this.title,
+    required this.isSelected,
+    required this.compact,
+    required this.innerRadius,
+    required this.onTap,
+    this.icon,
+  });
+
+  final String title;
+  final IconData? icon;
+  final bool isSelected;
+  final bool compact;
+  final double innerRadius;
+  final VoidCallback onTap;
+
+  static const Duration _duration = Duration(milliseconds: 160);
+  static const Curve _curve = Curves.easeInOut;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final textScheme = context.textScheme;
+
+    final double verticalPadding = compact ? 7.0 : 9.0;
+    final double iconSize = compact ? 14.0 : 16.0;
+    final double iconGap = compact ? 5.0 : 6.0;
+
+    final Color selectedColor = colorScheme.onSurface;
+    final Color unselectedColor = colorScheme.onSurfaceVariant;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: _duration,
+        curve: _curve,
+        padding: EdgeInsets.symmetric(vertical: verticalPadding),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? colorScheme.surfaceContainerHighest
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(innerRadius),
+        ),
+        child: Center(
+          child: AnimatedDefaultTextStyle(
+            duration: _duration,
+            curve: _curve,
+            style: textScheme.caption.copyWith(
+              color: isSelected ? selectedColor : unselectedColor,
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+            ),
+            child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(icon, size: iconSize, color: resolvedColor),
-                SizedBox(width: iconGap),
+                if (icon != null) ...[
+                  Icon(
+                    icon,
+                    size: iconSize,
+                    color: isSelected ? selectedColor : unselectedColor,
+                  ),
+                  SizedBox(width: iconGap),
+                ],
                 Flexible(
-                  child: TweenAnimationBuilder<double>(
-                    duration: _styleDuration,
-                    curve: _styleCurve,
-                    tween: Tween<double>(end: isSelected ? 1.0 : 0.0),
-                    builder: (BuildContext context, double t, Widget? child) {
-                      final FontWeight fontWeight =
-                          FontWeight.lerp(
-                            FontWeight.w500,
-                            FontWeight.w700,
-                            t,
-                          ) ??
-                          FontWeight.w500;
-
-                      return Text(
-                        title,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        style: baseStyle.copyWith(
-                          color: resolvedColor,
-                          fontSize: fontSize,
-                          fontWeight: fontWeight,
-                        ),
-                      );
-                    },
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
-            );
-          },
+            ),
+          ),
         ),
       ),
     );

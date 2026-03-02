@@ -20,10 +20,11 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'uz';
 
-  static String m0(min) => "Kamida \$${min} ta belgi";
+  static String m0(min) => "Kamida ${min} ta belgi";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+    "aboutApp": MessageLookupByLibrary.simpleMessage("Ilova haqida"),
     "accountStatus": MessageLookupByLibrary.simpleMessage("Profil holati"),
     "alreadyRegisteredQuestion": MessageLookupByLibrary.simpleMessage(
       "Allaqachon roʻyxatdan oʻtgansizmi?",
@@ -66,6 +67,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "authorization": MessageLookupByLibrary.simpleMessage("Avtorizatsiya"),
     "back": MessageLookupByLibrary.simpleMessage("Orqaga"),
     "blockCompanion": MessageLookupByLibrary.simpleMessage("Bloklash"),
+    "brightnessTitle": MessageLookupByLibrary.simpleMessage(
+      "Yorugʻ / qorongʻi mavzu",
+    ),
     "cancel": MessageLookupByLibrary.simpleMessage("Bekor qilish"),
     "charactersCountViolationException": MessageLookupByLibrary.simpleMessage(
       "Belgilar soni notoʻgʻri",
@@ -76,6 +80,11 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "clear": MessageLookupByLibrary.simpleMessage("Tozalash"),
     "close": MessageLookupByLibrary.simpleMessage("Yopish"),
+    "colorSchemeBlue": MessageLookupByLibrary.simpleMessage("Koʻk"),
+    "colorSchemeDefault": MessageLookupByLibrary.simpleMessage("Standart"),
+    "colorSchemeGreen": MessageLookupByLibrary.simpleMessage("Yashil"),
+    "colorSchemePurple": MessageLookupByLibrary.simpleMessage("Binafsha"),
+    "colorSchemeTitle": MessageLookupByLibrary.simpleMessage("Rang sxemasi"),
     "companionStatusOffline": MessageLookupByLibrary.simpleMessage("Oflayn"),
     "companionStatusOnline": MessageLookupByLibrary.simpleMessage("Onlayn"),
     "confirm": MessageLookupByLibrary.simpleMessage("Tasdiqlash"),
@@ -290,6 +299,34 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "sessionUserId": MessageLookupByLibrary.simpleMessage("Foydalanuvchi ID"),
     "settings": MessageLookupByLibrary.simpleMessage("Sozlamalar"),
+    "settingsChats": MessageLookupByLibrary.simpleMessage("Chat sozlamalari"),
+    "settingsChatsAppearance": MessageLookupByLibrary.simpleMessage(
+      "Koʻrinishi",
+    ),
+    "settingsChatsShortcuts": MessageLookupByLibrary.simpleMessage(
+      "Tugmalar birikmasi",
+    ),
+    "settingsChatsShortcutsDescription": MessageLookupByLibrary.simpleMessage(
+      "Tugmalar birikmasi keyingi yangilanishda qoʻshiladi.",
+    ),
+    "settingsLanguage": MessageLookupByLibrary.simpleMessage("Til"),
+    "settingsMyProfile": MessageLookupByLibrary.simpleMessage(
+      "Mening profilim",
+    ),
+    "settingsMyProfileDescription": MessageLookupByLibrary.simpleMessage(
+      "Profilni koʻrish va tahrirlash",
+    ),
+    "settingsNotificationsAndSounds": MessageLookupByLibrary.simpleMessage(
+      "Bildirishnomalar va tovushlar",
+    ),
+    "settingsNotificationsPlaceholder": MessageLookupByLibrary.simpleMessage(
+      "Bildirishnomalar va tovushlarni sozlash",
+    ),
+    "settingsPrivacy": MessageLookupByLibrary.simpleMessage("Maxfiylik"),
+    "settingsPrivacyPlaceholder": MessageLookupByLibrary.simpleMessage(
+      "Sessiya va xavfsizlik",
+    ),
+    "settingsSound": MessageLookupByLibrary.simpleMessage("Tovush"),
     "share": MessageLookupByLibrary.simpleMessage("Ulashish"),
     "signIn": MessageLookupByLibrary.simpleMessage("Kirish"),
     "storage": MessageLookupByLibrary.simpleMessage("Xotira"),
@@ -315,31 +352,5 @@ class MessageLookup extends MessageLookupByLibrary {
     "users": MessageLookupByLibrary.simpleMessage("Foydalanuvchilar"),
     "yesLabel": MessageLookupByLibrary.simpleMessage("Ha"),
     "you": MessageLookupByLibrary.simpleMessage("Siz"),
-    "aboutApp": MessageLookupByLibrary.simpleMessage("Ilova haqida"),
-    "settingsMyProfile": MessageLookupByLibrary.simpleMessage("Mening profilim"),
-    "settingsNotificationsAndSounds": MessageLookupByLibrary.simpleMessage(
-      "Bildirishnomalar va tovushlar",
-    ),
-    "settingsPrivacy": MessageLookupByLibrary.simpleMessage("Maxfiylik"),
-    "settingsChats": MessageLookupByLibrary.simpleMessage("Chat sozlamalari"),
-    "settingsLanguage": MessageLookupByLibrary.simpleMessage("Til"),
-    "settingsMyProfileDescription": MessageLookupByLibrary.simpleMessage(
-      "Profilni koʻrish va tahrirlash",
-    ),
-    "settingsNotificationsPlaceholder": MessageLookupByLibrary.simpleMessage(
-      "Bildirishnomalar va tovushlarni sozlash",
-    ),
-    "settingsPrivacyPlaceholder": MessageLookupByLibrary.simpleMessage(
-      "Sessiya va xavfsizlik",
-    ),
-    "settingsChatsAppearance": MessageLookupByLibrary.simpleMessage(
-      "Koʻrinishi",
-    ),
-    "settingsChatsShortcuts": MessageLookupByLibrary.simpleMessage(
-      "Tugmalar birikmasi",
-    ),
-    "settingsChatsShortcutsDescription": MessageLookupByLibrary.simpleMessage(
-      "Tugmalar birikmasi keyingi yangilanishda qoʻshiladi.",
-    ),
   };
 }

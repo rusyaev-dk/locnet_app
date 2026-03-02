@@ -93,6 +93,7 @@ class _ProfileEditorModalCardState extends State<ProfileEditorModalCard> {
               return InfoWidget(
                 icon: Icons.error,
                 text: state.failure.toString(),
+                useErrorStyle: true,
                 iconAnimationEffect: const ShakeEffect(),
               );
             }

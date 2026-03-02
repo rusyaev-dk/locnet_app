@@ -5,23 +5,19 @@ import 'dart:async';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/conversation/subfeatures/channel/channel.dart';
 import 'package:locnet_app/features/message/domain/domain.dart';
+import 'package:locnet_app/features/message/subfeatures/channel_publication/data/repositories/channel_publication_repo/mock_channel_publication_repo.dart';
 import 'package:locnet_app/mock/mock.dart';
 
 final class MockChannelRepo implements IChannelRepo {
   MockChannelRepo({
     required MockInMemoryBackend backendStorage,
-    required StreamController<ChannelPublicationUpdateRec>
-        publicationsUpdatesController,
-  }) : _backendStorage = backendStorage,
-       _publicationsUpdatesController = publicationsUpdatesController;
+  }) : _backendStorage = backendStorage;
 
   final MockInMemoryBackend _backendStorage;
-  final StreamController<ChannelPublicationUpdateRec>
-      _publicationsUpdatesController;
 
   @override
   Stream<ChannelPublicationUpdateRec> get publicationsUpdates =>
-      _publicationsUpdatesController.stream;
+      MockChannelPublicationRepo.publicationsUpdates;
 
   @override
   Future<Channel> getChannel({required String channelId}) async {

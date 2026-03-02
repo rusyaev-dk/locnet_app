@@ -49,6 +49,7 @@ class LogInCard extends StatelessWidget {
           CustomTextField(
             isActive: !isLoading,
             controller: usernameController,
+            backgroundColor: colorScheme.surfaceContainerLow,
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.next,
             labelText: l10n.login,
@@ -72,6 +73,7 @@ class LogInCard extends StatelessWidget {
           CustomTextField(
             isActive: !isLoading,
             controller: passwordController,
+            backgroundColor: colorScheme.surfaceContainerLow,
             obscureText: true,
             textInputAction: TextInputAction.done,
             labelText: l10n.password,

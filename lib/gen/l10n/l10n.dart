@@ -449,6 +449,7 @@ class S {
     );
   }
 
+  /// `Цветовое оформление`
   String get colorSchemeTitle {
     return Intl.message(
       'Цветовое оформление',
@@ -458,6 +459,7 @@ class S {
     );
   }
 
+  /// `По умолчанию`
   String get colorSchemeDefault {
     return Intl.message(
       'По умолчанию',
@@ -467,10 +469,12 @@ class S {
     );
   }
 
+  /// `Синий`
   String get colorSchemeBlue {
     return Intl.message('Синий', name: 'colorSchemeBlue', desc: '', args: []);
   }
 
+  /// `Зелёный`
   String get colorSchemeGreen {
     return Intl.message(
       'Зелёный',
@@ -480,6 +484,7 @@ class S {
     );
   }
 
+  /// `Фиолетовый`
   String get colorSchemePurple {
     return Intl.message(
       'Фиолетовый',
@@ -489,6 +494,7 @@ class S {
     );
   }
 
+  /// `Светлая / тёмная тема`
   String get brightnessTitle {
     return Intl.message(
       'Светлая / тёмная тема',
@@ -1318,10 +1324,10 @@ class S {
     );
   }
 
-  /// `Не менее ${min} символов`
+  /// `Не менее {min} символов`
   String passwordRequirementMinLength(Object min) {
     return Intl.message(
-      'Не менее \$$min символов',
+      'Не менее $min символов',
       name: 'passwordRequirementMinLength',
       desc: '',
       args: [min],
@@ -1386,11 +1392,6 @@ class S {
   /// `Загрузка`
   String get loading {
     return Intl.message('Загрузка', name: 'loading', desc: '', args: []);
-  }
-
-  /// `О приложении`
-  String get aboutApp {
-    return Intl.message('О приложении', name: 'aboutApp', desc: '', args: []);
   }
 
   /// `Мой профиль`
@@ -1460,12 +1461,7 @@ class S {
 
   /// `Звук`
   String get settingsSound {
-    return Intl.message(
-      'Звук',
-      name: 'settingsSound',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Звук', name: 'settingsSound', desc: '', args: []);
   }
 
   /// `Сессия и безопасность`
@@ -1506,6 +1502,11 @@ class S {
       desc: '',
       args: [],
     );
+  }
+
+  /// `О приложении`
+  String get aboutApp {
+    return Intl.message('О приложении', name: 'aboutApp', desc: '', args: []);
   }
 }
 

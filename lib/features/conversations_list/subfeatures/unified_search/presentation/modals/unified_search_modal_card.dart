@@ -66,6 +66,7 @@ class _UnifiedSearchModalCardState extends State<UnifiedSearchModalCard> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final colorScheme = context.colorScheme;
     final searchBloc = context.read<UnifiedSearchBloc>();
 
     return AppModalCard(
@@ -73,105 +74,93 @@ class _UnifiedSearchModalCardState extends State<UnifiedSearchModalCard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const UnifiedSearchHeader(),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
+            child: CustomTextField(
+              controller: _queryController,
+              labelText: l10n.search,
+              textInputAction: TextInputAction.search,
+              maxSymbols: 200,
+              onChanged: (String? value) {
+                searchBloc.add(LoadUnifiedSearchEvent(query: value ?? ''));
+              },
+              onFocusChange: (String? value) {
+                searchBloc.add(LoadUnifiedSearchEvent(query: value ?? ''));
+              },
+              onSubmitted: (String? value) {
+                searchBloc.add(LoadUnifiedSearchEvent(query: value ?? ''));
+              },
+            ),
+          ),
+          Divider(height: 1, thickness: 1, color: colorScheme.outlineVariant),
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 12),
-                  CustomTextField(
-                    controller: _queryController,
-                    labelText: l10n.search,
-                    textInputAction: TextInputAction.search,
-                    maxSymbols: 200,
-                    onChanged: (String? value) {
-                      searchBloc.add(
-                        LoadUnifiedSearchEvent(query: value ?? ''),
-                      );
-                    },
-                    onFocusChange: (String? value) {
-                      searchBloc.add(
-                        LoadUnifiedSearchEvent(query: value ?? ''),
-                      );
-                    },
-                    onSubmitted: (String? value) {
-                      searchBloc.add(
-                        LoadUnifiedSearchEvent(query: value ?? ''),
-                      );
-                    },
-                  ),
-                  Expanded(
-                    child: BlocBuilder<UnifiedSearchBloc, UnifiedSearchState>(
-                      builder:
-                          (BuildContext context, UnifiedSearchState state) {
-                            final Object? failure = state.failure;
+            child: BlocBuilder<UnifiedSearchBloc, UnifiedSearchState>(
+              builder: (BuildContext context, UnifiedSearchState state) {
+                final Object? failure = state.failure;
 
-                            if (failure != null &&
-                                state is UnifiedSearchFailureState) {
-                              return InfoWidget(
-                                icon: Icons.error,
-                                text: AppExceptionsTranslator.translate(
-                                  context,
-                                  failure,
-                                ),
-                                iconAnimationEffect: const ShakeEffect(),
-                              );
-                            }
+                if (failure != null && state is UnifiedSearchFailureState) {
+                  return InfoWidget(
+                    icon: Icons.error,
+                    text: AppExceptionsTranslator.translate(context, failure),
+                    useErrorStyle: true,
+                    iconAnimationEffect: const ShakeEffect(),
+                  );
+                }
 
-                            final bool hasResults = switch (state) {
-                              final UnifiedSearchLoadedState s =>
-                                s.result.users.isNotEmpty ||
-                                s.result.conversations.isNotEmpty,
-                              _ => false,
-                            };
+                final bool hasResults = switch (state) {
+                  final UnifiedSearchLoadedState s =>
+                    s.result.users.isNotEmpty ||
+                    s.result.conversations.isNotEmpty,
+                  _ => false,
+                };
 
-                            final Widget body = _UnifiedSearchBody(
-                              state: state,
-                              selectedTab: _selectedTab,
-                            );
+                final Widget body = _UnifiedSearchBody(
+                  state: state,
+                  selectedTab: _selectedTab,
+                );
 
-                            if (!hasResults) {
-                              return body;
-                            }
+                if (!hasResults) {
+                  return body;
+                }
 
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 10),
-                                SegmentedControl(
-                                  compact: true,
-                                  segments: [
-                                    SegmentedControlSegment(
-                                      title: l10n.users,
-                                      icon: Icons.person_outline,
-                                    ),
-                                    SegmentedControlSegment(
-                                      title: l10n.conversationTypeGroup,
-                                      icon: Icons.group_outlined,
-                                    ),
-                                    SegmentedControlSegment(
-                                      title: l10n.conversationTypeChannel,
-                                      icon: Icons.campaign_outlined,
-                                    ),
-                                  ],
-                                  selectedIndex: _selectedTab.index,
-                                  onSelected: (int index) {
-                                    setState(() {
-                                      _selectedTab =
-                                          _UnifiedSearchTab.values[index];
-                                    });
-                                  },
-                                ),
-                                const SizedBox(height: 10),
-                                Expanded(child: body),
-                              ],
-                            );
-                          },
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
+                      child: SegmentedControl(
+                        compact: true,
+                        segments: [
+                          SegmentedControlSegment(
+                            title: l10n.users,
+                            icon: Icons.person_outline,
+                          ),
+                          SegmentedControlSegment(
+                            title: l10n.conversationTypeGroup,
+                            icon: Icons.group_outlined,
+                          ),
+                          SegmentedControlSegment(
+                            title: l10n.conversationTypeChannel,
+                            icon: Icons.campaign_outlined,
+                          ),
+                        ],
+                        selectedIndex: _selectedTab.index,
+                        onSelected: (int index) {
+                          setState(() {
+                            _selectedTab = _UnifiedSearchTab.values[index];
+                          });
+                        },
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: body,
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ],
@@ -199,14 +188,18 @@ class _UnifiedSearchBody extends StatelessWidget {
             .toList();
       case _UnifiedSearchTab.groups:
         return loadedState.result.conversations
-            .where((UnifiedSearchConversation c) =>
-                c.type == UnifiedSearchConversationType.group)
+            .where(
+              (UnifiedSearchConversation c) =>
+                  c.type == UnifiedSearchConversationType.group,
+            )
             .map(UnifiedSearchListItem.conversation)
             .toList();
       case _UnifiedSearchTab.channels:
         return loadedState.result.conversations
-            .where((UnifiedSearchConversation c) =>
-                c.type == UnifiedSearchConversationType.channel)
+            .where(
+              (UnifiedSearchConversation c) =>
+                  c.type == UnifiedSearchConversationType.channel,
+            )
             .map(UnifiedSearchListItem.conversation)
             .toList();
     }
@@ -219,7 +212,7 @@ class _UnifiedSearchBody extends StatelessWidget {
 
     if (state is UnifiedSearchInitialState) {
       return _UnifiedSearchPlaceholder(
-        icon: Icons.search,
+        icon: Icons.search_rounded,
         text: l10n.searchUsersAndChatsHint,
       );
     }
@@ -227,8 +220,15 @@ class _UnifiedSearchBody extends StatelessWidget {
     if (state is UnifiedSearchLoadingState) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 24),
-          child: CircularProgressIndicator(color: colorScheme.primary),
+          padding: const EdgeInsets.symmetric(vertical: 32),
+          child: SizedBox(
+            width: 24,
+            height: 24,
+            child: CircularProgressIndicator(
+              strokeWidth: 2.5,
+              color: colorScheme.primary,
+            ),
+          ),
         ),
       );
     }
@@ -245,7 +245,7 @@ class _UnifiedSearchBody extends StatelessWidget {
 
     if (isEmpty) {
       return _UnifiedSearchPlaceholder(
-        icon: Icons.search_off,
+        icon: Icons.search_off_rounded,
         title: l10n.nothingFound,
         text: l10n.tryAnotherQuery,
       );
@@ -273,16 +273,9 @@ class _UnifiedSearchBody extends StatelessWidget {
 
         return false;
       },
-      child: ListView.separated(
-        padding: const EdgeInsets.only(bottom: 16),
+      child: ListView.builder(
+        padding: const EdgeInsets.only(top: 4, bottom: 16),
         itemCount: listItemsCount,
-        separatorBuilder: (BuildContext context, int index) {
-          final bool isLast = index == listItemsCount - 1;
-          if (isLast) {
-            return const SizedBox.shrink();
-          }
-          return const SizedBox(height: 6);
-        },
         itemBuilder: (BuildContext context, int index) {
           if (index >= items.length) {
             if (!loadedState.isLoadingMore && loadedState.hasMore) {
@@ -304,7 +297,10 @@ class _UnifiedSearchBody extends StatelessWidget {
             );
           }
 
-          return UnifiedSearchResultTile(item: items[index], onPressed: () {});
+          return UnifiedSearchResultTile(
+            item: items[index],
+            onPressed: () {},
+          );
         },
       ),
     );
@@ -331,18 +327,17 @@ class _UnifiedSearchPlaceholder extends StatelessWidget {
 
     return Center(
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 12),
+        padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 34, color: colorScheme.onSurfaceVariant),
+            Icon(icon, size: 36, color: colorScheme.onSurfaceVariant),
             if (hasTitle) ...[
-              const SizedBox(height: 10),
+              const SizedBox(height: 12),
               Text(
                 title!,
-                style: textScheme.display.copyWith(
+                style: textScheme.headline.copyWith(
                   color: colorScheme.onSurface,
-                  fontSize: 16,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -350,9 +345,9 @@ class _UnifiedSearchPlaceholder extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               text,
-              style: textScheme.label.copyWith(
+              style: textScheme.caption.copyWith(
                 color: colorScheme.onSurfaceVariant,
-                fontSize: 12,
+                height: 1.4,
               ),
               textAlign: TextAlign.center,
             ),

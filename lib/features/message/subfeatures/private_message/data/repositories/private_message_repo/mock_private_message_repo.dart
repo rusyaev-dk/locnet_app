@@ -10,14 +10,16 @@ import 'package:locnet_app/mock/mock.dart';
 final class MockPrivateMessageRepo implements IPrivateMessageRepo {
   MockPrivateMessageRepo({
     required MockInMemoryBackend backendStorage,
-    required StreamController<PrivateConversationMessageUpdateRec>
-        messagesUpdatesController,
-  }) : _backendStorage = backendStorage,
-       _messagesUpdatesController = messagesUpdatesController;
+  }) : _backendStorage = backendStorage;
 
   final MockInMemoryBackend _backendStorage;
-  final StreamController<PrivateConversationMessageUpdateRec>
-      _messagesUpdatesController;
+
+  static final StreamController<PrivateConversationMessageUpdateRec>
+      _messagesUpdatesController =
+      StreamController<PrivateConversationMessageUpdateRec>.broadcast();
+
+  static Stream<PrivateConversationMessageUpdateRec> get messagesUpdates =>
+      _messagesUpdatesController.stream;
 
   @override
   Future<PrivateMessage> sendMessage({required PrivateMessage message}) async {

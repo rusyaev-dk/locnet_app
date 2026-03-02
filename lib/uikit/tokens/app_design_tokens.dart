@@ -60,6 +60,7 @@ class AppDesignTokens extends ThemeExtension<AppDesignTokens> {
 
   /// Returns design tokens from the nearest [Theme]; fallback to [standard] if not set.
   static AppDesignTokens of(BuildContext context) {
-    return Theme.of(context).extension<AppDesignTokens>() ?? AppDesignTokens.standard();
+    return Theme.of(context).extension<AppDesignTokens>() ??
+        AppDesignTokens.standard();
   }
 }

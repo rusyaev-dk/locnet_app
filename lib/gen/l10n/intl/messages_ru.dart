@@ -20,10 +20,11 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'ru';
 
-  static String m0(min) => "Не менее \$${min} символов";
+  static String m0(min) => "Не менее ${min} символов";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+    "aboutApp": MessageLookupByLibrary.simpleMessage("О приложении"),
     "accountStatus": MessageLookupByLibrary.simpleMessage("Статус аккаунта"),
     "alreadyRegisteredQuestion": MessageLookupByLibrary.simpleMessage(
       "Уже зарегистрированы?",
@@ -64,6 +65,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "authorization": MessageLookupByLibrary.simpleMessage("Авторизация"),
     "back": MessageLookupByLibrary.simpleMessage("Назад"),
     "blockCompanion": MessageLookupByLibrary.simpleMessage("Заблокировать"),
+    "brightnessTitle": MessageLookupByLibrary.simpleMessage(
+      "Светлая / тёмная тема",
+    ),
     "cancel": MessageLookupByLibrary.simpleMessage("Отмена"),
     "charactersCountViolationException": MessageLookupByLibrary.simpleMessage(
       "Недопустимое количество символов",
@@ -74,6 +78,13 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "clear": MessageLookupByLibrary.simpleMessage("Очистить"),
     "close": MessageLookupByLibrary.simpleMessage("Закрыть"),
+    "colorSchemeBlue": MessageLookupByLibrary.simpleMessage("Синий"),
+    "colorSchemeDefault": MessageLookupByLibrary.simpleMessage("По умолчанию"),
+    "colorSchemeGreen": MessageLookupByLibrary.simpleMessage("Зелёный"),
+    "colorSchemePurple": MessageLookupByLibrary.simpleMessage("Фиолетовый"),
+    "colorSchemeTitle": MessageLookupByLibrary.simpleMessage(
+      "Цветовое оформление",
+    ),
     "companionStatusOffline": MessageLookupByLibrary.simpleMessage("Не в сети"),
     "companionStatusOnline": MessageLookupByLibrary.simpleMessage("В сети"),
     "confirm": MessageLookupByLibrary.simpleMessage("Подтвердить"),
@@ -272,6 +283,34 @@ class MessageLookup extends MessageLookupByLibrary {
     "sessionUpdatedAt": MessageLookupByLibrary.simpleMessage("Обновлена"),
     "sessionUserId": MessageLookupByLibrary.simpleMessage("ID пользователя"),
     "settings": MessageLookupByLibrary.simpleMessage("Настройки"),
+    "settingsChats": MessageLookupByLibrary.simpleMessage("Настройки чатов"),
+    "settingsChatsAppearance": MessageLookupByLibrary.simpleMessage(
+      "Внешний вид",
+    ),
+    "settingsChatsShortcuts": MessageLookupByLibrary.simpleMessage(
+      "Сочетания клавиш",
+    ),
+    "settingsChatsShortcutsDescription": MessageLookupByLibrary.simpleMessage(
+      "Сочетания клавиш будут доступны в следующем обновлении.",
+    ),
+    "settingsLanguage": MessageLookupByLibrary.simpleMessage("Язык"),
+    "settingsMyProfile": MessageLookupByLibrary.simpleMessage("Мой профиль"),
+    "settingsMyProfileDescription": MessageLookupByLibrary.simpleMessage(
+      "Просмотр и редактирование профиля",
+    ),
+    "settingsNotificationsAndSounds": MessageLookupByLibrary.simpleMessage(
+      "Уведомления и звуки",
+    ),
+    "settingsNotificationsPlaceholder": MessageLookupByLibrary.simpleMessage(
+      "Настройка уведомлений и звуков",
+    ),
+    "settingsPrivacy": MessageLookupByLibrary.simpleMessage(
+      "Конфиденциальность",
+    ),
+    "settingsPrivacyPlaceholder": MessageLookupByLibrary.simpleMessage(
+      "Сессия и безопасность",
+    ),
+    "settingsSound": MessageLookupByLibrary.simpleMessage("Звук"),
     "share": MessageLookupByLibrary.simpleMessage("Поделиться"),
     "signIn": MessageLookupByLibrary.simpleMessage("Войти"),
     "storage": MessageLookupByLibrary.simpleMessage("Хранилище"),
@@ -299,31 +338,5 @@ class MessageLookup extends MessageLookupByLibrary {
     "users": MessageLookupByLibrary.simpleMessage("Пользователи"),
     "yesLabel": MessageLookupByLibrary.simpleMessage("Да"),
     "you": MessageLookupByLibrary.simpleMessage("Вы"),
-    "aboutApp": MessageLookupByLibrary.simpleMessage("О приложении"),
-    "settingsMyProfile": MessageLookupByLibrary.simpleMessage("Мой профиль"),
-    "settingsNotificationsAndSounds": MessageLookupByLibrary.simpleMessage(
-      "Уведомления и звуки",
-    ),
-    "settingsPrivacy": MessageLookupByLibrary.simpleMessage("Конфиденциальность"),
-    "settingsChats": MessageLookupByLibrary.simpleMessage("Настройки чатов"),
-    "settingsLanguage": MessageLookupByLibrary.simpleMessage("Язык"),
-    "settingsMyProfileDescription": MessageLookupByLibrary.simpleMessage(
-      "Просмотр и редактирование профиля",
-    ),
-    "settingsNotificationsPlaceholder": MessageLookupByLibrary.simpleMessage(
-      "Настройка уведомлений и звуков",
-    ),
-    "settingsPrivacyPlaceholder": MessageLookupByLibrary.simpleMessage(
-      "Сессия и безопасность",
-    ),
-    "settingsChatsAppearance": MessageLookupByLibrary.simpleMessage(
-      "Внешний вид",
-    ),
-    "settingsChatsShortcuts": MessageLookupByLibrary.simpleMessage(
-      "Сочетания клавиш",
-    ),
-    "settingsChatsShortcutsDescription": MessageLookupByLibrary.simpleMessage(
-      "Сочетания клавиш будут доступны в следующем обновлении.",
-    ),
   };
 }

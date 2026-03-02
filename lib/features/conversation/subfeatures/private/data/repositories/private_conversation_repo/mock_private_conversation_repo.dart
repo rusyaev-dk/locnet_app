@@ -5,23 +5,18 @@ import 'dart:async';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/domain/domain.dart';
+import 'package:locnet_app/features/message/subfeatures/private_message/data/repositories/private_message_repo/mock_private_message_repo.dart';
 import 'package:locnet_app/mock/mock.dart';
 
 final class MockPrivateConversationRepo implements IPrivateConversationRepo {
-  MockPrivateConversationRepo({
-    required MockInMemoryBackend backendStorage,
-    required StreamController<PrivateConversationMessageUpdateRec>
-        messagesUpdatesController,
-  }) : _backendStorage = backendStorage,
-       _messagesUpdatesController = messagesUpdatesController;
+  MockPrivateConversationRepo({required MockInMemoryBackend backendStorage})
+    : _backendStorage = backendStorage;
 
   final MockInMemoryBackend _backendStorage;
-  final StreamController<PrivateConversationMessageUpdateRec>
-      _messagesUpdatesController;
 
   @override
   Stream<PrivateConversationMessageUpdateRec> get messagesUpdates =>
-      _messagesUpdatesController.stream;
+      MockPrivateMessageRepo.messagesUpdates;
 
   @override
   Future<bool> blockCompanion({
@@ -37,7 +32,6 @@ final class MockPrivateConversationRepo implements IPrivateConversationRepo {
   Future<PrivateConversation> getPrivateConversation({
     required String conversationId,
   }) async {
-    await Future<void>.delayed(const Duration(milliseconds: 200));
     final dto = _backendStorage.getPrivateConversationById(conversationId);
     return PrivateConversation.fromDto(dto);
   }

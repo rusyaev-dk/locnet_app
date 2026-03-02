@@ -100,40 +100,33 @@ class LanguageList extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colorScheme.outlineVariant),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: supportedLocales.asMap().entries.map((entry) {
-          final int index = entry.key;
-          final Locale locale = entry.value;
-          final bool isSelected =
-              locale.languageCode == selectedLocale.languageCode;
-          final bool isLast = index == supportedLocales.length - 1;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: supportedLocales.asMap().entries.map((entry) {
+        final int index = entry.key;
+        final Locale locale = entry.value;
+        final bool isSelected =
+            locale.languageCode == selectedLocale.languageCode;
+        final bool isLast = index == supportedLocales.length - 1;
 
-          return Column(
-            children: [
-              _LanguageItem(
-                locale: locale,
-                isSelected: isSelected,
-                onPressed: () => onLocaleSelected(locale),
-                localeToLabel: localeToLabel,
-                localeToIcon: localeToIcon,
+        return Column(
+          children: [
+            _LanguageItem(
+              locale: locale,
+              isSelected: isSelected,
+              onPressed: () => onLocaleSelected(locale),
+              localeToLabel: localeToLabel,
+              localeToIcon: localeToIcon,
+            ),
+            if (!isLast)
+              Divider(
+                height: 1,
+                indent: 48,
+                color: colorScheme.outlineVariant,
               ),
-              if (!isLast)
-                Divider(
-                  height: 1,
-                  indent: 48,
-                  color: colorScheme.outlineVariant,
-                ),
-            ],
-          );
-        }).toList(),
-      ),
+          ],
+        );
+      }).toList(),
     );
   }
 }

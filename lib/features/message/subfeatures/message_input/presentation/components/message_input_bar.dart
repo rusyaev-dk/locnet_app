@@ -109,8 +109,10 @@ class _MessageInputBarState extends State<MessageInputBar> {
       return;
     }
 
-    final List<UploadableFile> files =
-        context.read<MessageAttachmentsCubit>().state.files;
+    final List<UploadableFile> files = context
+        .read<MessageAttachmentsCubit>()
+        .state
+        .files;
 
     switch (widget.conversationType) {
       case ConversationType.private:
@@ -168,7 +170,6 @@ class _MessageInputBarState extends State<MessageInputBar> {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                 color: colorScheme.surfaceBright,
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     RoundedIconButton(
                       icon: Icons.attach_file,

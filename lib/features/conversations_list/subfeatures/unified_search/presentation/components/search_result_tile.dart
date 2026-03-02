@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/domain/utils/utils.dart';
 import 'package:locnet_app/features/conversation/presentation/presentation.dart';
-import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/presentation/presentation.dart';
 import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/domain/domain.dart';
+import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/presentation/presentation.dart';
 
 class UnifiedSearchResultTile extends StatelessWidget {
   const UnifiedSearchResultTile({
@@ -30,17 +30,18 @@ class UnifiedSearchResultTile extends StatelessWidget {
         title = ProfileDataExtractor.extractUserFullName(item.user!);
         avatarText = ProfileDataExtractor.extractUserInitials(item.user!);
         subtitle = item.user!.username;
-        icon = Icons.person;
+        icon = Icons.person_outline;
         break;
       case UnifiedSearchListItemType.conversation:
         title = item.conversation!.title;
         avatarText = item.conversation!.title.substring(0, 2);
-        if (item.conversation!.type == UnifiedSearchConversationType.private) {
-          icon = Icons.person;
-        } else if (item.conversation!.type == UnifiedSearchConversationType.group) {
-          icon = Icons.group;
+        if (item.conversation!.type == UnifiedSearchConversationType.group) {
+          icon = Icons.group_outlined;
+        } else if (item.conversation!.type ==
+            UnifiedSearchConversationType.channel) {
+          icon = Icons.campaign_outlined;
         } else {
-          icon = Icons.campaign;
+          icon = Icons.person_outline;
         }
         break;
     }
@@ -49,15 +50,15 @@ class UnifiedSearchResultTile extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onPressed,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 9),
           child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 45),
+            constraints: const BoxConstraints(minHeight: 46),
             child: Row(
               children: [
-                ConversationAvatar(text: avatarText), // TODO: passthrough url
-                const SizedBox(width: 8),
+                ConversationAvatar(text: avatarText),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -65,29 +66,33 @@ class UnifiedSearchResultTile extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          Icon(icon, color: colorScheme.onSurface, size: 15.5),
-                          const SizedBox(width: 4),
-                          Text(
-                            title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: textScheme.label.copyWith(
-                              color: colorScheme.onSurface,
-                              fontSize: 15.5,
-                              fontWeight: FontWeight.w600,
+                          Icon(
+                            icon,
+                            size: 14,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                          const SizedBox(width: 5),
+                          Expanded(
+                            child: Text(
+                              title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: textScheme.label.copyWith(
+                                color: colorScheme.onSurface,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                         ],
                       ),
                       if (subtitle != null && subtitle.trim().isNotEmpty) ...[
-                        const SizedBox(height: 6),
+                        const SizedBox(height: 3),
                         Text(
                           subtitle,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: textScheme.label.copyWith(
-                            color: colorScheme.primary.withAlpha(190),
-                            fontSize: 12.5,
+                          style: textScheme.caption.copyWith(
+                            color: colorScheme.primary.withAlpha(200),
                           ),
                         ),
                       ],

@@ -70,6 +70,7 @@ class ProfileModalCard extends StatelessWidget {
                 child: InfoWidget(
                   icon: Icons.error,
                   text: state.failure.toString(),
+                  useErrorStyle: true,
                   iconAnimationEffect: const ShakeEffect(),
                 ),
               );

@@ -633,13 +633,18 @@ class _MessageInputFieldState extends State<MessageInputField> {
                 style: baseStyle,
                 decoration: InputDecoration(
                   isCollapsed: true,
-                  border: InputBorder.none,
                   hintText: widget.hintText,
                   hintStyle: textScheme.label.copyWith(
                     color: colorScheme.onSurfaceVariant.withAlpha(150),
                     fontSize: 16,
                   ),
                   counterText: '',
+                  // Remove borders in all states
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  disabledBorder: InputBorder.none,
+                  errorBorder: InputBorder.none,
+                  focusedErrorBorder: InputBorder.none,
                 ),
                 onSubmitted: (_) => _submit(),
                 contextMenuBuilder:

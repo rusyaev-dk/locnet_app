@@ -94,6 +94,7 @@ class ChannelConversationScreen extends StatelessWidget {
                   return InfoWidget(
                     icon: Icons.error,
                     text: state.failure.toString(),
+                    useErrorStyle: true,
                     buttonText: l10n.retry,
                     onButtonPressed: () =>
                         context.read<ChannelConversationBloc>().add(

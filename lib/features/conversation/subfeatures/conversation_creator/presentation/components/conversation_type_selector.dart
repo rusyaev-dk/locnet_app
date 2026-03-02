@@ -41,11 +41,6 @@ class ConversationTypeSelector extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          l10n.conversationType,
-          style: textScheme.label.copyWith(color: colorScheme.onSurfaceVariant),
-        ),
-        const SizedBox(height: 8),
         SegmentedControl(
           segments: segments,
           selectedIndex: selectedIndex >= 0 ? selectedIndex : 0,

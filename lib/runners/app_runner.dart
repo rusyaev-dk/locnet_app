@@ -16,7 +16,7 @@ import 'package:locnet_app/di/di.dart';
 import 'package:locnet_app/features/error/error_screen.dart';
 import 'package:locnet_app/runners/runners.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:talker_bloc_logger/talker_bloc_logger_observer.dart';
+import 'package:talker_bloc_logger/talker_bloc_logger.dart';
 import 'package:talker_dio_logger/talker_dio_logger_interceptor.dart';
 import 'package:talker_dio_logger/talker_dio_logger_settings.dart';
 import 'package:talker_flutter/talker_flutter.dart';
@@ -110,14 +110,18 @@ class AppRunner {
     required AppEnvType env,
     required TimerRunner timerRunner,
   }) async {
-    // TODO: remove the delay
-    // await Future.delayed(const Duration(milliseconds: 1500));
     logger.log('Build type: ${env.name}');
 
     final dio = Dio();
 
     if (env == AppEnvType.dev || env == AppEnvType.stage) {
-      Bloc.observer = TalkerBlocObserver(talker: talker);
+      Bloc.observer = TalkerBlocObserver(
+        talker: talker,
+        settings: const TalkerBlocLoggerSettings(
+          printEventFullData: false,
+          printStateFullData: false,
+        ),
+      );
       dio.interceptors.add(
         TalkerDioLogger(
           settings: const TalkerDioLoggerSettings(

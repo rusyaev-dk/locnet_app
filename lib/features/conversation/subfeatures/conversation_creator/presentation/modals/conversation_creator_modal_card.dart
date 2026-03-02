@@ -100,6 +100,7 @@ class _ConversationCreatorModalCardState
               return InfoWidget(
                 icon: Icons.error,
                 text: AppExceptionsTranslator.translate(context, failure),
+                useErrorStyle: true,
                 iconAnimationEffect: const ShakeEffect(),
               );
             }
@@ -130,86 +131,156 @@ class _ConversationCreatorView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-
-    final ConversationCreatorBloc bloc = context
-        .read<ConversationCreatorBloc>();
-
+    final colorScheme = context.colorScheme;
+    final textScheme = context.textScheme;
+    final bloc = context.read<ConversationCreatorBloc>();
     final bool isPending = state.isPending;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const ConversationCreatorHeader(),
+        Divider(height: 1, thickness: 1, color: colorScheme.outlineVariant),
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 15),
-                ConversationTypeSelector(
-                  selectedConversationType: state.selectedConversationType,
+                // Section intro
+                Text(
+                  l10n.conversationType,
+                  style: textScheme.caption
+                      .copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.6,
+                      )
+                      .copyWith(
+                        // uppercase emulation
+                      ),
                 ),
-                const SizedBox(height: 15),
-                CustomTextField(
-                  isActive: !isPending,
-                  controller: titleController,
-                  labelText: l10n.conversationTitle,
-                  textInputAction: TextInputAction.next,
-                  maxSymbols: 40,
-                  onChanged: (String? value) {
-                    bloc.add(UpdateConversationTitleEvent(title: value));
-                  },
-                  onFocusChange: (String? value) {
-                    bloc.add(UpdateConversationTitleEvent(title: value));
-                  },
-                  onSubmitted: (String? value) {
-                    bloc.add(UpdateConversationTitleEvent(title: value));
-                  },
-                  errorText: state.titleException != null
-                      ? AppExceptionsTranslator.translate(
-                          context,
-                          state.titleException,
-                        )
-                      : null,
+                const SizedBox(height: 8),
+                // Type selector group card
+                Container(
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceContainerLow,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ConversationTypeSelector(
+                        selectedConversationType:
+                            state.selectedConversationType,
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 15),
-                CustomTextField(
-                  isActive: !isPending,
-                  controller: descriptionController,
-                  labelText: l10n.conversationDescription,
-                  textInputAction: TextInputAction.newline,
-                  maxLines: 4,
-                  maxSymbols: 2000,
-                  onChanged: (String? value) {
-                    bloc.add(
-                      UpdateConversationDescriptionEvent(description: value),
-                    );
-                  },
-                  onFocusChange: (String? value) {
-                    bloc.add(
-                      UpdateConversationDescriptionEvent(description: value),
-                    );
-                  },
-                  onSubmitted: (String? value) {
-                    bloc.add(
-                      UpdateConversationDescriptionEvent(description: value),
-                    );
-                  },
-                  errorText: state.descriptionException != null
-                      ? AppExceptionsTranslator.translate(
-                          context,
-                          state.descriptionException,
-                        )
-                      : null,
+                const SizedBox(height: 20),
+
+                _GroupLabel(l10n.conversationTitle),
+                const SizedBox(height: 8),
+
+                Container(
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceContainerLow,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomTextField(
+                        isActive: !isPending,
+                        controller: titleController,
+                        labelText: l10n.conversationTitle,
+                        textInputAction: TextInputAction.next,
+                        maxSymbols: 40,
+                        onChanged: (String? value) {
+                          bloc.add(UpdateConversationTitleEvent(title: value));
+                        },
+                        onFocusChange: (String? value) {
+                          bloc.add(UpdateConversationTitleEvent(title: value));
+                        },
+                        onSubmitted: (String? value) {
+                          bloc.add(UpdateConversationTitleEvent(title: value));
+                        },
+                        errorText: state.titleException != null
+                            ? AppExceptionsTranslator.translate(
+                                context,
+                                state.titleException,
+                              )
+                            : null,
+                      ),
+                      const SizedBox(height: 12),
+                      CustomTextField(
+                        isActive: !isPending,
+                        controller: descriptionController,
+                        labelText: l10n.conversationDescription,
+                        textInputAction: TextInputAction.newline,
+                        maxLines: 4,
+                        maxSymbols: 2000,
+                        onChanged: (String? value) {
+                          bloc.add(
+                            UpdateConversationDescriptionEvent(
+                              description: value,
+                            ),
+                          );
+                        },
+                        onFocusChange: (String? value) {
+                          bloc.add(
+                            UpdateConversationDescriptionEvent(
+                              description: value,
+                            ),
+                          );
+                        },
+                        onSubmitted: (String? value) {
+                          bloc.add(
+                            UpdateConversationDescriptionEvent(
+                              description: value,
+                            ),
+                          );
+                        },
+                        errorText: state.descriptionException != null
+                            ? AppExceptionsTranslator.translate(
+                                context,
+                                state.descriptionException,
+                              )
+                            : null,
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 24),
                 _ConversationCreatorSubmitButton(isPending: isPending),
               ],
             ),
           ),
         ),
       ],
+    );
+  }
+}
+
+class _GroupLabel extends StatelessWidget {
+  const _GroupLabel(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final textScheme = context.textScheme;
+
+    return Text(
+      text.toUpperCase(),
+      style: textScheme.caption.copyWith(
+        color: colorScheme.onSurfaceVariant,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.6,
+      ),
     );
   }
 }

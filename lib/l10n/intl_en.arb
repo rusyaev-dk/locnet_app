@@ -151,7 +151,7 @@
   "selectConversation": "Select a chat",
   "selectConversationSubtitle": "Select a user, group or channel to start chatting",
   "passwordRequirementsTitle": "Password requirements",
-  "passwordRequirementMinLength": "At least ${min} characters",
+  "passwordRequirementMinLength": "At least {min} characters",
   "passwordRequirementUppercase": "At least one uppercase letter (A–Z)",
   "passwordRequirementLowercase": "At least one lowercase letter (a–z)",
   "passwordRequirementDigit": "At least one digit (0–9)",

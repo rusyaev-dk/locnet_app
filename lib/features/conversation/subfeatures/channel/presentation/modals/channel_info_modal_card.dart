@@ -13,123 +13,160 @@ class ChannelInfoModalCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
-    final textScheme = context.textScheme;
+
+    final String? description =
+        (conversation.description ?? '').trim().isEmpty
+            ? null
+            : conversation.description!.trim();
 
     return AppModalCard(
-      child: Container(
-        color: colorScheme.secondaryContainer,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
-              child: ChannelInfoHeader(conversation: conversation),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(15, 10, 15, 12),
+            child: ConversationInfoHeroHeader(
+              title: conversation.title,
+              subtitle: description,
             ),
-            Expanded(
-              child: Container(
-                color: colorScheme.surface,
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+          ),
+          Divider(height: 1, thickness: 1, color: colorScheme.outlineVariant),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: _ChannelActionRow(conversation: conversation),
+          ),
+          Divider(height: 1, thickness: 1, color: colorScheme.outlineVariant),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 16,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AppTileButtonGroupCard(
+                    backgroundColor: colorScheme.surfaceContainerLow,
+                    borderRadius: const BorderRadius.all(Radius.circular(16)),
                     children: [
-                      const SizedBox(height: 4),
-                      Text(
-                        "Info",
-                        style: textScheme.label.copyWith(
-                          color: colorScheme.primary,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.2,
-                          fontSize: 15,
+                      AppTileButton(
+                        title: 'Type',
+                        value: 'Channel',
+                        icon: Icons.campaign_outlined,
+                        onPressed: () {},
+                      ),
+                      if (description != null)
+                        AppTileButton(
+                          title: 'Description',
+                          value: description,
+                          icon: Icons.info_outline,
+                          onPressed: () {},
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      AppTileButtonGroupCard(
-                        children: [
-                          if ((conversation.description ?? '').trim().isNotEmpty)
-                            AppTileButton(
-                              title: 'Description',
-                              value: conversation.description!.trim(),
-                              icon: Icons.info_outline,
-                              onPressed: () {},
-                            ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
                     ],
                   ),
-                ),
+                  const SizedBox(height: 20),
+                  const _InfoSectionLabel('More'),
+                  const SizedBox(height: 8),
+                  AppTileButtonGroupCard(
+                    backgroundColor: colorScheme.surfaceContainerLow,
+                    borderRadius: const BorderRadius.all(Radius.circular(16)),
+                    children: [
+                      AppTileButton(
+                        title: 'Shared media',
+                        value: '0',
+                        icon: Icons.photo_library_outlined,
+                        onPressed: () {},
+                      ),
+                      AppTileButton(
+                        title: 'Shared files',
+                        value: '0',
+                        icon: Icons.insert_drive_file_outlined,
+                        onPressed: () {},
+                      ),
+                      AppTileButton(
+                        title: 'Shared links',
+                        value: '0',
+                        icon: Icons.link_outlined,
+                        onPressed: () {},
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class ChannelInfoHeader extends StatelessWidget {
-  const ChannelInfoHeader({required this.conversation, super.key});
+class _ChannelActionRow extends StatelessWidget {
+  const _ChannelActionRow({required this.conversation});
 
   final Channel conversation;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: ConversationInfoActionButton(
+            icon: Icons.campaign_outlined,
+            label: 'Open',
+            onPressed: () {},
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: ConversationInfoActionButton(
+            icon: Icons.notifications_off_outlined,
+            label: 'Mute',
+            onPressed: () {},
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: ConversationInfoActionButton(
+            icon: Icons.share_outlined,
+            label: 'Share',
+            onPressed: () {},
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: ConversationInfoActionButton(
+            icon: Icons.more_horiz,
+            label: 'More',
+            onPressed: () {},
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _InfoSectionLabel extends StatelessWidget {
+  const _InfoSectionLabel(this.text);
+
+  final String text;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
 
-    return Stack(
-      children: [
-        Center(
-          child: Column(
-            children: [
-              const SizedBox(height: 6),
-              ConversationAvatar(
-                text: conversation.title,
-                size: 85,
-              ),
-              const SizedBox(height: 10),
-              Text(
-                conversation.title,
-                textAlign: TextAlign.center,
-                style: textScheme.headline.copyWith(
-                  color: colorScheme.onSurface,
-                  fontSize: 17,
-                ),
-              ),
-              if ((conversation.description ?? '').trim().isNotEmpty) ...[
-                const SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    conversation.description!.trim(),
-                    textAlign: TextAlign.center,
-                    style: textScheme.label.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                      fontSize: 14,
-                    ),
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-              const SizedBox(height: 12),
-            ],
-          ),
+    return Padding(
+      padding: const EdgeInsets.only(left: 4),
+      child: Text(
+        text.toUpperCase(),
+        style: textScheme.caption.copyWith(
+          color: colorScheme.onSurfaceVariant,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.6,
         ),
-        Align(
-          alignment: Alignment.topRight,
-          child: RoundedIconButton(
-            icon: Icons.close,
-            foregroundColor: colorScheme.onSurfaceVariant,
-            onPressed: () => Navigator.of(context).pop(),
-            tooltip: 'Close',
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

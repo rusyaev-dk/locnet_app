@@ -10,14 +10,16 @@ import 'package:locnet_app/mock/mock.dart';
 final class MockGroupMessageRepo implements IGroupMessageRepo {
   MockGroupMessageRepo({
     required MockInMemoryBackend backendStorage,
-    required StreamController<GroupConversationMessageUpdateRec>
-        messagesUpdatesController,
-  }) : _backendStorage = backendStorage,
-       _messagesUpdatesController = messagesUpdatesController;
+  }) : _backendStorage = backendStorage;
 
   final MockInMemoryBackend _backendStorage;
-  final StreamController<GroupConversationMessageUpdateRec>
-      _messagesUpdatesController;
+
+  static final StreamController<GroupConversationMessageUpdateRec>
+      _messagesUpdatesController =
+      StreamController<GroupConversationMessageUpdateRec>.broadcast();
+
+  static Stream<GroupConversationMessageUpdateRec> get messagesUpdates =>
+      _messagesUpdatesController.stream;
 
   @override
   Future<GroupMessage> sendMessage({required GroupMessage message}) async {

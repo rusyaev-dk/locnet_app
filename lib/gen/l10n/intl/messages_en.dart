@@ -20,10 +20,11 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
-  static String m0(min) => "At least \$${min} characters";
+  static String m0(min) => "At least ${min} characters";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+    "aboutApp": MessageLookupByLibrary.simpleMessage("About"),
     "accountStatus": MessageLookupByLibrary.simpleMessage("Account status"),
     "alreadyRegisteredQuestion": MessageLookupByLibrary.simpleMessage(
       "Already registered?",
@@ -66,6 +67,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "authorization": MessageLookupByLibrary.simpleMessage("Authorization"),
     "back": MessageLookupByLibrary.simpleMessage("Back"),
     "blockCompanion": MessageLookupByLibrary.simpleMessage("Block"),
+    "brightnessTitle": MessageLookupByLibrary.simpleMessage("Brightness"),
     "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
     "charactersCountViolationException": MessageLookupByLibrary.simpleMessage(
       "Invalid number of characters",
@@ -76,6 +78,11 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "clear": MessageLookupByLibrary.simpleMessage("Clear"),
     "close": MessageLookupByLibrary.simpleMessage("Close"),
+    "colorSchemeBlue": MessageLookupByLibrary.simpleMessage("Blue"),
+    "colorSchemeDefault": MessageLookupByLibrary.simpleMessage("Default"),
+    "colorSchemeGreen": MessageLookupByLibrary.simpleMessage("Green"),
+    "colorSchemePurple": MessageLookupByLibrary.simpleMessage("Purple"),
+    "colorSchemeTitle": MessageLookupByLibrary.simpleMessage("Color scheme"),
     "companionStatusOffline": MessageLookupByLibrary.simpleMessage("Offline"),
     "companionStatusOnline": MessageLookupByLibrary.simpleMessage("Online"),
     "confirm": MessageLookupByLibrary.simpleMessage("Confirm"),
@@ -272,6 +279,32 @@ class MessageLookup extends MessageLookupByLibrary {
     "sessionUpdatedAt": MessageLookupByLibrary.simpleMessage("Updated at"),
     "sessionUserId": MessageLookupByLibrary.simpleMessage("User ID"),
     "settings": MessageLookupByLibrary.simpleMessage("Settings"),
+    "settingsChats": MessageLookupByLibrary.simpleMessage("Chats"),
+    "settingsChatsAppearance": MessageLookupByLibrary.simpleMessage(
+      "Appearance",
+    ),
+    "settingsChatsShortcuts": MessageLookupByLibrary.simpleMessage(
+      "Keyboard shortcuts",
+    ),
+    "settingsChatsShortcutsDescription": MessageLookupByLibrary.simpleMessage(
+      "Shortcuts will be available in a future update.",
+    ),
+    "settingsLanguage": MessageLookupByLibrary.simpleMessage("Language"),
+    "settingsMyProfile": MessageLookupByLibrary.simpleMessage("My profile"),
+    "settingsMyProfileDescription": MessageLookupByLibrary.simpleMessage(
+      "View and edit your profile",
+    ),
+    "settingsNotificationsAndSounds": MessageLookupByLibrary.simpleMessage(
+      "Notifications and sounds",
+    ),
+    "settingsNotificationsPlaceholder": MessageLookupByLibrary.simpleMessage(
+      "Configure notifications and sounds",
+    ),
+    "settingsPrivacy": MessageLookupByLibrary.simpleMessage("Privacy"),
+    "settingsPrivacyPlaceholder": MessageLookupByLibrary.simpleMessage(
+      "Session and security",
+    ),
+    "settingsSound": MessageLookupByLibrary.simpleMessage("Sound"),
     "share": MessageLookupByLibrary.simpleMessage("Share"),
     "signIn": MessageLookupByLibrary.simpleMessage("Sign in"),
     "storage": MessageLookupByLibrary.simpleMessage("Storage"),
@@ -297,31 +330,5 @@ class MessageLookup extends MessageLookupByLibrary {
     "users": MessageLookupByLibrary.simpleMessage("Users"),
     "yesLabel": MessageLookupByLibrary.simpleMessage("Yes"),
     "you": MessageLookupByLibrary.simpleMessage("You"),
-    "aboutApp": MessageLookupByLibrary.simpleMessage("About"),
-    "settingsMyProfile": MessageLookupByLibrary.simpleMessage("My profile"),
-    "settingsNotificationsAndSounds": MessageLookupByLibrary.simpleMessage(
-      "Notifications and sounds",
-    ),
-    "settingsPrivacy": MessageLookupByLibrary.simpleMessage("Privacy"),
-    "settingsChats": MessageLookupByLibrary.simpleMessage("Chats"),
-    "settingsLanguage": MessageLookupByLibrary.simpleMessage("Language"),
-    "settingsMyProfileDescription": MessageLookupByLibrary.simpleMessage(
-      "View and edit your profile",
-    ),
-    "settingsNotificationsPlaceholder": MessageLookupByLibrary.simpleMessage(
-      "Configure notifications and sounds",
-    ),
-    "settingsPrivacyPlaceholder": MessageLookupByLibrary.simpleMessage(
-      "Session and security",
-    ),
-    "settingsChatsAppearance": MessageLookupByLibrary.simpleMessage(
-      "Appearance",
-    ),
-    "settingsChatsShortcuts": MessageLookupByLibrary.simpleMessage(
-      "Keyboard shortcuts",
-    ),
-    "settingsChatsShortcutsDescription": MessageLookupByLibrary.simpleMessage(
-      "Shortcuts will be available in a future update.",
-    ),
   };
 }

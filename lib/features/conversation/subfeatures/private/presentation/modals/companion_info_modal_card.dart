@@ -13,114 +13,96 @@ class CompanionInfoModalCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
-    final textScheme = context.textScheme;
+
+    final bool hasDescription =
+        (companion.description ?? '').trim().isNotEmpty;
 
     return AppModalCard(
-      child: Container(
-        color: colorScheme.secondaryContainer,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
-              child: CompanionInfoHeader(companion: companion),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(15, 10, 15, 12),
+            child: CompanionInfoHeader(companion: companion),
+          ),
+          Divider(height: 1, thickness: 1, color: colorScheme.outlineVariant),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: CompanionInfoActionRow(
+              onChatPressed: () {},
+              onMutePressed: () {},
+              onCallPressed: () {},
+              onMorePressed: () {},
             ),
-            Expanded(
-              child: Container(
-                color: colorScheme.surface,
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+          ),
+          Divider(height: 1, thickness: 1, color: colorScheme.outlineVariant),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 16,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AppTileButtonGroupCard(
+                    backgroundColor: colorScheme.surfaceContainerLow,
+                    borderRadius: const BorderRadius.all(Radius.circular(16)),
                     children: [
-                      const SizedBox(height: 4),
-                      CompanionInfoActionRow(
-                        onChatPressed: () {},
-                        onMutePressed: () {},
-                        onCallPressed: () {},
-                        onMorePressed: () {},
+                      AppTileButton(
+                        title: 'Username',
+                        value: '@${companion.username}',
+                        icon: Icons.alternate_email,
+                        onPressed: () {},
                       ),
-                      const SizedBox(height: 16),
-                      Text(
-                        "Info",
-                        style: textScheme.label.copyWith(
-                          color: colorScheme.primary,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.2,
-                          fontSize: 15,
+                      AppTileButton(
+                        title: 'Language',
+                        value: companion.languageCode,
+                        icon: Icons.language,
+                        onPressed: () {},
+                      ),
+                      if (hasDescription)
+                        AppTileButton(
+                          title: 'About',
+                          value: companion.description!.trim(),
+                          icon: Icons.info_outline,
+                          onPressed: () {},
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      AppTileButtonGroupCard(
-                        children: [
-                          AppTileButton(
-                            title: 'Username',
-                            value: '@${companion.username}',
-                            icon: Icons.alternate_email,
-                            onPressed: () {},
-                          ),
-                          AppTileButton(
-                            title: 'Language',
-                            value: companion.languageCode,
-                            icon: Icons.language,
-                            onPressed: () {},
-                          ),
-                          if ((companion.description ?? '').trim().isNotEmpty)
-                            AppTileButton(
-                              title: 'About',
-                              value: companion.description!.trim(),
-                              icon: Icons.info_outline,
-                              onPressed: () {},
-                            ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        "More",
-                        style: textScheme.label.copyWith(
-                          color: colorScheme.primary,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.2,
-                          fontSize: 15,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      AppTileButtonGroupCard(
-                        children: [
-                          AppTileButton(
-                            title: 'Shared media',
-                            value: '0',
-                            icon: Icons.photo_library_outlined,
-                            onPressed: () {},
-                          ),
-
-                          AppTileButton(
-                            title: 'Shared files',
-                            value: '0',
-                            icon: Icons.insert_drive_file_outlined,
-                            onPressed: () {},
-                          ),
-
-                          AppTileButton(
-                            title: 'Shared links',
-                            value: '0',
-                            icon: Icons.link_outlined,
-                            onPressed: () {},
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 8),
                     ],
                   ),
-                ),
+                  const SizedBox(height: 20),
+                  const _InfoSectionLabel('More'),
+                  const SizedBox(height: 8),
+                  AppTileButtonGroupCard(
+                    backgroundColor: colorScheme.surfaceContainerLow,
+                    borderRadius: const BorderRadius.all(Radius.circular(16)),
+                    children: [
+                      AppTileButton(
+                        title: 'Shared media',
+                        value: '0',
+                        icon: Icons.photo_library_outlined,
+                        onPressed: () {},
+                      ),
+                      AppTileButton(
+                        title: 'Shared files',
+                        value: '0',
+                        icon: Icons.insert_drive_file_outlined,
+                        onPressed: () {},
+                      ),
+                      AppTileButton(
+                        title: 'Shared links',
+                        value: '0',
+                        icon: Icons.link_outlined,
+                        onPressed: () {},
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -176,6 +158,30 @@ class CompanionInfoActionRow extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _InfoSectionLabel extends StatelessWidget {
+  const _InfoSectionLabel(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final textScheme = context.textScheme;
+
+    return Padding(
+      padding: const EdgeInsets.only(left: 4),
+      child: Text(
+        text.toUpperCase(),
+        style: textScheme.caption.copyWith(
+          color: colorScheme.onSurfaceVariant,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.6,
+        ),
+      ),
     );
   }
 }

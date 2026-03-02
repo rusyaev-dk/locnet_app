@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/data/data.dart';
 import 'package:locnet_app/di/di.dart';
@@ -7,9 +5,6 @@ import 'package:locnet_app/features/auth/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/channel/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/group/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/data/data.dart';
-import 'package:locnet_app/features/conversation/subfeatures/channel/domain/domain.dart';
-import 'package:locnet_app/features/conversation/subfeatures/group/domain/domain.dart';
-import 'package:locnet_app/features/conversation/subfeatures/private/domain/domain.dart';
 import 'package:locnet_app/features/conversations_list/data/data.dart';
 import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/data/repositories/repositories.dart';
 import 'package:locnet_app/features/message/data/data.dart';
@@ -27,30 +22,6 @@ final class DevEnvPreset implements IAppEnvPreset {
 
   final AppScope _appScope;
   final MockInMemoryBackend _mockInMemoryBackend;
-
-  StreamController<PrivateConversationMessageUpdateRec>?
-      _privateMessagesUpdatesController;
-
-  StreamController<PrivateConversationMessageUpdateRec>
-      get _privateMessagesUpdates =>
-      _privateMessagesUpdatesController ??=
-          StreamController<PrivateConversationMessageUpdateRec>.broadcast();
-
-  StreamController<GroupConversationMessageUpdateRec>?
-      _groupMessagesUpdatesController;
-
-  StreamController<GroupConversationMessageUpdateRec>
-      get _groupMessagesUpdates =>
-      _groupMessagesUpdatesController ??=
-          StreamController<GroupConversationMessageUpdateRec>.broadcast();
-
-  StreamController<ChannelPublicationUpdateRec>?
-      _channelPublicationsUpdatesController;
-
-  StreamController<ChannelPublicationUpdateRec>
-      get _channelPublicationsUpdates =>
-      _channelPublicationsUpdatesController ??=
-          StreamController<ChannelPublicationUpdateRec>.broadcast();
 
   @override
   IAuthRepo createAuthRepo() {
@@ -93,7 +64,6 @@ final class DevEnvPreset implements IAppEnvPreset {
   IChannelRepo createChannelRepo() {
     return MockChannelRepo(
       backendStorage: _mockInMemoryBackend,
-      publicationsUpdatesController: _channelPublicationsUpdates,
     );
   }
 
@@ -101,7 +71,6 @@ final class DevEnvPreset implements IAppEnvPreset {
   IGroupRepo createGroupConversationRepo() {
     return MockGroupRepo(
       backendStorage: _mockInMemoryBackend,
-      messagesUpdatesController: _groupMessagesUpdates,
     );
   }
 
@@ -109,7 +78,6 @@ final class DevEnvPreset implements IAppEnvPreset {
   IPrivateMessageRepo createPrivateMessageRepo() {
     return MockPrivateMessageRepo(
       backendStorage: _mockInMemoryBackend,
-      messagesUpdatesController: _privateMessagesUpdates,
     );
   }
 
@@ -117,7 +85,6 @@ final class DevEnvPreset implements IAppEnvPreset {
   IGroupMessageRepo createGroupMessageRepo() {
     return MockGroupMessageRepo(
       backendStorage: _mockInMemoryBackend,
-      messagesUpdatesController: _groupMessagesUpdates,
     );
   }
 
@@ -125,7 +92,6 @@ final class DevEnvPreset implements IAppEnvPreset {
   IChannelPublicationRepo createChannelPublicationRepo() {
     return MockChannelPublicationRepo(
       backendStorage: _mockInMemoryBackend,
-      publicationsUpdatesController: _channelPublicationsUpdates,
     );
   }
 
@@ -133,7 +99,6 @@ final class DevEnvPreset implements IAppEnvPreset {
   IPrivateConversationRepo createPrivateConversationRepo() {
     return MockPrivateConversationRepo(
       backendStorage: _mockInMemoryBackend,
-      messagesUpdatesController: _privateMessagesUpdates,
     );
   }
 
