@@ -92,17 +92,25 @@ class _App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<SettingsCubit, SettingsState, (Locale, AppThemeType)>(
-      selector: (state) {
-        switch (state) {
-          case SettingsLoadedState():
-            return (state.locale, state.themeType);
+    return BlocSelector<SettingsCubit, SettingsState, SettingsLoadedState?>(
+      selector: (state) => state is SettingsLoadedState ? state : null,
+      builder: (context, loaded) {
+        final locale = loaded?.locale ?? const Locale(AppLanguages.ru);
+        final themeType = loaded?.themeType ?? AppThemeType.light;
+        final textScaleIndex = loaded?.textScaleIndex ?? 1;
+
+        final double textScaleFactor;
+        switch (textScaleIndex) {
+          case 0:
+            textScaleFactor = 0.9;
+            break;
+          case 2:
+            textScaleFactor = 1.1;
+            break;
+          case 1:
           default:
-            return (const Locale(AppLanguages.ru), AppThemeType.light);
+            textScaleFactor = 1.0;
         }
-      },
-      builder: (context, tuple) {
-        final (locale, themeType) = tuple;
         final appTheme = AppThemeData(accentIndex: themeType.accentIndex);
         final theme = appTheme.getLightTheme();
         final darkTheme = appTheme.getDarkTheme();
@@ -123,6 +131,15 @@ class _App extends StatelessWidget {
           themeMode: themeMode,
           debugShowCheckedModeBanner: false,
           routerConfig: router,
+          builder: (context, child) {
+            final mediaQuery = MediaQuery.of(context);
+            return MediaQuery(
+              data: mediaQuery.copyWith(
+                textScaler: TextScaler.linear(textScaleFactor),
+              ),
+              child: child ?? const SizedBox.shrink(),
+            );
+          },
         );
       },
     );

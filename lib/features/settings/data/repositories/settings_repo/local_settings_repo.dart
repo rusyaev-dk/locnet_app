@@ -8,6 +8,7 @@ class LocalSettingsRepo implements ISettingsRepo {
   final IKeyValueStorage _storage;
   final String _languageCodeKey = "language_code";
   final String _themeKey = "theme";
+  final String _textScaleKey = "text_scale";
 
   @override
   Future<bool> changeLanguage({required String newLanguageCode}) async {
@@ -32,5 +33,19 @@ class LocalSettingsRepo implements ISettingsRepo {
   Future<String> getCurrentThemeMode() async {
     return await _storage.read<String>(key: _themeKey) ??
         AppConfig.defaultThemeMode;
+  }
+
+  @override
+  Future<bool> changeTextScale({required String newTextScaleCode}) async {
+    return await _storage.write<String>(
+      key: _textScaleKey,
+      value: newTextScaleCode,
+    );
+  }
+
+  @override
+  Future<String> getCurrentTextScaleCode() async {
+    return await _storage.read<String>(key: _textScaleKey) ??
+        AppConfig.defaultTextScale;
   }
 }

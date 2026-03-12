@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/conversation/subfeatures/group/group.dart';
+import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversation/presentation/presentation.dart';
 import 'package:locnet_app/features/conversation/subfeatures/group/presentation/modals/group_info_modal_card.dart';
+import 'package:locnet_app/features/conversation/subfeatures/conversation_tools/conversation_tools.dart';
 
 enum _GroupHeaderMenuAction {
   toggleNotifications,
@@ -14,11 +16,13 @@ enum _GroupHeaderMenuAction {
 
 class GroupHeader extends StatefulWidget {
   const GroupHeader({
+    required this.conversationId,
     required this.conversation,
     required this.participantsCount,
     super.key,
   });
 
+  final String conversationId;
   final Group conversation;
   final int participantsCount;
 
@@ -31,110 +35,133 @@ class _GroupHeaderState extends State<GroupHeader> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = context.colorScheme;
-    final textScheme = context.textScheme;
     final l10n = context.l10n;
 
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTap: () {
-          showGeneralDialog(
-            context: context,
-            transitionBuilder: slideFadeDialogTransition,
-            pageBuilder: (context, _, _) {
-              return GroupInfoModalCard(
-                conversation: widget.conversation,
-              );
-            },
-          );
+    final String subtitle = '${widget.participantsCount} participants';
+
+    return ConversationProfileHeaderBase(
+      title: widget.conversation.title,
+      avatarText: widget.conversation.title,
+      subtitle: subtitle,
+      onTap: () {
+        showGeneralDialog(
+          context: context,
+          transitionBuilder: slideFadeDialogTransition,
+          pageBuilder: (context, _, _) {
+            return GroupInfoModalCard(
+              conversation: widget.conversation,
+            );
+          },
+        );
+      },
+      trailingActions: [
+        _HeaderIconButton(
+          icon: Icons.search,
+          onPressed: () {
+            showConversationSearchSheet(
+              context: context,
+              conversationId: widget.conversationId,
+              conversationType: ConversationType.group,
+            );
+          },
+        ),
+        _HeaderIconButton(
+          icon: Icons.photo_outlined,
+          onPressed: () {
+            showConversationSharedMediaSheet(
+              context: context,
+              conversationId: widget.conversationId,
+              conversationType: ConversationType.group,
+            );
+          },
+        ),
+      ],
+      menuButton: PopupMenuButton<_GroupHeaderMenuAction>(
+        icon: const Icon(Icons.more_vert),
+        onSelected: (action) async {
+          // TODO: Implement GroupConversationOptionsCubit
+          // final cubit = context.read<GroupConversationOptionsCubit>();
+
+          switch (action) {
+            case _GroupHeaderMenuAction.toggleNotifications:
+              setState(() {
+                areNotificationsEnabled = !areNotificationsEnabled;
+              });
+
+              // await cubit.toggleNotifications(
+              //   newStatus: areNotificationsEnabled,
+              // );
+              break;
+
+            case _GroupHeaderMenuAction.viewGroupInfo:
+              // Already handled by onTap
+              break;
+
+            case _GroupHeaderMenuAction.leaveGroup:
+              // await cubit.leaveGroup();
+              break;
+
+            case _GroupHeaderMenuAction.deleteGroup:
+              // await cubit.deleteGroup();
+              break;
+          }
         },
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          color: colorScheme.surfaceBright,
-          child: Row(
-            children: [
-              ConversationAvatar(
-                text: widget.conversation.title,
-              ), // TODO: passthrough real url
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.conversation.title,
-                      style: textScheme.headline.copyWith(fontSize: 15),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Text(
-                      '${widget.participantsCount} participants',
-                      style: textScheme.label,
-                    ),
-                  ],
-                ),
+        itemBuilder: (context) {
+          return [
+            PopupMenuItem(
+              value: _GroupHeaderMenuAction.toggleNotifications,
+              child: Text(
+                areNotificationsEnabled
+                    ? l10n.toggleNotificationsOff
+                    : l10n.toggleNotificationsOn,
               ),
-              PopupMenuButton<_GroupHeaderMenuAction>(
-                icon: const Icon(Icons.more_vert),
-                color: colorScheme.surfaceBright,
-                onSelected: (action) async {
-                  // TODO: Implement GroupConversationOptionsCubit
-                  // final cubit = context.read<GroupConversationOptionsCubit>();
+            ),
+            PopupMenuItem(
+              value: _GroupHeaderMenuAction.viewGroupInfo,
+              child: const Text('View Group Info'),
+            ),
+            PopupMenuItem(
+              value: _GroupHeaderMenuAction.leaveGroup,
+              child: const Text('Leave Group'),
+            ),
+            PopupMenuItem(
+              value: _GroupHeaderMenuAction.deleteGroup,
+              child: const Text('Delete Group'),
+            ),
+          ];
+        },
+      ),
+    );
+  }
+}
 
-                  switch (action) {
-                    case _GroupHeaderMenuAction.toggleNotifications:
-                      setState(() {
-                        areNotificationsEnabled = !areNotificationsEnabled;
-                      });
+class _HeaderIconButton extends StatelessWidget {
+  const _HeaderIconButton({
+    required this.icon,
+    required this.onPressed,
+  });
 
-                      // await cubit.toggleNotifications(
-                      //   newStatus: areNotificationsEnabled,
-                      // );
-                      break;
+  final IconData icon;
+  final VoidCallback onPressed;
 
-                    case _GroupHeaderMenuAction.viewGroupInfo:
-                      // Already handled by onTap
-                      break;
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
 
-                    case _GroupHeaderMenuAction.leaveGroup:
-                      // await cubit.leaveGroup();
-                      break;
-
-                    case _GroupHeaderMenuAction.deleteGroup:
-                      // await cubit.deleteGroup();
-                      break;
-                  }
-                },
-                itemBuilder: (context) {
-                  return [
-                    PopupMenuItem(
-                      value: _GroupHeaderMenuAction.toggleNotifications,
-                      child: Text(
-                        areNotificationsEnabled
-                            ? l10n.toggleNotificationsOff
-                            : l10n.toggleNotificationsOn,
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: _GroupHeaderMenuAction.viewGroupInfo,
-                      child: const Text('View Group Info'),
-                    ),
-                    PopupMenuItem(
-                      value: _GroupHeaderMenuAction.leaveGroup,
-                      child: const Text('Leave Group'),
-                    ),
-                    PopupMenuItem(
-                      value: _GroupHeaderMenuAction.deleteGroup,
-                      child: const Text('Delete Group'),
-                    ),
-                  ];
-                },
-              ),
-            ],
-          ),
+    return Padding(
+      padding: const EdgeInsets.only(right: 4),
+      child: IconButton(
+        tooltip: null,
+        visualDensity: VisualDensity.compact,
+        iconSize: 20,
+        splashRadius: 18,
+        onPressed: onPressed,
+        icon: Icon(
+          icon,
+          color: colorScheme.onSurfaceVariant,
         ),
       ),
     );
   }
 }
+

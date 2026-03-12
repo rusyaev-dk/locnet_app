@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/conversation/presentation/presentation.dart';
-import 'package:locnet_app/features/conversation/subfeatures/private/presentation/presentation.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
 class CompanionInfoModalCard extends StatelessWidget {
@@ -23,7 +22,10 @@ class CompanionInfoModalCard extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(15, 10, 15, 12),
-            child: CompanionInfoHeader(companion: companion),
+            child: ConversationInfoHeroHeader(
+              title: "${companion.firstName} ${companion.lastName}",
+              subtitle: companion.description,
+            ),
           ),
           Divider(height: 1, thickness: 1, color: colorScheme.outlineVariant),
           Padding(

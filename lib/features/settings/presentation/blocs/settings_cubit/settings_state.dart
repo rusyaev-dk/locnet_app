@@ -26,6 +26,7 @@ final class SettingsLoadedState extends SettingsState {
     required this.themeMode,
     required this.appTheme,
     required this.themeType,
+    required this.textScaleIndex,
     super.failure,
   });
 
@@ -33,6 +34,7 @@ final class SettingsLoadedState extends SettingsState {
   final ThemeMode themeMode;
   final AppTheme appTheme;
   final AppThemeType themeType;
+  final int textScaleIndex;
 
   SettingsLoadedState copyWith({
     Locale? locale,
@@ -40,18 +42,21 @@ final class SettingsLoadedState extends SettingsState {
     AppTheme? appTheme,
     AppThemeType? themeType,
     Object? failure,
+    int? textScaleIndex,
   }) {
     return SettingsLoadedState(
       locale: locale ?? this.locale,
       themeMode: themeMode ?? this.themeMode,
       appTheme: appTheme ?? this.appTheme,
       themeType: themeType ?? this.themeType,
+      textScaleIndex: textScaleIndex ?? this.textScaleIndex,
       failure: failure ?? this.failure,
     );
   }
 
   @override
-  List<Object?> get props => <Object?>[locale, themeMode, appTheme, themeType, failure];
+  List<Object?> get props =>
+      <Object?>[locale, themeMode, appTheme, themeType, textScaleIndex, failure];
 }
 
 final class SettingsFailureState extends SettingsState {

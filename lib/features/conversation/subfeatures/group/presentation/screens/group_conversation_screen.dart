@@ -122,6 +122,7 @@ class GroupConversationScreen extends StatelessWidget {
                       return Column(
                         children: [
                           GroupHeader(
+                            conversationId: conversationId,
                             conversation: state.conversation,
                             participantsCount: state.participants.length,
                           ),

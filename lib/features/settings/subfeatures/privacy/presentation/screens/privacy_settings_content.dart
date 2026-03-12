@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
-import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/auth/domain/domain.dart';
-import 'package:locnet_app/features/profile/presentation/modals/modals.dart';
 import 'package:locnet_app/features/profile/presentation/components/session_info.dart';
 import 'package:locnet_app/features/settings/presentation/components/components.dart';
+import 'package:locnet_app/features/settings/subfeatures/language/presentation/components/components.dart';
 
 /// Privacy & security section.
 class PrivacySettingsContent extends StatefulWidget {
@@ -130,100 +129,15 @@ class _PrivacyBody extends StatelessWidget {
           ),
           const SizedBox(height: 20),
 
-          // ── Данные ────────────────────────────────────────
-          SettingsGroupCard(
-            title: 'Данные',
-            children: [
-              SettingsSwitchTile(
-                title: 'Разрешить сбор аналитики',
-                subtitle: 'Анонимная статистика для улучшения сервиса',
-                value: analytics,
-                onChanged: onAnalyticsChanged,
-              ),
-              SettingsSwitchTile(
-                title: 'Персонализация ответов',
-                value: personalization,
-                onChanged: onPersonalizationChanged,
-              ),
-              SettingsSwitchTile(
-                title: 'Использовать данные для улучшения сервиса',
-                value: dataImprovement,
-                onChanged: onDataImprovementChanged,
-              ),
-              SettingsActionTile(
-                title: 'Запросить копию данных',
-                leadingIcon: Icons.download_outlined,
-                onTap: () {},
-              ),
-            ],
-          ),
           const SizedBox(height: 20),
 
-          // ── Безопасность ─────────────────────────────────
-          SettingsGroupCard(
-            title: 'Безопасность',
+          // ── О приложении ──────────────────────────────────
+          const SettingsGroupCard(
+            title: 'О приложении',
             children: [
-              SettingsSwitchTile(
-                title: 'Двухфакторная аутентификация',
-                subtitle: 'Дополнительный уровень защиты аккаунта',
-                value: twoFactor,
-                onChanged: onTwoFactorChanged,
-              ),
-              SettingsNavTile(
-                title: 'Управление активными сессиями',
-                onTap: () {
-                  showGeneralDialog(
-                    context: context,
-                    barrierColor: Colors.transparent,
-                    transitionBuilder: slideFadeDialogTransition,
-                    pageBuilder: (dialogContext, _, __) {
-                      return SessionModalCard(session: session);
-                    },
-                  );
-                },
-              ),
-              SettingsActionTile(
-                title: 'Выйти со всех устройств',
-                leadingIcon: Icons.logout,
-                destructive: true,
-                onTap: () {},
-              ),
-              SettingsSwitchTile(
-                title: 'Блокировка приложения',
-                subtitle: 'Запрашивать биометрию при открытии',
-                value: appLock,
-                onChanged: onAppLockChanged,
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          const SettingsInfoCard(
-            message:
-                'Выход со всех устройств завершит все активные сессии и потребует повторного входа.',
-            icon: Icons.warning_amber_outlined,
-            variant: SettingsInfoCardVariant.warning,
-          ),
-          const SizedBox(height: 20),
-
-          // ── Контент ───────────────────────────────────────
-          SettingsGroupCard(
-            title: 'Контент',
-            children: [
-              SettingsSwitchTile(
-                title: 'Фильтр чувствительного контента',
-                value: sensitiveFilter,
-                onChanged: onSensitiveFilterChanged,
-              ),
-              SettingsSwitchTile(
-                title: 'Скрывать предпросмотр уведомлений',
-                value: hideNotificationPreview,
-                onChanged: onHideNotificationPreviewChanged,
-              ),
-              SettingsSegmentedTile(
-                title: 'Уровень модерации',
-                options: const ['Мягкий', 'Стандарт', 'Строгий'],
-                selectedIndex: moderationLevel,
-                onSelected: onModerationLevelChanged,
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: AppVersionWidget(),
               ),
             ],
           ),

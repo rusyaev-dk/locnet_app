@@ -18,11 +18,6 @@ class AppearanceSettingsContent extends StatefulWidget {
 class _AppearanceSettingsContentState
     extends State<AppearanceSettingsContent> {
   bool _dynamicTheme = false;
-  int _densityIndex = 1;
-  int _textSizeIndex = 1;
-  bool _animations = true;
-  bool _reducedMotion = false;
-  bool _autoAccent = true;
 
   @override
   Widget build(BuildContext context) {
@@ -43,11 +38,7 @@ class _AppearanceSettingsContentState
               isLight: state.themeType.isLight,
               accentIndex: state.themeType.accentIndex,
               dynamicTheme: _dynamicTheme,
-              densityIndex: _densityIndex,
-              textSizeIndex: _textSizeIndex,
-              animations: _animations,
-              reducedMotion: _reducedMotion,
-              autoAccent: _autoAccent,
+              textSizeIndex: state.textScaleIndex,
               onBrightnessChanged: (light) {
                 final newType = AppThemeType.fromAccentAndBrightness(
                   accentIndex: state.themeType.accentIndex,
@@ -64,12 +55,8 @@ class _AppearanceSettingsContentState
               },
               onDynamicThemeChanged: (v) =>
                   setState(() => _dynamicTheme = v),
-              onDensityChanged: (i) => setState(() => _densityIndex = i),
-              onTextSizeChanged: (i) => setState(() => _textSizeIndex = i),
-              onAnimationsChanged: (v) => setState(() => _animations = v),
-              onReducedMotionChanged: (v) =>
-                  setState(() => _reducedMotion = v),
-              onAutoAccentChanged: (v) => setState(() => _autoAccent = v),
+              onTextSizeChanged: (i) =>
+                  context.read<SettingsCubit>().changeTextScale(i),
             ),
         };
       },
@@ -82,37 +69,21 @@ class _AppearanceBody extends StatelessWidget {
     required this.isLight,
     required this.accentIndex,
     required this.dynamicTheme,
-    required this.densityIndex,
     required this.textSizeIndex,
-    required this.animations,
-    required this.reducedMotion,
-    required this.autoAccent,
     required this.onBrightnessChanged,
     required this.onAccentChanged,
     required this.onDynamicThemeChanged,
-    required this.onDensityChanged,
     required this.onTextSizeChanged,
-    required this.onAnimationsChanged,
-    required this.onReducedMotionChanged,
-    required this.onAutoAccentChanged,
   });
 
   final bool isLight;
   final int accentIndex;
   final bool dynamicTheme;
-  final int densityIndex;
   final int textSizeIndex;
-  final bool animations;
-  final bool reducedMotion;
-  final bool autoAccent;
   final ValueChanged<bool> onBrightnessChanged;
   final ValueChanged<int> onAccentChanged;
   final ValueChanged<bool> onDynamicThemeChanged;
-  final ValueChanged<int> onDensityChanged;
   final ValueChanged<int> onTextSizeChanged;
-  final ValueChanged<bool> onAnimationsChanged;
-  final ValueChanged<bool> onReducedMotionChanged;
-  final ValueChanged<bool> onAutoAccentChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -158,28 +129,10 @@ class _AppearanceBody extends StatelessWidget {
             title: 'Интерфейс',
             children: [
               SettingsSegmentedTile(
-                title: 'Плотность интерфейса',
-                options: const ['Компактная', 'Стандартная', 'Расширенная'],
-                selectedIndex: densityIndex,
-                onSelected: onDensityChanged,
-              ),
-              SettingsSegmentedTile(
                 title: 'Размер текста',
                 options: const ['S', 'M', 'L'],
                 selectedIndex: textSizeIndex,
                 onSelected: onTextSizeChanged,
-              ),
-              SettingsSwitchTile(
-                title: 'Анимации интерфейса',
-                value: animations,
-                onChanged: onAnimationsChanged,
-              ),
-              SettingsSwitchTile(
-                title: 'Сниженное движение',
-                subtitle: 'Минимизировать движущиеся элементы',
-                value: reducedMotion,
-                enabled: animations,
-                onChanged: onReducedMotionChanged,
               ),
             ],
           ),
@@ -195,11 +148,6 @@ class _AppearanceBody extends StatelessWidget {
                   selectedAccentIndex: accentIndex,
                   onAccentSelected: onAccentChanged,
                 ),
-              ),
-              SettingsSwitchTile(
-                title: 'Автоматически адаптировать акцент',
-                value: autoAccent,
-                onChanged: onAutoAccentChanged,
               ),
             ],
           ),

@@ -104,12 +104,14 @@ class SettingsCubit extends Cubit<SettingsState> {
         _settingsInteractor.getCurrentThemeMode(),
         _themeConstructorInteractor.loadAppTheme(),
         _settingsInteractor.getCurrentThemeType(),
+        _settingsInteractor.getCurrentTextScaleCode(),
       ]);
 
       final String localeCode = results[0] as String;
       final String themeCode = results[1] as String;
       final AppTheme appTheme = results[2] as AppTheme;
       final AppThemeType themeType = results[3] as AppThemeType;
+      final String textScaleCode = results[4] as String;
 
       emit(
         SettingsLoadedState(
@@ -117,6 +119,7 @@ class SettingsCubit extends Cubit<SettingsState> {
           themeMode: _decodeThemeMode(themeCode),
           appTheme: appTheme,
           themeType: themeType,
+          textScaleIndex: _decodeTextScaleCode(textScaleCode),
         ),
       );
     } catch (e, st) {
@@ -186,6 +189,65 @@ class SettingsCubit extends Cubit<SettingsState> {
       case 'system':
       default:
         return ThemeMode.system;
+    }
+  }
+
+  Future<void> changeTextScale(int newIndex) async {
+    try {
+      if (state is! SettingsLoadedState) {
+        return;
+      }
+      final prevState = state as SettingsLoadedState;
+
+      final bool success = await _settingsInteractor.changeTextScale(
+        newTextScaleCode: _encodeTextScaleIndex(newIndex),
+      );
+
+      if (!success) {
+        final failure = AppUnknownException(
+          message: 'Failed to update text scale',
+        );
+        emit(prevState.copyWith(failure: failure));
+        _logger.exception(failure, StackTrace.current);
+        return;
+      }
+
+      if (prevState.textScaleIndex != newIndex) {
+        emit(prevState.copyWith(textScaleIndex: newIndex));
+      }
+    } catch (e, st) {
+      _logger.exception(e, st);
+      emit(
+        SettingsFailureState(
+          failure: e is AppException
+              ? e
+              : AppUnknownException(message: e.toString(), stackTrace: st),
+        ),
+      );
+    }
+  }
+
+  String _encodeTextScaleIndex(int index) {
+    switch (index) {
+      case 0:
+        return 's';
+      case 2:
+        return 'l';
+      case 1:
+      default:
+        return 'm';
+    }
+  }
+
+  int _decodeTextScaleCode(String code) {
+    switch (code) {
+      case 's':
+        return 0;
+      case 'l':
+        return 2;
+      case 'm':
+      default:
+        return 1;
     }
   }
 }

@@ -177,30 +177,6 @@ class _NotificationsBody extends StatelessWidget {
           ),
           const SizedBox(height: 20),
 
-          // ── Дополнительно ─────────────────────────────────
-          SettingsGroupCard(
-            title: 'Дополнительно',
-            children: [
-              SettingsSwitchTile(
-                title: 'Показывать превью сообщения',
-                subtitle: 'Текст в уведомлении на экране блокировки',
-                value: showPreview,
-                onChanged: onShowPreviewChanged,
-              ),
-              SettingsSwitchTile(
-                title: 'Не беспокоить',
-                subtitle: 'Временно заглушить все уведомления',
-                value: doNotDisturb,
-                onChanged: onDoNotDisturbChanged,
-              ),
-              SettingsNavTile(
-                title: 'Расписание «Не беспокоить»',
-                trailingText: 'Не задано',
-                enabled: doNotDisturb,
-                onTap: () {},
-              ),
-            ],
-          ),
           const SizedBox(height: 8),
         ],
       ),

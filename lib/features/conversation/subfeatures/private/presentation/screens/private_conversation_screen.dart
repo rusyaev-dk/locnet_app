@@ -122,7 +122,10 @@ class PrivateConversationScreen extends StatelessWidget {
 
                   return Column(
                     children: [
-                      PrivateHeader(companion: state.companion),
+                      PrivateHeader(
+                        conversationId: conversationId,
+                        companion: state.companion,
+                      ),
                       Divider(
                         height: 1,
                         thickness: 1,

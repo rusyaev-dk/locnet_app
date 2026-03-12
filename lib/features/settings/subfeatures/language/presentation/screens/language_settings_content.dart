@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/features/settings/presentation/blocs/blocs.dart';
 import 'package:locnet_app/features/settings/presentation/components/components.dart';
-import 'package:locnet_app/features/settings/subfeatures/language/presentation/components/components.dart';
 
 /// Language & region section.
 class LanguageSettingsContent extends StatefulWidget {
@@ -145,66 +144,6 @@ class _LanguageBody extends StatelessWidget {
           ),
           const SizedBox(height: 20),
 
-          // ── Разговорный язык ──────────────────────────────
-          SettingsGroupCard(
-            title: 'Разговорный язык',
-            children: [
-              SettingsSegmentedTile(
-                title: 'Язык общения',
-                options: const ['RU', 'EN', 'UZ'],
-                selectedIndex: chatLangIndex,
-                onSelected: onChatLangChanged,
-              ),
-              SettingsSwitchTile(
-                title: 'Автоопределение языка сообщения',
-                value: autoDetectMessage,
-                onChanged: onAutoDetectMessageChanged,
-              ),
-              SettingsSwitchTile(
-                title: 'Предпочитать локализованные ответы',
-                value: preferLocalized,
-                onChanged: onPreferLocalizedChanged,
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-
-          // ── Регион ────────────────────────────────────────
-          SettingsGroupCard(
-            title: 'Регион',
-            children: [
-              SettingsSegmentedTile(
-                title: 'Формат даты',
-                options: const ['ДД.ММ.ГГ', 'ММ/ДД/ГГ', 'ГГ-ММ-ДД'],
-                selectedIndex: dateFormatIndex,
-                onSelected: onDateFormatChanged,
-              ),
-              SettingsSegmentedTile(
-                title: 'Формат времени',
-                options: const ['24 ч', '12 ч'],
-                selectedIndex: timeFormatIndex,
-                onSelected: onTimeFormatChanged,
-              ),
-              SettingsSegmentedTile(
-                title: 'Формат чисел',
-                options: const ['1 000,0', '1,000.0'],
-                selectedIndex: numberFormatIndex,
-                onSelected: onNumberFormatChanged,
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-
-          // ── О приложении ──────────────────────────────────
-          const SettingsGroupCard(
-            title: 'О приложении',
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: AppVersionWidget(),
-              ),
-            ],
-          ),
           const SizedBox(height: 8),
         ],
       ),

@@ -115,6 +115,7 @@ class ChannelConversationScreen extends StatelessWidget {
                   return Column(
                     children: [
                       ChannelHeader(
+                        conversationId: conversationId,
                         conversation: state.conversation,
                         subscribersCount: state.subscribers.length,
                       ),

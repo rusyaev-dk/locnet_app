@@ -4,6 +4,7 @@ import 'package:locnet_app/core/core.dart';
 final class AppConfig {
   static const String defaultLanguageCode = AppLanguages.ru;
   static const String defaultThemeMode = "system";
+  static const String defaultTextScale = "m";
 }
 
 abstract class AppLanguages {
