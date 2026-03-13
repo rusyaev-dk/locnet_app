@@ -119,7 +119,7 @@ class SettingsCubit extends Cubit<SettingsState> {
           themeMode: _decodeThemeMode(themeCode),
           appTheme: appTheme,
           themeType: themeType,
-          textScaleIndex: _decodeTextScaleCode(textScaleCode),
+          textScaleFactor: _decodeTextScaleCode(textScaleCode),
         ),
       );
     } catch (e, st) {
@@ -192,15 +192,18 @@ class SettingsCubit extends Cubit<SettingsState> {
     }
   }
 
-  Future<void> changeTextScale(int newIndex) async {
+  Future<void> changeTextScale(double newFactor) async {
     try {
       if (state is! SettingsLoadedState) {
         return;
       }
       final prevState = state as SettingsLoadedState;
+      final clamped =
+          newFactor.clamp(0.85, 1.2);
+      final code = clamped.toStringAsFixed(2);
 
       final bool success = await _settingsInteractor.changeTextScale(
-        newTextScaleCode: _encodeTextScaleIndex(newIndex),
+        newTextScaleCode: code,
       );
 
       if (!success) {
@@ -212,8 +215,8 @@ class SettingsCubit extends Cubit<SettingsState> {
         return;
       }
 
-      if (prevState.textScaleIndex != newIndex) {
-        emit(prevState.copyWith(textScaleIndex: newIndex));
+      if ((prevState.textScaleFactor - clamped).abs() > 0.001) {
+        emit(prevState.copyWith(textScaleFactor: clamped));
       }
     } catch (e, st) {
       _logger.exception(e, st);
@@ -227,27 +230,17 @@ class SettingsCubit extends Cubit<SettingsState> {
     }
   }
 
-  String _encodeTextScaleIndex(int index) {
-    switch (index) {
-      case 0:
-        return 's';
-      case 2:
-        return 'l';
-      case 1:
-      default:
-        return 'm';
-    }
-  }
-
-  int _decodeTextScaleCode(String code) {
+  double _decodeTextScaleCode(String code) {
     switch (code) {
       case 's':
-        return 0;
+        return 0.9;
       case 'l':
-        return 2;
+        return 1.1;
       case 'm':
-      default:
-        return 1;
+        return 1.0;
     }
+    final value = double.tryParse(code);
+    if (value == null || value < 0.85 || value > 1.2) return 1.0;
+    return value.clamp(0.85, 1.2);
   }
 }

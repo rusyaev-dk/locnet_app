@@ -97,20 +97,7 @@ class _App extends StatelessWidget {
       builder: (context, loaded) {
         final locale = loaded?.locale ?? const Locale(AppLanguages.ru);
         final themeType = loaded?.themeType ?? AppThemeType.light;
-        final textScaleIndex = loaded?.textScaleIndex ?? 1;
-
-        final double textScaleFactor;
-        switch (textScaleIndex) {
-          case 0:
-            textScaleFactor = 0.9;
-            break;
-          case 2:
-            textScaleFactor = 1.1;
-            break;
-          case 1:
-          default:
-            textScaleFactor = 1.0;
-        }
+        final textScaleFactor = loaded?.textScaleFactor ?? 1.0;
         final appTheme = AppThemeData(accentIndex: themeType.accentIndex);
         final theme = appTheme.getLightTheme();
         final darkTheme = appTheme.getDarkTheme();

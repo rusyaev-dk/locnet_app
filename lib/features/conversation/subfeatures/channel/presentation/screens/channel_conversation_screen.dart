@@ -11,6 +11,10 @@ import 'package:locnet_app/features/message/data/data.dart';
 import 'package:locnet_app/features/message/subfeatures/channel_publication/domain/domain.dart';
 import 'package:locnet_app/features/message/subfeatures/channel_publication/presentation/presentation.dart';
 import 'package:locnet_app/features/message/subfeatures/message_input/presentation/presentation.dart';
+import 'package:locnet_app/features/message/subfeatures/message_selection/presentation/blocs/message_selection_cubit.dart';
+import 'package:locnet_app/features/message/subfeatures/message_selection/presentation/components/messages_selection_app_bar.dart';
+import 'package:locnet_app/features/message/subfeatures/message_selection/presentation/modals/forward_target_picker_modal_card.dart';
+import 'package:locnet_app/features/conversations_list/domain/domain.dart';
 
 class ChannelConversationScreenWrapper extends StatelessWidget {
   const ChannelConversationScreenWrapper({
@@ -63,6 +67,12 @@ class ChannelConversationScreenWrapper extends StatelessWidget {
               logger: context.read<ILogger>(),
             ),
           ),
+          BlocProvider(
+            create: (context) => MessageSelectionCubit(
+              conversationId: conversationId,
+              conversationType: ConversationType.channel,
+            ),
+          ),
         ],
         child: child,
       ),
@@ -70,10 +80,18 @@ class ChannelConversationScreenWrapper extends StatelessWidget {
   }
 }
 
-class ChannelConversationScreen extends StatelessWidget {
+class ChannelConversationScreen extends StatefulWidget {
   const ChannelConversationScreen({required this.conversationId, super.key});
 
   final String conversationId;
+
+  @override
+  State<ChannelConversationScreen> createState() =>
+      _ChannelConversationScreenState();
+}
+
+class _ChannelConversationScreenState extends State<ChannelConversationScreen> {
+  ChannelPublication? _replyTo;
 
   @override
   Widget build(BuildContext context) {
@@ -83,6 +101,142 @@ class ChannelConversationScreen extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        BlocBuilder<MessageSelectionCubit, MessageSelectionState>(
+          builder: (context, selectionState) {
+            final bool isSelectionMode = selectionState.isSelectionMode;
+
+            final ChannelConversationState baseState =
+                context.read<ChannelConversationBloc>().state;
+
+            final header = isSelectionMode
+                ? MessagesSelectionAppBar(
+                    selectedCount: selectionState.selectedCount,
+                    onClosePressed: () =>
+                        context.read<MessageSelectionCubit>().clearSelection(),
+                    onDeletePressed: () async {
+                      if (baseState is! ChannelConversationLoadedState) return;
+
+                      final l10n = context.l10n;
+
+                      final bool? confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text(l10n.messageContextActionDelete),
+                            content: Text(
+                              l10n.logOutConfirmation,
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(false),
+                                child: Text(l10n.cancel),
+                              ),
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(true),
+                                child: Text(l10n.yesLabel),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+
+                      if (confirm != true) return;
+
+                      final messages = baseState.messages
+                          .where(
+                            (m) => selectionState.selectedMessageIds.contains(
+                              m.publicationId,
+                            ),
+                          )
+                          .toList();
+
+                      for (final pub in messages) {
+                        await context
+                            .read<ChannelPublicationActionsCubit>()
+                            .deletePublication(publication: pub);
+                      }
+
+                      context.read<MessageSelectionCubit>().clearSelection();
+                    },
+                    onForwardPressed: () async {
+                      if (selectionState.selectedMessageIds.isEmpty) return;
+
+                      final tile = await showGeneralDialog<ConversationTile>(
+                        context: context,
+                        barrierColor: Colors.transparent,
+                        transitionBuilder: slideFadeDialogTransition,
+                        pageBuilder: (context, _, __) {
+                          return ForwardTargetPickerModalWrapper(
+                            child: ForwardTargetPickerModalCard(
+                              onTargetSelected: (tile) {
+                                Navigator.of(context).pop(tile);
+                              },
+                            ),
+                          );
+                        },
+                      );
+
+                      if (tile == null) return;
+
+                      final selectedMessages = (baseState
+                              as ChannelConversationLoadedState)
+                          .messages
+                          .where(
+                            (m) => selectionState.selectedMessageIds.contains(
+                              m.publicationId,
+                            ),
+                          )
+                          .toList()
+                        ..sort(
+                          (a, b) => a.createdAt.compareTo(b.createdAt),
+                        );
+
+                      final text = selectedMessages
+                          .map((m) => m.text ?? '')
+                          .join('\n');
+
+                      if (text.trim().isEmpty) return;
+
+                      switch (tile.type) {
+                        case ConversationTileType.private:
+                        case ConversationTileType.group:
+                          return;
+                        case ConversationTileType.channel:
+                          await context
+                              .read<ChannelPublicationActionsCubit>()
+                              .sendPublication(
+                                channelId: tile.id,
+                                text: text,
+                              );
+                          break;
+                      }
+
+                      context.read<MessageSelectionCubit>().clearSelection();
+                    },
+                  )
+                : baseState is ChannelConversationLoadedState
+                    ? ChannelHeader(
+                        conversationId: widget.conversationId,
+                        conversation: baseState.conversation,
+                        subscribersCount: baseState.subscribers.length,
+                      )
+                    : const SizedBox.shrink();
+
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                header,
+                Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: colorScheme.surfaceContainer.withAlpha(80),
+                ),
+              ],
+            );
+          },
+        ),
         Expanded(
           child: BlocBuilder<ChannelConversationBloc, ChannelConversationState>(
             builder: (BuildContext context, ChannelConversationState state) {
@@ -99,7 +253,7 @@ class ChannelConversationScreen extends StatelessWidget {
                     onButtonPressed: () =>
                         context.read<ChannelConversationBloc>().add(
                           ChannelConversationStartedEvent(
-                            conversationId: conversationId,
+                            conversationId: widget.conversationId,
                           ),
                         ),
                     iconAnimationEffect: const ShakeEffect(),
@@ -112,28 +266,133 @@ class ChannelConversationScreen extends StatelessWidget {
                     return const Text("Empty here...");
                   }
 
-                  return Column(
-                    children: [
-                      ChannelHeader(
-                        conversationId: conversationId,
-                        conversation: state.conversation,
-                        subscribersCount: state.subscribers.length,
-                      ),
-                      Divider(
-                        height: 1,
-                        thickness: 1,
-                        color: colorScheme.surfaceContainer.withAlpha(80),
-                      ),
-                      Expanded(child: ChannelMessagesList(messages: messages)),
-                    ],
+                  return ChannelMessagesList(
+                    messages: messages,
+                    onReply: (publication) {
+                      setState(() {
+                        _replyTo = publication;
+                      });
+                    },
+                    onForward: (publication) async {
+                      final tile =
+                          await showGeneralDialog<ConversationTile>(
+                        context: context,
+                        barrierColor: Colors.transparent,
+                        transitionBuilder: slideFadeDialogTransition,
+                        pageBuilder: (context, _, __) {
+                          return ForwardTargetPickerModalWrapper(
+                            child: ForwardTargetPickerModalCard(
+                              onTargetSelected: (tile) {
+                                Navigator.of(context).pop(tile);
+                              },
+                            ),
+                          );
+                        },
+                      );
+
+                      if (tile == null) return;
+
+                      final text = (publication.text ?? '').trim();
+                      if (text.isEmpty) return;
+
+                      switch (tile.type) {
+                        case ConversationTileType.private:
+                        case ConversationTileType.group:
+                          return;
+                        case ConversationTileType.channel:
+                          await context
+                              .read<ChannelPublicationActionsCubit>()
+                              .sendPublication(
+                                channelId: tile.id,
+                                text: text,
+                              );
+                          break;
+                      }
+                    },
+                    onDelete: (publication) async {
+                      final l10n = context.l10n;
+
+                      final bool? confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text(l10n.messageContextActionDelete),
+                            content: Text(
+                              l10n.logOutConfirmation,
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(false),
+                                child: Text(l10n.cancel),
+                              ),
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(true),
+                                child: Text(l10n.yesLabel),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+
+                      if (confirm != true) return;
+
+                      await context
+                          .read<ChannelPublicationActionsCubit>()
+                          .deletePublication(publication: publication);
+                    },
                   );
               }
             },
           ),
         ),
+        if (_replyTo != null)
+          Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            color: colorScheme.surfaceContainerHigh,
+            child: Row(
+              children: [
+                Container(
+                  width: 3,
+                  height: 32,
+                  color: colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.messageContextActionReply,
+                        style: context.textScheme.caption.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        (_replyTo!.text ?? '').trim(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () {
+                    setState(() {
+                      _replyTo = null;
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
         MessageInputBar(
-          conversationId: conversationId,
+          conversationId: widget.conversationId,
           conversationType: ConversationType.channel,
+          replyToMessageId: _replyTo?.publicationId,
         ),
       ],
     );

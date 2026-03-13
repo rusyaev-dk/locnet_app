@@ -40,10 +40,13 @@ class ConversationLoadingShimmer extends StatelessWidget {
       ),
     )
         .animate(onPlay: (controller) => controller.repeat())
-        .shimmer(duration: const Duration(milliseconds: 1400))
+        .shimmer(
+          duration: const Duration(milliseconds: 900),
+          curve: Curves.easeInOut,
+        )
         .fadeIn(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
+          duration: const Duration(milliseconds: 160),
+          curve: Curves.easeOutQuad,
         );
   }
 }
@@ -61,47 +64,55 @@ class _ShimmerBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final Color lineColor = Color.lerp(baseColor, Colors.white, 0.12)!;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: baseColor,
-        borderRadius: BorderRadius.only(
-          topLeft: const Radius.circular(16),
-          topRight: const Radius.circular(16),
-          bottomLeft: Radius.circular(isFromOther ? 4 : 16),
-          bottomRight: Radius.circular(isFromOther ? 16 : 4),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 10,
-            margin: const EdgeInsets.only(bottom: 6),
-            decoration: BoxDecoration(
-              color: lineColor,
-              borderRadius: BorderRadius.circular(6),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double maxWidth = constraints.maxWidth;
+        final double secondLineWidth = maxWidth * 0.65;
+        final double thirdLineWidth = maxWidth * 0.4;
+
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: baseColor,
+            borderRadius: BorderRadius.only(
+              topLeft: const Radius.circular(16),
+              topRight: const Radius.circular(16),
+              bottomLeft: Radius.circular(isFromOther ? 4 : 16),
+              bottomRight: Radius.circular(isFromOther ? 16 : 4),
             ),
           ),
-          Container(
-            height: 10,
-            margin: const EdgeInsets.only(bottom: 4),
-            width: 140,
-            decoration: BoxDecoration(
-              color: lineColor,
-              borderRadius: BorderRadius.circular(6),
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                height: 10,
+                margin: const EdgeInsets.only(bottom: 6),
+                decoration: BoxDecoration(
+                  color: lineColor,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+              ),
+              Container(
+                height: 10,
+                margin: const EdgeInsets.only(bottom: 4),
+                width: secondLineWidth,
+                decoration: BoxDecoration(
+                  color: lineColor,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+              ),
+              Container(
+                height: 10,
+                width: thirdLineWidth,
+                decoration: BoxDecoration(
+                  color: lineColor,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+              ),
+            ],
           ),
-          Container(
-            height: 10,
-            width: 80,
-            decoration: BoxDecoration(
-              color: lineColor,
-              borderRadius: BorderRadius.circular(6),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

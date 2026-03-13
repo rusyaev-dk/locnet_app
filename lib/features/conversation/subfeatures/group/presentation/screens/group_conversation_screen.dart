@@ -11,6 +11,10 @@ import 'package:locnet_app/features/message/data/data.dart';
 import 'package:locnet_app/features/message/subfeatures/group_message/domain/domain.dart';
 import 'package:locnet_app/features/message/subfeatures/group_message/presentation/presentation.dart';
 import 'package:locnet_app/features/message/subfeatures/message_input/presentation/presentation.dart';
+import 'package:locnet_app/features/message/subfeatures/message_selection/presentation/blocs/message_selection_cubit.dart';
+import 'package:locnet_app/features/message/subfeatures/message_selection/presentation/components/messages_selection_app_bar.dart';
+import 'package:locnet_app/features/message/subfeatures/message_selection/presentation/modals/forward_target_picker_modal_card.dart';
+import 'package:locnet_app/features/conversations_list/domain/domain.dart';
 
 class GroupConversationScreenWrapper extends StatelessWidget {
   const GroupConversationScreenWrapper({
@@ -61,6 +65,12 @@ class GroupConversationScreenWrapper extends StatelessWidget {
               logger: context.read<ILogger>(),
             ),
           ),
+          BlocProvider(
+            create: (context) => MessageSelectionCubit(
+              conversationId: conversationId,
+              conversationType: ConversationType.group,
+            ),
+          ),
         ],
         child: child,
       ),
@@ -68,10 +78,18 @@ class GroupConversationScreenWrapper extends StatelessWidget {
   }
 }
 
-class GroupConversationScreen extends StatelessWidget {
+class GroupConversationScreen extends StatefulWidget {
   const GroupConversationScreen({required this.conversationId, super.key});
 
   final String conversationId;
+
+  @override
+  State<GroupConversationScreen> createState() =>
+      _GroupConversationScreenState();
+}
+
+class _GroupConversationScreenState extends State<GroupConversationScreen> {
+  GroupMessage? _replyTo;
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +99,142 @@ class GroupConversationScreen extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        BlocBuilder<MessageSelectionCubit, MessageSelectionState>(
+          builder: (context, selectionState) {
+            final bool isSelectionMode = selectionState.isSelectionMode;
+
+            final GroupConversationState baseState =
+                context.read<GroupConversationBloc>().state;
+
+            final header = isSelectionMode
+                ? MessagesSelectionAppBar(
+                    selectedCount: selectionState.selectedCount,
+                    onClosePressed: () =>
+                        context.read<MessageSelectionCubit>().clearSelection(),
+                    onDeletePressed: () async {
+                      if (baseState is! GroupConversationLoadedState) return;
+
+                      final l10n = context.l10n;
+
+                      final bool? confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text(l10n.messageContextActionDelete),
+                            content: Text(
+                              l10n.logOutConfirmation,
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(false),
+                                child: Text(l10n.cancel),
+                              ),
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(true),
+                                child: Text(l10n.yesLabel),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+
+                      if (confirm != true) return;
+
+                      final messages = baseState.messages
+                          .where(
+                            (m) => selectionState.selectedMessageIds.contains(
+                              m.id,
+                            ),
+                          )
+                          .toList();
+
+                      for (final msg in messages) {
+                        await context
+                            .read<GroupMessageActionsCubit>()
+                            .deleteMessage(message: msg);
+                      }
+
+                      context.read<MessageSelectionCubit>().clearSelection();
+                    },
+                    onForwardPressed: () async {
+                      if (selectionState.selectedMessageIds.isEmpty) return;
+
+                      final tile = await showGeneralDialog<ConversationTile>(
+                        context: context,
+                        barrierColor: Colors.transparent,
+                        transitionBuilder: slideFadeDialogTransition,
+                        pageBuilder: (context, _, __) {
+                          return ForwardTargetPickerModalWrapper(
+                            child: ForwardTargetPickerModalCard(
+                              onTargetSelected: (tile) {
+                                Navigator.of(context).pop(tile);
+                              },
+                            ),
+                          );
+                        },
+                      );
+
+                      if (tile == null) return;
+
+                      final selectedMessages = (baseState
+                              as GroupConversationLoadedState)
+                          .messages
+                          .where(
+                            (m) => selectionState.selectedMessageIds.contains(
+                              m.id,
+                            ),
+                          )
+                          .toList()
+                        ..sort(
+                          (a, b) => a.createdAt.compareTo(b.createdAt),
+                        );
+
+                      final text = selectedMessages
+                          .map((m) => m.text)
+                          .join('\n');
+
+                      if (text.trim().isEmpty) return;
+
+                      switch (tile.type) {
+                        case ConversationTileType.private:
+                        case ConversationTileType.group:
+                          await context
+                              .read<GroupMessageActionsCubit>()
+                              .sendMessage(
+                                groupId: tile.id,
+                                text: text,
+                              );
+                          break;
+                        case ConversationTileType.channel:
+                          return;
+                      }
+
+                      context.read<MessageSelectionCubit>().clearSelection();
+                    },
+                  )
+                : baseState is GroupConversationLoadedState
+                    ? GroupHeader(
+                        conversationId: widget.conversationId,
+                        conversation: baseState.conversation,
+                        participantsCount: baseState.participants.length,
+                      )
+                    : const SizedBox.shrink();
+
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                header,
+                Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: colorScheme.surfaceContainer.withAlpha(80),
+                ),
+              ],
+            );
+          },
+        ),
         Expanded(
           child: BlocBuilder<GroupConversationBloc, GroupConversationState>(
             builder: (BuildContext context, GroupConversationState state) {
@@ -97,7 +251,7 @@ class GroupConversationScreen extends StatelessWidget {
                     onButtonPressed: () =>
                         context.read<GroupConversationBloc>().add(
                           GroupConversationStartedEvent(
-                            conversationId: conversationId,
+                            conversationId: widget.conversationId,
                           ),
                         ),
                     iconAnimationEffect: const ShakeEffect(),
@@ -119,26 +273,84 @@ class GroupConversationScreen extends StatelessWidget {
 
                       final currentUserId = snapshot.data!.userId;
 
-                      return Column(
-                        children: [
-                          GroupHeader(
-                            conversationId: conversationId,
-                            conversation: state.conversation,
-                            participantsCount: state.participants.length,
-                          ),
-                          Divider(
-                            height: 1,
-                            thickness: 1,
-                            color: colorScheme.surfaceContainer.withAlpha(80),
-                          ),
-                          Expanded(
-                            child: GroupMessagesList(
-                              messages: messages,
-                              currentUserId: currentUserId,
-                              participants: state.participants,
-                            ),
-                          ),
-                        ],
+                      return GroupMessagesList(
+                        messages: messages,
+                        currentUserId: currentUserId,
+                        participants: state.participants,
+                        onReply: (message) {
+                          setState(() {
+                            _replyTo = message;
+                          });
+                        },
+                        onForward: (message) async {
+                          final tile =
+                              await showGeneralDialog<ConversationTile>(
+                            context: context,
+                            barrierColor: Colors.transparent,
+                            transitionBuilder: slideFadeDialogTransition,
+                            pageBuilder: (context, _, __) {
+                              return ForwardTargetPickerModalWrapper(
+                                child: ForwardTargetPickerModalCard(
+                                  onTargetSelected: (tile) {
+                                    Navigator.of(context).pop(tile);
+                                  },
+                                ),
+                              );
+                            },
+                          );
+
+                          if (tile == null) return;
+
+                          final text = message.text.trim();
+                          if (text.isEmpty) return;
+
+                          switch (tile.type) {
+                            case ConversationTileType.private:
+                            case ConversationTileType.group:
+                              await context
+                                  .read<GroupMessageActionsCubit>()
+                                  .sendMessage(
+                                    groupId: tile.id,
+                                    text: text,
+                                  );
+                              break;
+                            case ConversationTileType.channel:
+                              return;
+                          }
+                        },
+                        onDelete: (message) async {
+                          final l10n = context.l10n;
+
+                          final bool? confirm = await showDialog<bool>(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Text(l10n.messageContextActionDelete),
+                                content: Text(
+                                  l10n.logOutConfirmation,
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(false),
+                                    child: Text(l10n.cancel),
+                                  ),
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(true),
+                                    child: Text(l10n.yesLabel),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+
+                          if (confirm != true) return;
+
+                          await context
+                              .read<GroupMessageActionsCubit>()
+                              .deleteMessage(message: message);
+                        },
                       );
                     },
                   );
@@ -146,9 +358,52 @@ class GroupConversationScreen extends StatelessWidget {
             },
           ),
         ),
+        if (_replyTo != null)
+          Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            color: colorScheme.surfaceContainerHigh,
+            child: Row(
+              children: [
+                Container(
+                  width: 3,
+                  height: 32,
+                  color: colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.messageContextActionReply,
+                        style: context.textScheme.caption.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        _replyTo!.text,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () {
+                    setState(() {
+                      _replyTo = null;
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
         MessageInputBar(
-          conversationId: conversationId,
+          conversationId: widget.conversationId,
           conversationType: ConversationType.group,
+          replyToMessageId: _replyTo?.id,
         ),
       ],
     );

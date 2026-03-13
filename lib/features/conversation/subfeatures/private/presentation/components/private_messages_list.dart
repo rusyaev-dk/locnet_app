@@ -1,35 +1,81 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/private.dart';
-import 'package:locnet_app/features/message/presentation/presentation.dart';
+import 'package:locnet_app/features/message/subfeatures/message_selection/presentation/blocs/message_selection_cubit.dart';
+import 'package:locnet_app/features/message/subfeatures/message_selection/presentation/components/selectable_message_bubble_wrapper.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/services.dart';
 
-class PrivateMessagesList extends StatelessWidget {
+class PrivateMessagesList extends StatefulWidget {
   const PrivateMessagesList({
     required this.messages,
     required this.companionId,
+    this.onReply,
+    this.onForward,
+    this.onDelete,
     super.key,
   });
 
   final List<PrivateMessage> messages;
   final String companionId;
+  final void Function(PrivateMessage message)? onReply;
+  final void Function(PrivateMessage message)? onForward;
+  final void Function(PrivateMessage message)? onDelete;
+
+  @override
+  State<PrivateMessagesList> createState() => _PrivateMessagesListState();
+}
+
+class _PrivateMessagesListState extends State<PrivateMessagesList> {
+  bool _isDragSelecting = false;
+  final Set<String> _visitedIds = <String>{};
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
+    final selectionCubit = context.watch<MessageSelectionCubit>();
+
+    return Listener(
+      onPointerDown: (PointerDownEvent event) {
+        if ((event.buttons & kPrimaryMouseButton) != 0 &&
+            selectionCubit.state.isSelectionMode) {
+          setState(() {
+            _isDragSelecting = true;
+            _visitedIds.clear();
+          });
+        }
+      },
+      onPointerUp: (_) {
+        if (_isDragSelecting) {
+          setState(() {
+            _isDragSelecting = false;
+            _visitedIds.clear();
+          });
+        }
+      },
+      child: ListView.separated(
       cacheExtent: 1200,
       reverse: true,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-      itemCount: messages.length,
+      itemCount: widget.messages.length,
       separatorBuilder: (BuildContext context, int index) {
         return const SizedBox(height: 4);
       },
       itemBuilder: (BuildContext context, int index) {
-        final PrivateMessage message = messages[index];
+        final PrivateMessage message = widget.messages[index];
         const Duration baseDuration = Duration(milliseconds: 280);
         final Duration delay = Duration(milliseconds: 35 * index);
 
-        return Animate(
+        final isSelected = selectionCubit.state.isSelected(message.id);
+
+        return MouseRegion(
+          onEnter: (_) {
+            if (_isDragSelecting && !_visitedIds.contains(message.id)) {
+              _visitedIds.add(message.id);
+              selectionCubit.toggleMessage(message.id);
+            }
+          },
+          child: Animate(
           delay: delay,
           effects: const [
             FadeEffect(duration: baseDuration, curve: Curves.easeOut),
@@ -46,13 +92,17 @@ class PrivateMessagesList extends StatelessWidget {
               curve: Curves.easeOut,
             ),
           ],
-          child: MessageBubble(
+          child: SelectableMessageBubbleWrapper(
             message: message,
-            companionId: companionId,
-            onReply: () {},
-            onForward: () {},
-            onDelete: () {},
-            onSelect: () {},
+            companionId: widget.companionId,
+            isSelected: isSelected,
+            onEnterSelectionMode: () =>
+                selectionCubit.enterSelectionMode(message.id),
+            onToggleSelection: () =>
+                selectionCubit.toggleMessage(message.id),
+            onReply: () => widget.onReply?.call(message),
+            onForward: () => widget.onForward?.call(message),
+            onDelete: () => widget.onDelete?.call(message),
             onCopy: () async {
               final String text = message.text.trim();
               if (text.isNotEmpty) {
@@ -60,8 +110,10 @@ class PrivateMessagesList extends StatelessWidget {
               }
             },
           ),
+        ),
         );
       },
+    ),
     );
   }
 }

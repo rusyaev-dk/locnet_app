@@ -11,6 +11,10 @@ import 'package:locnet_app/features/message/data/data.dart';
 import 'package:locnet_app/features/message/subfeatures/message_input/presentation/presentation.dart';
 import 'package:locnet_app/features/message/subfeatures/private_message/domain/domain.dart';
 import 'package:locnet_app/features/message/subfeatures/private_message/presentation/presentation.dart';
+import 'package:locnet_app/features/message/subfeatures/message_selection/presentation/blocs/message_selection_cubit.dart';
+import 'package:locnet_app/features/message/subfeatures/message_selection/presentation/components/messages_selection_app_bar.dart';
+import 'package:locnet_app/features/message/subfeatures/message_selection/presentation/modals/forward_target_picker_modal_card.dart';
+import 'package:locnet_app/features/conversations_list/domain/domain.dart';
 
 class PrivateConversationScreenWrapper extends StatelessWidget {
   const PrivateConversationScreenWrapper({
@@ -71,6 +75,12 @@ class PrivateConversationScreenWrapper extends StatelessWidget {
               logger: context.read<ILogger>(),
             ),
           ),
+          BlocProvider(
+            create: (context) => MessageSelectionCubit(
+              conversationId: conversationId,
+              conversationType: ConversationType.private,
+            ),
+          ),
         ],
         child: child,
       ),
@@ -78,10 +88,18 @@ class PrivateConversationScreenWrapper extends StatelessWidget {
   }
 }
 
-class PrivateConversationScreen extends StatelessWidget {
+class PrivateConversationScreen extends StatefulWidget {
   const PrivateConversationScreen({required this.conversationId, super.key});
 
   final String conversationId;
+
+  @override
+  State<PrivateConversationScreen> createState() =>
+      _PrivateConversationScreenState();
+}
+
+class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
+  PrivateMessage? _replyTo;
 
   @override
   Widget build(BuildContext context) {
@@ -91,6 +109,138 @@ class PrivateConversationScreen extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        BlocBuilder<MessageSelectionCubit, MessageSelectionState>(
+          builder: (context, selectionState) {
+            final bool isSelectionMode = selectionState.isSelectionMode;
+
+            final PrivateConversationState baseState =
+                context.read<PrivateConversationBloc>().state;
+
+            final Widget header = isSelectionMode
+                ? MessagesSelectionAppBar(
+                    selectedCount: selectionState.selectedCount,
+                    onClosePressed: () =>
+                        context.read<MessageSelectionCubit>().clearSelection(),
+                    onDeletePressed: () async {
+                      if (baseState is! PrivateConversationLoadedState) return;
+
+                      final l10n = context.l10n;
+
+                      final bool? confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text(l10n.messageContextActionDelete),
+                            content: Text(
+                              l10n.logOutConfirmation,
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(false),
+                                child: Text(l10n.cancel),
+                              ),
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(true),
+                                child: Text(l10n.yesLabel),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+
+                      if (confirm != true) return;
+
+                      final messages = baseState.messages
+                          .where(
+                            (m) => selectionState.selectedMessageIds.contains(
+                              m.id,
+                            ),
+                          )
+                          .toList();
+
+                      for (final msg in messages) {
+                        await context
+                            .read<PrivateMessageActionsCubit>()
+                            .deleteMessage(message: msg);
+                      }
+
+                      context.read<MessageSelectionCubit>().clearSelection();
+                    },
+                    onForwardPressed: () async {
+                      if (selectionState.selectedMessageIds.isEmpty) return;
+
+                      final tiles = await showGeneralDialog<
+                          ConversationTile>(
+                        context: context,
+                        barrierColor: Colors.transparent,
+                        transitionBuilder: slideFadeDialogTransition,
+                        pageBuilder: (context, _, __) {
+                          return ForwardTargetPickerModalWrapper(
+                            child: ForwardTargetPickerModalCard(
+                              onTargetSelected: (tile) {
+                                Navigator.of(context).pop(tile);
+                              },
+                            ),
+                          );
+                        },
+                      );
+
+                      if (tiles == null) return;
+
+                      // Реальный forward предполагает бэкенд-метод forwardMessages.
+                      // Пока реализуем отправку цитатой текста выбранных сообщений.
+
+                      final selectedMessages = (baseState as
+                              PrivateConversationLoadedState)
+                          .messages
+                          .where(
+                            (m) => selectionState.selectedMessageIds.contains(
+                              m.id,
+                            ),
+                          )
+                          .toList()
+                        ..sort(
+                          (a, b) => a.createdAt.compareTo(b.createdAt),
+                        );
+
+                      final text = selectedMessages
+                          .map((m) => m.text)
+                          .join('\n');
+
+                      if (text.trim().isEmpty) return;
+
+                      if (tiles.type == ConversationTileType.private) {
+                        await context.read<PrivateMessageActionsCubit>().sendMessage(
+                              conversationId: tiles.id,
+                              text: text,
+                            );
+                      }
+
+                      context.read<MessageSelectionCubit>().clearSelection();
+                    },
+                  )
+                : baseState is PrivateConversationLoadedState
+                    ? PrivateHeader(
+                        conversationId: widget.conversationId,
+                        companion: baseState.companion,
+                      )
+                    : const SizedBox.shrink();
+
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                header,
+                Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: colorScheme.surfaceContainer.withAlpha(80),
+                ),
+              ],
+            );
+          },
+        ),
         Expanded(
           child: BlocBuilder<PrivateConversationBloc, PrivateConversationState>(
             builder: (BuildContext context, PrivateConversationState state) {
@@ -107,7 +257,7 @@ class PrivateConversationScreen extends StatelessWidget {
                     onButtonPressed: () =>
                         context.read<PrivateConversationBloc>().add(
                           PrivateConversationStartedEvent(
-                            conversationId: conversationId,
+                            conversationId: widget.conversationId,
                           ),
                         ),
                     iconAnimationEffect: const ShakeEffect(),
@@ -120,32 +270,128 @@ class PrivateConversationScreen extends StatelessWidget {
                     return const Text("Empty here...");
                   }
 
-                  return Column(
-                    children: [
-                      PrivateHeader(
-                        conversationId: conversationId,
-                        companion: state.companion,
-                      ),
-                      Divider(
-                        height: 1,
-                        thickness: 1,
-                        color: colorScheme.surfaceContainer.withAlpha(80),
-                      ),
-                      Expanded(
-                        child: PrivateMessagesList(
-                          messages: messages,
-                          companionId: state.companionId,
-                        ),
-                      ),
-                    ],
+                  return PrivateMessagesList(
+                    messages: messages,
+                    companionId: state.companionId,
+                    onReply: (message) {
+                      setState(() {
+                        _replyTo = message;
+                      });
+                    },
+                    onForward: (message) async {
+                      final tile = await showGeneralDialog<ConversationTile>(
+                        context: context,
+                        barrierColor: Colors.transparent,
+                        transitionBuilder: slideFadeDialogTransition,
+                        pageBuilder: (context, _, __) {
+                          return ForwardTargetPickerModalWrapper(
+                            child: ForwardTargetPickerModalCard(
+                              onTargetSelected: (tile) {
+                                Navigator.of(context).pop(tile);
+                              },
+                            ),
+                          );
+                        },
+                      );
+
+                      if (tile == null) return;
+
+                      final text = message.text.trim();
+                      if (text.isEmpty) return;
+
+                      if (tile.type == ConversationTileType.private) {
+                        await context
+                            .read<PrivateMessageActionsCubit>()
+                            .sendMessage(
+                              conversationId: tile.id,
+                              text: text,
+                            );
+                      }
+                    },
+                    onDelete: (message) async {
+                      final l10n = context.l10n;
+
+                      final bool? confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text(l10n.messageContextActionDelete),
+                            content: Text(
+                              l10n.logOutConfirmation,
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(false),
+                                child: Text(l10n.cancel),
+                              ),
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(true),
+                                child: Text(l10n.yesLabel),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+
+                      if (confirm != true) return;
+
+                      await context
+                          .read<PrivateMessageActionsCubit>()
+                          .deleteMessage(message: message);
+                    },
                   );
               }
             },
           ),
         ),
+        if (_replyTo != null)
+          Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            color: colorScheme.surfaceContainerHigh,
+            child: Row(
+              children: [
+                Container(
+                  width: 3,
+                  height: 32,
+                  color: colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.messageContextActionReply,
+                        style: context.textScheme.caption.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        _replyTo!.text,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () {
+                    setState(() {
+                      _replyTo = null;
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
         MessageInputBar(
-          conversationId: conversationId,
+          conversationId: widget.conversationId,
           conversationType: ConversationType.private,
+          replyToMessageId: _replyTo?.id,
         ),
       ],
     );

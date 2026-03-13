@@ -29,6 +29,7 @@ class PrivateMessageActionsCubit extends Cubit<PrivateMessageActionsState> {
     required String conversationId,
     List<UploadableFile>? attachedFiles,
     String? text,
+    String? replyToMessageId,
   }) async {
     final String normalizedText = text?.trim() ?? '';
     if (normalizedText.isEmpty) {
@@ -67,7 +68,7 @@ class PrivateMessageActionsCubit extends Cubit<PrivateMessageActionsState> {
         updatedAt: now,
         isDeleted: false,
         deletedById: null,
-        replyToMessageId: null,
+        replyToMessageId: replyToMessageId,
         deliveryStatus: MessageDeliveryStatus.sending,
         isPinned: false,
         editedAt: null,

@@ -30,6 +30,10 @@ void main() {
     mockLogger = MockLogger();
 
     appTheme = AppTheme.basic();
+
+    when(
+      () => mockSettingsInteractor.getCurrentTextScaleCode(),
+    ).thenAnswer((_) async => '1.0');
   });
 
   SettingsCubit buildCubit() {
@@ -68,6 +72,7 @@ void main() {
             themeMode: ThemeMode.dark,
             appTheme: appTheme,
             themeType: AppThemeType.dark,
+            textScaleFactor: 1.0,
           ),
         ],
         verify: (_) {
@@ -77,6 +82,7 @@ void main() {
           verify(() => mockSettingsInteractor.getCurrentThemeMode()).called(1);
           verify(() => mockThemeEditorInteractor.loadAppTheme()).called(1);
           verify(() => mockSettingsInteractor.getCurrentThemeType()).called(1);
+          verify(() => mockSettingsInteractor.getCurrentTextScaleCode()).called(1);
           verifyNever(() => mockLogger.exception(any(), any()));
         },
       );
@@ -110,6 +116,7 @@ void main() {
             themeMode: ThemeMode.system,
             appTheme: appTheme,
             themeType: AppThemeType.light,
+            textScaleFactor: 1.0,
           ),
           const SettingsLoadingState(),
           SettingsLoadedState(
@@ -117,6 +124,7 @@ void main() {
             themeMode: ThemeMode.system,
             appTheme: appTheme,
             themeType: AppThemeType.light,
+            textScaleFactor: 1.0,
           ),
         ],
         verify: (_) {
@@ -126,6 +134,7 @@ void main() {
           verify(() => mockSettingsInteractor.getCurrentThemeMode()).called(2);
           verify(() => mockThemeEditorInteractor.loadAppTheme()).called(2);
           verify(() => mockSettingsInteractor.getCurrentThemeType()).called(2);
+          verify(() => mockSettingsInteractor.getCurrentTextScaleCode()).called(2);
         },
       );
 
@@ -283,6 +292,7 @@ void main() {
             themeMode: ThemeMode.system,
             appTheme: appTheme,
             themeType: AppThemeType.light,
+            textScaleFactor: 1.0,
           ),
         ],
       );
@@ -345,12 +355,14 @@ void main() {
             themeMode: ThemeMode.system,
             appTheme: appTheme,
             themeType: AppThemeType.light,
+            textScaleFactor: 1.0,
           ),
           SettingsLoadedState(
             locale: const Locale('ru'),
             themeMode: ThemeMode.system,
             appTheme: appTheme,
             themeType: AppThemeType.light,
+            textScaleFactor: 1.0,
           ),
         ],
         verify: (_) {
@@ -394,6 +406,7 @@ void main() {
             themeMode: ThemeMode.system,
             appTheme: appTheme,
             themeType: AppThemeType.light,
+            textScaleFactor: 1.0,
           ),
         ],
         verify: (_) {
@@ -587,12 +600,14 @@ void main() {
             themeMode: ThemeMode.system,
             appTheme: appTheme,
             themeType: AppThemeType.light,
+            textScaleFactor: 1.0,
           ),
           SettingsLoadedState(
             locale: const Locale('en'),
             themeMode: ThemeMode.dark,
             appTheme: appTheme,
             themeType: AppThemeType.light,
+            textScaleFactor: 1.0,
           ),
         ],
         verify: (_) {
@@ -636,6 +651,7 @@ void main() {
             themeMode: ThemeMode.dark,
             appTheme: appTheme,
             themeType: AppThemeType.dark,
+            textScaleFactor: 1.0,
           ),
         ],
         verify: (_) {
@@ -680,12 +696,14 @@ void main() {
             themeMode: ThemeMode.dark,
             appTheme: appTheme,
             themeType: AppThemeType.dark,
+            textScaleFactor: 1.0,
           ),
           SettingsLoadedState(
             locale: const Locale('en'),
             themeMode: ThemeMode.system,
             appTheme: appTheme,
             themeType: AppThemeType.dark,
+            textScaleFactor: 1.0,
           ),
         ],
         verify: (_) {

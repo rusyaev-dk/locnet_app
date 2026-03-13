@@ -38,7 +38,7 @@ class _AppearanceSettingsContentState
               isLight: state.themeType.isLight,
               accentIndex: state.themeType.accentIndex,
               dynamicTheme: _dynamicTheme,
-              textSizeIndex: state.textScaleIndex,
+              textScaleFactor: state.textScaleFactor,
               onBrightnessChanged: (light) {
                 final newType = AppThemeType.fromAccentAndBrightness(
                   accentIndex: state.themeType.accentIndex,
@@ -55,8 +55,8 @@ class _AppearanceSettingsContentState
               },
               onDynamicThemeChanged: (v) =>
                   setState(() => _dynamicTheme = v),
-              onTextSizeChanged: (i) =>
-                  context.read<SettingsCubit>().changeTextScale(i),
+              onTextScaleChanged: (v) =>
+                  context.read<SettingsCubit>().changeTextScale(v),
             ),
         };
       },
@@ -69,21 +69,21 @@ class _AppearanceBody extends StatelessWidget {
     required this.isLight,
     required this.accentIndex,
     required this.dynamicTheme,
-    required this.textSizeIndex,
+    required this.textScaleFactor,
     required this.onBrightnessChanged,
     required this.onAccentChanged,
     required this.onDynamicThemeChanged,
-    required this.onTextSizeChanged,
+    required this.onTextScaleChanged,
   });
 
   final bool isLight;
   final int accentIndex;
   final bool dynamicTheme;
-  final int textSizeIndex;
+  final double textScaleFactor;
   final ValueChanged<bool> onBrightnessChanged;
   final ValueChanged<int> onAccentChanged;
   final ValueChanged<bool> onDynamicThemeChanged;
-  final ValueChanged<int> onTextSizeChanged;
+  final ValueChanged<double> onTextScaleChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -128,11 +128,46 @@ class _AppearanceBody extends StatelessWidget {
           SettingsGroupCard(
             title: 'Интерфейс',
             children: [
-              SettingsSegmentedTile(
-                title: 'Размер текста',
-                options: const ['S', 'M', 'L'],
-                selectedIndex: textSizeIndex,
-                onSelected: onTextSizeChanged,
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Размер текста',
+                          style: context.textScheme.title.copyWith(
+                            color: context.colorScheme.onSurface,
+                          ),
+                        ),
+                        Text(
+                          '${(textScaleFactor * 100).round()}%',
+                          style: context.textScheme.label.copyWith(
+                            color: context.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SliderTheme(
+                      data: SliderTheme.of(context).copyWith(
+                        overlayShape: const RoundSliderOverlayShape(),
+                        thumbShape: const RoundSliderThumbShape(
+                          enabledThumbRadius: 8,
+                        ),
+                        trackHeight: 4,
+                      ),
+                      child: Slider(
+                        value: textScaleFactor,
+                        min: 0.85,
+                        max: 1.2,
+                        divisions: 7,
+                        onChanged: onTextScaleChanged,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

@@ -29,6 +29,7 @@ class ChannelPublicationActionsCubit
     required String channelId,
     List<UploadableFile>? attachedFiles,
     String? text,
+    String? replyToPublicationId,
   }) async {
     final String normalizedText = text?.trim() ?? '';
     if (normalizedText.isEmpty) return;
@@ -59,7 +60,7 @@ class ChannelPublicationActionsCubit
         text: normalizedText,
         attachments: attachments,
         avatarFileId: null,
-        replyToPublicationId: null,
+        replyToPublicationId: replyToPublicationId,
         isDeleted: false,
         deletedById: null,
         createdAt: now,

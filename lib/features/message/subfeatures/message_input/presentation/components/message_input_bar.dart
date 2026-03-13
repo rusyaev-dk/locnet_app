@@ -14,11 +14,13 @@ class MessageInputBar extends StatefulWidget {
   const MessageInputBar({
     required this.conversationId,
     required this.conversationType,
+    this.replyToMessageId,
     super.key,
   });
 
   final String conversationId;
   final ConversationType conversationType;
+  final String? replyToMessageId;
 
   @override
   State<MessageInputBar> createState() => _MessageInputBarState();
@@ -120,18 +122,21 @@ class _MessageInputBarState extends State<MessageInputBar> {
           conversationId: widget.conversationId,
           attachedFiles: files,
           text: markdown,
+          replyToMessageId: widget.replyToMessageId,
         );
       case ConversationType.group:
         context.read<GroupMessageActionsCubit>().sendMessage(
           groupId: widget.conversationId,
           attachedFiles: files,
           text: markdown,
+          replyToMessageId: widget.replyToMessageId,
         );
       case ConversationType.channel:
         context.read<ChannelPublicationActionsCubit>().sendPublication(
           channelId: widget.conversationId,
           attachedFiles: files,
           text: markdown,
+          replyToPublicationId: widget.replyToMessageId,
         );
     }
 

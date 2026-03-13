@@ -14,7 +14,6 @@ class LanguageSettingsContent extends StatefulWidget {
 }
 
 class _LanguageSettingsContentState extends State<LanguageSettingsContent> {
-  bool _autoDetectLang = false;
   int _chatLangIndex = 0;
   bool _autoDetectMessage = true;
   bool _preferLocalized = true;
@@ -37,7 +36,6 @@ class _LanguageSettingsContentState extends State<LanguageSettingsContent> {
             ),
           SettingsLoadedState() => _LanguageBody(
               selectedLocale: state.locale,
-              autoDetectLang: _autoDetectLang,
               chatLangIndex: _chatLangIndex,
               autoDetectMessage: _autoDetectMessage,
               preferLocalized: _preferLocalized,
@@ -46,16 +44,13 @@ class _LanguageSettingsContentState extends State<LanguageSettingsContent> {
               numberFormatIndex: _numberFormatIndex,
               onLocaleSelected: (locale) =>
                   context.read<SettingsCubit>().changeLanguageCode(locale),
-              onAutoDetectLangChanged: (v) =>
-                  setState(() => _autoDetectLang = v),
               onChatLangChanged: (i) => setState(() => _chatLangIndex = i),
               onAutoDetectMessageChanged: (v) =>
                   setState(() => _autoDetectMessage = v),
               onPreferLocalizedChanged: (v) =>
                   setState(() => _preferLocalized = v),
               onDateFormatChanged: (i) => setState(() => _dateFormatIndex = i),
-              onTimeFormatChanged: (i) =>
-                  setState(() => _timeFormatIndex = i),
+              onTimeFormatChanged: (i) => setState(() => _timeFormatIndex = i),
               onNumberFormatChanged: (i) =>
                   setState(() => _numberFormatIndex = i),
             ),
@@ -68,7 +63,6 @@ class _LanguageSettingsContentState extends State<LanguageSettingsContent> {
 class _LanguageBody extends StatelessWidget {
   const _LanguageBody({
     required this.selectedLocale,
-    required this.autoDetectLang,
     required this.chatLangIndex,
     required this.autoDetectMessage,
     required this.preferLocalized,
@@ -76,7 +70,6 @@ class _LanguageBody extends StatelessWidget {
     required this.timeFormatIndex,
     required this.numberFormatIndex,
     required this.onLocaleSelected,
-    required this.onAutoDetectLangChanged,
     required this.onChatLangChanged,
     required this.onAutoDetectMessageChanged,
     required this.onPreferLocalizedChanged,
@@ -86,7 +79,6 @@ class _LanguageBody extends StatelessWidget {
   });
 
   final Locale selectedLocale;
-  final bool autoDetectLang;
   final int chatLangIndex;
   final bool autoDetectMessage;
   final bool preferLocalized;
@@ -94,7 +86,6 @@ class _LanguageBody extends StatelessWidget {
   final int timeFormatIndex;
   final int numberFormatIndex;
   final ValueChanged<Locale> onLocaleSelected;
-  final ValueChanged<bool> onAutoDetectLangChanged;
   final ValueChanged<int> onChatLangChanged;
   final ValueChanged<bool> onAutoDetectMessageChanged;
   final ValueChanged<bool> onPreferLocalizedChanged;
@@ -128,22 +119,8 @@ class _LanguageBody extends StatelessWidget {
                   onLocaleSelected: onLocaleSelected,
                 ),
               ),
-              SettingsSwitchTile(
-                title: 'Автоматически определять язык',
-                subtitle: 'На основе настроек системы',
-                value: autoDetectLang,
-                onChanged: onAutoDetectLangChanged,
-              ),
             ],
           ),
-          const SizedBox(height: 8),
-          const SettingsInfoCard(
-            message:
-                'После смены языка интерфейса приложение будет перезапущено.',
-            icon: Icons.refresh_outlined,
-          ),
-          const SizedBox(height: 20),
-
           const SizedBox(height: 8),
         ],
       ),
