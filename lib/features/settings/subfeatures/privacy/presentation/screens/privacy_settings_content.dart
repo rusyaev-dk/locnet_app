@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/features/auth/domain/domain.dart';
-import 'package:locnet_app/features/profile/presentation/components/session_info.dart';
 import 'package:locnet_app/features/settings/presentation/components/components.dart';
 import 'package:locnet_app/features/settings/subfeatures/language/presentation/components/components.dart';
+import 'package:locnet_app/features/settings/subfeatures/profile/presentation/components/session_info.dart';
 
 /// Privacy & security section.
 class PrivacySettingsContent extends StatefulWidget {

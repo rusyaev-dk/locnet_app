@@ -55,7 +55,7 @@ class ConversationSharedMediaSheet extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            Expanded(
+            const Expanded(
               child: TabBarView(
                 children: [
                   _PlaceholderList(
@@ -81,10 +81,7 @@ class ConversationSharedMediaSheet extends StatelessWidget {
 }
 
 class _PlaceholderList extends StatelessWidget {
-  const _PlaceholderList({
-    required this.icon,
-    required this.label,
-  });
+  const _PlaceholderList({required this.icon, required this.label});
 
   final IconData icon;
   final String label;
@@ -98,11 +95,7 @@ class _PlaceholderList extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            size: 32,
-            color: colorScheme.onSurfaceVariant,
-          ),
+          Icon(icon, size: 32, color: colorScheme.onSurfaceVariant),
           const SizedBox(height: 8),
           Text(
             label,
@@ -115,4 +108,3 @@ class _PlaceholderList extends StatelessWidget {
     );
   }
 }
-

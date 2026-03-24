@@ -9,11 +9,11 @@ final class ProfileInteractor {
   final ILogger _logger;
 
   Future<User> loadUserData() async {
-    _logger.info("Retrieving user data...");
-    return await _userRepo.me();
+    _logger.info('Retrieving user data...');
+    return _userRepo.me();
   }
 
   Future<User> udpateUserData({required User updatedUser}) async {
-    return await _userRepo.updateUser(updatedUser: updatedUser);
+    return _userRepo.updateUser(updatedUser: updatedUser);
   }
 }

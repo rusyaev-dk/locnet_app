@@ -79,10 +79,7 @@ class SessionInfo extends StatelessWidget {
         title: l10n.sessionDeviceType,
         value: _nullableOrDash(session.deviceType),
       ),
-      SessionInfoItem(
-        title: l10n.sessionOs,
-        value: _nullableOrDash(session.os),
-      ),
+      SessionInfoItem(title: l10n.sessionOs, value: _nullableOrDash(session.os)),
       SessionInfoItem(
         title: l10n.sessionIpAddress,
         value: _nullableOrDash(session.ipAddress),
@@ -173,7 +170,7 @@ class SessionInfoCard extends StatelessWidget {
                 final int index = entry.key;
                 final SessionInfoItem item = entry.value;
                 final bool isLast = index == items.length - 1;
-                
+
                 return Column(
                   children: [
                     SessionInfoRow(item: item),

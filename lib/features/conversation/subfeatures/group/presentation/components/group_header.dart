@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/conversation/subfeatures/group/group.dart';
 import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversation/presentation/presentation.dart';
-import 'package:locnet_app/features/conversation/subfeatures/group/presentation/modals/group_info_modal_card.dart';
 import 'package:locnet_app/features/conversation/subfeatures/conversation_tools/conversation_tools.dart';
+import 'package:locnet_app/features/conversation/subfeatures/group/group.dart';
 
 enum _GroupHeaderMenuAction {
   toggleNotifications,
@@ -48,9 +47,7 @@ class _GroupHeaderState extends State<GroupHeader> {
           context: context,
           transitionBuilder: slideFadeDialogTransition,
           pageBuilder: (context, _, _) {
-            return GroupInfoModalCard(
-              conversation: widget.conversation,
-            );
+            return GroupInfoModalCard(conversation: widget.conversation);
           },
         );
       },
@@ -116,17 +113,17 @@ class _GroupHeaderState extends State<GroupHeader> {
                     : l10n.toggleNotificationsOn,
               ),
             ),
-            PopupMenuItem(
+            const PopupMenuItem(
               value: _GroupHeaderMenuAction.viewGroupInfo,
-              child: const Text('View Group Info'),
+              child: Text('View Group Info'),
             ),
-            PopupMenuItem(
+            const PopupMenuItem(
               value: _GroupHeaderMenuAction.leaveGroup,
-              child: const Text('Leave Group'),
+              child: Text('Leave Group'),
             ),
-            PopupMenuItem(
+            const PopupMenuItem(
               value: _GroupHeaderMenuAction.deleteGroup,
-              child: const Text('Delete Group'),
+              child: Text('Delete Group'),
             ),
           ];
         },
@@ -136,10 +133,7 @@ class _GroupHeaderState extends State<GroupHeader> {
 }
 
 class _HeaderIconButton extends StatelessWidget {
-  const _HeaderIconButton({
-    required this.icon,
-    required this.onPressed,
-  });
+  const _HeaderIconButton({required this.icon, required this.onPressed});
 
   final IconData icon;
   final VoidCallback onPressed;
@@ -151,17 +145,12 @@ class _HeaderIconButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(right: 4),
       child: IconButton(
-        tooltip: null,
         visualDensity: VisualDensity.compact,
         iconSize: 20,
         splashRadius: 18,
         onPressed: onPressed,
-        icon: Icon(
-          icon,
-          color: colorScheme.onSurfaceVariant,
-        ),
+        icon: Icon(icon, color: colorScheme.onSurfaceVariant),
       ),
     );
   }
 }
-
