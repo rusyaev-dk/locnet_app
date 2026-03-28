@@ -8,8 +8,8 @@ import 'package:locnet_app/features/conversation/subfeatures/private/data/data.d
 import 'package:locnet_app/features/conversations_list/data/data.dart';
 import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/data/repositories/repositories.dart';
 import 'package:locnet_app/features/message/data/data.dart';
-import 'package:locnet_app/features/settings/domain/domain.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
+import 'package:locnet_app/features/settings/domain/domain.dart';
 import 'package:locnet_app/features/theme_editor/data/data.dart';
 import 'package:locnet_app/mock/mock.dart';
 
@@ -62,44 +62,32 @@ final class DevEnvPreset implements IAppEnvPreset {
 
   @override
   IChannelRepo createChannelRepo() {
-    return MockChannelRepo(
-      backendStorage: _mockInMemoryBackend,
-    );
+    return MockChannelRepo(backendStorage: _mockInMemoryBackend);
   }
 
   @override
   IGroupRepo createGroupConversationRepo() {
-    return MockGroupRepo(
-      backendStorage: _mockInMemoryBackend,
-    );
+    return MockGroupRepo(backendStorage: _mockInMemoryBackend);
   }
 
   @override
   IPrivateMessageRepo createPrivateMessageRepo() {
-    return MockPrivateMessageRepo(
-      backendStorage: _mockInMemoryBackend,
-    );
+    return MockPrivateMessageRepo(backendStorage: _mockInMemoryBackend);
   }
 
   @override
   IGroupMessageRepo createGroupMessageRepo() {
-    return MockGroupMessageRepo(
-      backendStorage: _mockInMemoryBackend,
-    );
+    return MockGroupMessageRepo(backendStorage: _mockInMemoryBackend);
   }
 
   @override
   IChannelPublicationRepo createChannelPublicationRepo() {
-    return MockChannelPublicationRepo(
-      backendStorage: _mockInMemoryBackend,
-    );
+    return MockChannelPublicationRepo(backendStorage: _mockInMemoryBackend);
   }
 
   @override
   IPrivateConversationRepo createPrivateConversationRepo() {
-    return MockPrivateConversationRepo(
-      backendStorage: _mockInMemoryBackend,
-    );
+    return MockPrivateConversationRepo(backendStorage: _mockInMemoryBackend);
   }
 
   @override

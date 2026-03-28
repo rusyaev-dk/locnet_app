@@ -118,12 +118,18 @@ final class LocalSessionCacheRepo implements ISessionCacheRepo {
   }
 
   void _validateSessionJson(Map<String, dynamic> json) {
+    final bool hasLegacyExpiry = _hasIsoDateString(json, 'expiresAt');
+    final bool hasAccessExpiry = _hasIsoDateString(json, 'accessExpiresAt');
+    final bool hasRefreshExpiry = _hasIsoDateString(json, 'refreshExpiresAt');
+    final bool hasValidExpiry =
+        hasLegacyExpiry || (hasAccessExpiry && hasRefreshExpiry);
+
     final List<String> missingOrInvalid = <String>[
       if (!_hasNonEmptyString(json, 'sessionId')) 'sessionId',
       if (!_hasNonEmptyString(json, 'userId')) 'userId',
       if (!_hasNonEmptyString(json, 'refreshToken')) 'refreshToken',
       if (!_hasNonEmptyString(json, 'accessToken')) 'accessToken',
-      if (!_hasIsoDateString(json, 'expiresAt')) 'expiresAt',
+      if (!hasValidExpiry) 'accessExpiresAt/refreshExpiresAt',
       if (!_hasBool(json, 'isExpired')) 'isExpired',
       if (!_hasIsoDateString(json, 'createdAt')) 'createdAt',
       if (!_hasIsoDateString(json, 'updatedAt')) 'updatedAt',
@@ -146,7 +152,21 @@ final class LocalSessionCacheRepo implements ISessionCacheRepo {
     _validateOptionalString(json, 'deviceType');
     _validateOptionalString(json, 'os');
 
-    _ensureParseableDate(json['expiresAt'] as String, fieldName: 'expiresAt');
+    if (hasAccessExpiry) {
+      _ensureParseableDate(
+        json['accessExpiresAt'] as String,
+        fieldName: 'accessExpiresAt',
+      );
+    }
+    if (hasRefreshExpiry) {
+      _ensureParseableDate(
+        json['refreshExpiresAt'] as String,
+        fieldName: 'refreshExpiresAt',
+      );
+    }
+    if (hasLegacyExpiry) {
+      _ensureParseableDate(json['expiresAt'] as String, fieldName: 'expiresAt');
+    }
     _ensureParseableDate(json['createdAt'] as String, fieldName: 'createdAt');
     _ensureParseableDate(json['updatedAt'] as String, fieldName: 'updatedAt');
 

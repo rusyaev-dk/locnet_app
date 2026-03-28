@@ -669,6 +669,26 @@ class S {
     );
   }
 
+  /// `Истекает access-токен`
+  String get sessionAccessExpiresAt {
+    return Intl.message(
+      'Истекает access-токен',
+      name: 'sessionAccessExpiresAt',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Истекает refresh-токен`
+  String get sessionRefreshExpiresAt {
+    return Intl.message(
+      'Истекает refresh-токен',
+      name: 'sessionRefreshExpiresAt',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Завершена`
   String get sessionTerminatedAt {
     return Intl.message(

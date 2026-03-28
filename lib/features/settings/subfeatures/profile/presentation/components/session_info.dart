@@ -97,8 +97,12 @@ class SessionInfo extends StatelessWidget {
         value: _dateTimeFormatter.format(session.updatedAt),
       ),
       SessionInfoItem(
-        title: l10n.sessionExpiresAt,
-        value: _dateTimeFormatter.format(session.expiresAt),
+        title: l10n.sessionAccessExpiresAt,
+        value: _dateTimeFormatter.format(session.accessExpiresAt),
+      ),
+      SessionInfoItem(
+        title: l10n.sessionRefreshExpiresAt,
+        value: _dateTimeFormatter.format(session.refreshExpiresAt),
       ),
     ];
 

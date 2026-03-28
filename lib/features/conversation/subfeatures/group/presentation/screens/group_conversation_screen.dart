@@ -103,15 +103,13 @@ class _GroupConversationScreenState extends State<GroupConversationScreen> {
           builder: (context, selectionState) {
             final bool isSelectionMode = selectionState.isSelectionMode;
 
-            final GroupConversationState baseState =
-                context.read<GroupConversationBloc>().state;
-
             final header = isSelectionMode
                 ? MessagesSelectionAppBar(
                     selectedCount: selectionState.selectedCount,
                     onClosePressed: () =>
                         context.read<MessageSelectionCubit>().clearSelection(),
                     onDeletePressed: () async {
+                      final baseState = context.read<GroupConversationBloc>().state;
                       if (baseState is! GroupConversationLoadedState) return;
 
                       final l10n = context.l10n;
@@ -178,6 +176,7 @@ class _GroupConversationScreenState extends State<GroupConversationScreen> {
 
                       if (tile == null) return;
 
+                      final baseState = context.read<GroupConversationBloc>().state;
                       final selectedMessages = (baseState
                               as GroupConversationLoadedState)
                           .messages
@@ -214,13 +213,16 @@ class _GroupConversationScreenState extends State<GroupConversationScreen> {
                       context.read<MessageSelectionCubit>().clearSelection();
                     },
                   )
-                : baseState is GroupConversationLoadedState
-                    ? GroupHeader(
-                        conversationId: widget.conversationId,
-                        conversation: baseState.conversation,
-                        participantsCount: baseState.participants.length,
-                      )
-                    : const SizedBox.shrink();
+                : BlocBuilder<GroupConversationBloc, GroupConversationState>(
+                    builder: (context, convState) =>
+                        convState is GroupConversationLoadedState
+                            ? GroupHeader(
+                                conversationId: widget.conversationId,
+                                conversation: convState.conversation,
+                                participantsCount: convState.participants.length,
+                              )
+                            : const SizedBox.shrink(),
+                  );
 
             return Column(
               mainAxisSize: MainAxisSize.min,

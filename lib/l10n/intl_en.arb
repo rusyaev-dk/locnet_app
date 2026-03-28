@@ -77,6 +77,8 @@
   "sessionCreatedAt": "Created at",
   "sessionUpdatedAt": "Updated at",
   "sessionExpiresAt": "Expires at",
+  "sessionAccessExpiresAt": "Access token expires",
+  "sessionRefreshExpiresAt": "Refresh token expires",
   "sessionTerminatedAt": "Terminated at",
   "sessionIsExpired": "Expired",
   "sessionIsTerminated": "Terminated",

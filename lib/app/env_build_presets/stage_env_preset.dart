@@ -8,10 +8,10 @@ import 'package:locnet_app/features/conversation/subfeatures/private/data/reposi
 import 'package:locnet_app/features/conversations_list/data/repositories/conversations_list_repo/i_conversations_list_repo.dart';
 import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/data/data.dart';
 import 'package:locnet_app/features/message/data/data.dart';
-import 'package:locnet_app/mock/mock.dart';
-import 'package:locnet_app/features/settings/domain/domain.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
+import 'package:locnet_app/features/settings/domain/domain.dart';
 import 'package:locnet_app/features/theme_editor/data/data.dart';
+import 'package:locnet_app/mock/mock.dart';
 
 final class StageEnvPreset implements IAppEnvPreset {
   StageEnvPreset({required AppScope appScope})
@@ -70,23 +70,17 @@ final class StageEnvPreset implements IAppEnvPreset {
 
   @override
   IPrivateMessageRepo createPrivateMessageRepo() {
-    return MockPrivateMessageRepo(
-      backendStorage: MockInMemoryBackend(),
-    );
+    return MockPrivateMessageRepo(backendStorage: MockInMemoryBackend());
   }
 
   @override
   IGroupMessageRepo createGroupMessageRepo() {
-    return MockGroupMessageRepo(
-      backendStorage: MockInMemoryBackend(),
-    );
+    return MockGroupMessageRepo(backendStorage: MockInMemoryBackend());
   }
 
   @override
   IChannelPublicationRepo createChannelPublicationRepo() {
-    return MockChannelPublicationRepo(
-      backendStorage: MockInMemoryBackend(),
-    );
+    return MockChannelPublicationRepo(backendStorage: MockInMemoryBackend());
   }
 
   @override
@@ -97,8 +91,7 @@ final class StageEnvPreset implements IAppEnvPreset {
 
   @override
   IUserRepo createUserRepo() {
-    // TODO: implement createUserRepo
-    throw UnimplementedError();
+    return HttpUserRepo(httpClient: _httpClient);
   }
 
   @override

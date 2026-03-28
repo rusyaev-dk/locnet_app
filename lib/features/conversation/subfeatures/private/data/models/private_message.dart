@@ -38,22 +38,32 @@ class PrivateMessageDto extends Equatable {
   final String? replyToMessageId;
 
   factory PrivateMessageDto.fromJson(Map<String, dynamic> json) {
+    final dynamic rawAttachments = json['attachments'];
+    final List<PrivateMessageAttachmentDto> parsedAttachments = rawAttachments is List
+        ? rawAttachments
+              .whereType<Map<String, dynamic>>()
+              .map(PrivateMessageAttachmentDto.fromJson)
+              .toList(growable: false)
+        : <PrivateMessageAttachmentDto>[];
+
+    final String? editedAtRaw = json['editedAt'] as String?;
+
     return PrivateMessageDto(
-      id: json['id'] as String,
+      id: (json['id'] ?? json['messageId']) as String,
       conversationId: json['conversationId'] as String,
       senderId: json['senderId'] as String,
-      deliveryStatus: json['deliveryStatus'] as String,
+      deliveryStatus: (json['deliveryStatus'] ?? json['status'] ?? 'SENT') as String,
       clientMessageId: json['clientMessageId'] as String?,
-      text: json['text'] as String,
-      attachments: json['attachments'] as List<PrivateMessageAttachmentDto>,
+      text: (json['text'] ?? '') as String,
+      attachments: parsedAttachments,
       createdAt: DateTimeFormatter.parse(json['createdAt'] as String),
       updatedAt: DateTimeFormatter.parse(json['updatedAt'] as String),
-      isDeleted: json['isDeleted'] as bool,
-      isPinned: json['isPinned'] as bool,
+      isDeleted: (json['isDeleted'] ?? false) as bool,
+      isPinned: (json['isPinned'] ?? false) as bool,
       deletedById: json['deletedById'] as String?,
       replyToMessageId: json['replyToMessageId'] as String?,
-      editedAt: json['editedAt'] != null
-          ? DateTimeFormatter.parse(json['editedAt'] as String)
+      editedAt: editedAtRaw != null && editedAtRaw.isNotEmpty
+          ? DateTimeFormatter.parse(editedAtRaw)
           : null,
     );
   }

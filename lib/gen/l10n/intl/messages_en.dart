@@ -254,6 +254,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectInterfaceLanguage": MessageLookupByLibrary.simpleMessage(
       "Select interface language",
     ),
+    "sessionAccessExpiresAt": MessageLookupByLibrary.simpleMessage(
+      "Access token expires",
+    ),
     "sessionCreatedAt": MessageLookupByLibrary.simpleMessage("Created at"),
     "sessionDetails": MessageLookupByLibrary.simpleMessage("Session details"),
     "sessionDeviceName": MessageLookupByLibrary.simpleMessage("Device name"),
@@ -267,6 +270,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "sessionIsTerminated": MessageLookupByLibrary.simpleMessage("Terminated"),
     "sessionMacAddress": MessageLookupByLibrary.simpleMessage("MAC address"),
     "sessionOs": MessageLookupByLibrary.simpleMessage("OS"),
+    "sessionRefreshExpiresAt": MessageLookupByLibrary.simpleMessage(
+      "Refresh token expires",
+    ),
     "sessionSessionId": MessageLookupByLibrary.simpleMessage("Session ID"),
     "sessionStatusActive": MessageLookupByLibrary.simpleMessage("Active"),
     "sessionStatusExpired": MessageLookupByLibrary.simpleMessage("Expired"),

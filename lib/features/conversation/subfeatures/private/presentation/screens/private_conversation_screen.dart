@@ -113,15 +113,13 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
           builder: (context, selectionState) {
             final bool isSelectionMode = selectionState.isSelectionMode;
 
-            final PrivateConversationState baseState =
-                context.read<PrivateConversationBloc>().state;
-
             final Widget header = isSelectionMode
                 ? MessagesSelectionAppBar(
                     selectedCount: selectionState.selectedCount,
                     onClosePressed: () =>
                         context.read<MessageSelectionCubit>().clearSelection(),
                     onDeletePressed: () async {
+                      final baseState = context.read<PrivateConversationBloc>().state;
                       if (baseState is! PrivateConversationLoadedState) return;
 
                       final l10n = context.l10n;
@@ -192,6 +190,7 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
                       // Реальный forward предполагает бэкенд-метод forwardMessages.
                       // Пока реализуем отправку цитатой текста выбранных сообщений.
 
+                      final baseState = context.read<PrivateConversationBloc>().state;
                       final selectedMessages = (baseState as
                               PrivateConversationLoadedState)
                           .messages
@@ -221,12 +220,15 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
                       context.read<MessageSelectionCubit>().clearSelection();
                     },
                   )
-                : baseState is PrivateConversationLoadedState
-                    ? PrivateHeader(
-                        conversationId: widget.conversationId,
-                        companion: baseState.companion,
-                      )
-                    : const SizedBox.shrink();
+                : BlocBuilder<PrivateConversationBloc, PrivateConversationState>(
+                    builder: (context, convState) =>
+                        convState is PrivateConversationLoadedState
+                            ? PrivateHeader(
+                                conversationId: widget.conversationId,
+                                companion: convState.companion,
+                              )
+                            : const SizedBox.shrink(),
+                  );
 
             return Column(
               mainAxisSize: MainAxisSize.min,

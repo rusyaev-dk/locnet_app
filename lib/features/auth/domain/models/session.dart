@@ -10,7 +10,8 @@ class Session extends Equatable {
     required this.userId,
     required this.refreshToken,
     required this.accessToken,
-    required this.expiresAt,
+    required this.accessExpiresAt,
+    required this.refreshExpiresAt,
     required this.isExpired,
     required this.createdAt,
     required this.updatedAt,
@@ -27,7 +28,8 @@ class Session extends Equatable {
   final String userId;
   final String refreshToken;
   final String accessToken;
-  final DateTime expiresAt;
+  final DateTime accessExpiresAt;
+  final DateTime refreshExpiresAt;
   final bool isExpired;
   final bool? isTerminated;
   final DateTime? terminatedAt;
@@ -45,7 +47,8 @@ class Session extends Equatable {
       userId: dto.userId,
       refreshToken: dto.refreshToken,
       accessToken: dto.accessToken,
-      expiresAt: dto.expiresAt,
+      accessExpiresAt: dto.accessExpiresAt,
+      refreshExpiresAt: dto.refreshExpiresAt,
       isExpired: dto.isExpired,
       isTerminated: dto.isTerminated,
       terminatedAt: dto.terminatedAt,
@@ -60,12 +63,24 @@ class Session extends Equatable {
   }
 
   factory Session.fromJson(Map<String, dynamic> json) {
+    final String? legacyExpiresAt = json['expiresAt'] as String?;
+    final String? accessRaw =
+        json['accessExpiresAt'] as String? ?? legacyExpiresAt;
+    final String? refreshRaw =
+        json['refreshExpiresAt'] as String? ?? legacyExpiresAt;
+    if (accessRaw == null || accessRaw.isEmpty) {
+      throw const FormatException('Session JSON is missing accessExpiresAt');
+    }
+    if (refreshRaw == null || refreshRaw.isEmpty) {
+      throw const FormatException('Session JSON is missing refreshExpiresAt');
+    }
     return Session(
       sessionId: json['sessionId'] as String,
       userId: json['userId'] as String,
       refreshToken: json['refreshToken'] as String,
       accessToken: json['accessToken'] as String,
-      expiresAt: DateTimeFormatter.parse(json['expiresAt']),
+      accessExpiresAt: DateTimeFormatter.parse(accessRaw),
+      refreshExpiresAt: DateTimeFormatter.parse(refreshRaw),
       isExpired: json['isExpired'] as bool,
       isTerminated: json['isTerminated'] as bool?,
       terminatedAt: json['terminatedAt'] != null
@@ -86,7 +101,8 @@ class Session extends Equatable {
     'userId': userId,
     'refreshToken': refreshToken,
     'accessToken': accessToken,
-    'expiresAt': expiresAt.toIso8601String(),
+    'accessExpiresAt': accessExpiresAt.toIso8601String(),
+    'refreshExpiresAt': refreshExpiresAt.toIso8601String(),
     'isExpired': isExpired,
     'isTerminated': isTerminated,
     'terminatedAt': terminatedAt?.toIso8601String(),
@@ -105,7 +121,8 @@ class Session extends Equatable {
     userId,
     refreshToken,
     accessToken,
-    expiresAt,
+    accessExpiresAt,
+    refreshExpiresAt,
     isExpired,
     isTerminated,
     terminatedAt,

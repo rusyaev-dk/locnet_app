@@ -145,8 +145,14 @@ class AuthInteractor {
   Future<(Session, User)?> restoreSession() async {
     try {
       final Session cachedSession = await _sessionCacheRepo.loadSession();
+      final DateTime now = DateTime.now();
 
-      if (cachedSession.expiresAt.isAfter(DateTime.now())) {
+      if (!cachedSession.refreshExpiresAt.isAfter(now)) {
+        await logOut();
+        return null;
+      }
+
+      if (cachedSession.accessExpiresAt.isAfter(now)) {
         final User user = await _userRepo.getUserById(
           userId: cachedSession.userId,
         );

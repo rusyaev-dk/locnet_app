@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/conversation_tools/presentation/presentation.dart'
     show ConversationSearchSheet, ConversationSharedMediaSheet;
@@ -8,16 +9,16 @@ Future<void> showConversationSearchSheet({
   required String conversationId,
   required ConversationType conversationType,
 }) {
-  return showModalBottomSheet<void>(
+  return showGeneralDialog<void>(
     context: context,
-    useSafeArea: true,
-    isScrollControlled: true,
-    backgroundColor: Theme.of(context).colorScheme.surface,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-    ),
-    builder: (context) => SizedBox(
-      height: MediaQuery.of(context).size.height * 0.6,
+    barrierDismissible: true,
+    barrierLabel: 'Search',
+    barrierColor: Colors.black54,
+    transitionDuration: const Duration(milliseconds: 200),
+    transitionBuilder: slideFadeDialogTransition,
+    pageBuilder: (context, _, __) => AppModalCard(
+      maxWidth: 440,
+      verticalInset: 80,
       child: ConversationSearchSheet(
         conversationId: conversationId,
         conversationType: conversationType,
@@ -31,16 +32,16 @@ Future<void> showConversationSharedMediaSheet({
   required String conversationId,
   required ConversationType conversationType,
 }) {
-  return showModalBottomSheet<void>(
+  return showGeneralDialog<void>(
     context: context,
-    useSafeArea: true,
-    isScrollControlled: true,
-    backgroundColor: Theme.of(context).colorScheme.surface,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-    ),
-    builder: (context) => SizedBox(
-      height: MediaQuery.of(context).size.height * 0.7,
+    barrierDismissible: true,
+    barrierLabel: 'Shared media',
+    barrierColor: Colors.black54,
+    transitionDuration: const Duration(milliseconds: 200),
+    transitionBuilder: slideFadeDialogTransition,
+    pageBuilder: (context, _, __) => AppModalCard(
+      maxWidth: 480,
+      verticalInset: 60,
       child: ConversationSharedMediaSheet(
         conversationId: conversationId,
         conversationType: conversationType,
@@ -48,4 +49,3 @@ Future<void> showConversationSharedMediaSheet({
     ),
   );
 }
-

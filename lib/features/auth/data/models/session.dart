@@ -9,7 +9,8 @@ final class SessionDto extends Equatable {
     required this.userId,
     required this.refreshToken,
     required this.accessToken,
-    required this.expiresAt,
+    required this.accessExpiresAt,
+    required this.refreshExpiresAt,
     required this.isExpired,
     required this.createdAt,
     required this.updatedAt,
@@ -26,7 +27,8 @@ final class SessionDto extends Equatable {
   final String userId;
   final String refreshToken;
   final String accessToken;
-  final DateTime expiresAt;
+  final DateTime accessExpiresAt;
+  final DateTime refreshExpiresAt;
   final bool isExpired;
   final bool? isTerminated;
   final DateTime? terminatedAt;
@@ -44,7 +46,12 @@ final class SessionDto extends Equatable {
       userId: json['userId'] as String,
       refreshToken: json['refreshToken'] as String,
       accessToken: json['accessToken'] as String,
-      expiresAt: DateTimeFormatter.parse(json['expiresAt']),
+      accessExpiresAt: DateTimeFormatter.parse(
+        json['accessExpiresAt'] as String,
+      ),
+      refreshExpiresAt: DateTimeFormatter.parse(
+        json['refreshExpiresAt'] as String,
+      ),
       isExpired: json['isExpired'] as bool,
       isTerminated: json['isTerminated'] as bool?,
       terminatedAt: json['terminatedAt'] != null
@@ -66,7 +73,8 @@ final class SessionDto extends Equatable {
     'userId': userId,
     'refreshToken': refreshToken,
     'accessToken': accessToken,
-    'expiresAt': expiresAt.toIso8601String(),
+    'accessExpiresAt': accessExpiresAt.toIso8601String(),
+    'refreshExpiresAt': refreshExpiresAt.toIso8601String(),
     'isExpired': isExpired,
     'isTerminated': isTerminated,
     'terminatedAt': terminatedAt?.toIso8601String(),
@@ -84,7 +92,8 @@ final class SessionDto extends Equatable {
     String? userId,
     String? refreshToken,
     String? accessToken,
-    DateTime? expiresAt,
+    DateTime? accessExpiresAt,
+    DateTime? refreshExpiresAt,
     bool? isExpired,
     bool? isTerminated,
     DateTime? terminatedAt,
@@ -101,7 +110,8 @@ final class SessionDto extends Equatable {
       userId: userId ?? this.userId,
       refreshToken: refreshToken ?? this.refreshToken,
       accessToken: accessToken ?? this.accessToken,
-      expiresAt: expiresAt ?? this.expiresAt,
+      accessExpiresAt: accessExpiresAt ?? this.accessExpiresAt,
+      refreshExpiresAt: refreshExpiresAt ?? this.refreshExpiresAt,
       isExpired: isExpired ?? this.isExpired,
       isTerminated: isTerminated ?? this.isTerminated,
       terminatedAt: terminatedAt ?? this.terminatedAt,
@@ -121,7 +131,8 @@ final class SessionDto extends Equatable {
     userId,
     refreshToken,
     accessToken,
-    expiresAt,
+    accessExpiresAt,
+    refreshExpiresAt,
     isExpired,
     isTerminated,
     terminatedAt,

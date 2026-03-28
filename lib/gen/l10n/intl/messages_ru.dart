@@ -260,6 +260,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectInterfaceLanguage": MessageLookupByLibrary.simpleMessage(
       "Выберите язык интерфейса",
     ),
+    "sessionAccessExpiresAt": MessageLookupByLibrary.simpleMessage(
+      "Истекает access-токен",
+    ),
     "sessionCreatedAt": MessageLookupByLibrary.simpleMessage("Создана"),
     "sessionDetails": MessageLookupByLibrary.simpleMessage("Детали сессии"),
     "sessionDeviceName": MessageLookupByLibrary.simpleMessage("Имя устройства"),
@@ -273,6 +276,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "sessionIsTerminated": MessageLookupByLibrary.simpleMessage("Завершена"),
     "sessionMacAddress": MessageLookupByLibrary.simpleMessage("MAC-адрес"),
     "sessionOs": MessageLookupByLibrary.simpleMessage("ОС"),
+    "sessionRefreshExpiresAt": MessageLookupByLibrary.simpleMessage(
+      "Истекает refresh-токен",
+    ),
     "sessionSessionId": MessageLookupByLibrary.simpleMessage("ID сессии"),
     "sessionStatusActive": MessageLookupByLibrary.simpleMessage("Активна"),
     "sessionStatusExpired": MessageLookupByLibrary.simpleMessage("Истекла"),

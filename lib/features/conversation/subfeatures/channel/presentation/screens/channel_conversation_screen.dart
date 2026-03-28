@@ -105,15 +105,13 @@ class _ChannelConversationScreenState extends State<ChannelConversationScreen> {
           builder: (context, selectionState) {
             final bool isSelectionMode = selectionState.isSelectionMode;
 
-            final ChannelConversationState baseState =
-                context.read<ChannelConversationBloc>().state;
-
             final header = isSelectionMode
                 ? MessagesSelectionAppBar(
                     selectedCount: selectionState.selectedCount,
                     onClosePressed: () =>
                         context.read<MessageSelectionCubit>().clearSelection(),
                     onDeletePressed: () async {
+                      final baseState = context.read<ChannelConversationBloc>().state;
                       if (baseState is! ChannelConversationLoadedState) return;
 
                       final l10n = context.l10n;
@@ -180,6 +178,7 @@ class _ChannelConversationScreenState extends State<ChannelConversationScreen> {
 
                       if (tile == null) return;
 
+                      final baseState = context.read<ChannelConversationBloc>().state;
                       final selectedMessages = (baseState
                               as ChannelConversationLoadedState)
                           .messages
@@ -216,13 +215,16 @@ class _ChannelConversationScreenState extends State<ChannelConversationScreen> {
                       context.read<MessageSelectionCubit>().clearSelection();
                     },
                   )
-                : baseState is ChannelConversationLoadedState
-                    ? ChannelHeader(
-                        conversationId: widget.conversationId,
-                        conversation: baseState.conversation,
-                        subscribersCount: baseState.subscribers.length,
-                      )
-                    : const SizedBox.shrink();
+                : BlocBuilder<ChannelConversationBloc, ChannelConversationState>(
+                    builder: (context, convState) =>
+                        convState is ChannelConversationLoadedState
+                            ? ChannelHeader(
+                                conversationId: widget.conversationId,
+                                conversation: convState.conversation,
+                                subscribersCount: convState.subscribers.length,
+                              )
+                            : const SizedBox.shrink(),
+                  );
 
             return Column(
               mainAxisSize: MainAxisSize.min,

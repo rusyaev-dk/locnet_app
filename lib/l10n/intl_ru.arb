@@ -77,6 +77,8 @@
   "sessionCreatedAt": "Создана",
   "sessionUpdatedAt": "Обновлена",
   "sessionExpiresAt": "Истекает",
+  "sessionAccessExpiresAt": "Истекает access-токен",
+  "sessionRefreshExpiresAt": "Истекает refresh-токен",
   "sessionTerminatedAt": "Завершена",
   "sessionIsExpired": "Истекла",
   "sessionIsTerminated": "Завершена",

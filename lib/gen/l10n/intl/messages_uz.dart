@@ -268,6 +268,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectInterfaceLanguage": MessageLookupByLibrary.simpleMessage(
       "Interfeys tilini tanlang",
     ),
+    "sessionAccessExpiresAt": MessageLookupByLibrary.simpleMessage(
+      "Access token muddati",
+    ),
     "sessionCreatedAt": MessageLookupByLibrary.simpleMessage("Yaratilgan vaqt"),
     "sessionDetails": MessageLookupByLibrary.simpleMessage(
       "Sessiya tafsilotlari",
@@ -283,6 +286,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "sessionIsTerminated": MessageLookupByLibrary.simpleMessage("Yakunlangan"),
     "sessionMacAddress": MessageLookupByLibrary.simpleMessage("MAC manzil"),
     "sessionOs": MessageLookupByLibrary.simpleMessage("OT"),
+    "sessionRefreshExpiresAt": MessageLookupByLibrary.simpleMessage(
+      "Refresh token muddati",
+    ),
     "sessionSessionId": MessageLookupByLibrary.simpleMessage("Sessiya ID"),
     "sessionStatusActive": MessageLookupByLibrary.simpleMessage("Faol"),
     "sessionStatusExpired": MessageLookupByLibrary.simpleMessage(

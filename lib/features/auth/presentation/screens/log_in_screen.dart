@@ -48,7 +48,7 @@ class _LogInScreenState extends State<LogInScreen> {
     final colorScheme = context.colorScheme;
 
     return Scaffold(
-      backgroundColor: colorScheme.primaryContainer,
+      backgroundColor: colorScheme.surface,
       body: SafeArea(
         child: MultiToastListener(
           listeners: [

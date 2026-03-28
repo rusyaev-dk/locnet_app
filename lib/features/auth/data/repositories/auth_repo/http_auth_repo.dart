@@ -25,7 +25,7 @@ final class HttpAuthRepo implements IAuthRepo {
       );
 
       final Map<String, dynamic> responseJson = _asJsonMap(httpResponse.data);
-      return Session.fromJson(responseJson);
+      return Session.fromJson(_extractSessionJson(responseJson));
     } on AppException {
       rethrow;
     } catch (e, st) {
@@ -62,7 +62,7 @@ final class HttpAuthRepo implements IAuthRepo {
       );
 
       final Map<String, dynamic> responseJson = _asJsonMap(httpResponse.data);
-      return Session.fromJson(responseJson);
+      return Session.fromJson(_extractSessionJson(responseJson));
     } on AppException {
       rethrow;
     } catch (e, st) {
@@ -91,7 +91,7 @@ final class HttpAuthRepo implements IAuthRepo {
       );
 
       final Map<String, dynamic> responseJson = _asJsonMap(httpResponse.data);
-      return Session.fromJson(responseJson);
+      return Session.fromJson(_extractSessionJson(responseJson));
     } on AppException {
       rethrow;
     } catch (e, st) {
@@ -141,5 +141,31 @@ final class HttpAuthRepo implements IAuthRepo {
       error: value,
       stackTrace: StackTrace.current,
     );
+  }
+
+  Map<String, dynamic> _extractSessionJson(Map<String, dynamic> responseJson) {
+    final dynamic sessionDynamic = responseJson['session'];
+    final Map<String, dynamic> sessionJson = sessionDynamic != null
+        ? _asJsonMap(sessionDynamic)
+        : responseJson;
+
+    final String? rootAccess = responseJson['accessExpiresAt'] as String?;
+    final String? rootRefresh = responseJson['refreshExpiresAt'] as String?;
+
+    return <String, dynamic>{
+      ...sessionJson,
+      // Some endpoints duplicate tokens on root level.
+      // Keep root values as a fallback if session fields are missing.
+      'accessToken': sessionJson['accessToken'] ?? responseJson['accessToken'],
+      'refreshToken': sessionJson['refreshToken'] ?? responseJson['refreshToken'],
+      'accessExpiresAt':
+          rootAccess ??
+          sessionJson['accessExpiresAt'] as String? ??
+          sessionJson['expiresAt'] as String?,
+      'refreshExpiresAt':
+          rootRefresh ??
+          sessionJson['refreshExpiresAt'] as String? ??
+          sessionJson['expiresAt'] as String?,
+    };
   }
 }

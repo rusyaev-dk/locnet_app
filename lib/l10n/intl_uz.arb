@@ -77,6 +77,8 @@
   "sessionCreatedAt": "Yaratilgan vaqt",
   "sessionUpdatedAt": "Yangilangan vaqt",
   "sessionExpiresAt": "Tugash vaqti",
+  "sessionAccessExpiresAt": "Access token muddati",
+  "sessionRefreshExpiresAt": "Refresh token muddati",
   "sessionTerminatedAt": "Yakunlangan vaqt",
   "sessionIsExpired": "Muddati tugagan",
   "sessionIsTerminated": "Yakunlangan",
