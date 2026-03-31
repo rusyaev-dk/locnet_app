@@ -1,4 +1,6 @@
 // message_bubble.dart
+import 'dart:math' show min;
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -198,87 +200,98 @@ class _MessageBubbleState extends State<MessageBubble> {
         ? colorScheme.primary
         : colorScheme.onPrimaryContainer;
 
-    final double maxBubbleWidth = MediaQuery.sizeOf(context).width * 0.7;
-
     return Listener(
       onPointerDown: _handlePointerDown,
-      child: Align(
-        alignment: alignment,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: maxBubbleWidth),
-          child: IntrinsicWidth(
-            child: Container(
-              margin: margin,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: bubbleColor,
-                borderRadius: borderRadius,
-              ),
-              child: Column(
-                crossAxisAlignment: crossAxisAlignment,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  if (widget.sender != null)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          widget.sender!,
-                          style: textScheme.label.copyWith(
-                            color: isMine
-                                ? colorScheme.onSurface.withAlpha(200)
-                                : colorScheme.onPrimaryContainer.withAlpha(230),
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  if (messageMarkdown.isNotEmpty)
-                    TextSelectionTheme(
-                      data: TextSelectionThemeData(
-                        selectionColor: selectionColor,
-                      ),
-                      child: AppMessageText(
-                        data: messageMarkdown,
-                        textStyle: messageTextStyle,
-                        linkColor: linkColor,
-                        onLinkTap: _onMessageLinkTap,
-                      ),
-                    ),
-                  const SizedBox(height: 4),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+      child: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          final double screenWidth = MediaQuery.sizeOf(context).width;
+          final double laneWidth = constraints.maxWidth.isFinite
+              ? constraints.maxWidth
+              : screenWidth;
+          final double maxBubbleWidth = min(laneWidth, screenWidth * 0.7);
+
+          return Align(
+            alignment: alignment,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: maxBubbleWidth),
+              child: IntrinsicWidth(
+                child: Container(
+                  margin: margin,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: bubbleColor,
+                    borderRadius: borderRadius,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: crossAxisAlignment,
+                    mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      const Spacer(),
-                      if (_isEdited())
+                      if (widget.sender != null)
                         Padding(
-                          padding: const EdgeInsets.only(right: 4),
-                          child: Text(
-                            context.l10n.edited,
-                            style: metaTextStyle,
+                          padding: const EdgeInsets.only(bottom: 4),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              widget.sender!,
+                              style: textScheme.label.copyWith(
+                                color: isMine
+                                    ? colorScheme.onSurface.withAlpha(200)
+                                    : colorScheme.onPrimaryContainer
+                                        .withAlpha(230),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
                         ),
-                      Text(timeText, style: metaTextStyle),
-                      if (widget.showDeliveryStatus && isMine) ...[
-                        const SizedBox(width: 6),
-                        if (_getDeliveryStatus() != null)
-                          MessageDeliveryStatusIndicator(
-                            deliveryStatus: _getDeliveryStatus()!,
-                            color:
-                                metaTextStyle.color ??
-                                colorScheme.onSurface,
-                            size: 14,
+                      if (messageMarkdown.isNotEmpty)
+                        TextSelectionTheme(
+                          data: TextSelectionThemeData(
+                            selectionColor: selectionColor,
                           ),
-                      ],
+                          child: AppMessageText(
+                            data: messageMarkdown,
+                            textStyle: messageTextStyle,
+                            linkColor: linkColor,
+                            onLinkTap: _onMessageLinkTap,
+                          ),
+                        ),
+                      const SizedBox(height: 4),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            if (_isEdited())
+                              Padding(
+                                padding: const EdgeInsets.only(right: 4),
+                                child: Text(
+                                  context.l10n.edited,
+                                  style: metaTextStyle,
+                                ),
+                              ),
+                            Text(timeText, style: metaTextStyle),
+                            if (widget.showDeliveryStatus && isMine) ...[
+                              const SizedBox(width: 6),
+                              if (_getDeliveryStatus() != null)
+                                MessageDeliveryStatusIndicator(
+                                  deliveryStatus: _getDeliveryStatus()!,
+                                  color: metaTextStyle.color ??
+                                      colorScheme.onSurface,
+                                  size: 14,
+                                ),
+                            ],
+                          ],
+                        ),
+                      ),
                     ],
                   ),
-                ],
+                ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

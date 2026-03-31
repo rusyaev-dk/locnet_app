@@ -107,7 +107,6 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
     final l10n = context.l10n;
 
     return Column(
-      mainAxisSize: MainAxisSize.min,
       children: [
         BlocBuilder<MessageSelectionCubit, MessageSelectionState>(
           builder: (context, selectionState) {

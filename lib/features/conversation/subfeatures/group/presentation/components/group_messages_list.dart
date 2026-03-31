@@ -88,80 +88,81 @@ class _GroupMessagesListState extends State<GroupMessagesList> {
               selectionCubit.toggleMessage(message.id);
             }
           },
-          child: Animate(
-          delay: delay,
-          effects: const [
-            FadeEffect(duration: baseDuration, curve: Curves.easeOut),
-            SlideEffect(
-              begin: Offset(0, 0.18),
-              end: Offset.zero,
-              duration: baseDuration,
-              curve: Curves.easeOutCubic,
-            ),
-            ScaleEffect(
-              begin: Offset(0.98, 0.98),
-              end: Offset(1, 1),
-              duration: baseDuration,
-              curve: Curves.easeOut,
-            ),
-          ],
-          child: isMine
-              ? SelectableMessageBubbleWrapper(
-                  message: message,
-                  companionId: '',
-                  currentUserId: widget.currentUserId,
-                  isSelected: isSelected,
-                  onEnterSelectionMode: () =>
-                      selectionCubit.enterSelectionMode(message.id),
-                  onToggleSelection: () =>
-                      selectionCubit.toggleMessage(message.id),
-                  onReply: () => widget.onReply?.call(message),
-                  onForward: () => widget.onForward?.call(message),
-                  onDelete: () => widget.onDelete?.call(message),
-                  onCopy: () async {
-                    final String t = message.text.trim();
-                    if (t.isNotEmpty) {
-                      await Clipboard.setData(ClipboardData(text: t));
-                    }
-                  },
-                )
-              : Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    CompanionAvatar(
-                      text: sender != null
-                          ? ProfileDataExtractor.extractUserInitials(sender)
-                          : '?',
-                      size: 32,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: SelectableMessageBubbleWrapper(
-                        message: message,
-                        companionId: '',
-                        currentUserId: widget.currentUserId,
-                        sender: senderName,
-                        isSelected: isSelected,
-                        onEnterSelectionMode: () =>
-                            selectionCubit.enterSelectionMode(message.id),
-                        onToggleSelection: () =>
-                            selectionCubit.toggleMessage(message.id),
-                        onReply: () => widget.onReply?.call(message),
-                        onForward: () => widget.onForward?.call(message),
-                        onDelete: () => widget.onDelete?.call(message),
-                        onCopy: () async {
-                          final String t = message.text.trim();
-                          if (t.isNotEmpty) {
-                            await Clipboard.setData(
-                              ClipboardData(text: t),
-                            );
-                          }
-                        },
-                      ),
-                    ),
-                  ],
+          child: ClipRect(
+            child: Animate(
+              delay: delay,
+              effects: const [
+                FadeEffect(duration: baseDuration, curve: Curves.easeOut),
+                SlideEffect(
+                  begin: Offset(0, 0.06),
+                  end: Offset.zero,
+                  duration: baseDuration,
+                  curve: Curves.easeOutCubic,
                 ),
-        ),
+                ScaleEffect(
+                  begin: Offset(0.98, 0.98),
+                  end: Offset(1, 1),
+                  duration: baseDuration,
+                  curve: Curves.easeOut,
+                ),
+              ],
+              child: isMine
+                  ? SelectableMessageBubbleWrapper(
+                      message: message,
+                      companionId: '',
+                      currentUserId: widget.currentUserId,
+                      isSelected: isSelected,
+                      onEnterSelectionMode: () =>
+                          selectionCubit.enterSelectionMode(message.id),
+                      onToggleSelection: () =>
+                          selectionCubit.toggleMessage(message.id),
+                      onReply: () => widget.onReply?.call(message),
+                      onForward: () => widget.onForward?.call(message),
+                      onDelete: () => widget.onDelete?.call(message),
+                      onCopy: () async {
+                        final String t = message.text.trim();
+                        if (t.isNotEmpty) {
+                          await Clipboard.setData(ClipboardData(text: t));
+                        }
+                      },
+                    )
+                  : Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        CompanionAvatar(
+                          text: sender != null
+                              ? ProfileDataExtractor.extractUserInitials(sender)
+                              : '?',
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: SelectableMessageBubbleWrapper(
+                            message: message,
+                            companionId: '',
+                            currentUserId: widget.currentUserId,
+                            sender: senderName,
+                            isSelected: isSelected,
+                            onEnterSelectionMode: () =>
+                                selectionCubit.enterSelectionMode(message.id),
+                            onToggleSelection: () =>
+                                selectionCubit.toggleMessage(message.id),
+                            onReply: () => widget.onReply?.call(message),
+                            onForward: () => widget.onForward?.call(message),
+                            onDelete: () => widget.onDelete?.call(message),
+                            onCopy: () async {
+                              final String t = message.text.trim();
+                              if (t.isNotEmpty) {
+                                await Clipboard.setData(
+                                  ClipboardData(text: t),
+                                );
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+            ),
+          ),
         );
       },
     ),

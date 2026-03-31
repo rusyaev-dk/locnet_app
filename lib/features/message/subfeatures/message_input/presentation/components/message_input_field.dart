@@ -488,7 +488,11 @@ class _MessageInputFieldState extends State<MessageInputField> {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
 
-    final double maxHeight = MediaQuery.of(context).size.height * 0.35;
+    final MediaQueryData mediaQuery = MediaQuery.of(context);
+    final double visibleViewportHeight =
+        (mediaQuery.size.height - mediaQuery.viewInsets.bottom)
+            .clamp(120.0, double.infinity);
+    final double maxHeight = visibleViewportHeight * 0.35;
 
     final TextStyle baseStyle = textScheme.label.copyWith(
       color: colorScheme.onSurface,
