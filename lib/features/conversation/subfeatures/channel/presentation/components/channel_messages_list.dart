@@ -75,44 +75,46 @@ class _ChannelMessagesListState extends State<ChannelMessagesList> {
               selectionCubit.toggleMessage(publication.publicationId);
             }
           },
-          child: Animate(
-          delay: delay,
-          effects: const [
-            FadeEffect(duration: baseDuration, curve: Curves.easeOut),
-            SlideEffect(
-              begin: Offset(0, 0.18),
-              end: Offset.zero,
-              duration: baseDuration,
-              curve: Curves.easeOutCubic,
+          child: ClipRect(
+            child: Animate(
+              delay: delay,
+              effects: const [
+                FadeEffect(duration: baseDuration, curve: Curves.easeOut),
+                SlideEffect(
+                  begin: Offset(0, 0.06),
+                  end: Offset.zero,
+                  duration: baseDuration,
+                  curve: Curves.easeOutCubic,
+                ),
+                ScaleEffect(
+                  begin: Offset(0.98, 0.98),
+                  end: Offset(1, 1),
+                  duration: baseDuration,
+                  curve: Curves.easeOut,
+                ),
+              ],
+              child: SelectableMessageBubbleWrapper(
+                message: publication,
+                companionId: '',
+                forceLeft: true,
+                showDeliveryStatus: false,
+                isSelected: isSelected,
+                onEnterSelectionMode: () => selectionCubit
+                    .enterSelectionMode(publication.publicationId),
+                onToggleSelection: () =>
+                    selectionCubit.toggleMessage(publication.publicationId),
+                onReply: () => widget.onReply?.call(publication),
+                onForward: () => widget.onForward?.call(publication),
+                onDelete: () => widget.onDelete?.call(publication),
+                onCopy: () async {
+                  final String text = (publication.text ?? '').trim();
+                  if (text.isNotEmpty) {
+                    await Clipboard.setData(ClipboardData(text: text));
+                  }
+                },
+              ),
             ),
-            ScaleEffect(
-              begin: Offset(0.98, 0.98),
-              end: Offset(1, 1),
-              duration: baseDuration,
-              curve: Curves.easeOut,
-            ),
-          ],
-          child: SelectableMessageBubbleWrapper(
-            message: publication,
-            companionId: '',
-            forceLeft: true,
-            showDeliveryStatus: false,
-            isSelected: isSelected,
-            onEnterSelectionMode: () => selectionCubit
-                .enterSelectionMode(publication.publicationId),
-            onToggleSelection: () =>
-                selectionCubit.toggleMessage(publication.publicationId),
-            onReply: () => widget.onReply?.call(publication),
-            onForward: () => widget.onForward?.call(publication),
-            onDelete: () => widget.onDelete?.call(publication),
-            onCopy: () async {
-              final String text = (publication.text ?? '').trim();
-              if (text.isNotEmpty) {
-                await Clipboard.setData(ClipboardData(text: text));
-              }
-            },
           ),
-        ),
         );
       },
     ),

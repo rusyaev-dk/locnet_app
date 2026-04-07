@@ -99,7 +99,6 @@ class _ChannelConversationScreenState extends State<ChannelConversationScreen> {
     final l10n = context.l10n;
 
     return Column(
-      mainAxisSize: MainAxisSize.min,
       children: [
         BlocBuilder<MessageSelectionCubit, MessageSelectionState>(
           builder: (context, selectionState) {
