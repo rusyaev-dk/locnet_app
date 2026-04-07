@@ -110,6 +110,8 @@ class _UnifiedSearchModalCardState extends State<UnifiedSearchModalCard> {
                 final bool hasResults = switch (state) {
                   final UnifiedSearchLoadedState s =>
                     s.result.users.isNotEmpty ||
+                    s.result.groups.isNotEmpty ||
+                    s.result.channels.isNotEmpty ||
                     s.result.conversations.isNotEmpty,
                   _ => false,
                 };
@@ -187,19 +189,11 @@ class _UnifiedSearchBody extends StatelessWidget {
             .map(UnifiedSearchListItem.user)
             .toList();
       case _UnifiedSearchTab.groups:
-        return loadedState.result.conversations
-            .where(
-              (UnifiedSearchConversation c) =>
-                  c.type == UnifiedSearchConversationType.group,
-            )
+        return loadedState.result.groups
             .map(UnifiedSearchListItem.conversation)
             .toList();
       case _UnifiedSearchTab.channels:
-        return loadedState.result.conversations
-            .where(
-              (UnifiedSearchConversation c) =>
-                  c.type == UnifiedSearchConversationType.channel,
-            )
+        return loadedState.result.channels
             .map(UnifiedSearchListItem.conversation)
             .toList();
     }

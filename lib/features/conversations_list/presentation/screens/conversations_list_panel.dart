@@ -260,16 +260,44 @@ class _ConversationsListPanel extends StatelessWidget {
           case AllConversationsListLoadedState():
             final List<ConversationTile> tiles = state.conversationTiles;
 
-            if (tiles.isEmpty) {
-              return const Center(child: Text('Empty here...'));
-            }
-
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ChipsBar(isCompact: isCompact),
                 Expanded(
-                  child: NotificationListener<ScrollNotification>(
+                  child: tiles.isEmpty
+                      ? Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.forum_outlined,
+                                  size: 40,
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  context.l10n.conversationsListEmptyTitle,
+                                  style: context.textScheme.title.copyWith(
+                                    color: colorScheme.onSurface,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  context.l10n.conversationsListEmptySubtitle,
+                                  style: context.textScheme.caption.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      : NotificationListener<ScrollNotification>(
                     onNotification: (ScrollNotification scrollInfo) {
                       if (!state.hasMore || state.isLoadingMore) {
                         return false;

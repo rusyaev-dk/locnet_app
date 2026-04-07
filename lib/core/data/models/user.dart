@@ -32,6 +32,11 @@ class UserDto extends Equatable {
   final DateTime updatedAt;
 
   factory UserDto.fromJson(Map<String, dynamic> json) {
+    final Map<String, dynamic> source = switch (json['user']) {
+      final Map<String, dynamic> nested => nested,
+      _ => json,
+    };
+
     DateTime parseDate(dynamic value) => value is DateTime
         ? value
         : value is int
@@ -39,23 +44,23 @@ class UserDto extends Equatable {
         : DateTime.parse(value as String);
 
     return UserDto(
-      userId: json['userId'] as String,
-      username: json['username'] as String,
-      firstName: json['firstName'] as String,
-      lastName: json['lastName'] as String,
-      patronymic: json['patronymic'] as String?,
-      languageCode: json['languageCode'] as String,
-      description: json['description'] as String?,
-      avatarId: json['avatarId'] as String?,
-      isDeleted: json['isDeleted'] as bool,
-      isBanned: json['isBanned'] as bool,
-      createdAt: parseDate(json['createdAt']),
-      updatedAt: parseDate(json['updatedAt']),
+      userId: source['id'] as String,
+      username: source['username'] as String,
+      firstName: source['firstName'] as String,
+      lastName: source['lastName'] as String,
+      patronymic: source['patronymic'] as String?,
+      languageCode: (source['languageCode'] as String?) ?? 'en',
+      description: source['description'] as String?,
+      avatarId: source['avatarId'] as String?,
+      isDeleted: source['isDeleted'] as bool,
+      isBanned: source['isBanned'] as bool,
+      createdAt: parseDate(source['createdAt']),
+      updatedAt: parseDate(source['updatedAt']),
     );
   }
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-    'userId': userId,
+    'id': userId,
     'username': username,
     'firstName': firstName,
     'lastName': lastName,

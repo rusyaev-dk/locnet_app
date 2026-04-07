@@ -124,6 +124,6 @@ final class ProdEnvPreset implements IAppEnvPreset {
 
   @override
   IUnifiedSearchRepo createUnifiedSearchRepo() {
-    throw UnimplementedError();
+    return HttpUnifiedSearchRepo(httpClient: _httpClient);
   }
 }

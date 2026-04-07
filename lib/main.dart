@@ -5,7 +5,7 @@ import 'package:locnet_app/runners/app_runner.dart';
 
 // flutter run --web-port=63192 --dart-define=APP_ENV=stage
 void main() {
-  const envString = String.fromEnvironment('APP_ENV', defaultValue: 'dev');
+  const envString = String.fromEnvironment('APP_ENV', defaultValue: 'stage');
 
   final AppEnvType env = switch (envString) {
     'dev' => AppEnvType.dev,

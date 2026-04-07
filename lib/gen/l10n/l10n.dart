@@ -1334,6 +1334,26 @@ class S {
     );
   }
 
+  /// `Пока нет переписок`
+  String get conversationsListEmptyTitle {
+    return Intl.message(
+      'Пока нет переписок',
+      name: 'conversationsListEmptyTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Кнопками выше можно создать новую переписку или найти людей и чаты.`
+  String get conversationsListEmptySubtitle {
+    return Intl.message(
+      'Кнопками выше можно создать новую переписку или найти людей и чаты.',
+      name: 'conversationsListEmptySubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Требования к паролю`
   String get passwordRequirementsTitle {
     return Intl.message(

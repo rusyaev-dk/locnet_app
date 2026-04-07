@@ -26,8 +26,9 @@ class AllConversationsListBloc
     on<AllConversationsListConversationUpdatedEvent>(_onConversationUpdated);
     on<AllConversationsListConversationDeletedEvent>(_onConversationDeleted);
 
-    _conversationsUpdatesSub = _conversationsListInteractor.conversationsUpdates
-        .listen(_onIncomingChange);
+    // TODO: Handle updates
+    // _conversationsUpdatesSub = _conversationsListInteractor.conversationsUpdates
+    //     .listen(_onIncomingChange);
   }
 
   final ConversationsListInteractor _conversationsListInteractor;
@@ -201,15 +202,15 @@ class AllConversationsListBloc
       return;
     }
 
-      final List<ConversationTile> updatedConversations = currentState
-          .conversationTiles
-          .map((ConversationTile tile) {
-            if (tile.id == event.conversationTile.id) {
-              return event.conversationTile;
-            }
-            return tile;
-          })
-          .toList();
+    final List<ConversationTile> updatedConversations = currentState
+        .conversationTiles
+        .map((ConversationTile tile) {
+          if (tile.id == event.conversationTile.id) {
+            return event.conversationTile;
+          }
+          return tile;
+        })
+        .toList();
 
     // Sort conversations by last message time
     final List<ConversationTile> sortedConversations =
@@ -230,9 +231,7 @@ class AllConversationsListBloc
 
     final List<ConversationTile> updatedConversations = currentState
         .conversationTiles
-        .where(
-          (ConversationTile tile) => tile.id != event.conversationId,
-        )
+        .where((ConversationTile tile) => tile.id != event.conversationId)
         .toList();
 
     emit(currentState.copyWith(conversationTiles: updatedConversations));

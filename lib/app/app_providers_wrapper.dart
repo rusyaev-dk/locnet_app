@@ -98,58 +98,45 @@ class AppProvidersWrapper extends StatelessWidget {
               return cacheRepo;
             },
           ),
+          RepositoryProvider<SettingsInteractor>(
+            create: (context) => SettingsInteractor(
+              settingsRepo: context.read<ISettingsRepo>(),
+              themeRepository: context.read<IThemeRepository>(),
+              userRepo: context.read<IUserRepo>(),
+              userCacheRepo: context.read<IUserCacheRepo>(),
+            ),
+          ),
+          RepositoryProvider<ThemeEditorInteractor>(
+            create: (context) => ThemeEditorInteractor(
+              themeEditorRepo: context.read<IThemeEditorRepo>(),
+            ),
+          ),
+          RepositoryProvider<UserInteractor>(
+            create: (context) => UserInteractor(
+              userRepo: context.read<IUserRepo>(),
+              userCacheRepo: context.read<IUserCacheRepo>(),
+              logger: context.read<ILogger>(),
+            ),
+          ),
+          RepositoryProvider<UnifiedSearchInteractor>(
+            create: (context) => UnifiedSearchInteractor(
+              searchRepo: context.read<IUnifiedSearchRepo>(),
+            ),
+          ),
+          RepositoryProvider<AuthInteractor>(
+            lazy: false,
+            create: (context) => AuthInteractor(
+              authRepo: context.read<IAuthRepo>(),
+              userRepo: context.read<IUserRepo>(),
+              sessionCacheRepo: context.read<ISessionCacheRepo>(),
+              userCacheRepo: context.read<IUserCacheRepo>(),
+              deviceInfoRepo: context.read<IDeviceInfoRepo>(),
+              logger: context.read<ILogger>(),
+            ),
+          ),
         ],
-        child: _InteractorProviders(child: _BlocProviders(child: child)),
+        child: _BlocProviders(child: child),
       ),
-    );
-  }
-}
-
-class _InteractorProviders extends StatelessWidget {
-  const _InteractorProviders({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return MultiRepositoryProvider(
-      providers: [
-        RepositoryProvider<SettingsInteractor>(
-          create: (context) => SettingsInteractor(
-            settingsRepo: context.read<ISettingsRepo>(),
-            themeRepository: context.read<IThemeRepository>(),
-          ),
-        ),
-        RepositoryProvider<ThemeEditorInteractor>(
-          create: (context) => ThemeEditorInteractor(
-            themeEditorRepo: context.read<IThemeEditorRepo>(),
-          ),
-        ),
-        RepositoryProvider<UserInteractor>(
-          create: (context) => UserInteractor(
-            userRepo: context.read<IUserRepo>(),
-            userCacheRepo: context.read<IUserCacheRepo>(),
-            logger: context.read<ILogger>(),
-          ),
-        ),
-        RepositoryProvider<UnifiedSearchInteractor>(
-          create: (context) => UnifiedSearchInteractor(
-            searchRepo: context.read<IUnifiedSearchRepo>(),
-          ),
-        ),
-        RepositoryProvider<AuthInteractor>(
-          lazy: false,
-          create: (context) => AuthInteractor(
-            authRepo: context.read<IAuthRepo>(),
-            userRepo: context.read<IUserRepo>(),
-            sessionCacheRepo: context.read<ISessionCacheRepo>(),
-            userCacheRepo: context.read<IUserCacheRepo>(),
-            deviceInfoRepo: context.read<IDeviceInfoRepo>(),
-            logger: context.read<ILogger>(),
-          ),
-        ),
-      ],
-      child: child,
     );
   }
 }

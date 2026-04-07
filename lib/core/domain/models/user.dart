@@ -54,6 +54,23 @@ class User extends Equatable {
     );
   }
 
+  UserDto toDto() {
+    return UserDto(
+      userId: userId,
+      username: username,
+      firstName: firstName,
+      lastName: lastName,
+      patronymic: patronymic,
+      languageCode: languageCode,
+      description: description,
+      avatarId: avatarId,
+      isDeleted: isDeleted,
+      isBanned: isBanned,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+    );
+  }
+
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       userId: json['userId'] as String,

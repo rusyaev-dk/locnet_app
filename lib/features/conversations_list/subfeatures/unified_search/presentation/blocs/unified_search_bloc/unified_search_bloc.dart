@@ -155,8 +155,14 @@ class UnifiedSearchBloc extends Bloc<UnifiedSearchEvent, UnifiedSearchState> {
 
   bool _calculateHasMore(UnifiedSearchResult fetched) {
     final bool usersHasMore = fetched.users.length >= _pageSize;
-    final bool conversationsHasMore = fetched.conversations.length >= _pageSize;
-    return usersHasMore || conversationsHasMore;
+    final bool groupsHasMore = fetched.groups.length >= _pageSize;
+    final bool channelsHasMore = fetched.channels.length >= _pageSize;
+    final bool conversationsHasMore =
+        fetched.conversations.length >= _pageSize;
+    return usersHasMore ||
+        groupsHasMore ||
+        channelsHasMore ||
+        conversationsHasMore;
   }
 
   UnifiedSearchResult _mergeAndDeduplicate({
@@ -164,6 +170,16 @@ class UnifiedSearchBloc extends Bloc<UnifiedSearchEvent, UnifiedSearchState> {
     required UnifiedSearchResult fetched,
   }) {
     final List<User> mergedUsers = <User>[...current.users, ...fetched.users];
+    final List<UnifiedSearchConversation> mergedGroups =
+        <UnifiedSearchConversation>[
+      ...current.groups,
+      ...fetched.groups,
+    ];
+    final List<UnifiedSearchConversation> mergedChannels =
+        <UnifiedSearchConversation>[
+      ...current.channels,
+      ...fetched.channels,
+    ];
     final List<UnifiedSearchConversation> mergedConversations =
         <UnifiedSearchConversation>[
       ...current.conversations,
@@ -175,6 +191,18 @@ class UnifiedSearchBloc extends Bloc<UnifiedSearchEvent, UnifiedSearchState> {
       usersById[user.userId] = user;
     }
 
+    final Map<String, UnifiedSearchConversation> groupsById =
+        <String, UnifiedSearchConversation>{};
+    for (final UnifiedSearchConversation conversation in mergedGroups) {
+      groupsById[conversation.id] = conversation;
+    }
+
+    final Map<String, UnifiedSearchConversation> channelsById =
+        <String, UnifiedSearchConversation>{};
+    for (final UnifiedSearchConversation conversation in mergedChannels) {
+      channelsById[conversation.id] = conversation;
+    }
+
     final Map<String, UnifiedSearchConversation> conversationsById =
         <String, UnifiedSearchConversation>{};
     for (final UnifiedSearchConversation conversation in mergedConversations) {
@@ -183,6 +211,8 @@ class UnifiedSearchBloc extends Bloc<UnifiedSearchEvent, UnifiedSearchState> {
 
     return UnifiedSearchResult(
       users: usersById.values.toList(growable: false),
+      groups: groupsById.values.toList(growable: false),
+      channels: channelsById.values.toList(growable: false),
       conversations: conversationsById.values.toList(growable: false),
     );
   }

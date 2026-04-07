@@ -104,6 +104,12 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "conversationTypePrivate": MessageLookupByLibrary.simpleMessage("Private"),
     "conversations": MessageLookupByLibrary.simpleMessage("Conversations"),
+    "conversationsListEmptySubtitle": MessageLookupByLibrary.simpleMessage(
+      "Use the buttons above to start a new chat or search for people and chats.",
+    ),
+    "conversationsListEmptyTitle": MessageLookupByLibrary.simpleMessage(
+      "No conversations yet",
+    ),
     "create": MessageLookupByLibrary.simpleMessage("Create"),
     "currentSession": MessageLookupByLibrary.simpleMessage("Current session"),
     "delete": MessageLookupByLibrary.simpleMessage("Delete"),

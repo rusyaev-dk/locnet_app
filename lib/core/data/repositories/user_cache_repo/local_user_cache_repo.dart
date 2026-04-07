@@ -53,11 +53,7 @@ final class LocalUserCacheRepo implements IUserCacheRepo {
       }
 
       final dynamic decoded = jsonDecode(rawJson);
-      final Map<String, dynamic> jsonMap = _asJsonObject(decoded);
-
-      _validateUserJson(jsonMap);
-
-      return User.fromJson(jsonMap);
+      return User.fromJson(decoded as Map<String, dynamic>);
     } on StorageException {
       rethrow;
     } on FormatException catch (e, st) {
@@ -102,83 +98,4 @@ final class LocalUserCacheRepo implements IUserCacheRepo {
     }
   }
 
-  Map<String, dynamic> _asJsonObject(dynamic decoded) {
-    if (decoded is Map<String, dynamic>) {
-      return decoded;
-    }
-
-    throw StorageException(
-      message: 'Cached user JSON is not an object.',
-      error: decoded.runtimeType,
-      stackTrace: StackTrace.current,
-    );
-  }
-
-  void _validateUserJson(Map<String, dynamic> json) {
-    final List<String> missingOrInvalid = <String>[
-      if (!_hasNonEmptyString(json, 'userId')) 'userId',
-      if (!_hasNonEmptyString(json, 'username')) 'username',
-      if (!_hasNonEmptyString(json, 'firstName')) 'firstName',
-      if (!_hasNonEmptyString(json, 'patronymic')) 'patronymic',
-      if (!_hasNonEmptyString(json, 'lastName')) 'lastName',
-      if (!_hasNonEmptyString(json, 'languageCode')) 'languageCode',
-      if (!_hasBool(json, 'isDeleted')) 'isDeleted',
-      if (!_hasBool(json, 'isBanned')) 'isBanned',
-      if (!_hasIsoDateString(json, 'createdAt')) 'createdAt',
-      if (!_hasIsoDateString(json, 'updatedAt')) 'updatedAt',
-    ];
-
-    if (missingOrInvalid.isNotEmpty) {
-      throw StorageException(
-        message:
-            'Cached user JSON misses required keys or has invalid types: ${missingOrInvalid.join(', ')}',
-        error: missingOrInvalid,
-        stackTrace: StackTrace.current,
-      );
-    }
-
-    _validateOptionalString(json, 'description');
-    _validateOptionalString(json, 'avatarId');
-
-    _ensureParseableDate(json['createdAt'] as String, fieldName: 'createdAt');
-    _ensureParseableDate(json['updatedAt'] as String, fieldName: 'updatedAt');
-  }
-
-  bool _hasNonEmptyString(Map<String, dynamic> json, String key) {
-    final dynamic value = json[key];
-    return value is String && value.isNotEmpty;
-  }
-
-  bool _hasBool(Map<String, dynamic> json, String key) {
-    final dynamic value = json[key];
-    return value is bool;
-  }
-
-  bool _hasIsoDateString(Map<String, dynamic> json, String key) {
-    final dynamic value = json[key];
-    return value is String && value.isNotEmpty;
-  }
-
-  void _validateOptionalString(Map<String, dynamic> json, String key) {
-    final dynamic value = json[key];
-    if (value != null && value is! String) {
-      throw StorageException(
-        message: 'Cached user JSON has invalid type for $key.',
-        error: value.runtimeType,
-        stackTrace: StackTrace.current,
-      );
-    }
-  }
-
-  void _ensureParseableDate(String value, {required String fieldName}) {
-    try {
-      DateTimeFormatter.parse(value);
-    } on Exception catch (e, st) {
-      throw StorageException(
-        message: 'Cached user JSON has invalid datetime for $fieldName: $value',
-        error: e,
-        stackTrace: st,
-      );
-    }
-  }
 }

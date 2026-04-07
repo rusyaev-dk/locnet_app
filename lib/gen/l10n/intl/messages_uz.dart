@@ -104,6 +104,12 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "conversationTypePrivate": MessageLookupByLibrary.simpleMessage("Shaxsiy"),
     "conversations": MessageLookupByLibrary.simpleMessage("Suhbatlar"),
+    "conversationsListEmptySubtitle": MessageLookupByLibrary.simpleMessage(
+      "Yuqoridagi tugmalar bilan yangi suhbat boshlash yoki odamlar va chatlarni qidirish mumkin.",
+    ),
+    "conversationsListEmptyTitle": MessageLookupByLibrary.simpleMessage(
+      "Hozircha suhbatlar yoʻq",
+    ),
     "create": MessageLookupByLibrary.simpleMessage("Yaratish"),
     "currentSession": MessageLookupByLibrary.simpleMessage("Joriy sessiya"),
     "delete": MessageLookupByLibrary.simpleMessage("Oʻchirish"),

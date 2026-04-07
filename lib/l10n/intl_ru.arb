@@ -152,6 +152,8 @@
   "tryAnotherQuery": "Попробуйте изменить запрос",
   "selectConversation": "Выберите чат",
   "selectConversationSubtitle": "Выберите пользователя, группу или канал, чтобы начать переписку",
+  "conversationsListEmptyTitle": "Пока нет переписок",
+  "conversationsListEmptySubtitle": "Кнопками выше можно создать новую переписку или найти людей и чаты.",
   "passwordRequirementsTitle": "Требования к паролю",
   "passwordRequirementMinLength": "Не менее {min} символов",
   "passwordRequirementUppercase": "Хотя бы одна заглавная буква (A–Z)",

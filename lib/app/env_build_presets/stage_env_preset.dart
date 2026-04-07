@@ -5,6 +5,7 @@ import 'package:locnet_app/features/auth/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/channel/data/repositories/channel_repo/i_channel_repo.dart';
 import 'package:locnet_app/features/conversation/subfeatures/group/data/repositories/group_repo/i_group_repo.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/data/repositories/private_conversation_repo/i_private_conversation_repo.dart';
+import 'package:locnet_app/features/conversations_list/data/data.dart';
 import 'package:locnet_app/features/conversations_list/data/repositories/conversations_list_repo/i_conversations_list_repo.dart';
 import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/data/data.dart';
 import 'package:locnet_app/features/message/data/data.dart';
@@ -52,8 +53,7 @@ final class StageEnvPreset implements IAppEnvPreset {
 
   @override
   IConversationsListRepo createConversationsListRepo() {
-    // TODO: implement conversationsListRepo
-    throw UnimplementedError();
+    return HttpConversationsListRepo(httpClient: _httpClient);
   }
 
   @override
@@ -115,6 +115,6 @@ final class StageEnvPreset implements IAppEnvPreset {
 
   @override
   IUnifiedSearchRepo createUnifiedSearchRepo() {
-    throw UnimplementedError();
+    return HttpUnifiedSearchRepo(httpClient: _httpClient);
   }
 }

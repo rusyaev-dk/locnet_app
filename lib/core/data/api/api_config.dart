@@ -15,16 +15,21 @@ abstract class ApiEndpoints {
   static const String refresh = "/auth/refresh";
   static const String logOut = "/auth/logout";
 
+  // Search
+  static const String unifiedSearch = "/search/unified";
+
   // Private conversations
   static const String privateConversations = "/private-chats/conversations";
   static String privateConversation(String conversationId) =>
       "/private-chats/conversations/$conversationId";
 
   static String privateConversationMessages(String conversationId) =>
-      "/private-chats/$conversationId/messages";
+      "/private-chats/conversations/$conversationId/messages";
+
+  static const String conversationsList = "/private-chats/conversations/tiles";
 
   static String privateConversationMessage(
     String conversationId,
     String messageId,
-  ) => "/private-chats/messages/$messageId";
+  ) => "/private-chats/conversations/$conversationId/messages/$messageId";
 }

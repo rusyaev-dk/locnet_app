@@ -104,6 +104,12 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "conversationTypePrivate": MessageLookupByLibrary.simpleMessage("Личная"),
     "conversations": MessageLookupByLibrary.simpleMessage("Переписки"),
+    "conversationsListEmptySubtitle": MessageLookupByLibrary.simpleMessage(
+      "Кнопками выше можно создать новую переписку или найти людей и чаты.",
+    ),
+    "conversationsListEmptyTitle": MessageLookupByLibrary.simpleMessage(
+      "Пока нет переписок",
+    ),
     "create": MessageLookupByLibrary.simpleMessage("Создать"),
     "currentSession": MessageLookupByLibrary.simpleMessage("Текущая сессия"),
     "delete": MessageLookupByLibrary.simpleMessage("Удалить"),

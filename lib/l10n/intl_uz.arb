@@ -152,6 +152,8 @@
   "tryAnotherQuery": "Boshqa soʻrovni sinab koʻring",
   "selectConversation": "Chatni tanlang",
   "selectConversationSubtitle": "Suhbatni boshlash uchun foydalanuvchi, guruh yoki kanalni tanlang",
+  "conversationsListEmptyTitle": "Hozircha suhbatlar yoʻq",
+  "conversationsListEmptySubtitle": "Yuqoridagi tugmalar bilan yangi suhbat boshlash yoki odamlar va chatlarni qidirish mumkin.",
   "passwordRequirementsTitle": "Parol talablari",
   "passwordRequirementMinLength": "Kamida {min} ta belgi",
   "passwordRequirementUppercase": "Kamida bitta katta harf (A–Z)",

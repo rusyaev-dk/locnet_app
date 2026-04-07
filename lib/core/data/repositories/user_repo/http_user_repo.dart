@@ -13,8 +13,16 @@ class HttpUserRepo implements IUserRepo {
         path: '${ApiEndpoints.users}/$userId',
       );
 
-      final Map<String, dynamic> responseJson = _asJsonMap(httpResponse.data);
-      return User.fromJson(_extractUserJson(responseJson));
+      final Object? data = httpResponse.data;
+      if (data is! Map<String, dynamic>) {
+        throw AppUnknownException(
+          message: 'Invalid API response format',
+          error: data,
+          stackTrace: StackTrace.current,
+        );
+      }
+
+      return User.fromDto(UserDto.fromJson(data));
     } on AppException {
       rethrow;
     } catch (e, st) {
@@ -31,8 +39,16 @@ class HttpUserRepo implements IUserRepo {
     try {
       final httpResponse = await _httpClient.get(path: '${ApiEndpoints.users}/me');
 
-      final Map<String, dynamic> responseJson = _asJsonMap(httpResponse.data);
-      return User.fromJson(_extractUserJson(responseJson));
+      final Object? data = httpResponse.data;
+      if (data is! Map<String, dynamic>) {
+        throw AppUnknownException(
+          message: 'Invalid API response format',
+          error: data,
+          stackTrace: StackTrace.current,
+        );
+      }
+
+      return User.fromDto(UserDto.fromJson(data));
     } on AppException {
       rethrow;
     } catch (e, st) {
@@ -49,11 +65,19 @@ class HttpUserRepo implements IUserRepo {
     try {
       final httpResponse = await _httpClient.put(
         path: '${ApiEndpoints.users}/${updatedUser.userId}',
-        data: _buildUpdatePayload(updatedUser),
+        data: updatedUser.toDto().toJson(),
       );
 
-      final Map<String, dynamic> responseJson = _asJsonMap(httpResponse.data);
-      return User.fromJson(_extractUserJson(responseJson));
+      final Object? data = httpResponse.data;
+      if (data is! Map<String, dynamic>) {
+        throw AppUnknownException(
+          message: 'Invalid API response format',
+          error: data,
+          stackTrace: StackTrace.current,
+        );
+      }
+
+      return User.fromDto(UserDto.fromJson(data));
     } on AppException {
       rethrow;
     } catch (e, st) {
@@ -63,42 +87,5 @@ class HttpUserRepo implements IUserRepo {
         stackTrace: st,
       );
     }
-  }
-
-  Map<String, dynamic> _buildUpdatePayload(User user) {
-    return <String, dynamic>{
-      'username': user.username,
-      'firstName': user.firstName,
-      'lastName': user.lastName,
-      'patronymic': user.patronymic,
-      'languageCode': user.languageCode,
-      'description': user.description,
-      'avatarId': user.avatarId,
-    };
-  }
-
-  Map<String, dynamic> _extractUserJson(Map<String, dynamic> responseJson) {
-    final Map<String, dynamic> rawUserJson = _asJsonMap(
-      responseJson['user'] ?? responseJson,
-    );
-
-    return <String, dynamic>{
-      ...rawUserJson,
-      'userId': rawUserJson['userId'] ?? rawUserJson['id'],
-      // Backend may omit languageCode in auth-related responses.
-      'languageCode': rawUserJson['languageCode'] ?? 'en',
-    };
-  }
-
-  Map<String, dynamic> _asJsonMap(dynamic value) {
-    if (value is Map<String, dynamic>) {
-      return value;
-    }
-
-    throw AppUnknownException(
-      message: 'Invalid API response format',
-      error: value,
-      stackTrace: StackTrace.current,
-    );
   }
 }

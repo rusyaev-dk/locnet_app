@@ -710,6 +710,8 @@ final class MockInMemoryBackend {
     if (normalizedQuery.isEmpty) {
       return const UnifiedSearchResultDto(
         users: <UserDto>[],
+        groups: <UnifiedSearchConversationDto>[],
+        channels: <UnifiedSearchConversationDto>[],
         conversations: <UnifiedSearchConversationDto>[],
       );
     }
@@ -779,9 +781,21 @@ final class MockInMemoryBackend {
       pageSize: _conversationsPageSize,
     );
 
+    final List<UnifiedSearchConversationDto> pagedGroups = pagedConversations
+        .where((UnifiedSearchConversationDto c) => c.type == 'group')
+        .toList(growable: false);
+    final List<UnifiedSearchConversationDto> pagedChannels = pagedConversations
+        .where((UnifiedSearchConversationDto c) => c.type == 'channel')
+        .toList(growable: false);
+    final List<UnifiedSearchConversationDto> pagedPrivate = pagedConversations
+        .where((UnifiedSearchConversationDto c) => c.type == 'private')
+        .toList(growable: false);
+
     return UnifiedSearchResultDto(
       users: pagedUsers,
-      conversations: pagedConversations,
+      groups: pagedGroups,
+      channels: pagedChannels,
+      conversations: pagedPrivate,
     );
   }
 

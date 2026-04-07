@@ -8,10 +8,14 @@ import 'package:locnet_app/features/conversations_list/subfeatures/unified_searc
 final class UnifiedSearchResult extends Equatable {
   const UnifiedSearchResult({
     required this.users,
+    required this.groups,
+    required this.channels,
     required this.conversations,
   });
 
   final List<User> users;
+  final List<UnifiedSearchConversation> groups;
+  final List<UnifiedSearchConversation> channels;
   final List<UnifiedSearchConversation> conversations;
 
   factory UnifiedSearchResult.fromDto(UnifiedSearchResultDto dto) {
@@ -19,15 +23,23 @@ final class UnifiedSearchResult extends Equatable {
       users: dto.users
           .map((UserDto userDto) => User.fromDto(userDto))
           .toList(growable: false),
-      conversations: dto.conversations
-          .map(
-            (UnifiedSearchConversationDto conversationDto) =>
-                UnifiedSearchConversation.fromDto(conversationDto),
-          )
-          .toList(growable: false),
+      groups: _conversationsFromDtos(dto.groups),
+      channels: _conversationsFromDtos(dto.channels),
+      conversations: _conversationsFromDtos(dto.conversations),
     );
   }
 
+  static List<UnifiedSearchConversation> _conversationsFromDtos(
+    List<UnifiedSearchConversationDto> dtos,
+  ) {
+    return dtos
+        .map(
+          (UnifiedSearchConversationDto conversationDto) =>
+              UnifiedSearchConversation.fromDto(conversationDto),
+        )
+        .toList(growable: false);
+  }
+
   @override
-  List<Object?> get props => [users, conversations];
+  List<Object?> get props => [users, groups, channels, conversations];
 }
