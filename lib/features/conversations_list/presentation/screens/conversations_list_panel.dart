@@ -46,9 +46,14 @@ class ConversationsPanelWrapper extends StatelessWidget {
 }
 
 class ConversationsPanel extends StatefulWidget {
-  const ConversationsPanel({super.key, this.selectedConversationId});
+  const ConversationsPanel({
+    super.key,
+    this.selectedConversationId,
+    this.draftCompanionId,
+  });
 
   final String? selectedConversationId;
+  final String? draftCompanionId;
 
   @override
   State<ConversationsPanel> createState() => _ConversationsPanelState();
@@ -132,7 +137,15 @@ class _ConversationsPanelState extends State<ConversationsPanel> {
         Expanded(
           child: Container(
             color: colorScheme.surface,
-            child: widget.selectedConversationId == null
+            child: widget.draftCompanionId != null
+                ? PrivateConversationScreenWrapper(
+                    key: ValueKey<String>('draft-${widget.draftCompanionId!}'),
+                    draftCompanionId: widget.draftCompanionId!,
+                    child: PrivateConversationScreen(
+                      draftCompanionId: widget.draftCompanionId!,
+                    ),
+                  )
+                : widget.selectedConversationId == null
                 ? Center(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -173,13 +186,20 @@ class _ConversationsPanelState extends State<ConversationsPanel> {
                         return const Center(child: CircularProgressIndicator());
                       }
 
-                      final ConversationTile selectedTile =
-                          state.conversationTiles.firstWhere(
-                        (tile) => tile.id == widget.selectedConversationId,
-                        orElse: () => throw StateError(
-                          'Conversation ${widget.selectedConversationId} not found',
-                        ),
-                      );
+                      final ConversationTile? selectedTile = state
+                          .conversationTiles
+                          .where(
+                            (ConversationTile tile) =>
+                                tile.id == widget.selectedConversationId,
+                          )
+                          .firstOrNull;
+
+                      if (selectedTile == null) {
+                        context.read<AllConversationsListBloc>().add(
+                          const AllConversationsListLoadEvent(),
+                        );
+                        return const Center(child: CircularProgressIndicator());
+                      }
 
                       final ConversationTileType conversationType =
                           selectedTile.type;
@@ -191,8 +211,10 @@ class _ConversationsPanelState extends State<ConversationsPanel> {
                               widget.selectedConversationId!,
                             ),
                             conversationId: widget.selectedConversationId!,
+                            initialCompanion: selectedTile.companion,
                             child: PrivateConversationScreen(
                               conversationId: widget.selectedConversationId!,
+                              initialCompanion: selectedTile.companion,
                             ),
                           );
 
@@ -298,53 +320,56 @@ class _ConversationsListPanel extends StatelessWidget {
                           ),
                         )
                       : NotificationListener<ScrollNotification>(
-                    onNotification: (ScrollNotification scrollInfo) {
-                      if (!state.hasMore || state.isLoadingMore) {
-                        return false;
-                      }
+                          onNotification: (ScrollNotification scrollInfo) {
+                            if (!state.hasMore || state.isLoadingMore) {
+                              return false;
+                            }
 
-                      // Load more when user scrolls to 80% of the list
-                      if (scrollInfo.metrics.pixels >=
-                          scrollInfo.metrics.maxScrollExtent * 0.8) {
-                        final int nextPage = state.page + 1;
-                        context.read<AllConversationsListBloc>().add(
-                          AllConversationsListLoadMoreEvent(page: nextPage),
-                        );
-                      }
+                            // Load more when user scrolls to 80% of the list
+                            if (scrollInfo.metrics.pixels >=
+                                scrollInfo.metrics.maxScrollExtent * 0.8) {
+                              final int nextPage = state.page + 1;
+                              context.read<AllConversationsListBloc>().add(
+                                AllConversationsListLoadMoreEvent(
+                                  page: nextPage,
+                                ),
+                              );
+                            }
 
-                      return false;
-                    },
-                    child: ListView.builder(
-                      itemCount: tiles.length + (state.isLoadingMore ? 1 : 0),
-                      itemBuilder: (BuildContext context, int index) {
-                        // Show loading indicator at the bottom
-                        if (index == tiles.length) {
-                          return Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Center(
-                              child: CircularProgressIndicator(
-                                color: colorScheme.primary,
-                              ),
-                            ),
-                          );
-                        }
-
-                        final ConversationTile tile = tiles[index];
-
-                        return ConversationListTile(
-                          conversationTile: tile,
-                          isSelected: tile.id == selectedConversationId,
-                          currentUserId: state.currentUserId,
-                          isCompact: isCompact,
-                          onTap: () {
-                            GoRouter.of(context).go(
-                              AppRoutes.conversation(tile.id),
-                            );
+                            return false;
                           },
-                        );
-                      },
-                    ),
-                  ),
+                          child: ListView.builder(
+                            itemCount:
+                                tiles.length + (state.isLoadingMore ? 1 : 0),
+                            itemBuilder: (BuildContext context, int index) {
+                              // Show loading indicator at the bottom
+                              if (index == tiles.length) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      color: colorScheme.primary,
+                                    ),
+                                  ),
+                                );
+                              }
+
+                              final ConversationTile tile = tiles[index];
+
+                              return ConversationListTile(
+                                conversationTile: tile,
+                                isSelected: tile.id == selectedConversationId,
+                                currentUserId: state.currentUserId,
+                                isCompact: isCompact,
+                                onTap: () {
+                                  GoRouter.of(
+                                    context,
+                                  ).go(AppRoutes.conversation(tile.id));
+                                },
+                              );
+                            },
+                          ),
+                        ),
                 ),
               ],
             );

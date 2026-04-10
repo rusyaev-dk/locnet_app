@@ -5,6 +5,9 @@ import 'package:equatable/equatable.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/private.dart';
+import 'package:locnet_app/features/message/domain/domain.dart';
+import 'package:locnet_app/features/message/subfeatures/private_message/domain/domain.dart';
+import 'package:uuid/uuid.dart';
 
 part 'private_conversation_event.dart';
 part 'private_conversation_state.dart';
@@ -13,18 +16,27 @@ class PrivateConversationBloc
     extends Bloc<PrivateConversationEvent, PrivateConversationState> {
   PrivateConversationBloc({
     required PrivateConversationInteractor privateConversationInteractor,
+    required PrivateMessageInteractor privateMessageInteractor,
+    required UserInteractor userInteractor,
     required ILogger logger,
   }) : _privateConversationInteractor = privateConversationInteractor,
+       _privateMessageInteractor = privateMessageInteractor,
+       _userInteractor = userInteractor,
        _logger = logger,
        super(const PrivateConversationLoadingState()) {
     on<PrivateConversationStartedEvent>(_onStarted);
+    on<PrivateConversationDraftStartedEvent>(_onDraftStarted);
+    on<PrivateConversationSendMessageEvent>(_onSendMessage);
     on<PrivateConversationMessageUpdateReceivedEvent>(_onMessageUpdateReceived);
 
-    _messagesUpdatesSubscription = _privateConversationInteractor.messagesUpdates
+    _messagesUpdatesSubscription = _privateConversationInteractor
+        .messagesUpdates
         .listen(_onMessagesUpdatesStreamEvent);
   }
 
   final PrivateConversationInteractor _privateConversationInteractor;
+  final PrivateMessageInteractor _privateMessageInteractor;
+  final UserInteractor _userInteractor;
   final ILogger _logger;
 
   StreamSubscription<PrivateConversationMessageUpdateRec>?
@@ -46,14 +58,31 @@ class PrivateConversationBloc
       final List<PrivateMessage> messages = await _privateConversationInteractor
           .loadMessagesPage(conversationId: event.conversationId);
 
-      final PrivateConversation conversation =
-          await _privateConversationInteractor.getConversationById(
-        conversationId: event.conversationId,
+      final User cachedUser = await _userInteractor.getCachedUser();
+      final List<PrivateConversation> conversations =
+          await _privateConversationInteractor.listConversations();
+      final PrivateConversation conversation = conversations.firstWhere(
+        (PrivateConversation privateConversation) =>
+            privateConversation.conversationId == event.conversationId,
+        orElse: () => PrivateConversation(
+          conversationId: event.conversationId,
+          user1Id: cachedUser.userId,
+          user2Id: event.initialCompanion?.userId ?? '',
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+          isDeleted: false,
+        ),
       );
-
-      final User companion = await _privateConversationInteractor.getCompanion(
-        conversationId: event.conversationId,
-      );
+      final User companion =
+          event.initialCompanion ??
+          (conversation.user1Id.isNotEmpty && conversation.user2Id.isNotEmpty
+              ? await _resolveCompanion(
+                  conversation: conversation,
+                  currentUserId: cachedUser.userId,
+                )
+              : await _privateConversationInteractor.getCompanion(
+                  conversationId: event.conversationId,
+                ));
 
       emit(
         PrivateConversationLoadedState(
@@ -78,6 +107,164 @@ class PrivateConversationBloc
     }
   }
 
+  Future<void> _onDraftStarted(
+    PrivateConversationDraftStartedEvent event,
+    Emitter<PrivateConversationState> emit,
+  ) async {
+    try {
+      emit(const PrivateConversationLoadingState());
+      final User companion = await _userInteractor.getUserById(
+        userId: event.companionId,
+      );
+      emit(PrivateConversationDraftState(companion: companion));
+    } catch (e, st) {
+      _logger.exception(e, st);
+      final AppException appException = e is AppException
+          ? e
+          : AppUnknownException(
+              message: e.toString(),
+              error: e,
+              stackTrace: st,
+            );
+      emit(PrivateConversationFailureState(failure: appException));
+    }
+  }
+
+  Future<void> _onSendMessage(
+    PrivateConversationSendMessageEvent event,
+    Emitter<PrivateConversationState> emit,
+  ) async {
+    final String normalizedText = event.text.trim();
+    if (normalizedText.isEmpty) {
+      return;
+    }
+
+    try {
+      final PrivateConversationState currentState = state;
+      if (currentState is PrivateConversationDraftState) {
+        if (currentState.isCreatingConversation) {
+          return;
+        }
+
+        emit(currentState.copyWith(isCreatingConversation: true));
+
+        final User currentUser = await _userInteractor.getCachedUser();
+        final String clientMessageId = const Uuid().v4();
+        final DateTime now = DateTime.now();
+        final PrivateConversation conversation =
+            await _privateConversationInteractor.getOrCreateByCompanion(
+              companionId: currentState.companion.userId,
+            );
+
+        final PrivateMessage pendingMessage = PrivateMessage(
+          id: '',
+          conversationId: conversation.conversationId,
+          senderId: currentUser.userId,
+          text: normalizedText,
+          attachments: const <PrivateMessageAttachment>[],
+          createdAt: now,
+          updatedAt: now,
+          isDeleted: false,
+          deletedById: null,
+          replyToMessageId: event.replyToMessageId,
+          deliveryStatus: MessageDeliveryStatus.sending,
+          clientMessageId: clientMessageId,
+          isPinned: false,
+          editedAt: null,
+        );
+
+        emit(
+          PrivateConversationLoadedState(
+            messages: <PrivateMessage>[pendingMessage],
+            conversation: conversation,
+            companion: currentState.companion,
+            companionId: currentState.companion.userId,
+            pendingNavigationConversationId: conversation.conversationId,
+          ),
+        );
+
+        await _privateMessageInteractor.sendMessage(message: pendingMessage);
+        return;
+      }
+
+      if (currentState is! PrivateConversationLoadedState) {
+        return;
+      }
+
+      final User currentUser = await _userInteractor.getCachedUser();
+      final String clientMessageId = const Uuid().v4();
+      final DateTime now = DateTime.now();
+      final PrivateMessage pendingMessage = PrivateMessage(
+        id: '',
+        conversationId: currentState.conversation.conversationId,
+        senderId: currentUser.userId,
+        text: normalizedText,
+        attachments: const <PrivateMessageAttachment>[],
+        createdAt: now,
+        updatedAt: now,
+        isDeleted: false,
+        deletedById: null,
+        replyToMessageId: event.replyToMessageId,
+        deliveryStatus: MessageDeliveryStatus.sending,
+        clientMessageId: clientMessageId,
+        isPinned: false,
+        editedAt: null,
+      );
+
+      final List<PrivateMessage> updatedMessages = List<PrivateMessage>.from(
+        currentState.messages,
+      )..insert(0, pendingMessage);
+      _sortMessagesByTime(updatedMessages);
+
+      emit(currentState.copyWith(messages: updatedMessages));
+      await _privateMessageInteractor.sendMessage(message: pendingMessage);
+    } catch (e, st) {
+      _logger.exception(e, st);
+
+      final AppException appException = e is AppException
+          ? e
+          : AppUnknownException(
+              message: e.toString(),
+              error: e,
+              stackTrace: st,
+            );
+
+      final PrivateConversationState currentState = state;
+      if (currentState is PrivateConversationLoadedState) {
+        final List<PrivateMessage> failedMessages = currentState.messages
+            .map((PrivateMessage message) {
+              if (message.deliveryStatus == MessageDeliveryStatus.sending) {
+                return message.copyWith(
+                  deliveryStatus: MessageDeliveryStatus.failed,
+                  updatedAt: DateTime.now(),
+                );
+              }
+              return message;
+            })
+            .toList(growable: false);
+        emit(
+          currentState.copyWith(
+            messages: failedMessages,
+            failure: appException,
+          ),
+        );
+        return;
+      }
+
+      if (currentState is PrivateConversationDraftState) {
+        emit(
+          currentState.copyWith(
+            isCreatingConversation: false,
+            failure: appException,
+          ),
+        );
+        return;
+      }
+
+      emit(PrivateConversationFailureState(failure: appException));
+    }
+  }
+
   Future<void> _onMessageUpdateReceived(
     PrivateConversationMessageUpdateReceivedEvent event,
     Emitter<PrivateConversationState> emit,
@@ -92,12 +279,14 @@ class PrivateConversationBloc
 
       final PrivateMessage incomingMessage = event.update.message;
 
-      if (incomingMessage.conversationId != loadedState.conversation.id) {
+      if (incomingMessage.conversationId !=
+          loadedState.conversation.conversationId) {
         return;
       }
 
-      final List<PrivateMessage> updatedMessages =
-          List<PrivateMessage>.from(loadedState.messages);
+      final List<PrivateMessage> updatedMessages = List<PrivateMessage>.from(
+        loadedState.messages,
+      );
 
       switch (event.update.updateType) {
         case PrivateConversationMessageUpdateType.created:
@@ -182,6 +371,16 @@ class PrivateConversationBloc
       }
       return second.updatedAt.compareTo(first.updatedAt);
     });
+  }
+
+  Future<User> _resolveCompanion({
+    required PrivateConversation conversation,
+    required String currentUserId,
+  }) async {
+    final String companionId = conversation.user1Id == currentUserId
+        ? conversation.user2Id
+        : conversation.user1Id;
+    return await _userInteractor.getUserById(userId: companionId);
   }
 
   @override

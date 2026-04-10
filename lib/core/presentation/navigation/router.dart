@@ -124,12 +124,27 @@ class AppRouter {
                   pageBuilder: buildNoTransitionPage((context, state) {
                     final String? selectedConversationId =
                         state.pathParameters['conversationId'];
+                    final String? draftCompanionId =
+                        state.pathParameters['companionId'];
 
                     return ConversationsPanel(
                       selectedConversationId: selectedConversationId,
+                      draftCompanionId: draftCompanionId,
                     );
                   }),
                   routes: <RouteBase>[
+                    GoRoute(
+                      path: 'draft/:companionId',
+                      name: 'conversationDraft',
+                      pageBuilder: buildNoTransitionPage((context, state) {
+                        final String? draftCompanionId =
+                            state.pathParameters['companionId'];
+
+                        return ConversationsPanel(
+                          draftCompanionId: draftCompanionId,
+                        );
+                      }),
+                    ),
                     GoRoute(
                       path: ':conversationId',
                       name: 'conversationDetails',

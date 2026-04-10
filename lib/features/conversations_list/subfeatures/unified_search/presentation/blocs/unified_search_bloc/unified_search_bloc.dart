@@ -20,8 +20,10 @@ EventTransformer<E> debounceDroppable<E>(Duration duration) {
 class UnifiedSearchBloc extends Bloc<UnifiedSearchEvent, UnifiedSearchState> {
   UnifiedSearchBloc({
     required UnifiedSearchInteractor searchInteractor,
+    required UserInteractor userInteractor,
     required ILogger logger,
   }) : _logger = logger,
+       _userInteractor = userInteractor,
        _searchInteractor = searchInteractor,
        super(const UnifiedSearchInitialState()) {
     on<LoadUnifiedSearchEvent>(
@@ -40,6 +42,7 @@ class UnifiedSearchBloc extends Bloc<UnifiedSearchEvent, UnifiedSearchState> {
   }
 
   final UnifiedSearchInteractor _searchInteractor;
+  final UserInteractor _userInteractor;
   final ILogger _logger;
 
   final int _pageSize = 20;
@@ -61,13 +64,18 @@ class UnifiedSearchBloc extends Bloc<UnifiedSearchEvent, UnifiedSearchState> {
       final UnifiedSearchResult page1 = await _searchInteractor.search(
         query: normalizedQuery,
       );
+      final User currentUser = await _userInteractor.getCachedUser();
+      final UnifiedSearchResult filteredResult = _filterCurrentUser(
+        result: page1,
+        currentUserId: currentUser.userId,
+      );
 
-      final bool hasMore = _calculateHasMore(page1);
+      final bool hasMore = _calculateHasMore(filteredResult);
 
       emit(
         UnifiedSearchLoadedState(
           query: normalizedQuery,
-          result: page1,
+          result: filteredResult,
           currentPage: 1,
           hasMore: hasMore,
         ),
@@ -113,13 +121,18 @@ class UnifiedSearchBloc extends Bloc<UnifiedSearchEvent, UnifiedSearchState> {
         query: prevState.query,
         page: nextPage,
       );
+      final User currentUser = await _userInteractor.getCachedUser();
+      final UnifiedSearchResult filteredFetched = _filterCurrentUser(
+        result: fetched,
+        currentUserId: currentUser.userId,
+      );
 
       final UnifiedSearchResult merged = _mergeAndDeduplicate(
         current: prevState.result,
-        fetched: fetched,
+        fetched: filteredFetched,
       );
 
-      final bool hasMore = _calculateHasMore(fetched);
+      final bool hasMore = _calculateHasMore(filteredFetched);
 
       emit(
         prevState.copyWith(
@@ -157,8 +170,7 @@ class UnifiedSearchBloc extends Bloc<UnifiedSearchEvent, UnifiedSearchState> {
     final bool usersHasMore = fetched.users.length >= _pageSize;
     final bool groupsHasMore = fetched.groups.length >= _pageSize;
     final bool channelsHasMore = fetched.channels.length >= _pageSize;
-    final bool conversationsHasMore =
-        fetched.conversations.length >= _pageSize;
+    final bool conversationsHasMore = fetched.conversations.length >= _pageSize;
     return usersHasMore ||
         groupsHasMore ||
         channelsHasMore ||
@@ -171,20 +183,14 @@ class UnifiedSearchBloc extends Bloc<UnifiedSearchEvent, UnifiedSearchState> {
   }) {
     final List<User> mergedUsers = <User>[...current.users, ...fetched.users];
     final List<UnifiedSearchConversation> mergedGroups =
-        <UnifiedSearchConversation>[
-      ...current.groups,
-      ...fetched.groups,
-    ];
+        <UnifiedSearchConversation>[...current.groups, ...fetched.groups];
     final List<UnifiedSearchConversation> mergedChannels =
-        <UnifiedSearchConversation>[
-      ...current.channels,
-      ...fetched.channels,
-    ];
+        <UnifiedSearchConversation>[...current.channels, ...fetched.channels];
     final List<UnifiedSearchConversation> mergedConversations =
         <UnifiedSearchConversation>[
-      ...current.conversations,
-      ...fetched.conversations,
-    ];
+          ...current.conversations,
+          ...fetched.conversations,
+        ];
 
     final Map<String, User> usersById = <String, User>{};
     for (final User user in mergedUsers) {
@@ -214,6 +220,20 @@ class UnifiedSearchBloc extends Bloc<UnifiedSearchEvent, UnifiedSearchState> {
       groups: groupsById.values.toList(growable: false),
       channels: channelsById.values.toList(growable: false),
       conversations: conversationsById.values.toList(growable: false),
+    );
+  }
+
+  UnifiedSearchResult _filterCurrentUser({
+    required UnifiedSearchResult result,
+    required String currentUserId,
+  }) {
+    return UnifiedSearchResult(
+      users: result.users
+          .where((User user) => user.userId != currentUserId)
+          .toList(growable: false),
+      groups: result.groups,
+      channels: result.channels,
+      conversations: result.conversations,
     );
   }
 

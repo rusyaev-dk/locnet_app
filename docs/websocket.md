@@ -196,8 +196,3 @@ socket.on('private_message_deleted', (payload) => {
 | Редактирование | `PATCH /private-chats/messages/:messageId` |
 | Удаление | `DELETE /private-chats/messages/:messageId?conversationId=<uuid>` |
 
----
-
-## 7. Масштабирование и отладка
-
-Между инстансами gateway используется **Redis**-адаптер Socket.IO: клиенту всё равно, к какому инстансу пришёл HTTP — push дойдёт в нужную комнату.

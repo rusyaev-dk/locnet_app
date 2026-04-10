@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/domain/domain.dart';
@@ -16,6 +17,7 @@ class UnifiedSearchModalCardWrapper extends StatelessWidget {
       create: (context) => UnifiedSearchBloc(
         logger: context.read<ILogger>(),
         searchInteractor: context.read<UnifiedSearchInteractor>(),
+        userInteractor: context.read<UserInteractor>(),
       ),
       child: child,
     );
@@ -110,9 +112,9 @@ class _UnifiedSearchModalCardState extends State<UnifiedSearchModalCard> {
                 final bool hasResults = switch (state) {
                   final UnifiedSearchLoadedState s =>
                     s.result.users.isNotEmpty ||
-                    s.result.groups.isNotEmpty ||
-                    s.result.channels.isNotEmpty ||
-                    s.result.conversations.isNotEmpty,
+                        s.result.groups.isNotEmpty ||
+                        s.result.channels.isNotEmpty ||
+                        s.result.conversations.isNotEmpty,
                   _ => false,
                 };
 
@@ -172,10 +174,7 @@ class _UnifiedSearchModalCardState extends State<UnifiedSearchModalCard> {
 }
 
 class _UnifiedSearchBody extends StatelessWidget {
-  const _UnifiedSearchBody({
-    required this.state,
-    required this.selectedTab,
-  });
+  const _UnifiedSearchBody({required this.state, required this.selectedTab});
 
   final UnifiedSearchState state;
   final _UnifiedSearchTab selectedTab;
@@ -293,7 +292,29 @@ class _UnifiedSearchBody extends StatelessWidget {
 
           return UnifiedSearchResultTile(
             item: items[index],
-            onPressed: () {},
+            onPressed: () {
+              switch (items[index].type) {
+                case UnifiedSearchListItemType.user:
+                  final User? user = items[index].user;
+                  if (user == null) {
+                    return;
+                  }
+                  GoRouter.of(
+                    context,
+                  ).go(AppRoutes.conversationDraft(user.userId));
+                  Navigator.of(context).pop();
+                case UnifiedSearchListItemType.conversation:
+                  final UnifiedSearchConversation? conversation =
+                      items[index].conversation;
+                  if (conversation == null) {
+                    return;
+                  }
+                  GoRouter.of(
+                    context,
+                  ).go(AppRoutes.conversation(conversation.id));
+                  Navigator.of(context).pop();
+              }
+            },
           );
         },
       ),

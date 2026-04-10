@@ -73,6 +73,24 @@ class DioHttpClient implements IHttpClient {
   }
 
   @override
+  Future<Response> patch({
+    required String path,
+    dynamic data,
+    String? baseUrl,
+    Map<String, dynamic>? uriParameters,
+    Map<String, dynamic>? headers,
+  }) async {
+    return await _sendRequest(
+      method: 'PATCH',
+      path: path,
+      baseUrl: baseUrl,
+      uriParameters: uriParameters,
+      headers: headers,
+      data: data,
+    );
+  }
+
+  @override
   Future<Response> delete({
     required String path,
     String? baseUrl,

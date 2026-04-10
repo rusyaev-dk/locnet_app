@@ -39,20 +39,28 @@ class PrivateConversationDto extends Equatable {
   }
 
   factory PrivateConversationDto.fromJson(Map<String, dynamic> json) {
+    final String? createdAtRaw = json['createdAt'] as String?;
+    final String? updatedAtRaw = json['updatedAt'] as String?;
+    final DateTime now = DateTime.now();
+
     return PrivateConversationDto(
-      conversationId: json['conversationId'] as String,
-      user1Id: json['user1'] as String,
-      user2Id: json['user2'] as String,
-      createdAt: DateTimeFormatter.parse(json['createdAt'] as String),
-      updatedAt: DateTimeFormatter.parse(json['updatedAt'] as String),
-      isDeleted: json['isDeleted'] as bool,
+      conversationId: (json['conversationId'] ?? json['id']) as String,
+      user1Id: (json['user1Id'] ?? json['user1']) as String,
+      user2Id: (json['user2Id'] ?? json['user2']) as String,
+      createdAt: createdAtRaw != null && createdAtRaw.isNotEmpty
+          ? DateTimeFormatter.parse(createdAtRaw)
+          : now,
+      updatedAt: updatedAtRaw != null && updatedAtRaw.isNotEmpty
+          ? DateTimeFormatter.parse(updatedAtRaw)
+          : now,
+      isDeleted: (json['isDeleted'] ?? false) as bool,
     );
   }
 
   Map<String, dynamic> toJson() => <String, dynamic>{
     'conversationId': conversationId,
-    'user1': user1Id,
-    'user2': user2Id,
+    'user1Id': user1Id,
+    'user2Id': user2Id,
     'createdAt': createdAt.toIso8601String(),
     'updatedAt': updatedAt.toIso8601String(),
     'isDeleted': isDeleted,

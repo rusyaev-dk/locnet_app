@@ -47,12 +47,16 @@ final class PrivateConversationInteractor {
     );
   }
 
-  Future<PrivateConversation> getConversationById({
-    required String conversationId,
+  Future<PrivateConversation> getOrCreateByCompanion({
+    required String companionId,
   }) async {
-    return await _privateConversationRepo.getPrivateConversation(
-      conversationId: conversationId,
+    return await _privateConversationRepo.getOrCreateByCompanion(
+      companionId: companionId,
     );
+  }
+
+  Future<List<PrivateConversation>> listConversations({int page = 1}) async {
+    return await _privateConversationRepo.listConversations(page: page);
   }
 
   Future<List<PrivateMessage>> loadMessagesPage({

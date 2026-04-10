@@ -24,6 +24,14 @@ abstract interface class IHttpClient {
     Map<String, dynamic>? headers,
   });
 
+  Future<Response> patch({
+    required String path,
+    dynamic data,
+    String? baseUrl,
+    Map<String, dynamic>? uriParameters,
+    Map<String, dynamic>? headers,
+  });
+
   Future<Response> delete({
     required String path,
     String? baseUrl,

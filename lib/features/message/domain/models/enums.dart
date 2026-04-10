@@ -12,10 +12,11 @@ enum MessageDeliveryStatus {
   @override
   String toString() => value;
 
-  factory MessageDeliveryStatus.fromString(String value) =>
-      MessageDeliveryStatus.values.firstWhere(
-        (MessageDeliveryStatus status) => status.value == value,
-        orElse: () =>
-            throw ArgumentError('Unknown MessageDeliveryStatus: $value'),
-      );
+  factory MessageDeliveryStatus.fromString(String value) {
+    final String normalized = value.toLowerCase();
+    return MessageDeliveryStatus.values.firstWhere(
+      (MessageDeliveryStatus status) => status.value == normalized,
+      orElse: () => MessageDeliveryStatus.sent,
+    );
+  }
 }

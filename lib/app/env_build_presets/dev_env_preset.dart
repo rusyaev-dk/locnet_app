@@ -22,6 +22,7 @@ final class DevEnvPreset implements IAppEnvPreset {
 
   final AppScope _appScope;
   final MockInMemoryBackend _mockInMemoryBackend;
+  static const bool _useHttpPrivateMessaging = false;
 
   @override
   IAuthRepo createAuthRepo() {
@@ -72,6 +73,15 @@ final class DevEnvPreset implements IAppEnvPreset {
 
   @override
   IPrivateMessageRepo createPrivateMessageRepo() {
+    if (_useHttpPrivateMessaging) {
+      return HttpPrivateMessageRepo(
+        httpClient: DioHttpClient(
+          dio: _appScope.dio,
+          apiConfig: _appScope.apiConfig,
+        ),
+      );
+    }
+
     return MockPrivateMessageRepo(backendStorage: _mockInMemoryBackend);
   }
 
@@ -87,6 +97,20 @@ final class DevEnvPreset implements IAppEnvPreset {
 
   @override
   IPrivateConversationRepo createPrivateConversationRepo() {
+    if (_useHttpPrivateMessaging) {
+      return HttpPrivateConversationRepo(
+        httpClient: DioHttpClient(
+          dio: _appScope.dio,
+          apiConfig: _appScope.apiConfig,
+        ),
+        sessionCacheRepo: LocalSessionCacheRepo(
+          storage: _appScope.storageAggregator.secureStorage,
+        ),
+        logger: _appScope.logger,
+        socketBaseUrl: _appScope.apiConfig.baseUrl,
+      );
+    }
+
     return MockPrivateConversationRepo(backendStorage: _mockInMemoryBackend);
   }
 

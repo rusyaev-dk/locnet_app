@@ -29,11 +29,50 @@ final class MockPrivateConversationRepo implements IPrivateConversationRepo {
   }
 
   @override
-  Future<PrivateConversation> getPrivateConversation({
-    required String conversationId,
+  Future<PrivateConversation> getOrCreateByCompanion({
+    required String companionId,
   }) async {
-    final dto = _backendStorage.getPrivateConversationById(conversationId);
-    return PrivateConversation.fromDto(dto);
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+
+    // Try to find an existing private conversation between the current
+    // (admin) user and the companion. If none — create a stub on the fly.
+    final String currentUserId = MockUsers.adminUser.userId;
+
+    final List<PrivateConversationDto> all = _backendStorage
+        .getAllPrivateConversations();
+
+    final PrivateConversationDto? existing = all
+        .where(
+          (c) =>
+              (c.user1Id == currentUserId && c.user2Id == companionId) ||
+              (c.user2Id == currentUserId && c.user1Id == companionId),
+        )
+        .firstOrNull;
+
+    if (existing != null) {
+      return PrivateConversation.fromDto(existing);
+    }
+
+    final DateTime now = DateTime.now();
+    final PrivateConversationDto created = PrivateConversationDto(
+      conversationId: 'mock-conv-${now.microsecondsSinceEpoch}',
+      user1Id: currentUserId,
+      user2Id: companionId,
+      createdAt: now,
+      updatedAt: now,
+      isDeleted: false,
+    );
+    _backendStorage.upsertPrivateConversation(conversation: created);
+    return PrivateConversation.fromDto(created);
+  }
+
+  @override
+  Future<List<PrivateConversation>> listConversations({int page = 1}) async {
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+    final int safePage = page <= 0 ? 1 : page;
+    final List<PrivateConversationDto> dtos = _backendStorage
+        .getAllPrivateConversations(page: safePage);
+    return dtos.map(PrivateConversation.fromDto).toList(growable: false);
   }
 
   @override

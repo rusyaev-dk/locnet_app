@@ -5,7 +5,7 @@ import 'package:locnet_app/features/conversation/subfeatures/private/data/data.d
 
 class PrivateConversation extends Equatable {
   const PrivateConversation({
-    required this.id,
+    required this.conversationId,
     required this.user1Id,
     required this.user2Id,
     required this.createdAt,
@@ -13,7 +13,7 @@ class PrivateConversation extends Equatable {
     required this.isDeleted,
   });
 
-  final String id;
+  final String conversationId;
   final String user1Id;
   final String user2Id;
   final DateTime createdAt;
@@ -22,7 +22,7 @@ class PrivateConversation extends Equatable {
 
   factory PrivateConversation.fromDto(PrivateConversationDto dto) {
     return PrivateConversation(
-      id: dto.conversationId,
+      conversationId: dto.conversationId,
       user1Id: dto.user1Id,
       user2Id: dto.user2Id,
       createdAt: dto.createdAt,
@@ -32,7 +32,7 @@ class PrivateConversation extends Equatable {
   }
 
   PrivateConversation copyWith({
-    String? id,
+    String? conversationId,
     String? user1Id,
     String? user2Id,
     DateTime? createdAt,
@@ -40,7 +40,7 @@ class PrivateConversation extends Equatable {
     bool? isDeleted,
   }) {
     return PrivateConversation(
-      id: id ?? this.id,
+      conversationId: conversationId ?? this.conversationId,
       user1Id: user1Id ?? this.user1Id,
       user2Id: user2Id ?? this.user2Id,
       createdAt: createdAt ?? this.createdAt,
@@ -51,7 +51,7 @@ class PrivateConversation extends Equatable {
 
   @override
   List<Object?> get props => [
-    id,
+    conversationId,
     user1Id,
     user2Id,
     createdAt,

@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
+import 'package:locnet_app/features/conversation/subfeatures/private/presentation/presentation.dart';
 import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/message/subfeatures/channel_publication/presentation/presentation.dart';
 import 'package:locnet_app/features/message/subfeatures/emoji_selector/presentation/presentation.dart';
 import 'package:locnet_app/features/message/subfeatures/group_message/presentation/presentation.dart';
 import 'package:locnet_app/features/message/subfeatures/message_input/domain/domain.dart';
 import 'package:locnet_app/features/message/subfeatures/message_input/presentation/presentation.dart';
-import 'package:locnet_app/features/message/subfeatures/private_message/presentation/presentation.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
 class MessageInputBar extends StatefulWidget {
   const MessageInputBar({
-    required this.conversationId,
     required this.conversationType,
+    this.conversationId,
     this.replyToMessageId,
     super.key,
   });
 
-  final String conversationId;
+  final String? conversationId;
   final ConversationType conversationType;
   final String? replyToMessageId;
 
@@ -118,22 +118,22 @@ class _MessageInputBarState extends State<MessageInputBar> {
 
     switch (widget.conversationType) {
       case ConversationType.private:
-        context.read<PrivateMessageActionsCubit>().sendMessage(
-          conversationId: widget.conversationId,
-          attachedFiles: files,
-          text: markdown,
-          replyToMessageId: widget.replyToMessageId,
+        context.read<PrivateConversationBloc>().add(
+          PrivateConversationSendMessageEvent(
+            text: markdown,
+            replyToMessageId: widget.replyToMessageId,
+          ),
         );
       case ConversationType.group:
         context.read<GroupMessageActionsCubit>().sendMessage(
-          groupId: widget.conversationId,
+          groupId: widget.conversationId!,
           attachedFiles: files,
           text: markdown,
           replyToMessageId: widget.replyToMessageId,
         );
       case ConversationType.channel:
         context.read<ChannelPublicationActionsCubit>().sendPublication(
-          channelId: widget.conversationId,
+          channelId: widget.conversationId!,
           attachedFiles: files,
           text: markdown,
           replyToPublicationId: widget.replyToMessageId,

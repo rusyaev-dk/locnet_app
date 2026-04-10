@@ -116,15 +116,15 @@ final class MockInMemoryBackend {
     PrivateConversation updatedConversation,
   ) {
     final PrivateConversationDto? existingDto =
-        _privateConversations[updatedConversation.id];
+        _privateConversations[updatedConversation.conversationId];
     if (existingDto == null) {
       throw StateError(
-        "Couldn't update conversation: conversation with id ${updatedConversation.id} not  found",
+        "Couldn't update conversation: conversation with id ${updatedConversation.conversationId} not  found",
       );
     }
 
     final PrivateConversationDto updatedDto = existingDto.copyWith(
-      conversationId: updatedConversation.id,
+      conversationId: updatedConversation.conversationId,
       user1Id: updatedConversation.user1Id,
       user2Id: updatedConversation.user2Id,
       createdAt: updatedConversation.createdAt,
@@ -132,8 +132,14 @@ final class MockInMemoryBackend {
       isDeleted: updatedConversation.isDeleted,
     );
 
-    _privateConversations[updatedConversation.id] = updatedDto;
+    _privateConversations[updatedConversation.conversationId] = updatedDto;
     return updatedDto;
+  }
+
+  void upsertPrivateConversation({
+    required PrivateConversationDto conversation,
+  }) {
+    _privateConversations[conversation.conversationId] = conversation;
   }
 
   bool deletePrivateConversation({required String privateConversationId}) {
@@ -398,9 +404,7 @@ final class MockInMemoryBackend {
     );
   }
 
-  PrivateMessageDto? getLastPrivateMessage({
-    required String conversationId,
-  }) {
+  PrivateMessageDto? getLastPrivateMessage({required String conversationId}) {
     final List<PrivateMessageDto>? messages = _privateMessages[conversationId];
     if (messages == null || messages.isEmpty) {
       return null;

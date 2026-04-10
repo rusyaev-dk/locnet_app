@@ -13,9 +13,15 @@ abstract interface class IPrivateConversationRepo {
     required bool deleteAtRecipient,
   });
 
-  Future<PrivateConversation> getPrivateConversation({
-    required String conversationId,
+  /// Calls `POST /private-chats/conversations` with `{companionId}`.
+  ///
+  /// The backend either creates a new private conversation between the
+  /// current user and [companionId], or returns the existing one.
+  Future<PrivateConversation> getOrCreateByCompanion({
+    required String companionId,
   });
+
+  Future<List<PrivateConversation>> listConversations({int page = 1});
 
   Future<User> getCompanion({required String conversationId});
 
