@@ -57,4 +57,10 @@ final class MockAuthRepo implements IAuthRepo {
   }) async {
     return _mockSession;
   }
+
+  @override
+  Future<bool> validateLogin({required String login}) async {
+    await Future<void>.delayed(_delay);
+    return true;
+  }
 }

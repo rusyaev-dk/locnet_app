@@ -1,20 +1,73 @@
 import 'package:bloc/bloc.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/auth/domain/domain.dart';
+import 'package:stream_transform/stream_transform.dart';
 
+part 'registration_event.dart';
 part 'registration_state.dart';
 
-class RegistrationCubit extends Cubit<RegistrationState> {
-  RegistrationCubit({required ILogger logger})
-    : _logger = logger,
-      super(const RegistrationState());
+class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
+  RegistrationBloc({
+    required AuthInteractor authInteractor,
+    required ILogger logger,
+  }) : _authInteractor = authInteractor,
+       _logger = logger,
+       super(const RegistrationState()) {
+    on<RegistrationFirstNameUpdated>(_onFirstNameUpdated);
+    on<RegistrationLastNameUpdated>(_onLastNameUpdated);
+    on<RegistrationDescriptionUpdated>(_onDescriptionUpdated);
+    on<RegistrationUsernameUpdated>(
+      _onUsernameUpdated,
+      transformer: _debounceDroppable(const Duration(milliseconds: 350)),
+    );
+    on<RegistrationPasswordUpdated>(_onPasswordUpdated);
+    on<RegistrationRepeatPasswordUpdated>(_onRepeatPasswordUpdated);
+  }
 
+  final AuthInteractor _authInteractor;
   final ILogger _logger;
+  int _usernameValidationRequestId = 0;
 
   Future<void> updateFirstName({String? newFirstName}) async {
+    add(RegistrationFirstNameUpdated(newFirstName: newFirstName));
+  }
+
+  Future<void> updateLastName({String? newLastName}) async {
+    add(RegistrationLastNameUpdated(newLastName: newLastName));
+  }
+
+  Future<void> updateDescription({String? newUserDescription}) async {
+    add(RegistrationDescriptionUpdated(newUserDescription: newUserDescription));
+  }
+
+  Future<void> updateUsername({String? newUsername}) async {
+    add(RegistrationUsernameUpdated(newUsername: newUsername));
+  }
+
+  Future<void> updatePassword({String? newPassword}) async {
+    add(RegistrationPasswordUpdated(newPassword: newPassword));
+  }
+
+  Future<void> updateRepeatPassword({String? newRepeatPassword}) async {
+    add(
+      RegistrationRepeatPasswordUpdated(newRepeatPassword: newRepeatPassword),
+    );
+  }
+
+  EventTransformer<T> _debounceDroppable<T>(Duration duration) {
+    return (events, mapper) =>
+        droppable<T>().call(events.debounce(duration), mapper);
+  }
+
+  Future<void> _onFirstNameUpdated(
+    RegistrationFirstNameUpdated event,
+    Emitter<RegistrationState> emit,
+  ) async {
     try {
+      final String? newFirstName = event.newFirstName;
       if (newFirstName == null || newFirstName.trim().isEmpty) {
         emit(
           state.copyWith(
@@ -48,8 +101,12 @@ class RegistrationCubit extends Cubit<RegistrationState> {
     }
   }
 
-  Future<void> updateLastName({String? newLastName}) async {
+  Future<void> _onLastNameUpdated(
+    RegistrationLastNameUpdated event,
+    Emitter<RegistrationState> emit,
+  ) async {
     try {
+      final String? newLastName = event.newLastName;
       if (newLastName == null || newLastName.trim().isEmpty) {
         emit(
           state.copyWith(
@@ -83,8 +140,12 @@ class RegistrationCubit extends Cubit<RegistrationState> {
     }
   }
 
-  Future<void> updateDescription({String? newUserDescription}) async {
+  Future<void> _onDescriptionUpdated(
+    RegistrationDescriptionUpdated event,
+    Emitter<RegistrationState> emit,
+  ) async {
     try {
+      final String? newUserDescription = event.newUserDescription;
       if (newUserDescription == null || newUserDescription.trim().isEmpty) {
         emit(state.copyWith(description: null, descriptionException: null));
         return;
@@ -120,8 +181,12 @@ class RegistrationCubit extends Cubit<RegistrationState> {
     }
   }
 
-  Future<void> updateUsername({String? newUsername}) async {
+  Future<void> _onUsernameUpdated(
+    RegistrationUsernameUpdated event,
+    Emitter<RegistrationState> emit,
+  ) async {
     try {
+      final String? newUsername = event.newUsername;
       if (newUsername == null || newUsername.trim().isEmpty) {
         emit(
           state.copyWith(
@@ -141,6 +206,29 @@ class RegistrationCubit extends Cubit<RegistrationState> {
         return;
       }
 
+      final int requestId = ++_usernameValidationRequestId;
+      emit(state.copyWith(username: newUsername, usernameException: null));
+
+      final bool isAvailable = await _authInteractor.validateRegisterLogin(
+        login: newUsername,
+      );
+
+      if (requestId != _usernameValidationRequestId) {
+        return;
+      }
+
+      if (!isAvailable) {
+        emit(
+          state.copyWith(
+            username: newUsername,
+            usernameException: AuthLoginAlreadyTakenException(
+              message: 'Username already taken',
+            ),
+          ),
+        );
+        return;
+      }
+
       emit(state.copyWith(username: newUsername, usernameException: null));
     } catch (e, st) {
       _logger.exception(e, st);
@@ -155,8 +243,12 @@ class RegistrationCubit extends Cubit<RegistrationState> {
     }
   }
 
-  Future<void> updatePassword({String? newPassword}) async {
+  Future<void> _onPasswordUpdated(
+    RegistrationPasswordUpdated event,
+    Emitter<RegistrationState> emit,
+  ) async {
     try {
+      final String? newPassword = event.newPassword;
       if (newPassword == null || newPassword.trim().isEmpty) {
         emit(
           state.copyWith(
@@ -221,8 +313,12 @@ class RegistrationCubit extends Cubit<RegistrationState> {
     }
   }
 
-  Future<void> updateRepeatPassword({String? newRepeatPassword}) async {
+  Future<void> _onRepeatPasswordUpdated(
+    RegistrationRepeatPasswordUpdated event,
+    Emitter<RegistrationState> emit,
+  ) async {
     try {
+      final String? newRepeatPassword = event.newRepeatPassword;
       if (newRepeatPassword == null || newRepeatPassword.trim().isEmpty) {
         emit(
           state.copyWith(
@@ -320,4 +416,8 @@ class RegistrationCubit extends Cubit<RegistrationState> {
 
     return hasAllFilled && passwordsMatch && hasNoFieldExceptions;
   }
+}
+
+class RegistrationCubit extends RegistrationBloc {
+  RegistrationCubit({required super.authInteractor, required super.logger});
 }

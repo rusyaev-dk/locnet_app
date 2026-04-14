@@ -17,6 +17,8 @@ abstract interface class IAuthRepo {
     DeviceInfo? deviceInfo,
   });
 
+  Future<bool> validateLogin({required String login});
+
   Future<Session> refresh({
     required String refreshToken,
     required String sessionId,

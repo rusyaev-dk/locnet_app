@@ -299,6 +299,16 @@ class S {
     );
   }
 
+  /// `Этот логин уже занят`
+  String get authLoginAlreadyTakenException {
+    return Intl.message(
+      'Этот логин уже занят',
+      name: 'authLoginAlreadyTakenException',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Введены некорректные символы`
   String get invalidCharactersException {
     return Intl.message(

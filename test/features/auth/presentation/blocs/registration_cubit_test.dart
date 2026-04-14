@@ -5,17 +5,26 @@ import 'package:locnet_app/features/auth/domain/domain.dart';
 import 'package:locnet_app/features/auth/presentation/blocs/registration_cubit/registration_cubit.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../../domain/interactors/mock_auth_interactor.dart';
 import '../../../../core/utils/logger/mock_logger.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late MockLogger mockLogger;
+  late MockAuthInteractor mockAuthInteractor;
 
-  RegistrationCubit buildCubit() => RegistrationCubit(logger: mockLogger);
+  RegistrationCubit buildCubit() => RegistrationCubit(
+    authInteractor: mockAuthInteractor,
+    logger: mockLogger,
+  );
 
   setUp(() {
     mockLogger = MockLogger();
+    mockAuthInteractor = MockAuthInteractor();
+    when(
+      () => mockAuthInteractor.validateRegisterLogin(login: any(named: 'login')),
+    ).thenAnswer((_) async => true);
   });
 
   group('RegistrationCubit', () {

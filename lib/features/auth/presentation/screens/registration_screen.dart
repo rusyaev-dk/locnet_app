@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/features/auth/domain/domain.dart';
 import 'package:locnet_app/features/auth/presentation/presentation.dart';
 
 class RegistrationScreenWrapper extends StatelessWidget {
@@ -13,7 +14,10 @@ class RegistrationScreenWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<RegistrationCubit>(
       create: (BuildContext context) =>
-          RegistrationCubit(logger: context.read<ILogger>()),
+          RegistrationCubit(
+            authInteractor: context.read<AuthInteractor>(),
+            logger: context.read<ILogger>(),
+          ),
       child: child,
     );
   }

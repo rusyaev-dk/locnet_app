@@ -61,6 +61,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "authInvalidCredentialsException": MessageLookupByLibrary.simpleMessage(
       "Invalid credentials, please check your login or password",
     ),
+    "authLoginAlreadyTakenException": MessageLookupByLibrary.simpleMessage(
+      "This login is already taken",
+    ),
     "authUnauthorizedException": MessageLookupByLibrary.simpleMessage(
       "You are not authorized, please sign in again",
     ),

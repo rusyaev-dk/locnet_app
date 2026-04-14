@@ -16,6 +16,14 @@ final class PasswordTooWeakException extends DomainException {
   });
 }
 
+final class AuthLoginAlreadyTakenException extends DomainException {
+  AuthLoginAlreadyTakenException({
+    required super.message,
+    super.stackTrace,
+    super.error,
+  });
+}
+
 class AuthException extends DomainException {
   AuthException({required super.message, super.stackTrace, super.error});
 }

@@ -34,6 +34,7 @@
   "authException": "Autentifikatsiya xatosi",
   "authUnauthorizedException": "Siz tizimga kirmagansiz, iltimos, qayta kiring",
   "authInvalidCredentialsException": "Login yoki parol notoʻgʻri, maʼlumotlarni tekshiring",
+  "authLoginAlreadyTakenException": "Bu login allaqachon band",
   "invalidCharactersException": "Notoʻgʻri belgilar kiritildi",
   "charactersCountViolationException": "Belgilar soni notoʻgʻri",
   "requiredValueNotProvidedException": "Majburiy maydon",

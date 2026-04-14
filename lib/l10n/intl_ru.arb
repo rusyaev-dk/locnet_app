@@ -34,6 +34,7 @@
   "authException": "Ошибка авторизации",
   "authUnauthorizedException": "Вы не авторизованы, пожалуйста, войдите снова",
   "authInvalidCredentialsException": "Неверные учетные данные, проверьте логин или пароль",
+  "authLoginAlreadyTakenException": "Этот логин уже занят",
   "invalidCharactersException": "Введены некорректные символы",
   "charactersCountViolationException": "Недопустимое количество символов",
   "requiredValueNotProvidedException": "Обязательно для заполнения",

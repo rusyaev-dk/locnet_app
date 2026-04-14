@@ -11,6 +11,7 @@ abstract class ApiEndpoints {
 
   // Auth
   static const String register = "/auth/register";
+  static const String validateRegisterLogin = "/auth/register/validate-login";
   static const String logIn = "/auth/login";
   static const String refresh = "/auth/refresh";
   static const String logOut = "/auth/logout";

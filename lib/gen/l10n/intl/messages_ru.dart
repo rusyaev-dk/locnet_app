@@ -59,6 +59,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "authInvalidCredentialsException": MessageLookupByLibrary.simpleMessage(
       "Неверные учетные данные, проверьте логин или пароль",
     ),
+    "authLoginAlreadyTakenException": MessageLookupByLibrary.simpleMessage(
+      "Этот логин уже занят",
+    ),
     "authUnauthorizedException": MessageLookupByLibrary.simpleMessage(
       "Вы не авторизованы, пожалуйста, войдите снова",
     ),

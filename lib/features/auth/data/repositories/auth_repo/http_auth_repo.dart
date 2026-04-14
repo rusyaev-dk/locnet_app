@@ -75,6 +75,35 @@ final class HttpAuthRepo implements IAuthRepo {
   }
 
   @override
+  Future<bool> validateLogin({required String login}) async {
+    try {
+      final httpResponse = await _httpClient.get(
+        path: ApiEndpoints.validateRegisterLogin,
+        uriParameters: <String, dynamic>{'login': login},
+      );
+      final Map<String, dynamic> responseJson = _asJsonMap(httpResponse.data);
+      final dynamic availableDynamic = responseJson['available'];
+      if (availableDynamic is bool) {
+        return availableDynamic;
+      }
+
+      throw AppUnknownException(
+        message: 'Invalid API response format',
+        error: responseJson,
+        stackTrace: StackTrace.current,
+      );
+    } on AppException {
+      rethrow;
+    } catch (e, st) {
+      throw AppUnknownException(
+        message: 'Failed to validate login',
+        error: e,
+        stackTrace: st,
+      );
+    }
+  }
+
+  @override
   Future<Session> refresh({
     required String refreshToken,
     required String sessionId,

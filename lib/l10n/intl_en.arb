@@ -34,6 +34,7 @@
   "authException": "Authentication error",
   "authUnauthorizedException": "You are not authorized, please sign in again",
   "authInvalidCredentialsException": "Invalid credentials, please check your login or password",
+  "authLoginAlreadyTakenException": "This login is already taken",
   "invalidCharactersException": "Invalid characters entered",
   "charactersCountViolationException": "Invalid number of characters",
   "requiredValueNotProvidedException": "Required field",

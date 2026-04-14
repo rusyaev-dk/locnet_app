@@ -8,6 +8,7 @@ class AuthExceptionsTranslator {
       <Type, String Function(S)>{
         PasswordsMismatchException: (s) => s.passwordsMismatchException,
         PasswordTooWeakException: (s) => s.passwordTooWeakException,
+        AuthLoginAlreadyTakenException: (s) => s.authLoginAlreadyTakenException,
         AuthInvalidCredentialsException: (s) =>
             s.authInvalidCredentialsException,
         AuthUnauthorizedException: (s) => s.authUnauthorizedException,

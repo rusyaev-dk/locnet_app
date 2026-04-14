@@ -142,6 +142,42 @@ class AuthInteractor {
     }
   }
 
+  Future<bool> validateRegisterLogin({required String login}) async {
+    try {
+      return await _authRepo.validateLogin(login: login);
+    } on ApiValidationException catch (e, st) {
+      _logger.exception(e, st);
+      throw AuthException(message: e.message, error: e, stackTrace: st);
+    } on ApiUnauthorizedException catch (e, st) {
+      _logger.exception(e, st);
+      throw AuthUnauthorizedException(
+        message: e.message,
+        error: e,
+        stackTrace: st,
+      );
+    } on ApiForbiddenException catch (e, st) {
+      _logger.exception(e, st);
+      throw AuthUnauthorizedException(
+        message: e.message,
+        error: e,
+        stackTrace: st,
+      );
+    } on ApiServerException catch (e, st) {
+      _logger.exception(e, st);
+      throw AuthException(message: e.message, error: e, stackTrace: st);
+    } on ApiException catch (e, st) {
+      _logger.exception(e, st);
+      throw AuthException(message: e.message, error: e, stackTrace: st);
+    } catch (e, st) {
+      _logger.exception(e, st);
+      throw AppUnknownException(
+        message: e.toString(),
+        error: e,
+        stackTrace: st,
+      );
+    }
+  }
+
   Future<(Session, User)?> restoreSession() async {
     try {
       final Session cachedSession = await _sessionCacheRepo.loadSession();

@@ -61,6 +61,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "authInvalidCredentialsException": MessageLookupByLibrary.simpleMessage(
       "Login yoki parol notoʻgʻri, maʼlumotlarni tekshiring",
     ),
+    "authLoginAlreadyTakenException": MessageLookupByLibrary.simpleMessage(
+      "Bu login allaqachon band",
+    ),
     "authUnauthorizedException": MessageLookupByLibrary.simpleMessage(
       "Siz tizimga kirmagansiz, iltimos, qayta kiring",
     ),
