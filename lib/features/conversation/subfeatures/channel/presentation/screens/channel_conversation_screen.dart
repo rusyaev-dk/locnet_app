@@ -394,6 +394,14 @@ class _ChannelConversationScreenState extends State<ChannelConversationScreen> {
           conversationId: widget.conversationId,
           conversationType: ConversationType.channel,
           replyToMessageId: _replyTo?.publicationId,
+          onMessageSent: () {
+            if (_replyTo == null) {
+              return;
+            }
+            setState(() {
+              _replyTo = null;
+            });
+          },
         ),
       ],
     );

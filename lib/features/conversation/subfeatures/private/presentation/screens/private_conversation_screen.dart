@@ -293,7 +293,7 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
                           conversationId: convState.conversation.conversationId,
                           companion: convState.companion,
                         ),
-                        PrivateConversationDraftState() => CompanionInfoHeader(
+                        PrivateConversationDraftState() => PrivateHeader(
                           companion: convState.companion,
                         ),
                         _ => const SizedBox.shrink(),
@@ -518,6 +518,14 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
             conversationId: widget.conversationId,
             conversationType: ConversationType.private,
             replyToMessageId: _replyTo?.id,
+            onMessageSent: () {
+              if (_replyTo == null) {
+                return;
+              }
+              setState(() {
+                _replyTo = null;
+              });
+            },
           ),
         ],
       ),

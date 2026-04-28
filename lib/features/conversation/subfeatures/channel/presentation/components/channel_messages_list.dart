@@ -32,6 +32,11 @@ class _ChannelMessagesListState extends State<ChannelMessagesList> {
   @override
   Widget build(BuildContext context) {
     final selectionCubit = context.watch<MessageSelectionCubit>();
+    final Map<String, ChannelPublication> publicationsById =
+        <String, ChannelPublication>{
+          for (final ChannelPublication publication in widget.messages)
+            publication.publicationId: publication,
+        };
 
     return Listener(
       onPointerDown: (PointerDownEvent event) {
@@ -61,6 +66,10 @@ class _ChannelMessagesListState extends State<ChannelMessagesList> {
       },
       itemBuilder: (BuildContext context, int index) {
         final ChannelPublication publication = widget.messages[index];
+        final String replyText =
+            publication.replyToPublicationId != null
+            ? (publicationsById[publication.replyToPublicationId!]?.text ?? '')
+            : '';
         const Duration baseDuration = Duration(milliseconds: 280);
         final Duration delay = Duration(milliseconds: 35 * index);
 
@@ -106,6 +115,7 @@ class _ChannelMessagesListState extends State<ChannelMessagesList> {
                 onReply: () => widget.onReply?.call(publication),
                 onForward: () => widget.onForward?.call(publication),
                 onDelete: () => widget.onDelete?.call(publication),
+                replyPreviewText: replyText,
                 onCopy: () async {
                   final String text = (publication.text ?? '').trim();
                   if (text.isNotEmpty) {

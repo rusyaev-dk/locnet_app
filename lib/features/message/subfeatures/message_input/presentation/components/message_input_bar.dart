@@ -15,12 +15,14 @@ class MessageInputBar extends StatefulWidget {
     required this.conversationType,
     this.conversationId,
     this.replyToMessageId,
+    this.onMessageSent,
     super.key,
   });
 
   final String? conversationId;
   final ConversationType conversationType;
   final String? replyToMessageId;
+  final VoidCallback? onMessageSent;
 
   @override
   State<MessageInputBar> createState() => _MessageInputBarState();
@@ -143,6 +145,7 @@ class _MessageInputBarState extends State<MessageInputBar> {
     final MessageRichInputController _ = _textEditingController!
       ..clear()
       ..clearAllFormatting();
+    widget.onMessageSent?.call();
   }
 
   @override

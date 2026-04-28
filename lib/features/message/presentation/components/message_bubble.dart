@@ -26,6 +26,8 @@ class MessageBubble extends StatefulWidget {
     this.currentUserId,
     this.sender,
     this.showDeliveryStatus = true,
+    this.replyPreviewText,
+    this.replyPreviewAuthor,
     super.key,
   });
 
@@ -43,6 +45,8 @@ class MessageBubble extends StatefulWidget {
   final String? currentUserId;
   final String? sender;
   final bool showDeliveryStatus;
+  final String? replyPreviewText;
+  final String? replyPreviewAuthor;
 
   final VoidCallback onReply;
   final VoidCallback onForward;
@@ -191,6 +195,9 @@ class _MessageBubbleState extends State<MessageBubble> {
 
     final String messageMarkdown = _getText().trim();
     final String timeText = _timeFormatter.format(_getCreatedAt());
+    final String replyPreviewText = (widget.replyPreviewText ?? '').trim();
+    final String? replyPreviewAuthor = widget.replyPreviewAuthor;
+    final bool hasReplyPreview = replyPreviewText.isNotEmpty;
 
     final Color selectionColor = isMine
         ? colorScheme.onSurface.withAlpha(80)
@@ -243,6 +250,60 @@ class _MessageBubbleState extends State<MessageBubble> {
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
+                          ),
+                        ),
+                      if (hasReplyPreview)
+                        Container(
+                          width: double.infinity,
+                          margin: const EdgeInsets.only(bottom: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 7,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isMine
+                                ? colorScheme.onSurface.withAlpha(14)
+                                : colorScheme.onPrimaryContainer.withAlpha(24),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border(
+                              left: BorderSide(
+                                color: isMine
+                                    ? colorScheme.primary
+                                    : colorScheme.onPrimaryContainer,
+                                width: 3,
+                              ),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (replyPreviewAuthor != null &&
+                                  replyPreviewAuthor.trim().isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 2),
+                                  child: Text(
+                                    replyPreviewAuthor,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: messageTextStyle.copyWith(
+                                      fontSize: 12.5,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              Text(
+                                replyPreviewText,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: messageTextStyle.copyWith(
+                                  fontSize: 12.5,
+                                  color: (messageTextStyle.color ??
+                                          colorScheme.onSurface)
+                                      .withAlpha(180),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       if (messageMarkdown.isNotEmpty)

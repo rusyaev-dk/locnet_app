@@ -26,17 +26,15 @@ class AllConversationsListBloc
     on<AllConversationsListConversationUpdatedEvent>(_onConversationUpdated);
     on<AllConversationsListConversationDeletedEvent>(_onConversationDeleted);
 
-    // TODO: Handle updates
-    // _conversationsUpdatesSub = _conversationsListInteractor.conversationsUpdates
-    //     .listen(_onIncomingChange);
+    _conversationsUpdatesSub = _conversationsListInteractor.conversationsUpdates
+        .listen(_onIncomingChange);
   }
 
   final ConversationsListInteractor _conversationsListInteractor;
   final UserInteractor _userInteractor;
   final ILogger _logger;
 
-  late final StreamSubscription<ConversationsListUpdateRec>
-  _conversationsUpdatesSub;
+  StreamSubscription<ConversationsListUpdateRec>? _conversationsUpdatesSub;
 
   static const int _pageSize = 20;
 
@@ -180,9 +178,12 @@ class AllConversationsListBloc
       return;
     }
 
+    final List<ConversationTile> withoutDuplicate = currentState.conversationTiles
+        .where((ConversationTile tile) => tile.id != event.conversationTile.id)
+        .toList();
     final List<ConversationTile> updatedConversations = <ConversationTile>[
       event.conversationTile,
-      ...currentState.conversationTiles,
+      ...withoutDuplicate,
     ];
 
     // Sort conversations by last message time
@@ -202,15 +203,22 @@ class AllConversationsListBloc
       return;
     }
 
-    final List<ConversationTile> updatedConversations = currentState
-        .conversationTiles
-        .map((ConversationTile tile) {
-          if (tile.id == event.conversationTile.id) {
-            return event.conversationTile;
-          }
-          return tile;
-        })
-        .toList();
+    final int index = currentState.conversationTiles.indexWhere(
+      (ConversationTile tile) => tile.id == event.conversationTile.id,
+    );
+    final List<ConversationTile> updatedConversations = List<ConversationTile>.from(
+      currentState.conversationTiles,
+    );
+
+    if (index >= 0) {
+      final ConversationTile existing = updatedConversations[index];
+      updatedConversations[index] = _mergeIncomingTile(
+        existing: existing,
+        incoming: event.conversationTile,
+      );
+    } else {
+      updatedConversations.add(event.conversationTile);
+    }
 
     // Sort conversations by last message time
     final List<ConversationTile> sortedConversations =
@@ -254,9 +262,26 @@ class AllConversationsListBloc
     return sorted;
   }
 
+  ConversationTile _mergeIncomingTile({
+    required ConversationTile existing,
+    required ConversationTile incoming,
+  }) {
+    return existing.copyWith(
+      type: incoming.type,
+      title: incoming.title == 'Private chat' ? existing.title : incoming.title,
+      description: incoming.description ?? existing.description,
+      companion: incoming.companion ?? existing.companion,
+      lastMessageText: incoming.lastMessageText ?? existing.lastMessageText,
+      lastMessageSenderId:
+          incoming.lastMessageSenderId ?? existing.lastMessageSenderId,
+      lastMessageAt: incoming.lastMessageAt ?? existing.lastMessageAt,
+      updatedAt: incoming.updatedAt,
+    );
+  }
+
   @override
   Future<void> close() async {
-    await _conversationsUpdatesSub.cancel();
+    await _conversationsUpdatesSub?.cancel();
     return super.close();
   }
 }

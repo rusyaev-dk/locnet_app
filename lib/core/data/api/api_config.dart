@@ -29,9 +29,7 @@ abstract class ApiEndpoints {
 
   static const String conversationsList = "/private-chats/conversations/tiles";
 
-  /// Send a private message (POST). The conversationId is in the body.
-  static const String privateMessages = "/private-chats/messages";
-
+  /// Send a private message (POST). The conversationId is in the path.
   static String privateConversationMessage(
     String conversationId,
     String messageId,

@@ -405,6 +405,14 @@ class _GroupConversationScreenState extends State<GroupConversationScreen> {
           conversationId: widget.conversationId,
           conversationType: ConversationType.group,
           replyToMessageId: _replyTo?.id,
+          onMessageSent: () {
+            if (_replyTo == null) {
+              return;
+            }
+            setState(() {
+              _replyTo = null;
+            });
+          },
         ),
       ],
     );

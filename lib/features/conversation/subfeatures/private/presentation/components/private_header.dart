@@ -16,12 +16,12 @@ enum _PrivateHeaderMenuAction {
 
 class PrivateHeader extends StatefulWidget {
   const PrivateHeader({
-    required this.conversationId,
+    this.conversationId,
     required this.companion,
     super.key,
   });
 
-  final String conversationId;
+  final String? conversationId;
   final User companion;
 
   @override
@@ -34,6 +34,8 @@ class _PrivateHeaderState extends State<PrivateHeader> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final String? conversationId = widget.conversationId;
+    final bool hasConversationId = conversationId != null;
 
     final String title =
         "${widget.companion.firstName} ${widget.companion.lastName}";
@@ -51,74 +53,78 @@ class _PrivateHeaderState extends State<PrivateHeader> {
           },
         );
       },
-      trailingActions: [
-        _HeaderIconButton(
-          icon: Icons.search,
-          onPressed: () {
-            showConversationSearchSheet(
-              context: context,
-              conversationId: widget.conversationId,
-              conversationType: ConversationType.private,
-            );
-          },
-        ),
-        _HeaderIconButton(
-          icon: Icons.photo_outlined,
-          onPressed: () {
-            showConversationSharedMediaSheet(
-              context: context,
-              conversationId: widget.conversationId,
-              conversationType: ConversationType.private,
-            );
-          },
-        ),
-      ],
-      menuButton: PopupMenuButton<_PrivateHeaderMenuAction>(
-        icon: const Icon(Icons.more_vert),
-        onSelected: (action) async {
-          final cubit = context.read<PrivateConversationOptionsCubit>();
-
-          switch (action) {
-            case _PrivateHeaderMenuAction.toggleNotifications:
-              setState(() {
-                areNotificationsEnabled = !areNotificationsEnabled;
-              });
-
-              await cubit.toggleNotifications(
-                newStatus: areNotificationsEnabled,
-              );
-              break;
-
-            case _PrivateHeaderMenuAction.blockCompanion:
-              await cubit.blockCompanion();
-              break;
-
-            case _PrivateHeaderMenuAction.deleteConversation:
-              await cubit.deleteConversation();
-              break;
-          }
-        },
-        itemBuilder: (context) {
-          return [
-            PopupMenuItem(
-              value: _PrivateHeaderMenuAction.toggleNotifications,
-              child: Text(
-                areNotificationsEnabled
-                    ? l10n.toggleNotificationsOff
-                    : l10n.toggleNotificationsOn,
+      trailingActions: hasConversationId
+          ? [
+              _HeaderIconButton(
+                icon: Icons.search,
+                onPressed: () {
+                  showConversationSearchSheet(
+                    context: context,
+                    conversationId: conversationId,
+                    conversationType: ConversationType.private,
+                  );
+                },
               ),
-            ),
-            PopupMenuItem(
-              value: _PrivateHeaderMenuAction.blockCompanion,
-              child: Text(l10n.blockCompanion),
-            ),
-            PopupMenuItem(
-              value: _PrivateHeaderMenuAction.deleteConversation,
-              child: Text(l10n.deleteConversation),
-            ),
-          ];
-        },
-      ),
+              _HeaderIconButton(
+                icon: Icons.photo_outlined,
+                onPressed: () {
+                  showConversationSharedMediaSheet(
+                    context: context,
+                    conversationId: conversationId,
+                    conversationType: ConversationType.private,
+                  );
+                },
+              ),
+            ]
+          : const [],
+      menuButton: hasConversationId
+          ? PopupMenuButton<_PrivateHeaderMenuAction>(
+              icon: const Icon(Icons.more_vert),
+              onSelected: (action) async {
+                final cubit = context.read<PrivateConversationOptionsCubit>();
+
+                switch (action) {
+                  case _PrivateHeaderMenuAction.toggleNotifications:
+                    setState(() {
+                      areNotificationsEnabled = !areNotificationsEnabled;
+                    });
+
+                    await cubit.toggleNotifications(
+                      newStatus: areNotificationsEnabled,
+                    );
+                    break;
+
+                  case _PrivateHeaderMenuAction.blockCompanion:
+                    await cubit.blockCompanion();
+                    break;
+
+                  case _PrivateHeaderMenuAction.deleteConversation:
+                    await cubit.deleteConversation();
+                    break;
+                }
+              },
+              itemBuilder: (context) {
+                return [
+                  PopupMenuItem(
+                    value: _PrivateHeaderMenuAction.toggleNotifications,
+                    child: Text(
+                      areNotificationsEnabled
+                          ? l10n.toggleNotificationsOff
+                          : l10n.toggleNotificationsOn,
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: _PrivateHeaderMenuAction.blockCompanion,
+                    child: Text(l10n.blockCompanion),
+                  ),
+                  PopupMenuItem(
+                    value: _PrivateHeaderMenuAction.deleteConversation,
+                    child: Text(l10n.deleteConversation),
+                  ),
+                ];
+              },
+            )
+          : null,
     );
   }
 }

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/features/auth/domain/domain.dart';
 import 'package:locnet_app/features/auth/presentation/presentation.dart';
+import 'package:locnet_app/features/settings/subfeatures/profile/presentation/screens/profile_settings_view.dart';
 import 'package:locnet_app/features/settings/subfeatures/profile/domain/profile_interactor.dart';
-import 'package:locnet_app/features/settings/presentation/components/components.dart';
-import 'package:locnet_app/uikit/uikit.dart';
 
 /// Profile section in Settings: compact profile view + inline editor.
 class ProfileSettingsContent extends StatefulWidget {
@@ -114,6 +114,8 @@ class _ProfileSettingsContentState extends State<ProfileSettingsContent> {
 
   Future<void> _saveProfile() async {
     if (_user == null || _isSubmitting) return;
+    final AuthInteractor authInteractor = context.read<AuthInteractor>();
+    final ProfileInteractor profileInteractor = _profileInteractor(context);
 
     final firstName = _firstNameController.text.trim();
     final lastName = _lastNameController.text.trim();
@@ -123,6 +125,7 @@ class _ProfileSettingsContentState extends State<ProfileSettingsContent> {
     String? firstNameError;
     String? lastNameError;
     String? usernameError;
+    String? screenError;
 
     try {
       ProfileDataValidator.validateName(firstName);
@@ -142,16 +145,36 @@ class _ProfileSettingsContentState extends State<ProfileSettingsContent> {
       usernameError = AppExceptionsTranslator.translate(context, e);
     }
 
+    if (usernameError == null && username != _user!.username) {
+      try {
+        final bool isAvailable = await authInteractor.validateRegisterLogin(
+          login: username,
+        );
+        if (!mounted) return;
+        if (!isAvailable) {
+          usernameError = AuthExceptionsTranslator.translate(
+            context,
+            AuthLoginAlreadyTakenException(message: 'Username already taken'),
+          );
+        }
+      } catch (e) {
+        if (!mounted) return;
+        screenError = AuthExceptionsTranslator.translate(context, e);
+      }
+    }
+
+    if (!mounted) return;
     setState(() {
       _firstNameError = firstNameError;
       _lastNameError = lastNameError;
       _usernameError = usernameError;
-      _screenError = null;
+      _screenError = screenError;
     });
 
     if (firstNameError != null ||
         lastNameError != null ||
-        usernameError != null) {
+        usernameError != null ||
+        screenError != null) {
       return;
     }
 
@@ -165,9 +188,7 @@ class _ProfileSettingsContentState extends State<ProfileSettingsContent> {
         description: description.isEmpty ? null : description,
       );
 
-      await _profileInteractor(
-        context,
-      ).udpateUserData(updatedUser: updatedUser);
+      await profileInteractor.udpateUserData(updatedUser: updatedUser);
       if (!mounted) return;
       setState(() {
         _user = updatedUser;
@@ -210,7 +231,7 @@ class _ProfileSettingsContentState extends State<ProfileSettingsContent> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    return _ProfileSectionBody(
+    return ProfileSettingsView(
       user: _user ?? user,
       isEditing: _isEditing,
       isSubmitting: _isSubmitting,
@@ -225,240 +246,6 @@ class _ProfileSettingsContentState extends State<ProfileSettingsContent> {
       onStartEdit: _startEditing,
       onCancelEdit: _cancelEditing,
       onSave: _saveProfile,
-    );
-  }
-}
-
-class _ProfileSectionBody extends StatelessWidget {
-  const _ProfileSectionBody({
-    required this.user,
-    required this.isEditing,
-    required this.isSubmitting,
-    required this.firstNameController,
-    required this.lastNameController,
-    required this.usernameController,
-    required this.descriptionController,
-    required this.firstNameError,
-    required this.lastNameError,
-    required this.usernameError,
-    required this.screenError,
-    required this.onStartEdit,
-    required this.onCancelEdit,
-    required this.onSave,
-  });
-
-  final User user;
-  final bool isEditing;
-  final bool isSubmitting;
-  final TextEditingController firstNameController;
-  final TextEditingController lastNameController;
-  final TextEditingController usernameController;
-  final TextEditingController descriptionController;
-  final String? firstNameError;
-  final String? lastNameError;
-  final String? usernameError;
-  final String? screenError;
-  final VoidCallback onStartEdit;
-  final VoidCallback onCancelEdit;
-  final VoidCallback onSave;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final textScheme = context.textScheme;
-    final colorScheme = context.colorScheme;
-
-    final initials = ProfileDataExtractor.extractUserInitials(user);
-    final fullName = ProfileDataExtractor.extractUserFullName(user);
-    final displayName = fullName.isNotEmpty ? fullName : user.username;
-
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SettingsSectionHeader(title: l10n.settingsMyProfile),
-          SettingsGroupCard(
-            title: 'Профиль',
-            children: [
-              if (!isEditing) ...[
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 6),
-                  child: Row(
-                    children: [
-                      CompanionAvatar(text: initials, size: 50),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              displayName,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: textScheme.headline.copyWith(
-                                color: colorScheme.onSurface,
-                                fontSize: 17,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              '@${user.username}',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: textScheme.label.copyWith(
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Divider(height: 1),
-                _ProfileInfoTile(title: l10n.firstName, value: user.firstName),
-                _ProfileInfoTile(title: l10n.lastName, value: user.lastName),
-                _ProfileInfoTile(
-                  title: l10n.username,
-                  value: '@${user.username}',
-                ),
-                _ProfileInfoTile(
-                  title: l10n.language,
-                  value: user.languageCode.toUpperCase(),
-                ),
-                _ProfileInfoTile(
-                  title: l10n.description,
-                  value: (user.description ?? '').trim().isEmpty
-                      ? l10n.unknownValue
-                      : user.description!.trim(),
-                ),
-                const Divider(height: 1),
-                SettingsActionTile(
-                  title: 'Редактировать профиль',
-                  leadingIcon: Icons.edit_outlined,
-                  onTap: onStartEdit,
-                ),
-              ] else ...[
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-                  child: Column(
-                    children: [
-                      CustomTextField(
-                        controller: firstNameController,
-                        labelText: l10n.firstName,
-                        textInputAction: TextInputAction.next,
-                        errorText: firstNameError,
-                        isActive: !isSubmitting,
-                      ),
-                      const SizedBox(height: 12),
-                      CustomTextField(
-                        controller: lastNameController,
-                        labelText: l10n.lastName,
-                        textInputAction: TextInputAction.next,
-                        errorText: lastNameError,
-                        isActive: !isSubmitting,
-                      ),
-                      const SizedBox(height: 12),
-                      CustomTextField(
-                        controller: usernameController,
-                        labelText: l10n.username,
-                        textInputAction: TextInputAction.next,
-                        errorText: usernameError,
-                        isActive: !isSubmitting,
-                      ),
-                      const SizedBox(height: 12),
-                      TextField(
-                        controller: descriptionController,
-                        enabled: !isSubmitting,
-                        minLines: 3,
-                        maxLines: 5,
-                        style: textScheme.body.copyWith(
-                          color: colorScheme.onSurface,
-                        ),
-                        decoration: InputDecoration(
-                          labelText: l10n.description,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                      ),
-                      if (screenError != null) ...[
-                        const SizedBox(height: 10),
-                        Text(
-                          screenError!,
-                          style: textScheme.caption.copyWith(
-                            color: colorScheme.error,
-                          ),
-                        ),
-                      ],
-                      const SizedBox(height: 14),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: OutlinedButton(
-                              onPressed: isSubmitting ? null : onCancelEdit,
-                              child: Text(l10n.cancel),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: AppPrimaryButton(
-                              text: l10n.apply,
-                              onPressed: onSave,
-                              isLoading: isSubmitting,
-                              isActive: !isSubmitting,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ],
-          ),
-          const SizedBox(height: 8),
-        ],
-      ),
-    );
-  }
-}
-
-class _ProfileInfoTile extends StatelessWidget {
-  const _ProfileInfoTile({required this.title, required this.value});
-
-  final String title;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final textScheme = context.textScheme;
-    final colorScheme = context.colorScheme;
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Text(
-              title,
-              style: textScheme.label.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Flexible(
-            child: Text(
-              value,
-              textAlign: TextAlign.right,
-              style: textScheme.body.copyWith(color: colorScheme.onSurface),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

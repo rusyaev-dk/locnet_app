@@ -41,6 +41,9 @@ class _GroupMessagesListState extends State<GroupMessagesList> {
     };
 
     final selectionCubit = context.watch<MessageSelectionCubit>();
+    final Map<String, GroupMessage> messagesById = <String, GroupMessage>{
+      for (final GroupMessage msg in widget.messages) msg.id: msg,
+    };
 
     return Listener(
       onPointerDown: (PointerDownEvent event) {
@@ -70,6 +73,19 @@ class _GroupMessagesListState extends State<GroupMessagesList> {
       },
       itemBuilder: (BuildContext context, int index) {
         final GroupMessage message = widget.messages[index];
+        final GroupMessage? repliedMessage =
+            message.replyToMessageId != null
+            ? messagesById[message.replyToMessageId!]
+            : null;
+        final String replyText = repliedMessage?.text ?? '';
+        final User? repliedSender = repliedMessage != null
+            ? participantsMap[repliedMessage.senderId]
+            : null;
+        final String? replyAuthor = repliedSender != null
+            ? (repliedSender.fullName.isNotEmpty
+                  ? repliedSender.fullName
+                  : repliedSender.username)
+            : null;
         const Duration baseDuration = Duration(milliseconds: 280);
         final Duration delay = Duration(milliseconds: 35 * index);
 
@@ -119,6 +135,8 @@ class _GroupMessagesListState extends State<GroupMessagesList> {
                       onReply: () => widget.onReply?.call(message),
                       onForward: () => widget.onForward?.call(message),
                       onDelete: () => widget.onDelete?.call(message),
+                      replyPreviewText: replyText,
+                      replyPreviewAuthor: replyAuthor,
                       onCopy: () async {
                         final String t = message.text.trim();
                         if (t.isNotEmpty) {
@@ -149,6 +167,8 @@ class _GroupMessagesListState extends State<GroupMessagesList> {
                             onReply: () => widget.onReply?.call(message),
                             onForward: () => widget.onForward?.call(message),
                             onDelete: () => widget.onDelete?.call(message),
+                            replyPreviewText: replyText,
+                            replyPreviewAuthor: replyAuthor,
                             onCopy: () async {
                               final String t = message.text.trim();
                               if (t.isNotEmpty) {

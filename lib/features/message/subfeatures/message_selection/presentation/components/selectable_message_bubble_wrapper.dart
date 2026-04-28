@@ -19,6 +19,8 @@ class SelectableMessageBubbleWrapper extends StatelessWidget {
     this.sender,
     this.forceLeft = false,
     this.showDeliveryStatus = true,
+    this.replyPreviewText,
+    this.replyPreviewAuthor,
     super.key,
   });
 
@@ -30,6 +32,8 @@ class SelectableMessageBubbleWrapper extends StatelessWidget {
   final String? sender;
   final bool forceLeft;
   final bool showDeliveryStatus;
+  final String? replyPreviewText;
+  final String? replyPreviewAuthor;
 
   final VoidCallback onEnterSelectionMode;
   final VoidCallback onToggleSelection;
@@ -65,6 +69,8 @@ class SelectableMessageBubbleWrapper extends StatelessWidget {
           sender: sender,
           forceLeft: forceLeft,
           showDeliveryStatus: showDeliveryStatus,
+          replyPreviewText: replyPreviewText,
+          replyPreviewAuthor: replyPreviewAuthor,
           onReply: onReply,
           onForward: onForward,
           onDelete: onDelete,

@@ -29,17 +29,18 @@ class HttpPrivateMessageRepo implements IPrivateMessageRepo {
   @override
   Future<PrivateMessage> sendMessage({required PrivateMessage message}) async {
     try {
+      final String? replyToMessageId = _normalizeReplyToMessageId(
+        message.replyToMessageId,
+      );
       final Map<String, dynamic> body = <String, dynamic>{
-        'conversationId': message.conversationId,
         'text': message.text,
         if (message.clientMessageId != null)
           'clientMessageId': message.clientMessageId,
-        if (message.replyToMessageId != null)
-          'replyToMessageId': message.replyToMessageId,
+        if (replyToMessageId != null) 'replyToMessageId': replyToMessageId,
       };
 
       final httpResponse = await _httpClient.post(
-        path: ApiEndpoints.privateMessages,
+        path: ApiEndpoints.privateConversationMessages(message.conversationId),
         data: body,
       );
 
@@ -226,5 +227,16 @@ class HttpPrivateMessageRepo implements IPrivateMessageRepo {
     } catch (_) {
       return null;
     }
+  }
+
+  String? _normalizeReplyToMessageId(String? value) {
+    if (value == null) {
+      return null;
+    }
+    final String normalized = value.trim();
+    if (normalized.isEmpty) {
+      return null;
+    }
+    return normalized;
   }
 }

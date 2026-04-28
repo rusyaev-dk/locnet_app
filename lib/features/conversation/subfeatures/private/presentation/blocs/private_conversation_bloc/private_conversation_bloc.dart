@@ -59,30 +59,20 @@ class PrivateConversationBloc
           .loadMessagesPage(conversationId: event.conversationId);
 
       final User cachedUser = await _userInteractor.getCachedUser();
-      final List<PrivateConversation> conversations =
-          await _privateConversationInteractor.listConversations();
-      final PrivateConversation conversation = conversations.firstWhere(
-        (PrivateConversation privateConversation) =>
-            privateConversation.conversationId == event.conversationId,
-        orElse: () => PrivateConversation(
-          conversationId: event.conversationId,
-          user1Id: cachedUser.userId,
-          user2Id: event.initialCompanion?.userId ?? '',
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-          isDeleted: false,
-        ),
-      );
       final User companion =
           event.initialCompanion ??
-          (conversation.user1Id.isNotEmpty && conversation.user2Id.isNotEmpty
-              ? await _resolveCompanion(
-                  conversation: conversation,
-                  currentUserId: cachedUser.userId,
-                )
-              : await _privateConversationInteractor.getCompanion(
-                  conversationId: event.conversationId,
-                ));
+          await _privateConversationInteractor.getCompanion(
+            conversationId: event.conversationId,
+          );
+      final DateTime now = DateTime.now();
+      final PrivateConversation conversation = PrivateConversation(
+        conversationId: event.conversationId,
+        user1Id: cachedUser.userId,
+        user2Id: companion.userId,
+        createdAt: now,
+        updatedAt: now,
+        isDeleted: false,
+      );
 
       emit(
         PrivateConversationLoadedState(
@@ -116,6 +106,39 @@ class PrivateConversationBloc
       final User companion = await _userInteractor.getUserById(
         userId: event.companionId,
       );
+
+      final User currentUser = await _userInteractor.getCachedUser();
+      final List<PrivateConversation> conversations =
+          await _privateConversationInteractor.listConversations();
+      final PrivateConversation? existingConversation = conversations
+          .where(
+            (PrivateConversation conversation) =>
+                !conversation.isDeleted &&
+                ((conversation.user1Id == currentUser.userId &&
+                        conversation.user2Id == companion.userId) ||
+                    (conversation.user2Id == currentUser.userId &&
+                        conversation.user1Id == companion.userId)),
+          )
+          .firstOrNull;
+
+      if (existingConversation != null) {
+        final List<PrivateMessage> messages =
+            await _privateConversationInteractor.loadMessagesPage(
+              conversationId: existingConversation.conversationId,
+            );
+
+        emit(
+          PrivateConversationLoadedState(
+            messages: messages,
+            conversation: existingConversation,
+            companionId: companion.userId,
+            companion: companion,
+            pendingNavigationConversationId: existingConversation.conversationId,
+          ),
+        );
+        return;
+      }
+
       emit(PrivateConversationDraftState(companion: companion));
     } catch (e, st) {
       _logger.exception(e, st);
@@ -135,6 +158,9 @@ class PrivateConversationBloc
     Emitter<PrivateConversationState> emit,
   ) async {
     final String normalizedText = event.text.trim();
+    final String? replyToMessageId = _normalizeReplyToMessageId(
+      event.replyToMessageId,
+    );
     if (normalizedText.isEmpty) {
       return;
     }
@@ -166,7 +192,7 @@ class PrivateConversationBloc
           updatedAt: now,
           isDeleted: false,
           deletedById: null,
-          replyToMessageId: event.replyToMessageId,
+          replyToMessageId: replyToMessageId,
           deliveryStatus: MessageDeliveryStatus.sending,
           clientMessageId: clientMessageId,
           isPinned: false,
@@ -204,7 +230,7 @@ class PrivateConversationBloc
         updatedAt: now,
         isDeleted: false,
         deletedById: null,
-        replyToMessageId: event.replyToMessageId,
+        replyToMessageId: replyToMessageId,
         deliveryStatus: MessageDeliveryStatus.sending,
         clientMessageId: clientMessageId,
         isPinned: false,
@@ -373,14 +399,15 @@ class PrivateConversationBloc
     });
   }
 
-  Future<User> _resolveCompanion({
-    required PrivateConversation conversation,
-    required String currentUserId,
-  }) async {
-    final String companionId = conversation.user1Id == currentUserId
-        ? conversation.user2Id
-        : conversation.user1Id;
-    return await _userInteractor.getUserById(userId: companionId);
+  String? _normalizeReplyToMessageId(String? value) {
+    if (value == null) {
+      return null;
+    }
+    final String normalized = value.trim();
+    if (normalized.isEmpty) {
+      return null;
+    }
+    return normalized;
   }
 
   @override

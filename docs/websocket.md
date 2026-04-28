@@ -1,9 +1,18 @@
+# WebSocket для фронтенда (Gateway, приватный чат)
+
 Документ для интеграции **real-time уведомлений** о личных сообщениях. Полный REST (отправка, история, ошибки) — в [FRONTEND_GATEWAY_API.md](./FRONTEND_GATEWAY_API.md).
+
+### Главная страница «как в Telegram»
+
+Целевой UX — **один экран со списком всех разговоров** (лички, позже группы и каналы), где строки **живут обновлениями** без полного рефетча: новый чат, новое сообщение, превью текста, порядок по времени.
+
+**Сейчас в gateway реализован только блок личных чатов** (`/private-chats` + события ниже). **Группы и каналы** в API поиска пока пустые резервы; для них понадобятся отдельные сервисы и **свои** Socket.IO-события (по тому же принципу: персональная комната `user_<id>`, push после успешного HTTP). Клиент главной может уже сейчас держать **один** сокет и вешать обработчики на `private_*`; позже рядом добавятся, например, `group_*` / `channel_*`.
 
 **Кратко:**
 
 - Сокет нужен только чтобы **слушать** события от сервера (`socket.on`).
-- **Создание, правка и удаление сообщений** делайте **только через HTTP**. После успешного ответа gateway сам рассылает событие в Socket.IO — отдельно `emit` для этого не предусмотрено.
+- **Создание, правка и удаление сообщений** делайте **только через HTTP**. После успешного ответа gateway сам рассылает события в Socket.IO — отдельно `emit` с клиента для этого не предусмотрено.
+- **Список личных чатов на главной:** подпишитесь на **`private_conversation_upsert`** (появление/обновление диалога) и на **`new_private_message`** (превью последнего сообщения и сортировка по **`conversationUpdatedAt`**).
 - После успешного `connect` сервер уже поместил сокет в персональную комнату; **ручного `join` с клиента не требуется** и отдельного события «подписаться на диалог» нет.
 
 ---
@@ -75,7 +84,7 @@ const socket = io('http://localhost:3000', {
 
 | Событие | Что делать |
 |--------|------------|
-| **`connect`** | Считать канал готовым к приёму `new_private_message` и др. Можно снять флаг «переподключаемся». |
+| **`connect`** | Считать канал готовым к приёму `private_conversation_upsert`, `new_private_message` и др. Можно снять флаг «переподключаемся». |
 | **`disconnect`** | По желанию: индикатор офлайна, отложенный рефетч списков при возврате в `connect`. |
 | **`connect_error`** | Сеть, неверный URL, CORS, недоступный сервер — до успешного handshake. Показать ошибку / повтор с backoff. |
 | **`error`** | Отказ при подключении (часто невалидный или просроченный JWT). Тело см. ниже; соединение обычно закрывается. |
@@ -92,8 +101,14 @@ const socket = io('http://localhost:3000', {
 Все имена совпадают с [`ws-events.constant.ts`](../apps/gateway-service/src/messenger/constants/ws-events.constant.ts).
 
 ```javascript
+socket.on('private_conversation_upsert', (payload) => {
+  // Список чатов: вставить или обновить карточку по payload.conversationId
+  // Собеседник: тот из user1Id / user2Id, кто не равен текущему user.id
+});
+
 socket.on('new_private_message', (payload) => {
-  // Добавить/обновить сообщение в state для payload.conversationId
+  // Лента чата: сообщение по conversationId
+  // Список чатов: обновить превью (text, senderId, createdAt), поднять чат вверх по payload.conversationUpdatedAt
 });
 
 socket.on('private_message_edited', (payload) => {
@@ -107,25 +122,31 @@ socket.on('private_message_deleted', (payload) => {
 
 | Событие | Когда приходит | Действие в UI |
 |--------|----------------|---------------|
-| **`new_private_message`** | После успешного `POST /private-chats/messages` | Вставить сообщение в ленту; по `senderId` отличать входящее/исходящее. |
-| **`private_message_edited`** | После успешного `PATCH /private-chats/messages/:messageId` | Обновить текст/`editedAt` для `messageId` (редактировать может только автор). |
-| **`private_message_deleted`** | После успешного `DELETE .../messages/:messageId?conversationId=...` | Soft-delete в UI; при необходимости уточнить поля через `GET .../messages`. |
+| **`private_conversation_upsert`** | После успешного **`POST /private-chats/conversations`** (создание или восстановление), **`PUT .../conversations/:id`** (в т.ч. soft-delete), **`DELETE .../conversations/:id`** | Обновить или добавить строку в списке чатов: `conversationId`, `user1Id`, `user2Id`, `createdAt`, `updatedAt`, `isDeleted`. Оба участника получают одно и то же тело (как в gRPC `ConversationResponse`). |
+| **`new_private_message`** | После успешного `POST /private-chats/conversations/:conversationId/messages` | Вставить сообщение в ленту; по `senderId` отличать входящее/исходящее. На главной: обновить превью и сортировку (`conversationUpdatedAt`, `text`, `createdAt`). |
+| **`private_message_edited`** | После успешного `PATCH /private-chats/conversations/:conversationId/messages/:messageId` | Обновить текст/`editedAt` для `messageId` (редактировать может только автор). Превью в списке, если это последнее сообщение, можно обновить по этому событию или перезапросить плитки. |
+| **`private_message_deleted`** | После успешного `DELETE /private-chats/conversations/:conversationId/messages/:messageId` | Soft-delete в UI; при необходимости уточнить поля через `GET .../messages`. |
+
+Для этих событий в payload может приходить опциональное поле **`correlationId`** (UUID v4) — то же значение, что в заголовке **`X-Correlation-Id`** HTTP-ответа, который инициировал рассылку. Его можно использовать для связки REST и push в логах/аналитике; клиенты без поддержки поля могут игнорировать его.
 
 Событие **`error`** при отказе в подключении:
 
 ```json
 {
   "message": "Unauthorized connection",
-  "details": "jwt expired"
+  "details": "jwt expired",
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
 }
 ```
+
+Поле **`correlationId`** здесь генерируется отдельно на попытку подключения (нет привязки к HTTP-запросу).
 
 ---
 
 ## 4. Гонки, HTTP и дедупликация
 
 - Push уходит **после** успешного HTTP. Если в этот момент сокет **ещё не подключён**, событие **не буферизуется** для клиента — его вы не получите позже.
-- **Источник истины при открытии экрана чата** — `GET /private-chats/:conversationId/messages` (и ответ `POST` при отправке). Сокет дополняет live-обновлениями.
+- **Источник истины при открытии экрана чата** — `GET /private-chats/conversations/:conversationId/messages` (и ответ `POST` при отправке). Сокет дополняет live-обновлениями.
 - **Оптимистичный UI:** привяжите черновик к `clientMessageId`, после ответа `POST` подставьте `messageId`. Со своей же отправки вы можете получить **`new_private_message` с тем же `messageId`** — храните сообщения по **`messageId`** и не дублируйте запись.
 
 ---
@@ -134,11 +155,13 @@ socket.on('private_message_deleted', (payload) => {
 
 Типы на сервере: [`ws-message.dto.ts`](../apps/gateway-service/src/messenger/dtos/ws-message.dto.ts). Даты часто приходят **строками в Go-формате**; опциональные поля иногда как **пустые строки** `""` — закладывайте парсинг/проверку на пустоту.
 
-**`new_private_message`** — ключевые поля: `messageId`, `clientMessageId`, `conversationId`, `senderId`, `text`, `hasAttachments`, `attachments`, `replyToMessageId`, `isPinned`, `editedAt`, `isDeleted`, `deletedAt`, `createdAt`, `updatedAt`, `deliveryStatus` (аналог `status` в HTTP-ответе отправки).
+**`private_conversation_upsert`:** `conversationId`, `user1Id`, `user2Id`, `createdAt`, `updatedAt`, `isDeleted`, опционально **`correlationId`**.
 
-**`private_message_edited`:** `messageId`, `conversationId`, `senderId`, `text`, `editedAt`, `updatedAt`, `clientMessageId` (опционально).
+**`new_private_message`** — ключевые поля: `messageId`, `clientMessageId`, `conversationId`, `senderId`, `text`, `hasAttachments`, `attachments`, `replyToMessageId`, `isPinned`, `editedAt`, `isDeleted`, `deletedAt`, `createdAt`, `updatedAt`, `deliveryStatus` (аналог `status` в HTTP-ответе отправки), опционально **`conversationUpdatedAt`** (время строки диалога после отправки — для сортировки списка), опционально **`correlationId`**.
 
-**`private_message_deleted`:** `messageId`, `conversationId`, `deletedById`, `deletedAt`, `isDeleted`.
+**`private_message_edited`:** `messageId`, `conversationId`, `senderId`, `text`, `editedAt`, `updatedAt`, `clientMessageId` (опционально), опционально **`correlationId`**.
+
+**`private_message_deleted`:** `messageId`, `conversationId`, `deletedById`, `deletedAt`, `isDeleted`, опционально **`correlationId`**.
 
 Компактные примеры:
 
@@ -158,7 +181,21 @@ socket.on('private_message_deleted', (payload) => {
   "deletedAt": "",
   "createdAt": "2026-03-25 15:02:32.271023728 +0000 UTC",
   "updatedAt": "2026-03-25 15:02:32.271023728 +0000 UTC",
-  "deliveryStatus": "SENT"
+  "deliveryStatus": "SENT",
+  "conversationUpdatedAt": "2026-03-25 15:02:32.271023728 +0000 UTC",
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+```json
+{
+  "conversationId": "80068ed0-e7fc-4e33-a4a8-3d0cc3965de2",
+  "user1Id": "fea175c6-a326-4400-bcc2-ce73b88634c5",
+  "user2Id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "createdAt": "2026-03-25 14:00:00.000000000 +0000 UTC",
+  "updatedAt": "2026-03-25 15:02:32.271023728 +0000 UTC",
+  "isDeleted": false,
+  "correlationId": "550e8400-e29b-41d4-a716-446655440001"
 }
 ```
 
@@ -192,7 +229,14 @@ socket.on('private_message_deleted', (payload) => {
 
 | Действие | HTTP |
 |----------|------|
-| Новое сообщение | `POST /private-chats/messages` |
-| Редактирование | `PATCH /private-chats/messages/:messageId` |
-| Удаление | `DELETE /private-chats/messages/:messageId?conversationId=<uuid>` |
+| Новое сообщение | `POST /private-chats/conversations/:conversationId/messages` |
+| Редактирование | `PATCH /private-chats/conversations/:conversationId/messages/:messageId` |
+| Удаление | `DELETE /private-chats/conversations/:conversationId/messages/:messageId` |
 
+---
+
+## 7. Масштабирование и отладка
+
+Между инстансами gateway используется **Redis**-адаптер Socket.IO: клиенту всё равно, к какому инстансу пришёл HTTP — push дойдёт в нужную комнату.
+
+Реализация: [`chat.gateway.ts`](../apps/gateway-service/src/messenger/chat.gateway.ts). Скрипты для проверки: [`scripts/ws-sniff.js`](../scripts/ws-sniff.js), [`scripts/ws-sniff-edit-delete.js`](../scripts/ws-sniff-edit-delete.js), сценарий [`scripts/e2e-full-flow.sh`](../scripts/e2e-full-flow.sh).

@@ -34,6 +34,9 @@ class _PrivateMessagesListState extends State<PrivateMessagesList> {
   @override
   Widget build(BuildContext context) {
     final selectionCubit = context.watch<MessageSelectionCubit>();
+    final Map<String, PrivateMessage> messagesById = <String, PrivateMessage>{
+      for (final PrivateMessage msg in widget.messages) msg.id: msg,
+    };
 
     return Listener(
       onPointerDown: (PointerDownEvent event) {
@@ -63,6 +66,10 @@ class _PrivateMessagesListState extends State<PrivateMessagesList> {
       },
       itemBuilder: (BuildContext context, int index) {
         final PrivateMessage message = widget.messages[index];
+        final String replyText =
+            message.replyToMessageId != null
+            ? (messagesById[message.replyToMessageId!]?.text ?? '')
+            : '';
         const Duration baseDuration = Duration(milliseconds: 280);
         final Duration delay = Duration(milliseconds: 35 * index);
 
@@ -104,6 +111,7 @@ class _PrivateMessagesListState extends State<PrivateMessagesList> {
                 onReply: () => widget.onReply?.call(message),
                 onForward: () => widget.onForward?.call(message),
                 onDelete: () => widget.onDelete?.call(message),
+                replyPreviewText: replyText,
                 onCopy: () async {
                   final String text = message.text.trim();
                   if (text.isNotEmpty) {

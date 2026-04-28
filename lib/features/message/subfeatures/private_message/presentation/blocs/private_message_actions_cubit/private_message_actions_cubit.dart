@@ -32,6 +32,9 @@ class PrivateMessageActionsCubit extends Cubit<PrivateMessageActionsState> {
     String? replyToMessageId,
   }) async {
     final String normalizedText = text?.trim() ?? '';
+    final String? normalizedReplyToMessageId = _normalizeReplyToMessageId(
+      replyToMessageId,
+    );
     if (normalizedText.isEmpty) {
       return;
     }
@@ -68,7 +71,7 @@ class PrivateMessageActionsCubit extends Cubit<PrivateMessageActionsState> {
         updatedAt: now,
         isDeleted: false,
         deletedById: null,
-        replyToMessageId: replyToMessageId,
+        replyToMessageId: normalizedReplyToMessageId,
         deliveryStatus: MessageDeliveryStatus.sending,
         isPinned: false,
         editedAt: null,
@@ -264,5 +267,16 @@ class PrivateMessageActionsCubit extends Cubit<PrivateMessageActionsState> {
             : null,
       ),
     );
+  }
+
+  String? _normalizeReplyToMessageId(String? value) {
+    if (value == null) {
+      return null;
+    }
+    final String normalized = value.trim();
+    if (normalized.isEmpty) {
+      return null;
+    }
+    return normalized;
   }
 }

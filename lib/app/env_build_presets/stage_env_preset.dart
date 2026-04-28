@@ -53,7 +53,14 @@ final class StageEnvPreset implements IAppEnvPreset {
 
   @override
   IConversationsListRepo createConversationsListRepo() {
-    return HttpConversationsListRepo(httpClient: _httpClient);
+    return HttpConversationsListRepo(
+      httpClient: _httpClient,
+      sessionCacheRepo: LocalSessionCacheRepo(
+        storage: _appScope.storageAggregator.secureStorage,
+      ),
+      logger: _appScope.logger,
+      socketBaseUrl: _appScope.apiConfig.baseUrl,
+    );
   }
 
   @override

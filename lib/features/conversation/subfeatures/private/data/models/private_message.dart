@@ -46,7 +46,10 @@ class PrivateMessageDto extends Equatable {
               .toList(growable: false)
         : <PrivateMessageAttachmentDto>[];
 
-    final String? editedAtRaw = json['editedAt'] as String?;
+    final String? editedAtRaw =
+        (json['editedAt'] ?? json['edited_at']) as String?;
+    final String? replyToMessageId =
+        (json['replyToMessageId'] ?? json['reply_to_message_id']) as String?;
 
     return PrivateMessageDto(
       id: (json['id'] ?? json['messageId']) as String,
@@ -61,7 +64,7 @@ class PrivateMessageDto extends Equatable {
       isDeleted: (json['isDeleted'] ?? false) as bool,
       isPinned: (json['isPinned'] ?? false) as bool,
       deletedById: json['deletedById'] as String?,
-      replyToMessageId: json['replyToMessageId'] as String?,
+      replyToMessageId: replyToMessageId,
       editedAt: editedAtRaw != null && editedAtRaw.isNotEmpty
           ? DateTimeFormatter.parse(editedAtRaw)
           : null,

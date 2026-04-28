@@ -244,11 +244,33 @@ class HttpPrivateConversationRepo implements IPrivateConversationRepo {
           continue;
         }
 
-        // Backend history items omit conversationId (it's known from the
-        // request path); inject it so the DTO parser is happy.
+        final DateTime now = DateTime.now().toUtc();
+        final String fallbackTimestamp = now.toIso8601String();
+
+        // Backend history items can differ from DTO shape:
+        // - omit conversationId (known from request path)
+        // - use Go-like timestamps
+        // - use attachment history projection (mediaId/mimeType/...)
         final Map<String, dynamic> normalized = <String, dynamic>{
           ...message,
+          'id': message['id'] ?? message['messageId'] ?? '',
+          'messageId': message['messageId'] ?? message['id'] ?? '',
           'conversationId': message['conversationId'] ?? conversationId,
+          'createdAt':
+              _normalizeDateValue(message['createdAt']) ??
+              _normalizeDateValue(message['updatedAt']) ??
+              fallbackTimestamp,
+          'updatedAt':
+              _normalizeDateValue(message['updatedAt']) ??
+              _normalizeDateValue(message['createdAt']) ??
+              fallbackTimestamp,
+          'editedAt': _normalizeDateValue(message['editedAt']) ?? '',
+          'deletedAt': _normalizeDateValue(message['deletedAt']) ?? '',
+          'attachments': _normalizeHistoryAttachments(
+            raw: message['attachments'],
+            messageId: (message['id'] ?? message['messageId'] ?? '').toString(),
+            fallbackTimestamp: fallbackTimestamp,
+          ),
         };
 
         final PrivateMessageDto messageDto = PrivateMessageDto.fromJson(
@@ -499,5 +521,41 @@ class HttpPrivateConversationRepo implements IPrivateConversationRepo {
     } catch (_) {
       return null;
     }
+  }
+
+  List<Map<String, dynamic>> _normalizeHistoryAttachments({
+    required Object? raw,
+    required String messageId,
+    required String fallbackTimestamp,
+  }) {
+    if (raw is! List) {
+      return <Map<String, dynamic>>[];
+    }
+
+    final List<Map<String, dynamic>> normalized = <Map<String, dynamic>>[];
+    for (int index = 0; index < raw.length; index++) {
+      final dynamic item = raw[index];
+      if (item is! Map) {
+        continue;
+      }
+
+      final Map<String, dynamic> itemMap = Map<String, dynamic>.from(item);
+      final String id = (itemMap['id'] ?? itemMap['attachmentId'] ?? itemMap['mediaId'] ?? '').toString();
+      final String fileId = (itemMap['fileId'] ?? itemMap['mediaId'] ?? '').toString();
+      if (id.isEmpty || fileId.isEmpty) {
+        continue;
+      }
+
+      normalized.add(<String, dynamic>{
+        'id': id,
+        'messageId': messageId,
+        'fileId': fileId,
+        'order': itemMap['order'] is int ? itemMap['order'] as int : index,
+        'createdAt':
+            _normalizeDateValue(itemMap['createdAt']) ?? fallbackTimestamp,
+      });
+    }
+
+    return normalized;
   }
 }
