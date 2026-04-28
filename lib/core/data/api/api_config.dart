@@ -1,7 +1,8 @@
 final class ApiConfig {
-  ApiConfig({required this.baseUrl});
+  ApiConfig({required this.baseUrl, required this.baseSocketUrl});
 
   final String baseUrl;
+  final String baseSocketUrl;
 }
 
 abstract class ApiEndpoints {
@@ -28,6 +29,13 @@ abstract class ApiEndpoints {
       "/private-chats/conversations/$conversationId/messages";
 
   static const String conversationsList = "/private-chats/conversations/tiles";
+
+  // Media
+  static const String mediaInit = "/media/init";
+  static String media(String mediaId) => "/media/$mediaId";
+  static String mediaComplete(String mediaId) => "/media/$mediaId/complete";
+  static String mediaMetadata(String mediaId) => "/media/$mediaId/metadata";
+  static String mediaDownload(String mediaId) => "/media/$mediaId/download";
 
   /// Send a private message (POST). The conversationId is in the path.
   static String privateConversationMessage(

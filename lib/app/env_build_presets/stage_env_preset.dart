@@ -55,11 +55,11 @@ final class StageEnvPreset implements IAppEnvPreset {
   IConversationsListRepo createConversationsListRepo() {
     return HttpConversationsListRepo(
       httpClient: _httpClient,
+      apiConfig: _appScope.apiConfig,
       sessionCacheRepo: LocalSessionCacheRepo(
         storage: _appScope.storageAggregator.secureStorage,
       ),
       logger: _appScope.logger,
-      socketBaseUrl: _appScope.apiConfig.baseUrl,
     );
   }
 
@@ -81,6 +81,11 @@ final class StageEnvPreset implements IAppEnvPreset {
   }
 
   @override
+  IMediaRepo createMediaRepo() {
+    return HttpMediaRepo(httpClient: _httpClient);
+  }
+
+  @override
   IGroupMessageRepo createGroupMessageRepo() {
     return MockGroupMessageRepo(backendStorage: MockInMemoryBackend());
   }
@@ -94,11 +99,11 @@ final class StageEnvPreset implements IAppEnvPreset {
   IPrivateConversationRepo createPrivateConversationRepo() {
     return HttpPrivateConversationRepo(
       httpClient: _httpClient,
+      apiConfig: _appScope.apiConfig,
       sessionCacheRepo: LocalSessionCacheRepo(
         storage: _appScope.storageAggregator.secureStorage,
       ),
       logger: _appScope.logger,
-      socketBaseUrl: _appScope.apiConfig.baseUrl,
     );
   }
 

@@ -127,6 +127,7 @@ class AppRunner {
           settings: const TalkerDioLoggerSettings(
             printRequestHeaders: true,
             printResponseHeaders: true,
+            printRequestData: false,
           ),
         ),
       );
@@ -146,7 +147,10 @@ class AppRunner {
       localKeyValueStorage: localKeyValueStorage,
     );
 
-    final apiConfig = ApiConfig(baseUrl: dotenv.env["BASE_URL"]!);
+    final apiConfig = ApiConfig(
+      baseUrl: dotenv.env["BASE_URL"]!,
+      baseSocketUrl: dotenv.env["BASE_SOCKET_URL"]!,
+    );
     final appConfig = AppConfig();
 
     return AppScope(

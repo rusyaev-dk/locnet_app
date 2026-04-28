@@ -3,43 +3,36 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/side_panel/presentation/presentation.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
+import 'package:locnet_app/features/side_panel/presentation/presentation.dart';
 
-class PanelSidebar extends StatefulWidget {
-  const PanelSidebar({required this.currentLocation, super.key});
+class PanelSidebar extends StatelessWidget {
+  const PanelSidebar({super.key});
 
-  final String currentLocation;
-
-  @override
-  State<PanelSidebar> createState() => _PanelSidebarState();
-}
-
-class _PanelSidebarState extends State<PanelSidebar> {
-  bool _isSelected(String path) {
+  bool _isSelected({required String currentLocation, required String path}) {
     if (path == AppRoutes.conversations) {
-      return widget.currentLocation == AppRoutes.conversations ||
-          widget.currentLocation.startsWith('${AppRoutes.conversations}/');
+      return currentLocation == AppRoutes.conversations ||
+          currentLocation.startsWith('${AppRoutes.conversations}/');
     }
 
-    return widget.currentLocation == path;
+    return currentLocation == path;
   }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
+    final spacing = context.designTokens.spacing;
     final l10n = context.l10n;
+    final String currentLocation = GoRouterState.of(context).uri.path;
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeOutCubic,
-      decoration: BoxDecoration(color: colorScheme.secondary),
+    return ColoredBox(
+      color: colorScheme.secondary,
       child: IntrinsicWidth(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 42),
+            SizedBox(height: spacing.xxl + spacing.sm - spacing.xxs / 2),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
@@ -49,7 +42,10 @@ class _PanelSidebarState extends State<PanelSidebar> {
                     SidebarItem(
                       label: l10n.conversations,
                       icon: Icons.chat_bubble_outline,
-                      isSelected: _isSelected(AppRoutes.conversations),
+                      isSelected: _isSelected(
+                        currentLocation: currentLocation,
+                        path: AppRoutes.conversations,
+                      ),
                       onTap: () {
                         GoRouter.of(context).go(AppRoutes.conversations);
                       },
@@ -61,7 +57,10 @@ class _PanelSidebarState extends State<PanelSidebar> {
             SidebarItem(
               label: l10n.settings,
               icon: Icons.settings_outlined,
-              isSelected: _isSelected(AppRoutes.settings),
+              isSelected: _isSelected(
+                currentLocation: currentLocation,
+                path: AppRoutes.settings,
+              ),
               onTap: () {
                 showGeneralDialog(
                   context: context,
@@ -70,7 +69,7 @@ class _PanelSidebarState extends State<PanelSidebar> {
                 );
               },
             ),
-            const SizedBox(height: 35),
+            SizedBox(height: spacing.xxl + spacing.xs - spacing.xxs / 4),
           ],
         ),
       ),

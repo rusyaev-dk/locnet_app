@@ -1,8 +1,10 @@
 // message_bubble.dart
 import 'dart:math' show min;
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/features/conversation/subfeatures/channel/channel.dart';
@@ -63,6 +65,8 @@ class _MessageBubbleState extends State<MessageBubble> {
 
   final MessageContextMenuController _menuController =
       MessageContextMenuController();
+  final Map<String, Future<MediaDownloadInfo>> _downloadInfoCache =
+      <String, Future<MediaDownloadInfo>>{};
 
   @override
   void dispose() {
@@ -224,8 +228,10 @@ class _MessageBubbleState extends State<MessageBubble> {
               child: IntrinsicWidth(
                 child: Container(
                   margin: margin,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: bubbleColor,
                     borderRadius: borderRadius,
@@ -244,8 +250,9 @@ class _MessageBubbleState extends State<MessageBubble> {
                               style: textScheme.label.copyWith(
                                 color: isMine
                                     ? colorScheme.onSurface.withAlpha(200)
-                                    : colorScheme.onPrimaryContainer
-                                        .withAlpha(230),
+                                    : colorScheme.onPrimaryContainer.withAlpha(
+                                        230,
+                                      ),
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -298,9 +305,10 @@ class _MessageBubbleState extends State<MessageBubble> {
                                 overflow: TextOverflow.ellipsis,
                                 style: messageTextStyle.copyWith(
                                   fontSize: 12.5,
-                                  color: (messageTextStyle.color ??
-                                          colorScheme.onSurface)
-                                      .withAlpha(180),
+                                  color:
+                                      (messageTextStyle.color ??
+                                              colorScheme.onSurface)
+                                          .withAlpha(180),
                                 ),
                               ),
                             ],
@@ -318,6 +326,8 @@ class _MessageBubbleState extends State<MessageBubble> {
                             onLinkTap: _onMessageLinkTap,
                           ),
                         ),
+                      _buildAttachments(messageTextStyle: messageTextStyle),
+                      if (_hasAttachments()) const SizedBox(height: 6),
                       const SizedBox(height: 4),
                       Align(
                         alignment: Alignment.centerRight,
@@ -338,7 +348,8 @@ class _MessageBubbleState extends State<MessageBubble> {
                               if (_getDeliveryStatus() != null)
                                 MessageDeliveryStatusIndicator(
                                   deliveryStatus: _getDeliveryStatus()!,
-                                  color: metaTextStyle.color ??
+                                  color:
+                                      metaTextStyle.color ??
                                       colorScheme.onSurface,
                                   size: 14,
                                 ),
@@ -395,6 +406,115 @@ class _MessageBubbleState extends State<MessageBubble> {
     if (m is GroupMessage) return m.deliveryStatus;
     if (m is ChannelPublication) return m.deliveryStatus;
     return null;
+  }
+
+  bool _hasAttachments() {
+    final Object m = widget.message;
+    if (m is PrivateMessage) {
+      return m.attachments.isNotEmpty;
+    }
+    return false;
+  }
+
+  Widget _buildAttachments({required TextStyle messageTextStyle}) {
+    final Object m = widget.message;
+    if (m is! PrivateMessage || m.attachments.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: m.attachments
+          .map((PrivateMessageAttachment attachment) {
+            final String mediaId = attachment.fileId;
+            final bool isImage = (attachment.fileType ?? '').startsWith(
+              'image',
+            );
+
+            if (!isImage) {
+              return Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: Text(
+                  'Attachment: $mediaId',
+                  style: messageTextStyle.copyWith(fontSize: 12.5),
+                ),
+              );
+            }
+
+            return Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: FutureBuilder<MediaDownloadInfo>(
+                future: _resolveDownloadInfo(
+                  mediaId: mediaId,
+                  conversationId: m.conversationId,
+                ),
+                builder:
+                    (
+                      BuildContext context,
+                      AsyncSnapshot<MediaDownloadInfo> snapshot,
+                    ) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const AspectRatio(
+                          aspectRatio: 16 / 9,
+                          child: Center(
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        );
+                      }
+
+                      if (snapshot.hasError || !snapshot.hasData) {
+                        return Text(
+                          'Failed to load attachment',
+                          style: messageTextStyle.copyWith(fontSize: 12.5),
+                        );
+                      }
+
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: CachedNetworkImage(
+                          imageUrl: snapshot.data!.downloadUrl,
+                          fit: BoxFit.cover,
+                          placeholder: (BuildContext context, String url) =>
+                              const AspectRatio(
+                                aspectRatio: 16 / 9,
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                ),
+                              ),
+                          errorWidget:
+                              (
+                                BuildContext context,
+                                String url,
+                                Object error,
+                              ) => const AspectRatio(
+                                aspectRatio: 16 / 9,
+                                child: Center(
+                                  child: Icon(Icons.broken_image_outlined),
+                                ),
+                              ),
+                        ),
+                      );
+                    },
+              ),
+            );
+          })
+          .toList(growable: false),
+    );
+  }
+
+  Future<MediaDownloadInfo> _resolveDownloadInfo({
+    required String mediaId,
+    required String conversationId,
+  }) {
+    return _downloadInfoCache.putIfAbsent(mediaId, () {
+      return context.read<MediaInteractor>().getDownloadInfo(
+        mediaId: mediaId,
+        scope: 'private_conversation',
+        scopeId: conversationId,
+      );
+    });
   }
 
   void _onMessageLinkTap(Uri uri) async {

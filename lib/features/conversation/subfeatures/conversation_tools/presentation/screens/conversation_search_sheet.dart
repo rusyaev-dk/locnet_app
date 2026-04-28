@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/features/conversation/domain/domain.dart';
+import 'package:locnet_app/features/conversation/subfeatures/private/private.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
 class ConversationSearchSheet extends StatefulWidget {
   const ConversationSearchSheet({
     required this.conversationId,
     required this.conversationType,
+    this.onMessageSelected,
     super.key,
   });
 
   final String conversationId;
   final ConversationType conversationType;
+  final ValueChanged<String>? onMessageSelected;
 
   @override
   State<ConversationSearchSheet> createState() =>
@@ -24,14 +28,7 @@ class _ConversationSearchSheetState extends State<ConversationSearchSheet> {
 
   String _query = '';
 
-  static const List<String> _recentSearches = [
-    'Project meeting',
-    'Invoice Q1',
-    'figma link',
-  ];
-
-  static const int _mockResultCount = 7;
-  int _currentResult = 1;
+  int _currentResult = 0;
 
   @override
   void initState() {
@@ -51,7 +48,7 @@ class _ConversationSearchSheetState extends State<ConversationSearchSheet> {
     if (text != _query) {
       setState(() {
         _query = text;
-        _currentResult = 1;
+        _currentResult = 0;
       });
     }
   }
@@ -61,12 +58,29 @@ class _ConversationSearchSheetState extends State<ConversationSearchSheet> {
     _focusNode.requestFocus();
   }
 
-  void _prevResult() {
-    if (_currentResult > 1) setState(() => _currentResult--);
+  void _prevResult(int totalResults) {
+    if (totalResults <= 0) {
+      return;
+    }
+    setState(() {
+      _currentResult = (_currentResult - 1 + totalResults) % totalResults;
+    });
   }
 
-  void _nextResult() {
-    if (_currentResult < _mockResultCount) setState(() => _currentResult++);
+  void _nextResult(int totalResults) {
+    if (totalResults <= 0) {
+      return;
+    }
+    setState(() {
+      _currentResult = (_currentResult + 1) % totalResults;
+    });
+  }
+
+  void _selectResult(_SearchResultItem result, {required bool closeSheet}) {
+    widget.onMessageSelected?.call(result.messageId);
+    if (closeSheet) {
+      Navigator.of(context).maybePop();
+    }
   }
 
   @override
@@ -75,6 +89,11 @@ class _ConversationSearchSheetState extends State<ConversationSearchSheet> {
     final textScheme = context.textScheme;
     final radii = context.radii;
     final hasQuery = _query.isNotEmpty;
+    final List<_SearchResultItem> results = _buildResults(context);
+    final int totalResults = results.length;
+    final int activeResultIndex = totalResults == 0
+        ? 0
+        : _currentResult.clamp(0, totalResults - 1);
 
     return Column(
       children: [
@@ -146,21 +165,19 @@ class _ConversationSearchSheetState extends State<ConversationSearchSheet> {
           child: hasQuery
               ? _ResultsBody(
                   query: _query,
-                  currentResult: _currentResult,
-                  totalResults: _mockResultCount,
+                  activeResultIndex: activeResultIndex,
+                  results: results,
+                  onResultTap: (item) => _selectResult(item, closeSheet: true),
                   colorScheme: colorScheme,
                   textScheme: textScheme,
                 )
-              : _RecentBody(
-                  recentSearches: _recentSearches,
-                  colorScheme: colorScheme,
-                  textScheme: textScheme,
-                  onTap: (term) {
-                    _controller.text = term;
-                    _controller.selection = TextSelection.fromPosition(
-                      TextPosition(offset: term.length),
-                    );
-                  },
+              : Center(
+                  child: Text(
+                    'Type to search messages',
+                    style: textScheme.caption.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
                 ),
         ),
 
@@ -168,10 +185,20 @@ class _ConversationSearchSheetState extends State<ConversationSearchSheet> {
         if (hasQuery) ...[
           Divider(height: 1, thickness: 1, color: colorScheme.outlineVariant),
           _SearchNavBar(
-            current: _currentResult,
-            total: _mockResultCount,
-            onPrev: _prevResult,
-            onNext: _nextResult,
+            current: totalResults == 0 ? 0 : activeResultIndex + 1,
+            total: totalResults,
+            onPrev: () {
+              _prevResult(totalResults);
+              if (totalResults > 0) {
+                _selectResult(results[_currentResult], closeSheet: false);
+              }
+            },
+            onNext: () {
+              _nextResult(totalResults);
+              if (totalResults > 0) {
+                _selectResult(results[_currentResult], closeSheet: false);
+              }
+            },
             colorScheme: colorScheme,
             textScheme: textScheme,
           ),
@@ -179,114 +206,59 @@ class _ConversationSearchSheetState extends State<ConversationSearchSheet> {
       ],
     );
   }
-}
 
-// ── Recent searches ───────────────────────────────────────────────────────────
+  List<_SearchResultItem> _buildResults(BuildContext context) {
+    if (widget.conversationType != ConversationType.private) {
+      return const <_SearchResultItem>[];
+    }
+    if (_query.trim().isEmpty) {
+      return const <_SearchResultItem>[];
+    }
 
-class _RecentBody extends StatelessWidget {
-  const _RecentBody({
-    required this.recentSearches,
-    required this.colorScheme,
-    required this.textScheme,
-    required this.onTap,
-  });
+    final PrivateConversationState state = context
+        .read<PrivateConversationBloc>()
+        .state;
+    if (state is! PrivateConversationLoadedState) {
+      return const <_SearchResultItem>[];
+    }
 
-  final List<String> recentSearches;
-  final AppColorScheme colorScheme;
-  final AppTextScheme textScheme;
-  final ValueChanged<String> onTap;
+    final String companionName =
+        '${state.companion.firstName} ${state.companion.lastName}'.trim();
+    final String normalizedQuery = _query.trim().toLowerCase();
+    final List<_SearchResultItem> results = <_SearchResultItem>[];
 
-  @override
-  Widget build(BuildContext context) {
-    final radii = context.radii;
-
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
-      children: [
-        // Section label — matches CompanionInfoModalCard style
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 8),
-          child: Text(
-            'RECENT',
-            style: textScheme.caption.copyWith(
-              color: colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.6,
-              fontSize: 11,
-            ),
-          ),
+    for (final PrivateMessage message in state.messages) {
+      final String normalizedText = message.text.toLowerCase();
+      if (!normalizedText.contains(normalizedQuery)) {
+        continue;
+      }
+      final String sender = message.senderId == state.companionId
+          ? companionName
+          : 'You';
+      results.add(
+        _SearchResultItem(
+          messageId: message.id,
+          sender: sender.isEmpty ? 'Unknown' : sender,
+          snippet: message.text,
+          dateLabel: _buildDateLabel(message.createdAt),
         ),
-        // Group card — matches AppTileButtonGroupCard style
-        AppTileButtonGroupCard(
-          backgroundColor: colorScheme.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(radii.large),
-          dividerIndent: 44,
-          children: recentSearches
-              .map(
-                (term) => _RecentTile(
-                  term: term,
-                  colorScheme: colorScheme,
-                  textScheme: textScheme,
-                  onTap: () => onTap(term),
-                ),
-              )
-              .toList(),
-        ),
-      ],
-    );
+      );
+    }
+    return results;
   }
-}
 
-class _RecentTile extends StatelessWidget {
-  const _RecentTile({
-    required this.term,
-    required this.colorScheme,
-    required this.textScheme,
-    required this.onTap,
-  });
-
-  final String term;
-  final AppColorScheme colorScheme;
-  final AppTextScheme textScheme;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final radii = context.radii;
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: radii.defaultRadiusValue,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-          child: Row(
-            children: [
-              Icon(
-                Icons.history_rounded,
-                size: 20,
-                color: colorScheme.onSurfaceVariant,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  term,
-                  style: textScheme.subtitle.copyWith(
-                    color: colorScheme.onSurface,
-                  ),
-                ),
-              ),
-              Icon(
-                Icons.north_west_rounded,
-                size: 14,
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+  String _buildDateLabel(DateTime dateTime) {
+    final DateTime now = DateTime.now();
+    final DateTime today = DateTime(now.year, now.month, now.day);
+    final DateTime date = DateTime(dateTime.year, dateTime.month, dateTime.day);
+    final int daysAgo = today.difference(date).inDays;
+    if (daysAgo <= 0) {
+      return 'Today';
+    }
+    if (daysAgo == 1) {
+      return 'Yesterday';
+    }
+    return '$daysAgo days ago';
   }
 }
 
@@ -295,34 +267,36 @@ class _RecentTile extends StatelessWidget {
 class _ResultsBody extends StatelessWidget {
   const _ResultsBody({
     required this.query,
-    required this.currentResult,
-    required this.totalResults,
+    required this.activeResultIndex,
+    required this.results,
+    required this.onResultTap,
     required this.colorScheme,
     required this.textScheme,
   });
 
   final String query;
-  final int currentResult;
-  final int totalResults;
+  final int activeResultIndex;
+  final List<_SearchResultItem> results;
+  final ValueChanged<_SearchResultItem> onResultTap;
   final AppColorScheme colorScheme;
   final AppTextScheme textScheme;
 
-  static const _senders = ['Alice', 'Bob', 'You', 'Carol'];
-  static const _snippets = [
-    'Here is the file you requested for the report.',
-    'Let me know when you have a chance to review.',
-    'I will send you the updated version shortly.',
-    'The meeting has been rescheduled to Thursday.',
-    'Can you double-check the numbers in section 3?',
-    'Looks great! Ship it.',
-    'Thanks, I will get back to you by EOD.',
-  ];
-
   @override
   Widget build(BuildContext context) {
+    if (results.isEmpty) {
+      return Center(
+        child: Text(
+          'No matches found',
+          style: textScheme.caption.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
+        ),
+      );
+    }
+
     return ListView.separated(
       padding: EdgeInsets.zero,
-      itemCount: totalResults,
+      itemCount: results.length,
       separatorBuilder: (_, __) => Divider(
         height: 1,
         thickness: 1,
@@ -330,22 +304,16 @@ class _ResultsBody extends StatelessWidget {
         color: colorScheme.outlineVariant,
       ),
       itemBuilder: (context, index) {
-        final isActive = index + 1 == currentResult;
-        final sender = _senders[index % _senders.length];
-        final snippet = _snippets[index % _snippets.length];
-        final daysAgo = index * 2;
-        final dateLabel = daysAgo == 0
-            ? 'Today'
-            : daysAgo == 1
-                ? 'Yesterday'
-                : '$daysAgo days ago';
+        final isActive = index == activeResultIndex;
+        final _SearchResultItem result = results[index];
 
         return _ResultTile(
-          sender: sender,
-          snippet: snippet,
-          dateLabel: dateLabel,
+          sender: result.sender,
+          snippet: result.snippet,
+          dateLabel: result.dateLabel,
           isActive: isActive,
           query: query,
+          onTap: () => onResultTap(result),
           colorScheme: colorScheme,
           textScheme: textScheme,
         );
@@ -361,6 +329,7 @@ class _ResultTile extends StatelessWidget {
     required this.dateLabel,
     required this.isActive,
     required this.query,
+    required this.onTap,
     required this.colorScheme,
     required this.textScheme,
   });
@@ -370,71 +339,73 @@ class _ResultTile extends StatelessWidget {
   final String dateLabel;
   final bool isActive;
   final String query;
+  final VoidCallback onTap;
   final AppColorScheme colorScheme;
   final AppTextScheme textScheme;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: isActive
-          ? colorScheme.primary.withAlpha(18)
-          : Colors.transparent,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CircleAvatar(
-              radius: 18,
-              backgroundColor: colorScheme.primaryContainer,
-              child: Text(
-                sender[0],
-                style: textScheme.caption.copyWith(
-                  color: colorScheme.onPrimaryContainer,
-                  fontWeight: FontWeight.w600,
+    return Material(
+      color: isActive ? colorScheme.primary.withAlpha(18) : Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CircleAvatar(
+                radius: 18,
+                backgroundColor: colorScheme.primaryContainer,
+                child: Text(
+                  sender[0],
+                  style: textScheme.caption.copyWith(
+                    color: colorScheme.onPrimaryContainer,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        sender,
-                        style: textScheme.subtitle.copyWith(
-                          color: colorScheme.onSurface,
-                          fontWeight: FontWeight.w600,
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          sender,
+                          style: textScheme.subtitle.copyWith(
+                            color: colorScheme.onSurface,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
-                      const Spacer(),
-                      Text(
-                        dateLabel,
-                        style: textScheme.caption.copyWith(
-                          color: colorScheme.onSurfaceVariant,
+                        const Spacer(),
+                        Text(
+                          dateLabel,
+                          style: textScheme.caption.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
                         ),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    _HighlightText(
+                      text: snippet,
+                      query: query,
+                      normalStyle: textScheme.caption.copyWith(
+                        color: colorScheme.onSurfaceVariant,
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 2),
-                  _HighlightText(
-                    text: snippet,
-                    query: query,
-                    normalStyle: textScheme.caption.copyWith(
-                      color: colorScheme.onSurfaceVariant,
+                      highlightStyle: textScheme.caption.copyWith(
+                        color: colorScheme.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 2,
                     ),
-                    highlightStyle: textScheme.caption.copyWith(
-                      color: colorScheme.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    maxLines: 2,
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -459,8 +430,12 @@ class _HighlightText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (query.isEmpty) {
-      return Text(text, style: normalStyle, maxLines: maxLines,
-          overflow: TextOverflow.ellipsis);
+      return Text(
+        text,
+        style: normalStyle,
+        maxLines: maxLines,
+        overflow: TextOverflow.ellipsis,
+      );
     }
 
     final lower = text.toLowerCase();
@@ -475,12 +450,16 @@ class _HighlightText extends StatelessWidget {
         break;
       }
       if (idx > start) {
-        spans.add(TextSpan(
-            text: text.substring(start, idx), style: normalStyle));
+        spans.add(
+          TextSpan(text: text.substring(start, idx), style: normalStyle),
+        );
       }
-      spans.add(TextSpan(
+      spans.add(
+        TextSpan(
           text: text.substring(idx, idx + query.length),
-          style: highlightStyle));
+          style: highlightStyle,
+        ),
+      );
       start = idx + query.length;
     }
 
@@ -513,6 +492,7 @@ class _SearchNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool hasResults = total > 0;
     return SizedBox(
       height: 42,
       child: Padding(
@@ -531,7 +511,7 @@ class _SearchNavBar extends StatelessWidget {
               foregroundColor: current > 1
                   ? colorScheme.primary
                   : colorScheme.onSurfaceVariant.withAlpha(80),
-              onPressed: onPrev,
+              onPressed: hasResults ? onPrev : () {},
               iconSize: 22,
             ),
             const SizedBox(width: 2),
@@ -540,7 +520,7 @@ class _SearchNavBar extends StatelessWidget {
               foregroundColor: current < total
                   ? colorScheme.primary
                   : colorScheme.onSurfaceVariant.withAlpha(80),
-              onPressed: onNext,
+              onPressed: hasResults ? onNext : () {},
               iconSize: 22,
             ),
           ],
@@ -548,4 +528,18 @@ class _SearchNavBar extends StatelessWidget {
       ),
     );
   }
+}
+
+final class _SearchResultItem {
+  const _SearchResultItem({
+    required this.messageId,
+    required this.sender,
+    required this.snippet,
+    required this.dateLabel,
+  });
+
+  final String messageId;
+  final String sender;
+  final String snippet;
+  final String dateLabel;
 }

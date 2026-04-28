@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
 
-/// Sidebar navigation item with small-radius highlight; desktop hover/focus.
 class SidebarItem extends StatelessWidget {
   const SidebarItem({
     required this.label,
@@ -20,47 +19,60 @@ class SidebarItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
+    final spacing = context.designTokens.spacing;
+    final radii = context.radii;
     final textScheme = context.textScheme;
+    final Color selectedBackground = colorScheme.primaryContainer;
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOutCubic,
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? colorScheme.primary.withAlpha(26)
-                : Colors.transparent,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                size: 22,
-                color: isSelected
-                    ? colorScheme.primary
-                    : colorScheme.onSurfaceVariant,
-              ),
-              const SizedBox(height: 6),
-              Text(
-                label,
-                maxLines: 2,
-                softWrap: false,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.fade,
-                style: textScheme.caption.copyWith(
-                  color: isSelected
-                      ? colorScheme.primary
-                      : colorScheme.onSurfaceVariant,
-                  fontSize: 12,
+    return Tooltip(
+      message: label,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Material(
+          color: Colors.transparent,
+          child: Ink(
+            decoration: BoxDecoration(
+              color: isSelected ? selectedBackground : Colors.transparent,
+              borderRadius: radii.smallRadius,
+            ),
+            child: InkWell(
+              onTap: onTap,
+              borderRadius: radii.smallRadius,
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: spacing.xs,
+                  vertical: spacing.xs + spacing.xxs / 2,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      icon,
+                      size: spacing.lg + spacing.xxs / 2,
+                      color: isSelected
+                          ? colorScheme.primary
+                          : colorScheme.onSurfaceVariant,
+                    ),
+                    SizedBox(
+                      height: spacing.sm - spacing.xxs - spacing.xxs / 2,
+                    ),
+                    Text(
+                      label,
+                      maxLines: 2,
+                      softWrap: false,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.fade,
+                      style: textScheme.caption.copyWith(
+                        color: isSelected
+                            ? colorScheme.primary
+                            : colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
         ),
       ),

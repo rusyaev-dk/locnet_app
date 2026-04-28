@@ -27,6 +27,7 @@ abstract interface class IAppEnvPreset {
   IUnifiedSearchRepo createUnifiedSearchRepo();
 
   IPrivateMessageRepo createPrivateMessageRepo();
+  IMediaRepo createMediaRepo();
   IGroupMessageRepo createGroupMessageRepo();
   IChannelPublicationRepo createChannelPublicationRepo();
 

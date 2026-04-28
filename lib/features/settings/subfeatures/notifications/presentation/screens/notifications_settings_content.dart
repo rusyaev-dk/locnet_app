@@ -5,23 +5,8 @@ import 'package:locnet_app/features/settings/presentation/components/components.
 import 'package:locnet_app/features/settings/subfeatures/notifications/presentation/blocs/blocs.dart';
 
 /// Notifications & sounds section.
-class NotificationsSettingsContent extends StatefulWidget {
+class NotificationsSettingsContent extends StatelessWidget {
   const NotificationsSettingsContent({super.key});
-
-  @override
-  State<NotificationsSettingsContent> createState() =>
-      _NotificationsSettingsContentState();
-}
-
-class _NotificationsSettingsContentState
-    extends State<NotificationsSettingsContent> {
-  bool _mentionNotifications = true;
-  bool _systemNotifications = false;
-  bool _sendSound = false;
-  bool _systemSounds = true;
-  int _soundIndex = 0;
-  bool _showPreview = true;
-  bool _doNotDisturb = false;
 
   @override
   Widget build(BuildContext context) {
@@ -32,28 +17,40 @@ class _NotificationsSettingsContentState
         }
         return _NotificationsBody(
           messageNotifications: state.messageNotifications,
-          mentionNotifications: _mentionNotifications,
-          systemNotifications: _systemNotifications,
+          mentionNotifications: state.mentionNotifications,
+          systemNotifications: state.systemNotifications,
           soundEnabled: state.soundEnabled,
-          sendSound: _sendSound,
-          systemSounds: _systemSounds,
-          soundIndex: _soundIndex,
-          showPreview: _showPreview,
-          doNotDisturb: _doNotDisturb,
+          sendSound: state.sendSound,
+          systemSounds: state.systemSounds,
+          soundIndex: state.soundIndex,
+          showPreview: state.showPreview,
+          doNotDisturb: state.doNotDisturb,
           onMessageNotificationsChanged: (v) => context
               .read<NotificationsSettingsCubit>()
               .setMessageNotifications(value: v),
-          onMentionNotificationsChanged: (v) =>
-              setState(() => _mentionNotifications = v),
-          onSystemNotificationsChanged: (v) =>
-              setState(() => _systemNotifications = v),
-          onSoundEnabledChanged: (v) =>
-              context.read<NotificationsSettingsCubit>().setSoundEnabled(value: v),
-          onSendSoundChanged: (v) => setState(() => _sendSound = v),
-          onSystemSoundsChanged: (v) => setState(() => _systemSounds = v),
-          onSoundIndexChanged: (i) => setState(() => _soundIndex = i),
-          onShowPreviewChanged: (v) => setState(() => _showPreview = v),
-          onDoNotDisturbChanged: (v) => setState(() => _doNotDisturb = v),
+          onMentionNotificationsChanged: (v) => context
+              .read<NotificationsSettingsCubit>()
+              .setMentionNotifications(value: v),
+          onSystemNotificationsChanged: (v) => context
+              .read<NotificationsSettingsCubit>()
+              .setSystemNotifications(value: v),
+          onSoundEnabledChanged: (v) => context
+              .read<NotificationsSettingsCubit>()
+              .setSoundEnabled(value: v),
+          onSendSoundChanged: (v) =>
+              context.read<NotificationsSettingsCubit>().setSendSound(value: v),
+          onSystemSoundsChanged: (v) => context
+              .read<NotificationsSettingsCubit>()
+              .setSystemSounds(value: v),
+          onSoundIndexChanged: (i) => context
+              .read<NotificationsSettingsCubit>()
+              .setSoundIndex(value: i),
+          onShowPreviewChanged: (v) => context
+              .read<NotificationsSettingsCubit>()
+              .setShowPreview(value: v),
+          onDoNotDisturbChanged: (v) => context
+              .read<NotificationsSettingsCubit>()
+              .setDoNotDisturb(value: v),
         );
       },
     );
@@ -112,7 +109,8 @@ class _NotificationsBody extends StatelessWidget {
         children: [
           SettingsSectionHeader(
             title: l10n.settingsNotificationsAndSounds,
-            description: 'Управляйте тем, когда и как вы получаете уведомления.',
+            description:
+                'Управляйте тем, когда и как вы получаете уведомления.',
           ),
 
           // ── Push-уведомления ──────────────────────────────
@@ -169,7 +167,7 @@ class _NotificationsBody extends StatelessWidget {
               ),
               SettingsSegmentedTile(
                 title: 'Звук уведомлений',
-                options: ['Default', 'Chime', 'Ping'],
+                options: const ['Default', 'Chime', 'Ping'],
                 selectedIndex: soundIndex,
                 onSelected: onSoundIndexChanged,
               ),

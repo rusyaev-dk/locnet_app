@@ -11,6 +11,8 @@ class PrivateMessagesList extends StatefulWidget {
   const PrivateMessagesList({
     required this.messages,
     required this.companionId,
+    this.highlightedMessageId,
+    this.onHighlightConsumed,
     this.onReply,
     this.onForward,
     this.onDelete,
@@ -19,6 +21,8 @@ class PrivateMessagesList extends StatefulWidget {
 
   final List<PrivateMessage> messages;
   final String companionId;
+  final String? highlightedMessageId;
+  final ValueChanged<String>? onHighlightConsumed;
   final void Function(PrivateMessage message)? onReply;
   final void Function(PrivateMessage message)? onForward;
   final void Function(PrivateMessage message)? onDelete;
@@ -30,6 +34,32 @@ class PrivateMessagesList extends StatefulWidget {
 class _PrivateMessagesListState extends State<PrivateMessagesList> {
   bool _isDragSelecting = false;
   final Set<String> _visitedIds = <String>{};
+  final Map<String, GlobalKey> _messageKeys = <String, GlobalKey>{};
+
+  @override
+  void didUpdateWidget(covariant PrivateMessagesList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.highlightedMessageId != null &&
+        widget.highlightedMessageId != oldWidget.highlightedMessageId) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToMessage(widget.highlightedMessageId!);
+      });
+    }
+  }
+
+  void _scrollToMessage(String messageId) {
+    final BuildContext? targetContext = _messageKeys[messageId]?.currentContext;
+    if (targetContext == null) {
+      return;
+    }
+    Scrollable.ensureVisible(
+      targetContext,
+      alignment: 0.5,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOutCubic,
+    );
+    widget.onHighlightConsumed?.call(messageId);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,73 +87,84 @@ class _PrivateMessagesListState extends State<PrivateMessagesList> {
         }
       },
       child: ListView.separated(
-      cacheExtent: 1200,
-      reverse: true,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-      itemCount: widget.messages.length,
-      separatorBuilder: (BuildContext context, int index) {
-        return const SizedBox(height: 4);
-      },
-      itemBuilder: (BuildContext context, int index) {
-        final PrivateMessage message = widget.messages[index];
-        final String replyText =
-            message.replyToMessageId != null
-            ? (messagesById[message.replyToMessageId!]?.text ?? '')
-            : '';
-        const Duration baseDuration = Duration(milliseconds: 280);
-        final Duration delay = Duration(milliseconds: 35 * index);
+        cacheExtent: 1200,
+        reverse: true,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+        itemCount: widget.messages.length,
+        separatorBuilder: (BuildContext context, int index) {
+          return const SizedBox(height: 4);
+        },
+        itemBuilder: (BuildContext context, int index) {
+          final PrivateMessage message = widget.messages[index];
+          final GlobalKey itemKey = _messageKeys[message.id] ??= GlobalKey(
+            debugLabel: message.id,
+          );
+          final bool isHighlighted = widget.highlightedMessageId == message.id;
+          final String replyText = message.replyToMessageId != null
+              ? (messagesById[message.replyToMessageId!]?.text ?? '')
+              : '';
+          const Duration baseDuration = Duration(milliseconds: 280);
+          final Duration delay = Duration(milliseconds: 35 * index);
+          final isSelected = selectionCubit.state.isSelected(message.id);
 
-        final isSelected = selectionCubit.state.isSelected(message.id);
-
-        return MouseRegion(
-          onEnter: (_) {
-            if (_isDragSelecting && !_visitedIds.contains(message.id)) {
-              _visitedIds.add(message.id);
-              selectionCubit.toggleMessage(message.id);
-            }
-          },
-          child: ClipRect(
-            child: Animate(
-              delay: delay,
-              effects: const [
-                FadeEffect(duration: baseDuration, curve: Curves.easeOut),
-                SlideEffect(
-                  begin: Offset(0, 0.06),
-                  end: Offset.zero,
-                  duration: baseDuration,
-                  curve: Curves.easeOutCubic,
+          return Container(
+            key: itemKey,
+            decoration: isHighlighted
+                ? BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary.withAlpha(28),
+                    borderRadius: BorderRadius.circular(14),
+                  )
+                : null,
+            child: MouseRegion(
+              onEnter: (_) {
+                if (_isDragSelecting && !_visitedIds.contains(message.id)) {
+                  _visitedIds.add(message.id);
+                  selectionCubit.toggleMessage(message.id);
+                }
+              },
+              child: ClipRect(
+                child: Animate(
+                  delay: delay,
+                  effects: const [
+                    FadeEffect(duration: baseDuration, curve: Curves.easeOut),
+                    SlideEffect(
+                      begin: Offset(0, 0.06),
+                      end: Offset.zero,
+                      duration: baseDuration,
+                      curve: Curves.easeOutCubic,
+                    ),
+                    ScaleEffect(
+                      begin: Offset(0.98, 0.98),
+                      end: Offset(1, 1),
+                      duration: baseDuration,
+                      curve: Curves.easeOut,
+                    ),
+                  ],
+                  child: SelectableMessageBubbleWrapper(
+                    message: message,
+                    companionId: widget.companionId,
+                    isSelected: isSelected,
+                    onEnterSelectionMode: () =>
+                        selectionCubit.enterSelectionMode(message.id),
+                    onToggleSelection: () =>
+                        selectionCubit.toggleMessage(message.id),
+                    onReply: () => widget.onReply?.call(message),
+                    onForward: () => widget.onForward?.call(message),
+                    onDelete: () => widget.onDelete?.call(message),
+                    replyPreviewText: replyText,
+                    onCopy: () async {
+                      final String text = message.text.trim();
+                      if (text.isNotEmpty) {
+                        await Clipboard.setData(ClipboardData(text: text));
+                      }
+                    },
+                  ),
                 ),
-                ScaleEffect(
-                  begin: Offset(0.98, 0.98),
-                  end: Offset(1, 1),
-                  duration: baseDuration,
-                  curve: Curves.easeOut,
-                ),
-              ],
-              child: SelectableMessageBubbleWrapper(
-                message: message,
-                companionId: widget.companionId,
-                isSelected: isSelected,
-                onEnterSelectionMode: () =>
-                    selectionCubit.enterSelectionMode(message.id),
-                onToggleSelection: () =>
-                    selectionCubit.toggleMessage(message.id),
-                onReply: () => widget.onReply?.call(message),
-                onForward: () => widget.onForward?.call(message),
-                onDelete: () => widget.onDelete?.call(message),
-                replyPreviewText: replyText,
-                onCopy: () async {
-                  final String text = message.text.trim();
-                  if (text.isNotEmpty) {
-                    await Clipboard.setData(ClipboardData(text: text));
-                  }
-                },
               ),
             ),
-          ),
-        );
-      },
-    ),
+          );
+        },
+      ),
     );
   }
 }

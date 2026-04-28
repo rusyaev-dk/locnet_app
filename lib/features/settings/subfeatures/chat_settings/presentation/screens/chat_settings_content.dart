@@ -5,18 +5,8 @@ import 'package:locnet_app/features/settings/presentation/components/components.
 import 'package:locnet_app/features/settings/subfeatures/chat_settings/presentation/blocs/blocs.dart';
 
 /// Chats settings section.
-class ChatSettingsContent extends StatefulWidget {
+class ChatSettingsContent extends StatelessWidget {
   const ChatSettingsContent({super.key});
-
-  @override
-  State<ChatSettingsContent> createState() => _ChatSettingsContentState();
-}
-
-class _ChatSettingsContentState extends State<ChatSettingsContent> {
-  bool _autoScroll = true;
-  bool _sendOnEnter = true;
-  bool _shiftEnterNewLine = true;
-  bool _saveDrafts = true;
 
   @override
   Widget build(BuildContext context) {
@@ -26,15 +16,18 @@ class _ChatSettingsContentState extends State<ChatSettingsContent> {
           return const Center(child: CircularProgressIndicator());
         }
         return _ChatSettingsBody(
-          autoScroll: _autoScroll,
-          sendOnEnter: _sendOnEnter,
-          shiftEnterNewLine: _shiftEnterNewLine,
-          saveDrafts: _saveDrafts,
-          onAutoScrollChanged: (v) => setState(() => _autoScroll = v),
-          onSendOnEnterChanged: (v) => setState(() => _sendOnEnter = v),
+          autoScroll: state.autoScroll,
+          sendOnEnter: state.sendOnEnter,
+          shiftEnterNewLine: state.shiftEnterNewLine,
+          saveDrafts: state.saveDrafts,
+          onAutoScrollChanged: (v) =>
+              context.read<ChatSettingsCubit>().setAutoScroll(value: v),
+          onSendOnEnterChanged: (v) =>
+              context.read<ChatSettingsCubit>().setSendOnEnter(value: v),
           onShiftEnterNewLineChanged: (v) =>
-              setState(() => _shiftEnterNewLine = v),
-          onSaveDraftsChanged: (v) => setState(() => _saveDrafts = v),
+              context.read<ChatSettingsCubit>().setShiftEnterNewLine(value: v),
+          onSaveDraftsChanged: (v) =>
+              context.read<ChatSettingsCubit>().setSaveDrafts(value: v),
         );
       },
     );

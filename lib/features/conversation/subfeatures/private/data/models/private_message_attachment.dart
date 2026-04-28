@@ -8,6 +8,7 @@ class PrivateMessageAttachmentDto extends Equatable {
     required this.id,
     required this.messageId,
     required this.fileId,
+    required this.fileType,
     required this.order,
     required this.createdAt,
   });
@@ -15,6 +16,7 @@ class PrivateMessageAttachmentDto extends Equatable {
   final String id;
   final String messageId;
   final String fileId;
+  final String? fileType;
   final int order;
   final DateTime createdAt;
 
@@ -23,6 +25,7 @@ class PrivateMessageAttachmentDto extends Equatable {
       id: json['id'] as String,
       messageId: json['messageId'] as String,
       fileId: json['fileId'] as String,
+      fileType: json['fileType'] as String?,
       order: json['order'] as int,
       createdAt: DateTimeFormatter.parse(json['createdAt'] as String),
     );
@@ -32,9 +35,17 @@ class PrivateMessageAttachmentDto extends Equatable {
     'id': id,
     'messageId': messageId,
     'fileId': fileId,
+    'fileType': fileType,
     'order': order,
     'createdAt': createdAt.toIso8601String(),
   };
   @override
-  List<Object?> get props => [id, messageId, fileId, order, createdAt];
+  List<Object?> get props => [
+    id,
+    messageId,
+    fileId,
+    fileType,
+    order,
+    createdAt,
+  ];
 }

@@ -171,10 +171,7 @@ class _SettingsViewState extends State<SettingsView> {
 }
 
 class _SettingsSectionContent extends StatelessWidget {
-  const _SettingsSectionContent({
-    required this.section,
-    required this.session,
-  });
+  const _SettingsSectionContent({required this.section, required this.session});
 
   final SettingsSection section;
   final Session? session;

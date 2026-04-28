@@ -34,14 +34,16 @@ final class PrivateConversationSendMessageEvent
     extends PrivateConversationEvent {
   const PrivateConversationSendMessageEvent({
     required this.text,
+    required this.attachedFiles,
     this.replyToMessageId,
   });
 
   final String text;
+  final List<UploadableFile> attachedFiles;
   final String? replyToMessageId;
 
   @override
-  List<Object?> get props => [text, replyToMessageId];
+  List<Object?> get props => [text, attachedFiles, replyToMessageId];
 }
 
 final class PrivateConversationMessageUpdateReceivedEvent

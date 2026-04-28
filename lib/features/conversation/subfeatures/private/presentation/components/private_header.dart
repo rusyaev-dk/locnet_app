@@ -16,13 +16,15 @@ enum _PrivateHeaderMenuAction {
 
 class PrivateHeader extends StatefulWidget {
   const PrivateHeader({
-    this.conversationId,
     required this.companion,
+    this.conversationId,
+    this.onSearchResultSelected,
     super.key,
   });
 
   final String? conversationId;
   final User companion;
+  final ValueChanged<String>? onSearchResultSelected;
 
   @override
   State<PrivateHeader> createState() => _PrivateHeaderState();
@@ -62,6 +64,9 @@ class _PrivateHeaderState extends State<PrivateHeader> {
                     context: context,
                     conversationId: conversationId,
                     conversationType: ConversationType.private,
+                    onMessageSelected: widget.onSearchResultSelected,
+                    privateConversationBloc: context
+                        .read<PrivateConversationBloc>(),
                   );
                 },
               ),
@@ -130,10 +135,7 @@ class _PrivateHeaderState extends State<PrivateHeader> {
 }
 
 class _HeaderIconButton extends StatelessWidget {
-  const _HeaderIconButton({
-    required this.icon,
-    required this.onPressed,
-  });
+  const _HeaderIconButton({required this.icon, required this.onPressed});
 
   final IconData icon;
   final VoidCallback onPressed;
@@ -150,12 +152,8 @@ class _HeaderIconButton extends StatelessWidget {
         iconSize: 20,
         splashRadius: 18,
         onPressed: onPressed,
-        icon: Icon(
-          icon,
-          color: colorScheme.onSurfaceVariant,
-        ),
+        icon: Icon(icon, color: colorScheme.onSurfaceVariant),
       ),
     );
   }
 }
-

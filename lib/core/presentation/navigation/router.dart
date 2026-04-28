@@ -4,7 +4,6 @@ import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/auth/presentation/presentation.dart';
 import 'package:locnet_app/features/conversations_list/presentation/presentation.dart';
 import 'package:locnet_app/features/root/root_screen.dart';
-import 'package:locnet_app/features/settings/presentation/presentation.dart';
 import 'package:locnet_app/features/side_panel/presentation/presentation.dart';
 import 'package:locnet_app/features/splash/splash_screen.dart';
 
@@ -61,9 +60,7 @@ class AppRouter {
               location.startsWith('${AppRoutes.conversations}/') ||
               location == AppRoutes.conversations ||
               location == AppRoutes.storage ||
-              location == AppRoutes.settings ||
-              location.startsWith('${AppRoutes.storage}/') ||
-              location.startsWith('${AppRoutes.settings}/');
+              location.startsWith('${AppRoutes.storage}/');
 
           if (isAppRoute) {
             return null;
@@ -122,52 +119,37 @@ class AppRouter {
                   path: '/conversations',
                   name: 'conversations',
                   pageBuilder: buildNoTransitionPage((context, state) {
-                    final String? selectedConversationId =
-                        state.pathParameters['conversationId'];
+                    return ConversationsPanel(
+                      selectedConversationId: null,
+                      draftCompanionId: null,
+                    );
+                  }),
+                ),
+                GoRoute(
+                  path: '/conversations/draft/:companionId',
+                  name: 'conversationDraft',
+                  pageBuilder: buildNoTransitionPage((context, state) {
                     final String? draftCompanionId =
                         state.pathParameters['companionId'];
 
                     return ConversationsPanel(
-                      selectedConversationId: selectedConversationId,
                       draftCompanionId: draftCompanionId,
                     );
                   }),
-                  routes: <RouteBase>[
-                    GoRoute(
-                      path: 'draft/:companionId',
-                      name: 'conversationDraft',
-                      pageBuilder: buildNoTransitionPage((context, state) {
-                        final String? draftCompanionId =
-                            state.pathParameters['companionId'];
+                ),
+                GoRoute(
+                  path: '/conversations/:conversationId',
+                  name: 'conversationDetails',
+                  pageBuilder: buildNoTransitionPage((context, state) {
+                    final String? selectedConversationId =
+                        state.pathParameters['conversationId'];
 
-                        return ConversationsPanel(
-                          draftCompanionId: draftCompanionId,
-                        );
-                      }),
-                    ),
-                    GoRoute(
-                      path: ':conversationId',
-                      name: 'conversationDetails',
-                      pageBuilder: buildNoTransitionPage((context, state) {
-                        final String? selectedConversationId =
-                            state.pathParameters['conversationId'];
-
-                        return ConversationsPanel(
-                          selectedConversationId: selectedConversationId,
-                        );
-                      }),
-                    ),
-                  ],
+                    return ConversationsPanel(
+                      selectedConversationId: selectedConversationId,
+                    );
+                  }),
                 ),
               ],
-            ),
-
-            GoRoute(
-              path: '/settings',
-              name: 'settings',
-              pageBuilder: buildNoTransitionPage((context, state) {
-                return const SettingsScreen();
-              }),
             ),
           ],
         ),

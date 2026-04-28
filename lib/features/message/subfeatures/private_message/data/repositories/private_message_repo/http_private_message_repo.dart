@@ -37,6 +37,15 @@ class HttpPrivateMessageRepo implements IPrivateMessageRepo {
         if (message.clientMessageId != null)
           'clientMessageId': message.clientMessageId,
         if (replyToMessageId != null) 'replyToMessageId': replyToMessageId,
+        if (message.attachments.isNotEmpty)
+          'attachments': message.attachments
+              .map(
+                (PrivateMessageAttachment attachment) => <String, dynamic>{
+                  'mediaId': attachment.fileId,
+                  'fileType': attachment.fileType ?? 'file',
+                },
+              )
+              .toList(growable: false),
       };
 
       final httpResponse = await _httpClient.post(

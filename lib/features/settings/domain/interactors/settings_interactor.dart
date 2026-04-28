@@ -69,4 +69,40 @@ class SettingsInteractor {
   Future<bool> setThemeType(AppThemeType type) async {
     return await _themeRepository.setThemeType(type);
   }
+
+  Future<bool> saveChatSetting({
+    required String key,
+    required bool value,
+  }) async {
+    return _settingsRepo.saveChatSetting(key: key, value: value);
+  }
+
+  Future<bool> getChatSetting({
+    required String key,
+    required bool fallback,
+  }) async {
+    return _settingsRepo.getChatSetting(key: key, fallback: fallback);
+  }
+
+  Future<bool> saveNotificationSetting({
+    required String key,
+    required bool value,
+  }) async {
+    return _settingsRepo.saveNotificationSetting(key: key, value: value);
+  }
+
+  Future<bool> getNotificationSetting({
+    required String key,
+    required bool fallback,
+  }) async {
+    return _settingsRepo.getNotificationSetting(key: key, fallback: fallback);
+  }
+
+  Future<bool> saveNotificationSoundIndex({required int value}) async {
+    return _settingsRepo.saveNotificationSoundIndex(value: value);
+  }
+
+  Future<int> getNotificationSoundIndex({required int fallback}) async {
+    return _settingsRepo.getNotificationSoundIndex(fallback: fallback);
+  }
 }

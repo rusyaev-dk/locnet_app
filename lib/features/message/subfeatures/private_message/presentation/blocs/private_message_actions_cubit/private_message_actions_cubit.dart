@@ -54,6 +54,7 @@ class PrivateMessageActionsCubit extends Cubit<PrivateMessageActionsState> {
                   id: 'local-attach-${const Uuid().v4()}',
                   messageId: '',
                   fileId: 'pending-${const Uuid().v4()}',
+                  fileType: f.fileType.value,
                   order: order++,
                   createdAt: now,
                 ),

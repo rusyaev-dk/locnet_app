@@ -10,18 +10,18 @@ import 'package:socket_io_client/socket_io_client.dart' as io;
 class HttpConversationsListRepo implements IConversationsListRepo {
   HttpConversationsListRepo({
     required IHttpClient httpClient,
-    ISessionCacheRepo? sessionCacheRepo,
-    ILogger? logger,
-    String? socketBaseUrl,
+    required ApiConfig apiConfig,
+    required ISessionCacheRepo sessionCacheRepo,
+    required ILogger logger,
   }) : _httpClient = httpClient,
+       _apiConfig = apiConfig,
        _sessionCacheRepo = sessionCacheRepo,
-       _logger = logger,
-       _socketBaseUrl = socketBaseUrl;
+       _logger = logger;
 
   final IHttpClient _httpClient;
-  final ISessionCacheRepo? _sessionCacheRepo;
-  final ILogger? _logger;
-  final String? _socketBaseUrl;
+  final ApiConfig _apiConfig;
+  final ISessionCacheRepo _sessionCacheRepo;
+  final ILogger _logger;
   io.Socket? _socket;
   bool _isSocketConnecting = false;
   final StreamController<ConversationsListUpdateRec> _updatesController =
@@ -52,7 +52,8 @@ class HttpConversationsListRepo implements IConversationsListRepo {
       }
 
       final Map<String, dynamic> responseJson = responseData;
-      final dynamic rawTiles = responseJson['tiles'] ?? responseJson['conversations'];
+      final dynamic rawTiles =
+          responseJson['tiles'] ?? responseJson['conversations'];
       if (rawTiles is! List) {
         return <ConversationTile>[];
       }
@@ -69,9 +70,8 @@ class HttpConversationsListRepo implements IConversationsListRepo {
         if (normalizedTile == null) {
           continue;
         }
-        final ConversationTileDto conversationDto = ConversationTileDto.fromJson(
-          normalizedTile,
-        );
+        final ConversationTileDto conversationDto =
+            ConversationTileDto.fromJson(normalizedTile);
         conversations.add(ConversationTile.fromDto(conversationDto));
       }
 
@@ -96,8 +96,8 @@ class HttpConversationsListRepo implements IConversationsListRepo {
       return;
     }
 
-    final String? baseUrl = _socketBaseUrl;
-    if (baseUrl == null || baseUrl.isEmpty || _sessionCacheRepo == null) {
+    final String baseUrl = _apiConfig.baseSocketUrl.trim();
+    if (baseUrl.isEmpty) {
       return;
     }
 
@@ -109,7 +109,7 @@ class HttpConversationsListRepo implements IConversationsListRepo {
 
   Future<void> _createAndConnectSocket({required String baseUrl}) async {
     try {
-      final session = await _sessionCacheRepo!.loadSession();
+      final session = await _sessionCacheRepo.loadSession();
       final String token = session.accessToken;
       if (token.isEmpty) {
         return;
@@ -134,7 +134,7 @@ class HttpConversationsListRepo implements IConversationsListRepo {
           unawaited(_emitNewPrivateMessage(payload));
         })
         ..onConnectError((dynamic error) {
-          _logger?.warning('Conversations socket connect error: $error');
+          _logger.warning('Conversations socket connect error: $error');
           if (error.toString().toLowerCase().contains('jwt expired')) {
             _tryReconnectWithFreshSessionToken();
           }
@@ -145,7 +145,7 @@ class HttpConversationsListRepo implements IConversationsListRepo {
           );
         })
         ..onError((dynamic error) {
-          _logger?.warning('Conversations socket error: $error');
+          _logger.warning('Conversations socket error: $error');
           _updatesController.addError(
             AppUnknownException(message: 'Conversations socket error: $error'),
           );
@@ -153,7 +153,7 @@ class HttpConversationsListRepo implements IConversationsListRepo {
         ..connect();
       _socket = socket;
     } catch (e, st) {
-      _logger?.exception(e, st);
+      _logger.exception(e, st);
       _updatesController.addError(
         e is AppException
             ? e
@@ -172,8 +172,11 @@ class HttpConversationsListRepo implements IConversationsListRepo {
         return;
       }
 
-      final Map<String, dynamic> payloadMap = Map<String, dynamic>.from(payload);
-      final String conversationId = (payloadMap['conversationId'] ?? '').toString();
+      final Map<String, dynamic> payloadMap = Map<String, dynamic>.from(
+        payload,
+      );
+      final String conversationId = (payloadMap['conversationId'] ?? '')
+          .toString();
       if (conversationId.isEmpty) {
         return;
       }
@@ -201,7 +204,7 @@ class HttpConversationsListRepo implements IConversationsListRepo {
         conversationTile: tile,
       ));
     } catch (e, st) {
-      _logger?.exception(e, st);
+      _logger.exception(e, st);
     }
   }
 
@@ -211,8 +214,11 @@ class HttpConversationsListRepo implements IConversationsListRepo {
         return;
       }
 
-      final Map<String, dynamic> payloadMap = Map<String, dynamic>.from(payload);
-      final String conversationId = (payloadMap['conversationId'] ?? '').toString();
+      final Map<String, dynamic> payloadMap = Map<String, dynamic>.from(
+        payload,
+      );
+      final String conversationId = (payloadMap['conversationId'] ?? '')
+          .toString();
       if (conversationId.isEmpty) {
         return;
       }
@@ -225,7 +231,8 @@ class HttpConversationsListRepo implements IConversationsListRepo {
           now;
 
       final DateTime? lastMessageAt =
-          _tryParseDate(payloadMap['createdAt']) ?? _tryParseDate(payloadMap['updatedAt']);
+          _tryParseDate(payloadMap['createdAt']) ??
+          _tryParseDate(payloadMap['updatedAt']);
 
       final ConversationTile? serverTile = await _fetchConversationTileById(
         conversationId,
@@ -233,7 +240,8 @@ class HttpConversationsListRepo implements IConversationsListRepo {
       final ConversationTile tile = serverTile != null
           ? serverTile.copyWith(
               lastMessageText:
-                  _nonEmptyString(payloadMap['text']) ?? serverTile.lastMessageText,
+                  _nonEmptyString(payloadMap['text']) ??
+                  serverTile.lastMessageText,
               lastMessageSenderId:
                   _nonEmptyString(payloadMap['senderId']) ??
                   serverTile.lastMessageSenderId,
@@ -255,19 +263,19 @@ class HttpConversationsListRepo implements IConversationsListRepo {
         conversationTile: tile,
       ));
     } catch (e, st) {
-      _logger?.exception(e, st);
+      _logger.exception(e, st);
     }
   }
 
   Future<void> _tryReconnectWithFreshSessionToken() async {
     try {
-      final String? baseUrl = _socketBaseUrl;
-      if (_sessionCacheRepo == null || baseUrl == null) {
+      final String baseUrl = _apiConfig.baseSocketUrl.trim();
+      if (baseUrl.isEmpty) {
         return;
       }
       await _createAndConnectSocket(baseUrl: baseUrl);
     } catch (e, st) {
-      _logger?.exception(e, st);
+      _logger.exception(e, st);
     }
   }
 
@@ -324,14 +332,13 @@ class HttpConversationsListRepo implements IConversationsListRepo {
     return value.isEmpty ? null : value;
   }
 
-  Future<ConversationTile?> _fetchConversationTileById(String conversationId) async {
+  Future<ConversationTile?> _fetchConversationTileById(
+    String conversationId,
+  ) async {
     try {
       final httpResponse = await _httpClient.get(
         path: ApiEndpoints.conversationsList,
-        uriParameters: <String, dynamic>{
-          'page': '1',
-          'limit': '100',
-        },
+        uriParameters: <String, dynamic>{'page': '1', 'limit': '100'},
       );
 
       final dynamic responseData = httpResponse.data;
@@ -339,7 +346,8 @@ class HttpConversationsListRepo implements IConversationsListRepo {
         return null;
       }
 
-      final dynamic rawTiles = responseData['tiles'] ?? responseData['conversations'];
+      final dynamic rawTiles =
+          responseData['tiles'] ?? responseData['conversations'];
       if (rawTiles is! List) {
         return null;
       }
@@ -348,24 +356,29 @@ class HttpConversationsListRepo implements IConversationsListRepo {
         if (tileRaw is! Map<String, dynamic>) {
           continue;
         }
-        final Map<String, dynamic>? normalizedTile = _normalizeTilePayload(tileRaw);
+        final Map<String, dynamic>? normalizedTile = _normalizeTilePayload(
+          tileRaw,
+        );
         if (normalizedTile == null) {
           continue;
         }
         if (normalizedTile['id'] != conversationId) {
           continue;
         }
-        return ConversationTile.fromDto(ConversationTileDto.fromJson(normalizedTile));
+        return ConversationTile.fromDto(
+          ConversationTileDto.fromJson(normalizedTile),
+        );
       }
     } catch (e, st) {
-      _logger?.exception(e, st);
+      _logger.exception(e, st);
     }
 
     return null;
   }
 
   Map<String, dynamic>? _normalizeTilePayload(Map<String, dynamic> raw) {
-    final String id = _nonEmptyString(raw['id']) ??
+    final String id =
+        _nonEmptyString(raw['id']) ??
         _nonEmptyString(raw['conversationId']) ??
         '';
     if (id.isEmpty) {
@@ -374,7 +387,9 @@ class HttpConversationsListRepo implements IConversationsListRepo {
 
     final DateTime now = DateTime.now().toUtc();
     final DateTime updatedAt =
-        _tryParseDate(raw['updatedAt']) ?? _tryParseDate(raw['createdAt']) ?? now;
+        _tryParseDate(raw['updatedAt']) ??
+        _tryParseDate(raw['createdAt']) ??
+        now;
     final DateTime? lastMessageAt = _tryParseDate(raw['lastMessageAt']);
 
     final dynamic companionRaw = raw['companion'];
@@ -385,8 +400,10 @@ class HttpConversationsListRepo implements IConversationsListRepo {
 
     String title = _nonEmptyString(raw['title']) ?? '';
     if (title.isEmpty && normalizedCompanion != null) {
-      final String firstName = _nonEmptyString(normalizedCompanion['firstName']) ?? '';
-      final String lastName = _nonEmptyString(normalizedCompanion['lastName']) ?? '';
+      final String firstName =
+          _nonEmptyString(normalizedCompanion['firstName']) ?? '';
+      final String lastName =
+          _nonEmptyString(normalizedCompanion['lastName']) ?? '';
       final String fullName = '$firstName $lastName'.trim();
       title = fullName.isNotEmpty ? fullName : 'Private chat';
     } else if (title.isEmpty) {
@@ -407,7 +424,8 @@ class HttpConversationsListRepo implements IConversationsListRepo {
   }
 
   Map<String, dynamic>? _normalizeCompanionPayload(Map<String, dynamic> raw) {
-    final String id = _nonEmptyString(raw['id']) ?? _nonEmptyString(raw['userId']) ?? '';
+    final String id =
+        _nonEmptyString(raw['id']) ?? _nonEmptyString(raw['userId']) ?? '';
     if (id.isEmpty) {
       return null;
     }

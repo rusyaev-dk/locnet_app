@@ -69,6 +69,7 @@ class _ConversationsPanelState extends State<ConversationsPanel> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
+    final spacing = context.designTokens.spacing;
 
     final bool isCompact = _panelWidth <= _panelMinWidth;
 
@@ -148,16 +149,16 @@ class _ConversationsPanelState extends State<ConversationsPanel> {
                 : widget.selectedConversationId == null
                 ? Center(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      padding: EdgeInsets.symmetric(horizontal: spacing.xl),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
                             Icons.chat_bubble_outline,
-                            size: 36,
+                            size: spacing.xxl + spacing.xxs,
                             color: context.colorScheme.onSurfaceVariant,
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: spacing.sm),
                           Text(
                             context.l10n.selectConversation,
                             style: context.textScheme.title.copyWith(
@@ -165,7 +166,7 @@ class _ConversationsPanelState extends State<ConversationsPanel> {
                             ),
                             textAlign: TextAlign.center,
                           ),
-                          const SizedBox(height: 6),
+                          SizedBox(height: spacing.xs - spacing.xxs / 2),
                           Text(
                             context.l10n.selectConversationSubtitle,
                             style: context.textScheme.caption.copyWith(
@@ -261,123 +262,142 @@ class _ConversationsListPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
+    final spacing = context.designTokens.spacing;
+    final l10n = context.l10n;
 
-    return BlocBuilder<AllConversationsListBloc, AllConversationsListState>(
-      builder: (context, state) {
-        switch (state) {
-          case AllConversationsListLoadingState():
-            return Container(
-              decoration: BoxDecoration(color: colorScheme.surface),
-              child: const Center(child: CircularProgressIndicator()),
-            );
+    return ToastListener<
+      AllConversationsListBloc,
+      AllConversationsListState,
+      AllConversationsListState
+    >(
+      bloc: context.read<AllConversationsListBloc>(),
+      messageOf: (BuildContext context, AllConversationsListState state) {
+        return AppExceptionsTranslator.translate(context, state.failure);
+      },
+      child: BlocBuilder<AllConversationsListBloc, AllConversationsListState>(
+        builder: (context, state) {
+          switch (state) {
+            case AllConversationsListLoadingState():
+              return Container(
+                decoration: BoxDecoration(color: colorScheme.surface),
+                child: const Center(child: CircularProgressIndicator()),
+              );
 
-          case AllConversationsListFailureState():
-            return InfoWidget(
-              icon: Icons.error,
-              text: state.failure.toString(),
-              useErrorStyle: true,
-              iconAnimationEffect: const ShakeEffect(),
-            );
+            case AllConversationsListFailureState():
+              return InfoWidget(
+                icon: Icons.error,
+                text: AppExceptionsTranslator.translate(context, state.failure),
+                useErrorStyle: true,
+                iconAnimationEffect: const ShakeEffect(),
+              );
 
-          case AllConversationsListLoadedState():
-            final List<ConversationTile> tiles = state.conversationTiles;
+            case AllConversationsListLoadedState():
+              final List<ConversationTile> tiles = state.conversationTiles;
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ChipsBar(isCompact: isCompact),
-                Expanded(
-                  child: tiles.isEmpty
-                      ? Center(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.forum_outlined,
-                                  size: 40,
-                                  color: colorScheme.onSurfaceVariant,
-                                ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  context.l10n.conversationsListEmptyTitle,
-                                  style: context.textScheme.title.copyWith(
-                                    color: colorScheme.onSurface,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  context.l10n.conversationsListEmptySubtitle,
-                                  style: context.textScheme.caption.copyWith(
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ChipsBar(isCompact: isCompact),
+                  Expanded(
+                    child: tiles.isEmpty
+                        ? Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: spacing.lg,
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.forum_outlined,
+                                    size: spacing.xxl + spacing.xs,
                                     color: colorScheme.onSurfaceVariant,
                                   ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
+                                  SizedBox(height: spacing.sm),
+                                  Text(
+                                    l10n.conversationsListEmptyTitle,
+                                    style: context.textScheme.title.copyWith(
+                                      color: colorScheme.onSurface,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  SizedBox(
+                                    height: spacing.xs - spacing.xxs / 2,
+                                  ),
+                                  Text(
+                                    l10n.conversationsListEmptySubtitle,
+                                    style: context.textScheme.caption.copyWith(
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        : NotificationListener<ScrollUpdateNotification>(
+                            onNotification:
+                                (ScrollUpdateNotification scrollInfo) {
+                                  if (!state.hasMore || state.isLoadingMore) {
+                                    return false;
+                                  }
+
+                                  if (scrollInfo.metrics.pixels >=
+                                      scrollInfo.metrics.maxScrollExtent *
+                                          0.8) {
+                                    final int nextPage = state.page + 1;
+                                    context
+                                        .read<AllConversationsListBloc>()
+                                        .add(
+                                          AllConversationsListLoadMoreEvent(
+                                            page: nextPage,
+                                          ),
+                                        );
+                                  }
+
+                                  return false;
+                                },
+                            child: ListView.builder(
+                              itemCount:
+                                  tiles.length + (state.isLoadingMore ? 1 : 0),
+                              itemBuilder: (BuildContext context, int index) {
+                                if (index == tiles.length) {
+                                  return Padding(
+                                    padding: EdgeInsets.all(spacing.md),
+                                    child: Center(
+                                      child: CircularProgressIndicator(
+                                        color: colorScheme.primary,
+                                      ),
+                                    ),
+                                  );
+                                }
+
+                                final ConversationTile tile = tiles[index];
+
+                                return ConversationListTile(
+                                  key: ValueKey<String>(tile.id),
+                                  conversationTile: tile,
+                                  isSelected: tile.id == selectedConversationId,
+                                  currentUserId: state.currentUserId,
+                                  isCompact: isCompact,
+                                  onTap: () {
+                                    GoRouter.of(
+                                      context,
+                                    ).go(AppRoutes.conversation(tile.id));
+                                  },
+                                );
+                              },
                             ),
                           ),
-                        )
-                      : NotificationListener<ScrollNotification>(
-                          onNotification: (ScrollNotification scrollInfo) {
-                            if (!state.hasMore || state.isLoadingMore) {
-                              return false;
-                            }
+                  ),
+                ],
+              );
 
-                            // Load more when user scrolls to 80% of the list
-                            if (scrollInfo.metrics.pixels >=
-                                scrollInfo.metrics.maxScrollExtent * 0.8) {
-                              final int nextPage = state.page + 1;
-                              context.read<AllConversationsListBloc>().add(
-                                AllConversationsListLoadMoreEvent(
-                                  page: nextPage,
-                                ),
-                              );
-                            }
-
-                            return false;
-                          },
-                          child: ListView.builder(
-                            itemCount:
-                                tiles.length + (state.isLoadingMore ? 1 : 0),
-                            itemBuilder: (BuildContext context, int index) {
-                              // Show loading indicator at the bottom
-                              if (index == tiles.length) {
-                                return Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: Center(
-                                    child: CircularProgressIndicator(
-                                      color: colorScheme.primary,
-                                    ),
-                                  ),
-                                );
-                              }
-
-                              final ConversationTile tile = tiles[index];
-
-                              return ConversationListTile(
-                                conversationTile: tile,
-                                isSelected: tile.id == selectedConversationId,
-                                currentUserId: state.currentUserId,
-                                isCompact: isCompact,
-                                onTap: () {
-                                  GoRouter.of(
-                                    context,
-                                  ).go(AppRoutes.conversation(tile.id));
-                                },
-                              );
-                            },
-                          ),
-                        ),
-                ),
-              ],
-            );
-
-          case AllConversationsListInitial():
-            return const SizedBox.shrink();
-        }
-      },
+            case AllConversationsListInitial():
+              return const SizedBox.shrink();
+          }
+        },
+      ),
     );
   }
 }

@@ -14,12 +14,14 @@ class MessageInputBar extends StatefulWidget {
   const MessageInputBar({
     required this.conversationType,
     this.conversationId,
+    this.draftContextId,
     this.replyToMessageId,
     this.onMessageSent,
     super.key,
   });
 
   final String? conversationId;
+  final String? draftContextId;
   final ConversationType conversationType;
   final String? replyToMessageId;
   final VoidCallback? onMessageSent;
@@ -30,7 +32,9 @@ class MessageInputBar extends StatefulWidget {
 
 class _MessageInputBarState extends State<MessageInputBar> {
   MessageRichInputController? _textEditingController;
+  MessageAttachmentsCubit? _messageAttachmentsCubit;
   bool _emojiWarmUpStarted = false;
+  bool _didRestoreDraft = false;
 
   @override
   void initState() {
@@ -52,6 +56,7 @@ class _MessageInputBarState extends State<MessageInputBar> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    _messageAttachmentsCubit ??= context.read<MessageAttachmentsCubit>();
 
     if (_textEditingController != null) {
       return;
@@ -82,16 +87,71 @@ class _MessageInputBarState extends State<MessageInputBar> {
         decoration: TextDecoration.none,
       ),
     );
+    _textEditingController!.addListener(_persistDraft);
+    _restoreDraftIfNeeded();
   }
 
   @override
   void dispose() {
+    _persistDraft();
+    _textEditingController?.removeListener(_persistDraft);
     _textEditingController?.dispose();
     super.dispose();
   }
 
+  String _draftKey() {
+    final String identity =
+        widget.conversationId ??
+        widget.draftContextId ??
+        'unknown-${widget.conversationType.name}';
+    return '${widget.conversationType.name}::$identity';
+  }
+
+  void _restoreDraftIfNeeded() {
+    if (_didRestoreDraft) {
+      return;
+    }
+    _didRestoreDraft = true;
+    final _MessageDraft? draft = _MessageDraftStore.instance.get(_draftKey());
+    if (draft == null) {
+      return;
+    }
+    final MessageMarkdownDecoded decoded = MessageMarkdownCodec.decodeInline(
+      draft.text,
+    );
+    _textEditingController!
+      ..value = _textEditingController!.value.copyWith(
+        text: decoded.text,
+        selection: TextSelection.collapsed(offset: decoded.text.length),
+      )
+      ..setRanges(decoded.ranges);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      _messageAttachmentsCubit?.setFiles(draft.attachedFiles);
+    });
+  }
+
+  void _persistDraft() {
+    final MessageRichInputController? controller = _textEditingController;
+    if (controller == null) {
+      return;
+    }
+    final List<UploadableFile> files =
+        _messageAttachmentsCubit?.state.files ?? [];
+    final String markdown = MessageMarkdownCodec.encode(
+      text: controller.text,
+      ranges: controller.ranges,
+    );
+    _MessageDraftStore.instance.save(
+      key: _draftKey(),
+      draft: _MessageDraft(text: markdown, attachedFiles: files),
+    );
+  }
+
   void _handleAttachPressed() {
-    context.read<MessageAttachmentsCubit>().pickFiles();
+    _messageAttachmentsCubit?.pickFiles();
   }
 
   String _buildMarkdownForSend() {
@@ -113,16 +173,15 @@ class _MessageInputBarState extends State<MessageInputBar> {
       return;
     }
 
-    final List<UploadableFile> files = context
-        .read<MessageAttachmentsCubit>()
-        .state
-        .files;
+    final List<UploadableFile> files =
+        _messageAttachmentsCubit?.state.files ?? [];
 
     switch (widget.conversationType) {
       case ConversationType.private:
         context.read<PrivateConversationBloc>().add(
           PrivateConversationSendMessageEvent(
             text: markdown,
+            attachedFiles: files,
             replyToMessageId: widget.replyToMessageId,
           ),
         );
@@ -145,6 +204,8 @@ class _MessageInputBarState extends State<MessageInputBar> {
     final MessageRichInputController _ = _textEditingController!
       ..clear()
       ..clearAllFormatting();
+    _messageAttachmentsCubit?.clear();
+    _MessageDraftStore.instance.clear(_draftKey());
     widget.onMessageSent?.call();
   }
 
@@ -157,6 +218,12 @@ class _MessageInputBarState extends State<MessageInputBar> {
 
     return BlocBuilder<MessageAttachmentsCubit, MessageAttachmentsState>(
       builder: (context, state) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) {
+            return;
+          }
+          _persistDraft();
+        });
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
@@ -212,5 +279,33 @@ class _MessageInputBarState extends State<MessageInputBar> {
         );
       },
     );
+  }
+}
+
+final class _MessageDraft {
+  const _MessageDraft({required this.text, required this.attachedFiles});
+
+  final String text;
+  final List<UploadableFile> attachedFiles;
+}
+
+final class _MessageDraftStore {
+  _MessageDraftStore._();
+
+  static final _MessageDraftStore instance = _MessageDraftStore._();
+  final Map<String, _MessageDraft> _drafts = <String, _MessageDraft>{};
+
+  _MessageDraft? get(String key) => _drafts[key];
+
+  void save({required String key, required _MessageDraft draft}) {
+    if (draft.text.trim().isEmpty && draft.attachedFiles.isEmpty) {
+      _drafts.remove(key);
+      return;
+    }
+    _drafts[key] = draft;
+  }
+
+  void clear(String key) {
+    _drafts.remove(key);
   }
 }

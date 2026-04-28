@@ -47,10 +47,6 @@ class ProfileSettingsView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SettingsSectionHeader(
-            title: l10n.settingsMyProfile,
-            description: l10n.settingsMyProfileDescription,
-          ),
           SettingsGroupCard(children: [ProfileIdentityCard(user: user)]),
           const SizedBox(height: 16),
           SettingsGroupCard(

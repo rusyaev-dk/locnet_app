@@ -105,7 +105,6 @@ class _SettingsLogoutTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -118,11 +117,7 @@ class _SettingsLogoutTile extends StatelessWidget {
           ),
           child: compact
               ? Center(
-                  child: Icon(
-                    Icons.logout,
-                    size: 18,
-                    color: colorScheme.error,
-                  ),
+                  child: Icon(Icons.logout, size: 18, color: colorScheme.error),
                 )
               : Row(
                   children: [

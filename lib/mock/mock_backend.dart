@@ -304,6 +304,7 @@ final class MockInMemoryBackend {
           fileId: attachment.fileId,
           order: attachmentOrder,
           createdAt: attachment.createdAt,
+          fileType: attachment.fileType,
         );
       }).toList(),
       createdAt: newMessage.createdAt,
@@ -357,6 +358,7 @@ final class MockInMemoryBackend {
           id: const Uuid().v4(),
           messageId: updatedMessage.id,
           fileId: attachment.fileId,
+          fileType: attachment.fileType,
           order: attachmentOrder,
           createdAt: attachment.createdAt,
         );

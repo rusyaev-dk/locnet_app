@@ -12,29 +12,24 @@ import 'package:socket_io_client/socket_io_client.dart' as io;
 class HttpPrivateConversationRepo implements IPrivateConversationRepo {
   HttpPrivateConversationRepo({
     required IHttpClient httpClient,
+    required ApiConfig apiConfig,
     ISessionCacheRepo? sessionCacheRepo,
     ILogger? logger,
-    String? socketBaseUrl,
   }) : _httpClient = httpClient,
+       _apiConfig = apiConfig,
        _sessionCacheRepo = sessionCacheRepo,
-       _logger = logger,
-       _socketBaseUrl = socketBaseUrl;
+       _logger = logger;
 
   final IHttpClient _httpClient;
+  final ApiConfig _apiConfig;
   final ISessionCacheRepo? _sessionCacheRepo;
   final ILogger? _logger;
-  String? _socketBaseUrl;
   io.Socket? _socket;
   bool _isSocketConnecting = false;
 
   final StreamController<PrivateConversationMessageUpdateRec>
   _messagesUpdatesController =
       StreamController<PrivateConversationMessageUpdateRec>.broadcast();
-
-  void configureSocket({required String socketBaseUrl}) {
-    _socketBaseUrl = socketBaseUrl;
-    _tryConnectSocket();
-  }
 
   @override
   Future<bool> blockCompanion({
@@ -316,8 +311,8 @@ class HttpPrivateConversationRepo implements IPrivateConversationRepo {
       return;
     }
 
-    final String? baseUrl = _socketBaseUrl;
-    if (baseUrl == null || baseUrl.isEmpty || _sessionCacheRepo == null) {
+    final String baseUrl = _apiConfig.baseSocketUrl.trim();
+    if (baseUrl.isEmpty || _sessionCacheRepo == null) {
       return;
     }
 
@@ -472,10 +467,11 @@ class HttpPrivateConversationRepo implements IPrivateConversationRepo {
 
   Future<void> _tryReconnectWithFreshSessionToken() async {
     try {
-      if (_sessionCacheRepo == null || _socketBaseUrl == null) {
+      final String baseUrl = _apiConfig.baseSocketUrl.trim();
+      if (_sessionCacheRepo == null || baseUrl.isEmpty) {
         return;
       }
-      await _createAndConnectSocket(baseUrl: _socketBaseUrl!);
+      await _createAndConnectSocket(baseUrl: baseUrl);
     } catch (e, st) {
       _logger?.exception(e, st);
     }

@@ -72,23 +72,22 @@ final class ProdEnvPreset implements IAppEnvPreset {
 
   @override
   IPrivateMessageRepo createPrivateMessageRepo() {
-    return MockPrivateMessageRepo(
-      backendStorage: MockInMemoryBackend(),
-    );
+    return MockPrivateMessageRepo(backendStorage: MockInMemoryBackend());
+  }
+
+  @override
+  IMediaRepo createMediaRepo() {
+    return HttpMediaRepo(httpClient: _httpClient);
   }
 
   @override
   IGroupMessageRepo createGroupMessageRepo() {
-    return MockGroupMessageRepo(
-      backendStorage: MockInMemoryBackend(),
-    );
+    return MockGroupMessageRepo(backendStorage: MockInMemoryBackend());
   }
 
   @override
   IChannelPublicationRepo createChannelPublicationRepo() {
-    return MockChannelPublicationRepo(
-      backendStorage: MockInMemoryBackend(),
-    );
+    return MockChannelPublicationRepo(backendStorage: MockInMemoryBackend());
   }
 
   @override

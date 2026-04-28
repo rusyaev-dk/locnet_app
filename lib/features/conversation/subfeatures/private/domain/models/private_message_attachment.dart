@@ -8,6 +8,7 @@ class PrivateMessageAttachment extends Equatable {
     required this.id,
     required this.messageId,
     required this.fileId,
+    required this.fileType,
     required this.order,
     required this.createdAt,
   });
@@ -15,6 +16,7 @@ class PrivateMessageAttachment extends Equatable {
   final String id;
   final String messageId;
   final String fileId;
+  final String? fileType;
   final int order;
   final DateTime createdAt;
 
@@ -23,6 +25,7 @@ class PrivateMessageAttachment extends Equatable {
       id: dto.id,
       messageId: dto.messageId,
       fileId: dto.fileId,
+      fileType: dto.fileType,
       order: dto.order,
       createdAt: dto.createdAt,
     );
@@ -32,6 +35,7 @@ class PrivateMessageAttachment extends Equatable {
     String? id,
     String? messageId,
     String? fileId,
+    String? fileType,
     int? order,
     DateTime? createdAt,
   }) {
@@ -39,11 +43,19 @@ class PrivateMessageAttachment extends Equatable {
       id: id ?? this.id,
       messageId: messageId ?? this.messageId,
       fileId: fileId ?? this.fileId,
+      fileType: fileType ?? this.fileType,
       order: order ?? this.order,
       createdAt: createdAt ?? this.createdAt,
     );
   }
 
   @override
-  List<Object?> get props => [id, messageId, fileId, order, createdAt];
+  List<Object?> get props => [
+    id,
+    messageId,
+    fileId,
+    fileType,
+    order,
+    createdAt,
+  ];
 }

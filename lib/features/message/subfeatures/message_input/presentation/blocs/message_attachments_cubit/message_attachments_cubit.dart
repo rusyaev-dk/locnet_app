@@ -82,6 +82,10 @@ class MessageAttachmentsCubit extends Cubit<MessageAttachmentsState> {
     emit(state.copyWith(files: <UploadableFile>[]));
   }
 
+  void setFiles(List<UploadableFile> files) {
+    emit(state.copyWith(files: List<UploadableFile>.from(files)));
+  }
+
   void applyNewOrder(List<UploadableFile> files) {
     emit(state.copyWith(files: List<UploadableFile>.from(files)));
   }

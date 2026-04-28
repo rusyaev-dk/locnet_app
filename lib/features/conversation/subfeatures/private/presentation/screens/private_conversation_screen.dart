@@ -10,6 +10,7 @@ import 'package:locnet_app/features/conversation/subfeatures/private/domain/doma
 import 'package:locnet_app/features/conversation/subfeatures/private/presentation/presentation.dart';
 import 'package:locnet_app/features/conversations_list/presentation/presentation.dart';
 import 'package:locnet_app/features/message/data/data.dart';
+import 'package:locnet_app/features/message/domain/domain.dart';
 import 'package:locnet_app/features/message/subfeatures/message_input/presentation/presentation.dart';
 import 'package:locnet_app/features/message/subfeatures/private_message/domain/domain.dart';
 import 'package:locnet_app/features/message/subfeatures/private_message/presentation/presentation.dart';
@@ -53,6 +54,11 @@ class PrivateConversationScreenWrapper extends StatelessWidget {
             messageRepo: context.read<IPrivateMessageRepo>(),
           ),
         ),
+        RepositoryProvider<MediaInteractor>(
+          create: (BuildContext context) => MediaInteractor(
+            mediaRepo: context.read<IAppEnvPreset>().createMediaRepo(),
+          ),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -63,6 +69,7 @@ class PrivateConversationScreenWrapper extends StatelessWidget {
                       .read<PrivateConversationInteractor>(),
                   privateMessageInteractor: context
                       .read<PrivateMessageInteractor>(),
+                  mediaInteractor: context.read<MediaInteractor>(),
                   userInteractor: context.read<UserInteractor>(),
                   logger: context.read<ILogger>(),
                 )..add(
@@ -130,6 +137,7 @@ class PrivateConversationScreen extends StatefulWidget {
 
 class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
   PrivateMessage? _replyTo;
+  String? _highlightedMessageId;
 
   @override
   Widget build(BuildContext context) {
@@ -292,6 +300,11 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
                         PrivateConversationLoadedState() => PrivateHeader(
                           conversationId: convState.conversation.conversationId,
                           companion: convState.companion,
+                          onSearchResultSelected: (messageId) {
+                            setState(() {
+                              _highlightedMessageId = messageId;
+                            });
+                          },
                         ),
                         PrivateConversationDraftState() => PrivateHeader(
                           companion: convState.companion,
@@ -402,6 +415,15 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
                             return PrivateMessagesList(
                               messages: messages,
                               companionId: state.companionId,
+                              highlightedMessageId: _highlightedMessageId,
+                              onHighlightConsumed: (messageId) {
+                                if (_highlightedMessageId != messageId) {
+                                  return;
+                                }
+                                setState(() {
+                                  _highlightedMessageId = null;
+                                });
+                              },
                               onReply: (message) {
                                 setState(() {
                                   _replyTo = message;
@@ -516,6 +538,7 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
             ),
           MessageInputBar(
             conversationId: widget.conversationId,
+            draftContextId: widget.draftCompanionId,
             conversationType: ConversationType.private,
             replyToMessageId: _replyTo?.id,
             onMessageSent: () {

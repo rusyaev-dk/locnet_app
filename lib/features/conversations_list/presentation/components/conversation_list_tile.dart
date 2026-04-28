@@ -23,8 +23,10 @@ class ConversationListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
+    final spacing = context.designTokens.spacing;
     final textScheme = context.textScheme;
     final l10n = context.l10n;
+    final Color secondaryTextColor = colorScheme.onSurfaceVariant;
 
     if (isCompact) {
       final String avatarText = conversationTile.companion != null
@@ -38,7 +40,10 @@ class ConversationListTile extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            padding: EdgeInsets.symmetric(
+              horizontal: spacing.sm,
+              vertical: spacing.xs + spacing.xxs / 2,
+            ),
             child: ConversationAvatar(text: avatarText),
           ),
         ),
@@ -69,18 +74,14 @@ class ConversationListTile extends StatelessWidget {
             ),
             TextSpan(
               text: lastMessageText,
-              style: textScheme.body.copyWith(
-                color: colorScheme.onSurface.withAlpha(0x99),
-              ),
+              style: textScheme.body.copyWith(color: secondaryTextColor),
             ),
           ],
         );
       } else {
         subtitleSpan = TextSpan(
           text: lastMessageText,
-          style: textScheme.body.copyWith(
-            color: colorScheme.onSurface.withAlpha(0x99),
-          ),
+          style: textScheme.body.copyWith(color: secondaryTextColor),
         );
       }
 
@@ -110,7 +111,10 @@ class ConversationListTile extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          padding: EdgeInsets.symmetric(
+            horizontal: spacing.sm,
+            vertical: spacing.xs + spacing.xxs / 2,
+          ),
           child: Row(
             children: [
               ConversationAvatar(
@@ -120,7 +124,7 @@ class ConversationListTile extends StatelessWidget {
                       )
                     : conversationTile.title,
               ), // TODO: passthrouth real url
-              const SizedBox(width: 12),
+              SizedBox(width: spacing.sm),
               Expanded(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -129,8 +133,12 @@ class ConversationListTile extends StatelessWidget {
                     Row(
                       children: [
                         if (icon != null) ...[
-                          Icon(icon, color: colorScheme.onSurface, size: 15),
-                          const SizedBox(width: 4),
+                          Icon(
+                            icon,
+                            color: colorScheme.onSurfaceVariant,
+                            size: spacing.sm + spacing.xxs - spacing.xxs / 4,
+                          ),
+                          SizedBox(width: spacing.xxs),
                         ],
                         Expanded(
                           child: Text(
@@ -143,11 +151,11 @@ class ConversationListTile extends StatelessWidget {
                           ),
                         ),
                         if (timeText != null) ...[
-                          const SizedBox(width: 8),
+                          SizedBox(width: spacing.xs),
                           Text(
                             timeText,
                             style: textScheme.caption.copyWith(
-                              color: colorScheme.onSurface.withAlpha(0x99),
+                              color: secondaryTextColor,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -156,7 +164,7 @@ class ConversationListTile extends StatelessWidget {
                       ],
                     ),
                     if (subtitleSpan != null) ...[
-                      const SizedBox(height: 7),
+                      SizedBox(height: spacing.xs - spacing.xxs / 4),
                       RichText(
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,

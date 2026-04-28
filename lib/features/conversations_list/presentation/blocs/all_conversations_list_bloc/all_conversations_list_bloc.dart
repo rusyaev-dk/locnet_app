@@ -27,7 +27,12 @@ class AllConversationsListBloc
     on<AllConversationsListConversationDeletedEvent>(_onConversationDeleted);
 
     _conversationsUpdatesSub = _conversationsListInteractor.conversationsUpdates
-        .listen(_onIncomingChange);
+        .listen(
+          _onIncomingChange,
+          onError: (Object e, StackTrace st) {
+            _logger.exception(e, st);
+          },
+        );
   }
 
   final ConversationsListInteractor _conversationsListInteractor;
@@ -178,7 +183,8 @@ class AllConversationsListBloc
       return;
     }
 
-    final List<ConversationTile> withoutDuplicate = currentState.conversationTiles
+    final List<ConversationTile> withoutDuplicate = currentState
+        .conversationTiles
         .where((ConversationTile tile) => tile.id != event.conversationTile.id)
         .toList();
     final List<ConversationTile> updatedConversations = <ConversationTile>[
@@ -206,9 +212,8 @@ class AllConversationsListBloc
     final int index = currentState.conversationTiles.indexWhere(
       (ConversationTile tile) => tile.id == event.conversationTile.id,
     );
-    final List<ConversationTile> updatedConversations = List<ConversationTile>.from(
-      currentState.conversationTiles,
-    );
+    final List<ConversationTile> updatedConversations =
+        List<ConversationTile>.from(currentState.conversationTiles);
 
     if (index >= 0) {
       final ConversationTile existing = updatedConversations[index];

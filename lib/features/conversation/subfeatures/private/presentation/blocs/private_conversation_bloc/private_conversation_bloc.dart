@@ -6,6 +6,7 @@ import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/private.dart';
 import 'package:locnet_app/features/message/domain/domain.dart';
+import 'package:locnet_app/features/message/subfeatures/message_input/domain/domain.dart';
 import 'package:locnet_app/features/message/subfeatures/private_message/domain/domain.dart';
 import 'package:uuid/uuid.dart';
 
@@ -17,10 +18,12 @@ class PrivateConversationBloc
   PrivateConversationBloc({
     required PrivateConversationInteractor privateConversationInteractor,
     required PrivateMessageInteractor privateMessageInteractor,
+    required MediaInteractor mediaInteractor,
     required UserInteractor userInteractor,
     required ILogger logger,
   }) : _privateConversationInteractor = privateConversationInteractor,
        _privateMessageInteractor = privateMessageInteractor,
+       _mediaInteractor = mediaInteractor,
        _userInteractor = userInteractor,
        _logger = logger,
        super(const PrivateConversationLoadingState()) {
@@ -36,6 +39,7 @@ class PrivateConversationBloc
 
   final PrivateConversationInteractor _privateConversationInteractor;
   final PrivateMessageInteractor _privateMessageInteractor;
+  final MediaInteractor _mediaInteractor;
   final UserInteractor _userInteractor;
   final ILogger _logger;
 
@@ -107,38 +111,6 @@ class PrivateConversationBloc
         userId: event.companionId,
       );
 
-      final User currentUser = await _userInteractor.getCachedUser();
-      final List<PrivateConversation> conversations =
-          await _privateConversationInteractor.listConversations();
-      final PrivateConversation? existingConversation = conversations
-          .where(
-            (PrivateConversation conversation) =>
-                !conversation.isDeleted &&
-                ((conversation.user1Id == currentUser.userId &&
-                        conversation.user2Id == companion.userId) ||
-                    (conversation.user2Id == currentUser.userId &&
-                        conversation.user1Id == companion.userId)),
-          )
-          .firstOrNull;
-
-      if (existingConversation != null) {
-        final List<PrivateMessage> messages =
-            await _privateConversationInteractor.loadMessagesPage(
-              conversationId: existingConversation.conversationId,
-            );
-
-        emit(
-          PrivateConversationLoadedState(
-            messages: messages,
-            conversation: existingConversation,
-            companionId: companion.userId,
-            companion: companion,
-            pendingNavigationConversationId: existingConversation.conversationId,
-          ),
-        );
-        return;
-      }
-
       emit(PrivateConversationDraftState(companion: companion));
     } catch (e, st) {
       _logger.exception(e, st);
@@ -158,10 +130,11 @@ class PrivateConversationBloc
     Emitter<PrivateConversationState> emit,
   ) async {
     final String normalizedText = event.text.trim();
+    final List<UploadableFile> attachedFiles = event.attachedFiles;
     final String? replyToMessageId = _normalizeReplyToMessageId(
       event.replyToMessageId,
     );
-    if (normalizedText.isEmpty) {
+    if (normalizedText.isEmpty && attachedFiles.isEmpty) {
       return;
     }
 
@@ -181,13 +154,18 @@ class PrivateConversationBloc
             await _privateConversationInteractor.getOrCreateByCompanion(
               companionId: currentState.companion.userId,
             );
+        final List<PrivateMessageAttachment> readyAttachments =
+            await _uploadReadyAttachments(
+              conversationId: conversation.conversationId,
+              attachedFiles: attachedFiles,
+            );
 
         final PrivateMessage pendingMessage = PrivateMessage(
           id: '',
           conversationId: conversation.conversationId,
           senderId: currentUser.userId,
           text: normalizedText,
-          attachments: const <PrivateMessageAttachment>[],
+          attachments: readyAttachments,
           createdAt: now,
           updatedAt: now,
           isDeleted: false,
@@ -220,12 +198,17 @@ class PrivateConversationBloc
       final User currentUser = await _userInteractor.getCachedUser();
       final String clientMessageId = const Uuid().v4();
       final DateTime now = DateTime.now();
+      final List<PrivateMessageAttachment> readyAttachments =
+          await _uploadReadyAttachments(
+            conversationId: currentState.conversation.conversationId,
+            attachedFiles: attachedFiles,
+          );
       final PrivateMessage pendingMessage = PrivateMessage(
         id: '',
         conversationId: currentState.conversation.conversationId,
         senderId: currentUser.userId,
         text: normalizedText,
-        attachments: const <PrivateMessageAttachment>[],
+        attachments: readyAttachments,
         createdAt: now,
         updatedAt: now,
         isDeleted: false,
@@ -408,6 +391,69 @@ class PrivateConversationBloc
       return null;
     }
     return normalized;
+  }
+
+  Future<List<PrivateMessageAttachment>> _uploadReadyAttachments({
+    required String conversationId,
+    required List<UploadableFile> attachedFiles,
+  }) async {
+    final DateTime now = DateTime.now();
+    final List<PrivateMessageAttachment> attachments =
+        <PrivateMessageAttachment>[];
+
+    for (int index = 0; index < attachedFiles.length; index++) {
+      final UploadableFile file = attachedFiles[index];
+      final String mimeType = _resolveMimeType(file);
+
+      final MediaInitUpload initUpload = await _mediaInteractor.initUpload(
+        scope: 'private_conversation',
+        scopeId: conversationId,
+        fileName: file.fileName,
+        mimeType: mimeType,
+        sizeBytes: file.bytes.length,
+      );
+
+      final String? etag = await _mediaInteractor.uploadBytes(
+        uploadUrl: initUpload.uploadUrl,
+        bytes: file.bytes,
+        requiredHeaders: initUpload.requiredHeaders,
+      );
+
+      final MediaCompleteUpload completeUpload = await _mediaInteractor
+          .completeUpload(
+            mediaId: initUpload.mediaId,
+            etag: etag,
+            contentLength: file.bytes.length,
+          );
+
+      attachments.add(
+        PrivateMessageAttachment(
+          id: 'local-attach-${const Uuid().v4()}',
+          messageId: '',
+          fileId: completeUpload.mediaId,
+          fileType: file.fileType.value,
+          order: index,
+          createdAt: now,
+        ),
+      );
+    }
+
+    return attachments;
+  }
+
+  String _resolveMimeType(UploadableFile file) {
+    switch (file.fileType) {
+      case UploadableFileType.image:
+        return 'image/*';
+      case UploadableFileType.video:
+        return 'video/*';
+      case UploadableFileType.audio:
+        return 'audio/*';
+      case UploadableFileType.doc:
+        return 'application/octet-stream';
+      case UploadableFileType.file:
+        return 'application/octet-stream';
+    }
   }
 
   @override

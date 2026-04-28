@@ -86,6 +86,16 @@ final class DevEnvPreset implements IAppEnvPreset {
   }
 
   @override
+  IMediaRepo createMediaRepo() {
+    return HttpMediaRepo(
+      httpClient: DioHttpClient(
+        dio: _appScope.dio,
+        apiConfig: _appScope.apiConfig,
+      ),
+    );
+  }
+
+  @override
   IGroupMessageRepo createGroupMessageRepo() {
     return MockGroupMessageRepo(backendStorage: _mockInMemoryBackend);
   }
@@ -103,11 +113,11 @@ final class DevEnvPreset implements IAppEnvPreset {
           dio: _appScope.dio,
           apiConfig: _appScope.apiConfig,
         ),
+        apiConfig: _appScope.apiConfig,
         sessionCacheRepo: LocalSessionCacheRepo(
           storage: _appScope.storageAggregator.secureStorage,
         ),
         logger: _appScope.logger,
-        socketBaseUrl: _appScope.apiConfig.baseUrl,
       );
     }
 

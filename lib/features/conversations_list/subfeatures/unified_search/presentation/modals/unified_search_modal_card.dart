@@ -6,6 +6,8 @@ import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/domain/domain.dart';
 import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/presentation/presentation.dart';
+import 'package:locnet_app/features/conversations_list/domain/domain.dart';
+import 'package:locnet_app/features/conversations_list/presentation/presentation.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
 class UnifiedSearchModalCardWrapper extends StatelessWidget {
@@ -179,6 +181,33 @@ class _UnifiedSearchBody extends StatelessWidget {
   final UnifiedSearchState state;
   final _UnifiedSearchTab selectedTab;
 
+  String? _resolvePrivateConversationIdForUser(
+    BuildContext context, {
+    required String companionId,
+  }) {
+    final AllConversationsListBloc? conversationsBloc =
+        context.read<AllConversationsListBloc?>();
+    if (conversationsBloc == null) {
+      return null;
+    }
+
+    final AllConversationsListState conversationsState = conversationsBloc.state;
+
+    if (conversationsState is! AllConversationsListLoadedState) {
+      return null;
+    }
+
+    final ConversationTile? privateTile = conversationsState.conversationTiles
+        .where(
+          (ConversationTile tile) =>
+              tile.type == ConversationTileType.private &&
+              tile.companion?.userId == companionId,
+        )
+        .firstOrNull;
+
+    return privateTile?.id;
+  }
+
   List<UnifiedSearchListItem> _itemsForTab(
     UnifiedSearchLoadedState loadedState,
   ) {
@@ -299,20 +328,27 @@ class _UnifiedSearchBody extends StatelessWidget {
                   if (user == null) {
                     return;
                   }
-                  GoRouter.of(
-                    context,
-                  ).go(AppRoutes.conversationDraft(user.userId));
+                  final String? existingConversationId =
+                      _resolvePrivateConversationIdForUser(
+                        context,
+                        companionId: user.userId,
+                      );
+                  final GoRouter router = GoRouter.of(context);
                   Navigator.of(context).pop();
+                  router.go(
+                    existingConversationId == null
+                        ? AppRoutes.conversationDraft(user.userId)
+                        : AppRoutes.conversation(existingConversationId),
+                  );
                 case UnifiedSearchListItemType.conversation:
                   final UnifiedSearchConversation? conversation =
                       items[index].conversation;
                   if (conversation == null) {
                     return;
                   }
-                  GoRouter.of(
-                    context,
-                  ).go(AppRoutes.conversation(conversation.id));
+                  final GoRouter router = GoRouter.of(context);
                   Navigator.of(context).pop();
+                  router.go(AppRoutes.conversation(conversation.id));
               }
             },
           );
