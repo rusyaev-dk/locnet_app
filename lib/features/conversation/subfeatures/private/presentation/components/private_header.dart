@@ -7,6 +7,7 @@ import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/conversation_tools/conversation_tools.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/presentation/modals/companion_info_modal_card.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/private.dart';
+import 'package:locnet_app/features/message/domain/domain.dart';
 
 enum _PrivateHeaderMenuAction {
   toggleNotifications,
@@ -77,6 +78,9 @@ class _PrivateHeaderState extends State<PrivateHeader> {
                     context: context,
                     conversationId: conversationId,
                     conversationType: ConversationType.private,
+                    privateConversationBloc: context
+                        .read<PrivateConversationBloc>(),
+                    mediaInteractor: context.read<MediaInteractor>(),
                   );
                 },
               ),

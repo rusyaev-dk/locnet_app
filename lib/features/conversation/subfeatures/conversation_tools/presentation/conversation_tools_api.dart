@@ -5,6 +5,8 @@ import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/private.dart';
 import 'package:locnet_app/features/conversation/subfeatures/conversation_tools/presentation/presentation.dart'
     show ConversationSearchSheet, ConversationSharedMediaSheet;
+import 'package:locnet_app/features/message/domain/domain.dart';
+import 'package:provider/provider.dart';
 
 Future<void> showConversationSearchSheet({
   required BuildContext context,
@@ -45,6 +47,8 @@ Future<void> showConversationSharedMediaSheet({
   required BuildContext context,
   required String conversationId,
   required ConversationType conversationType,
+  PrivateConversationBloc? privateConversationBloc,
+  MediaInteractor? mediaInteractor,
 }) {
   return showGeneralDialog<void>(
     context: context,
@@ -53,13 +57,28 @@ Future<void> showConversationSharedMediaSheet({
     barrierColor: Colors.black54,
     transitionDuration: const Duration(milliseconds: 200),
     transitionBuilder: slideFadeDialogTransition,
-    pageBuilder: (context, _, __) => AppModalCard(
+    pageBuilder: (dialogContext, _, __) => AppModalCard(
       maxWidth: 480,
       verticalInset: 60,
-      child: ConversationSharedMediaSheet(
-        conversationId: conversationId,
-        conversationType: conversationType,
-      ),
+      child: privateConversationBloc == null && mediaInteractor == null
+          ? ConversationSharedMediaSheet(
+              conversationId: conversationId,
+              conversationType: conversationType,
+            )
+          : MultiProvider(
+              providers: [
+                if (privateConversationBloc != null)
+                  BlocProvider<PrivateConversationBloc>.value(
+                    value: privateConversationBloc,
+                  ),
+                if (mediaInteractor != null)
+                  Provider<MediaInteractor>.value(value: mediaInteractor),
+              ],
+              child: ConversationSharedMediaSheet(
+                conversationId: conversationId,
+                conversationType: conversationType,
+              ),
+            ),
     ),
   );
 }

@@ -8,6 +8,8 @@ class HttpMediaRepo implements IMediaRepo {
   HttpMediaRepo({required IHttpClient httpClient}) : _httpClient = httpClient;
 
   final IHttpClient _httpClient;
+  final Map<String, MediaDownloadInfoDto> _downloadInfoCache =
+      <String, MediaDownloadInfoDto>{};
 
   @override
   Future<MediaInitUploadResponseDto> initUpload({
@@ -138,6 +140,12 @@ class HttpMediaRepo implements IMediaRepo {
     String? scopeId,
   }) async {
     try {
+      final String cacheKey = '$mediaId::$scope::$scopeId';
+      final MediaDownloadInfoDto? cached = _downloadInfoCache[cacheKey];
+      if (cached != null) {
+        return cached;
+      }
+
       final Response<dynamic> response = await _httpClient.get(
         path: ApiEndpoints.mediaDownload(mediaId),
         uriParameters: <String, dynamic>{
@@ -156,7 +164,9 @@ class HttpMediaRepo implements IMediaRepo {
       final Map<String, Object?> payload = data['data'] is Map<String, Object?>
           ? data['data'] as Map<String, Object?>
           : data;
-      return MediaDownloadInfoDto.fromJson(payload);
+      final MediaDownloadInfoDto dto = MediaDownloadInfoDto.fromJson(payload);
+      _downloadInfoCache[cacheKey] = dto;
+      return dto;
     } on AppException {
       rethrow;
     } catch (e, st) {

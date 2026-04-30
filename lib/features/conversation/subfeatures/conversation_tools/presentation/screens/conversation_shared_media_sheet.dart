@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/features/conversation/domain/domain.dart';
+import 'package:locnet_app/features/conversation/subfeatures/private/private.dart';
+import 'package:locnet_app/features/message/domain/domain.dart';
+import 'package:locnet_app/features/message/subfeatures/media_viewer/media_viewer.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
 // ── Tab definitions ───────────────────────────────────────────────────────────
@@ -9,20 +14,20 @@ enum _MediaTab { media, files, links, voice, music }
 
 extension _MediaTabExt on _MediaTab {
   String get label => switch (this) {
-        _MediaTab.media => 'Media',
-        _MediaTab.files => 'Files',
-        _MediaTab.links => 'Links',
-        _MediaTab.voice => 'Voice',
-        _MediaTab.music => 'Music',
-      };
+    _MediaTab.media => 'Media',
+    _MediaTab.files => 'Files',
+    _MediaTab.links => 'Links',
+    _MediaTab.voice => 'Voice',
+    _MediaTab.music => 'Music',
+  };
 
   IconData get icon => switch (this) {
-        _MediaTab.media => Icons.photo_library_outlined,
-        _MediaTab.files => Icons.insert_drive_file_outlined,
-        _MediaTab.links => Icons.link_rounded,
-        _MediaTab.voice => Icons.mic_none_rounded,
-        _MediaTab.music => Icons.music_note_outlined,
-      };
+    _MediaTab.media => Icons.photo_library_outlined,
+    _MediaTab.files => Icons.insert_drive_file_outlined,
+    _MediaTab.links => Icons.link_rounded,
+    _MediaTab.voice => Icons.mic_none_rounded,
+    _MediaTab.music => Icons.music_note_outlined,
+  };
 }
 
 // ── Main widget ───────────────────────────────────────────────────────────────
@@ -45,6 +50,8 @@ class ConversationSharedMediaSheet extends StatefulWidget {
 class _ConversationSharedMediaSheetState
     extends State<ConversationSharedMediaSheet> {
   _MediaTab _activeTab = _MediaTab.media;
+  final Map<String, Future<MediaDownloadInfo>> _downloadInfoCache =
+      <String, Future<MediaDownloadInfo>>{};
 
   @override
   Widget build(BuildContext context) {
@@ -120,36 +127,91 @@ class _ConversationSharedMediaSheetState
     AppColorScheme colorScheme,
     AppTextScheme textScheme,
   ) {
+    final List<_SharedMediaItem> mediaItems = _resolveSharedMediaItems();
+    final List<_SharedMediaItem> fileItems = mediaItems
+        .where((_SharedMediaItem item) => !item.isImage && !item.isVideo)
+        .toList(growable: false);
     return switch (tab) {
       _MediaTab.media => _MediaGrid(
-          key: const ValueKey('media'),
-          colorScheme: colorScheme,
-        ),
+        key: const ValueKey('media'),
+        colorScheme: colorScheme,
+        items: mediaItems,
+        loadDownloadInfo: _resolveDownloadInfo,
+      ),
       _MediaTab.files => _FilesList(
-          key: const ValueKey('files'),
-          colorScheme: colorScheme,
-          textScheme: textScheme,
-        ),
+        key: const ValueKey('files'),
+        colorScheme: colorScheme,
+        textScheme: textScheme,
+        sharedItems: fileItems,
+      ),
       _MediaTab.links => _LinksList(
-          key: const ValueKey('links'),
-          colorScheme: colorScheme,
-          textScheme: textScheme,
-        ),
+        key: const ValueKey('links'),
+        colorScheme: colorScheme,
+        textScheme: textScheme,
+      ),
       _MediaTab.voice => _EmptyTabState(
-          key: const ValueKey('voice'),
-          icon: _MediaTab.voice.icon,
-          label: 'No voice messages',
-          colorScheme: colorScheme,
-          textScheme: textScheme,
-        ),
+        key: const ValueKey('voice'),
+        icon: _MediaTab.voice.icon,
+        label: 'No voice messages',
+        colorScheme: colorScheme,
+        textScheme: textScheme,
+      ),
       _MediaTab.music => _EmptyTabState(
-          key: const ValueKey('music'),
-          icon: _MediaTab.music.icon,
-          label: 'No music files',
-          colorScheme: colorScheme,
-          textScheme: textScheme,
-        ),
+        key: const ValueKey('music'),
+        icon: _MediaTab.music.icon,
+        label: 'No music files',
+        colorScheme: colorScheme,
+        textScheme: textScheme,
+      ),
     };
+  }
+
+  List<_SharedMediaItem> _resolveSharedMediaItems() {
+    if (widget.conversationType != ConversationType.private) {
+      return const <_SharedMediaItem>[];
+    }
+
+    final PrivateConversationBloc? bloc = context
+        .read<PrivateConversationBloc?>();
+    if (bloc == null) {
+      return const <_SharedMediaItem>[];
+    }
+
+    final PrivateConversationState state = bloc.state;
+    if (state is! PrivateConversationLoadedState) {
+      return const <_SharedMediaItem>[];
+    }
+
+    final List<_SharedMediaItem> items = <_SharedMediaItem>[];
+    final Set<String> seenMediaIds = <String>{};
+    for (final PrivateMessage message in state.messages) {
+      for (final PrivateMessageAttachment attachment in message.attachments) {
+        final String mediaId = attachment.fileId;
+        if (mediaId.isEmpty || seenMediaIds.contains(mediaId)) {
+          continue;
+        }
+        seenMediaIds.add(mediaId);
+        items.add(
+          _SharedMediaItem(
+            mediaId: mediaId,
+            kind: attachment.fileType ?? '',
+            conversationId: state.conversation.conversationId,
+          ),
+        );
+      }
+    }
+    return items;
+  }
+
+  Future<MediaDownloadInfo> _resolveDownloadInfo(_SharedMediaItem item) {
+    final String cacheKey = '${item.mediaId}::${item.conversationId}';
+    return _downloadInfoCache.putIfAbsent(cacheKey, () {
+      return context.read<MediaInteractor>().getDownloadInfo(
+        mediaId: item.mediaId,
+        scope: 'private_conversation',
+        scopeId: item.conversationId,
+      );
+    });
   }
 }
 
@@ -205,15 +267,30 @@ class _TabChip extends StatelessWidget {
 // ── Media grid ────────────────────────────────────────────────────────────────
 
 class _MediaGrid extends StatelessWidget {
-  const _MediaGrid({required this.colorScheme, super.key});
+  const _MediaGrid({
+    required this.colorScheme,
+    required this.items,
+    required this.loadDownloadInfo,
+    super.key,
+  });
 
   final AppColorScheme colorScheme;
-
-  static const int _itemCount = 18;
+  final List<_SharedMediaItem> items;
+  final Future<MediaDownloadInfo> Function(_SharedMediaItem item)
+  loadDownloadInfo;
 
   @override
   Widget build(BuildContext context) {
     final radii = context.radii;
+
+    if (items.isEmpty) {
+      return _EmptyTabState(
+        icon: Icons.photo_library_outlined,
+        label: 'No shared media',
+        colorScheme: colorScheme,
+        textScheme: context.textScheme,
+      );
+    }
 
     return GridView.builder(
       padding: const EdgeInsets.all(3),
@@ -222,24 +299,97 @@ class _MediaGrid extends StatelessWidget {
         crossAxisSpacing: 3,
         mainAxisSpacing: 3,
       ),
-      itemCount: _itemCount,
+      itemCount: items.length,
       itemBuilder: (context, index) {
-        final shade = index.isEven
-            ? colorScheme.surfaceContainer
-            : colorScheme.surfaceContainerHigh;
+        final _SharedMediaItem item = items[index];
+        return FutureBuilder<MediaDownloadInfo>(
+          future: loadDownloadInfo(item),
+          builder:
+              (
+                BuildContext context,
+                AsyncSnapshot<MediaDownloadInfo> snapshot,
+              ) {
+                if (snapshot.connectionState != ConnectionState.done ||
+                    !snapshot.hasData) {
+                  return ClipRRect(
+                    borderRadius: radii.smallRadius,
+                    child: Container(
+                      color: colorScheme.surfaceContainer,
+                      child: const Center(
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    ),
+                  );
+                }
+                final MediaDownloadInfo info = snapshot.data!;
+                final String type = item.kind.isEmpty
+                    ? info.mimeType
+                    : item.kind;
+                final bool isVideo = type.startsWith('video');
+                final bool isImage = type.startsWith('image');
 
-        return ClipRRect(
-          borderRadius: radii.smallRadius,
-          child: Container(
-            color: shade,
-            child: Center(
-              child: Icon(
-                Icons.image_outlined,
-                size: 26,
-                color: colorScheme.onSurfaceVariant.withAlpha(70),
-              ),
-            ),
-          ),
+                return Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () {
+                      if (isImage) {
+                        showImageGalleryViewerModal(
+                          context: context,
+                          imageUrls: [info.downloadUrl],
+                          initialIndex: 0,
+                        );
+                        return;
+                      }
+                      if (isVideo) {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => MessageVideoPlayerScreen(
+                              videoUrl: info.downloadUrl,
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                    child: ClipRRect(
+                      borderRadius: radii.smallRadius,
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          CachedNetworkImage(
+                            imageUrl: info.downloadUrl,
+                            fit: BoxFit.cover,
+                            errorWidget:
+                                (BuildContext context, String _, Object _) {
+                                  return Container(
+                                    color: colorScheme.surfaceContainerHigh,
+                                    child: Icon(
+                                      Icons.image_not_supported_outlined,
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
+                                  );
+                                },
+                          ),
+                          if (isVideo)
+                            Center(
+                              child: Container(
+                                width: 34,
+                                height: 34,
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withAlpha(130),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.play_arrow_rounded,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
         );
       },
     );
@@ -262,11 +412,13 @@ class _FilesList extends StatelessWidget {
   const _FilesList({
     required this.colorScheme,
     required this.textScheme,
+    required this.sharedItems,
     super.key,
   });
 
   final AppColorScheme colorScheme;
   final AppTextScheme textScheme;
+  final List<_SharedMediaItem> sharedItems;
 
   static const _files = [
     _FileItem('Project_Brief.pdf', '2.4 MB', 'Mar 22', _FileKind.pdf),
@@ -279,6 +431,33 @@ class _FilesList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final radii = context.radii;
+
+    if (sharedItems.isNotEmpty) {
+      return ListView(
+        padding: const EdgeInsets.all(14),
+        children: [
+          AppTileButtonGroupCard(
+            backgroundColor: colorScheme.surfaceContainerLow,
+            borderRadius: BorderRadius.circular(radii.large),
+            dividerIndent: 54,
+            children: sharedItems
+                .map(
+                  (item) => _FileTile(
+                    item: _FileItem(
+                      item.mediaId,
+                      'Attachment',
+                      'Shared',
+                      _FileKind.doc,
+                    ),
+                    colorScheme: colorScheme,
+                    textScheme: textScheme,
+                  ),
+                )
+                .toList(growable: false),
+          ),
+        ],
+      );
+    }
 
     return ListView(
       padding: const EdgeInsets.all(14),
@@ -302,6 +481,21 @@ class _FilesList extends StatelessWidget {
   }
 }
 
+final class _SharedMediaItem {
+  const _SharedMediaItem({
+    required this.mediaId,
+    required this.kind,
+    required this.conversationId,
+  });
+
+  final String mediaId;
+  final String kind;
+  final String conversationId;
+
+  bool get isImage => kind.startsWith('image');
+  bool get isVideo => kind.startsWith('video');
+}
+
 class _FileTile extends StatelessWidget {
   const _FileTile({
     required this.item,
@@ -314,20 +508,20 @@ class _FileTile extends StatelessWidget {
   final AppTextScheme textScheme;
 
   Color _iconColor() => switch (item.kind) {
-        _FileKind.pdf => const Color(0xFFE53935),
-        _FileKind.zip => const Color(0xFFFB8C00),
-        _FileKind.doc => const Color(0xFF1E88E5),
-        _FileKind.fig => const Color(0xFF8B5CF6),
-        _FileKind.xls => const Color(0xFF43A047),
-      };
+    _FileKind.pdf => const Color(0xFFE53935),
+    _FileKind.zip => const Color(0xFFFB8C00),
+    _FileKind.doc => const Color(0xFF1E88E5),
+    _FileKind.fig => const Color(0xFF8B5CF6),
+    _FileKind.xls => const Color(0xFF43A047),
+  };
 
   IconData _icon() => switch (item.kind) {
-        _FileKind.pdf => Icons.picture_as_pdf_outlined,
-        _FileKind.zip => Icons.folder_zip_outlined,
-        _FileKind.doc => Icons.description_outlined,
-        _FileKind.fig => Icons.auto_awesome_outlined,
-        _FileKind.xls => Icons.table_chart_outlined,
-      };
+    _FileKind.pdf => Icons.picture_as_pdf_outlined,
+    _FileKind.zip => Icons.folder_zip_outlined,
+    _FileKind.doc => Icons.description_outlined,
+    _FileKind.fig => Icons.auto_awesome_outlined,
+    _FileKind.xls => Icons.table_chart_outlined,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -575,17 +769,11 @@ class _EmptyTabState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            size: 65,
-            color: colorScheme.onSurfaceVariant,
-          ),
+          Icon(icon, size: 65, color: colorScheme.onSurfaceVariant),
           const SizedBox(height: 16),
           Text(
             label,
-            style: textScheme.headline.copyWith(
-              color: colorScheme.onSurface,
-            ),
+            style: textScheme.headline.copyWith(color: colorScheme.onSurface),
           ),
         ],
       ),

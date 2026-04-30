@@ -1,4 +1,3 @@
-// message_bubble.dart
 import 'dart:math' show min;
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -12,8 +11,8 @@ import 'package:locnet_app/features/conversation/subfeatures/group/group.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/private.dart';
 import 'package:locnet_app/features/message/domain/domain.dart';
 import 'package:locnet_app/features/message/presentation/presentation.dart';
+import 'package:locnet_app/features/message/subfeatures/media_viewer/media_viewer.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:video_player/video_player.dart';
 
 class MessageBubble extends StatefulWidget {
   const MessageBubble({
@@ -570,15 +569,10 @@ class _MessageBubbleState extends State<MessageBubble> {
     if (imageUrls.isEmpty) {
       return;
     }
-    showDialog<void>(
+    showImageGalleryViewerModal(
       context: context,
-      barrierColor: Colors.black.withAlpha(90),
-      builder: (BuildContext context) {
-        return _ImageGalleryViewer(
-          imageUrls: imageUrls,
-          initialIndex: initialIndex,
-        );
-      },
+      imageUrls: imageUrls,
+      initialIndex: initialIndex,
     );
   }
 
@@ -586,7 +580,7 @@ class _MessageBubbleState extends State<MessageBubble> {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (BuildContext context) {
-          return _VideoPlayerScreen(videoUrl: videoUrl);
+          return MessageVideoPlayerScreen(videoUrl: videoUrl);
         },
       ),
     );
@@ -841,180 +835,6 @@ class _AttachmentTile extends StatelessWidget {
                   ),
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _VideoPlayerScreen extends StatefulWidget {
-  const _VideoPlayerScreen({required this.videoUrl});
-
-  final String videoUrl;
-
-  @override
-  State<_VideoPlayerScreen> createState() => _VideoPlayerScreenState();
-}
-
-class _VideoPlayerScreenState extends State<_VideoPlayerScreen> {
-  late final VideoPlayerController _controller;
-  Future<void>? _initializeFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
-    _initializeFuture = _controller.initialize().then((_) {
-      _controller.play();
-      setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(backgroundColor: Colors.black),
-      body: Center(
-        child: FutureBuilder<void>(
-          future: _initializeFuture,
-          builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-            if (snapshot.connectionState != ConnectionState.done ||
-                !_controller.value.isInitialized) {
-              return const CircularProgressIndicator(strokeWidth: 2);
-            }
-
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                AspectRatio(
-                  aspectRatio: _controller.value.aspectRatio,
-                  child: VideoPlayer(_controller),
-                ),
-                const SizedBox(height: 12),
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      if (_controller.value.isPlaying) {
-                        _controller.pause();
-                      } else {
-                        _controller.play();
-                      }
-                    });
-                  },
-                  icon: Icon(
-                    _controller.value.isPlaying
-                        ? Icons.pause_circle_outline
-                        : Icons.play_circle_outline,
-                    color: Colors.white,
-                    size: 36,
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class _ImageGalleryViewer extends StatefulWidget {
-  const _ImageGalleryViewer({
-    required this.imageUrls,
-    required this.initialIndex,
-  });
-
-  final List<String> imageUrls;
-  final int initialIndex;
-
-  @override
-  State<_ImageGalleryViewer> createState() => _ImageGalleryViewerState();
-}
-
-class _ImageGalleryViewerState extends State<_ImageGalleryViewer> {
-  late final PageController _pageController;
-  late int _currentIndex;
-
-  @override
-  void initState() {
-    super.initState();
-    _currentIndex = widget.initialIndex.clamp(0, widget.imageUrls.length - 1);
-    _pageController = PageController(initialPage: _currentIndex);
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => Navigator.of(context).pop(),
-      child: ColoredBox(
-        color: Colors.black.withAlpha(90),
-        child: SafeArea(
-          child: Stack(
-            children: [
-              PageView.builder(
-                controller: _pageController,
-                itemCount: widget.imageUrls.length,
-                onPageChanged: (int index) {
-                  setState(() {
-                    _currentIndex = index;
-                  });
-                },
-                itemBuilder: (BuildContext context, int index) {
-                  return Center(
-                    child: InteractiveViewer(
-                      child: CachedNetworkImage(
-                        imageUrl: widget.imageUrls[index],
-                        fit: BoxFit.contain,
-                        placeholder: (BuildContext context, String _) =>
-                            const CircularProgressIndicator(strokeWidth: 2),
-                        errorWidget:
-                            (BuildContext context, String _, Object _) {
-                              return const Icon(
-                                Icons.broken_image_outlined,
-                                color: Colors.white,
-                                size: 32,
-                              );
-                            },
-                      ),
-                    ),
-                  );
-                },
-              ),
-              Positioned(
-                top: 8,
-                right: 8,
-                child: IconButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  icon: const Icon(Icons.close, color: Colors.white),
-                ),
-              ),
-              if (widget.imageUrls.length > 1)
-                Positioned(
-                  bottom: 16,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: Text(
-                      '${_currentIndex + 1} / ${widget.imageUrls.length}',
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
-            ],
           ),
         ),
       ),
