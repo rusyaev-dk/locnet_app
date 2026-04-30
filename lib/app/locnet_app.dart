@@ -65,8 +65,10 @@ class _LocnetAppState extends State<LocnetApp> {
                   final router = AppRouter.createRouter(
                     includePrefixMatches: true,
                     navigatorObservers: [appScope.routeObserver],
-                    authListenable: AuthRouterListenable(
+                    authFlowController: AuthFlowController(
                       authCubit: context.read<AuthCubit>(),
+                      unauthorizedEventBus: context
+                          .read<UnauthorizedEventBus>(),
                     ),
                   );
                   return _App(router: router);

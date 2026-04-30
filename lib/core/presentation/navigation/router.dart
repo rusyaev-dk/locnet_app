@@ -16,16 +16,16 @@ class AppRouter {
   static GoRouter createRouter({
     required bool includePrefixMatches,
     required List<NavigatorObserver> navigatorObservers,
-    required AuthRouterListenable authListenable,
+    required AuthFlowController authFlowController,
   }) {
     return GoRouter(
       initialLocation: '/',
       navigatorKey: rootNavigatorKey,
       debugLogDiagnostics: true,
-      refreshListenable: authListenable,
+      refreshListenable: authFlowController,
       observers: navigatorObservers,
       redirect: (BuildContext context, GoRouterState state) {
-        final AuthFlowStatus status = authListenable.status;
+        final AuthFlowStatus status = authFlowController.status;
         final String location = state.uri.path;
 
         if (status == AuthFlowStatus.loading) {

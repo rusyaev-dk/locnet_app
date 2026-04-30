@@ -20,6 +20,10 @@ class ProfileSettingsView extends StatelessWidget {
     required this.onStartEdit,
     required this.onCancelEdit,
     required this.onSave,
+    required this.onFirstNameChanged,
+    required this.onLastNameChanged,
+    required this.onUsernameChanged,
+    required this.onDescriptionChanged,
     super.key,
   });
 
@@ -37,6 +41,10 @@ class ProfileSettingsView extends StatelessWidget {
   final VoidCallback onStartEdit;
   final VoidCallback onCancelEdit;
   final VoidCallback onSave;
+  final ValueChanged<String?> onFirstNameChanged;
+  final ValueChanged<String?> onLastNameChanged;
+  final ValueChanged<String?> onUsernameChanged;
+  final ValueChanged<String?> onDescriptionChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -83,6 +91,10 @@ class ProfileSettingsView extends StatelessWidget {
                   isSubmitting: isSubmitting,
                   onCancelEdit: onCancelEdit,
                   onSave: onSave,
+                  onFirstNameChanged: onFirstNameChanged,
+                  onLastNameChanged: onLastNameChanged,
+                  onUsernameChanged: onUsernameChanged,
+                  onDescriptionChanged: onDescriptionChanged,
                 ),
               if (!isEditing)
                 SettingsActionTile(

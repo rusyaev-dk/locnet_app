@@ -37,6 +37,9 @@ class AppProvidersWrapper extends StatelessWidget {
       providers: [
         Provider<AppScope>(create: (context) => appScope),
         Provider<ILogger>(create: (context) => appScope.logger),
+        Provider<UnauthorizedEventBus>(
+          create: (context) => UnauthorizedEventBus(),
+        ),
         Provider<IHttpClient>(
           create: (context) =>
               DioHttpClient(dio: appScope.dio, apiConfig: appScope.apiConfig),
@@ -92,6 +95,7 @@ class AppProvidersWrapper extends StatelessWidget {
               appScope.dio.interceptors.add(
                 JWTInterceptor(
                   sessionCacheRepo: cacheRepo,
+                  unauthorizedEventBus: context.read<UnauthorizedEventBus>(),
                   logger: appScope.logger,
                 ),
               );

@@ -20,6 +20,7 @@ class PrivateMessageDto extends Equatable {
     required this.clientMessageId,
     required this.isPinned,
     required this.editedAt,
+    this.readAt,
   });
 
   final String id;
@@ -34,12 +35,14 @@ class PrivateMessageDto extends Equatable {
   final bool isDeleted;
   final bool isPinned;
   final DateTime? editedAt;
+  final DateTime? readAt;
   final String? deletedById;
   final String? replyToMessageId;
 
   factory PrivateMessageDto.fromJson(Map<String, dynamic> json) {
     final dynamic rawAttachments = json['attachments'];
-    final List<PrivateMessageAttachmentDto> parsedAttachments = rawAttachments is List
+    final List<PrivateMessageAttachmentDto> parsedAttachments =
+        rawAttachments is List
         ? rawAttachments
               .whereType<Map<String, dynamic>>()
               .map(PrivateMessageAttachmentDto.fromJson)
@@ -50,12 +53,14 @@ class PrivateMessageDto extends Equatable {
         (json['editedAt'] ?? json['edited_at']) as String?;
     final String? replyToMessageId =
         (json['replyToMessageId'] ?? json['reply_to_message_id']) as String?;
+    final String? readAtRaw = (json['readAt'] ?? json['read_at']) as String?;
 
     return PrivateMessageDto(
       id: (json['id'] ?? json['messageId']) as String,
       conversationId: json['conversationId'] as String,
       senderId: json['senderId'] as String,
-      deliveryStatus: (json['deliveryStatus'] ?? json['status'] ?? 'SENT') as String,
+      deliveryStatus:
+          (json['deliveryStatus'] ?? json['status'] ?? 'SENT') as String,
       clientMessageId: json['clientMessageId'] as String?,
       text: (json['text'] ?? '') as String,
       attachments: parsedAttachments,
@@ -67,6 +72,9 @@ class PrivateMessageDto extends Equatable {
       replyToMessageId: replyToMessageId,
       editedAt: editedAtRaw != null && editedAtRaw.isNotEmpty
           ? DateTimeFormatter.parse(editedAtRaw)
+          : null,
+      readAt: readAtRaw != null && readAtRaw.isNotEmpty
+          ? DateTimeFormatter.parse(readAtRaw)
           : null,
     );
   }
@@ -88,6 +96,7 @@ class PrivateMessageDto extends Equatable {
     'deletedById': deletedById,
     'replyToMessageId': replyToMessageId,
     'editedAt': editedAt?.toIso8601String(),
+    'readAt': readAt?.toIso8601String(),
   };
 
   @override
@@ -106,5 +115,6 @@ class PrivateMessageDto extends Equatable {
     deletedById,
     replyToMessageId,
     editedAt,
+    readAt,
   ];
 }

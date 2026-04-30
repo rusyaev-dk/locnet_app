@@ -15,6 +15,10 @@ class ProfileEditorForm extends StatelessWidget {
     required this.isSubmitting,
     required this.onCancelEdit,
     required this.onSave,
+    required this.onFirstNameChanged,
+    required this.onLastNameChanged,
+    required this.onUsernameChanged,
+    required this.onDescriptionChanged,
     super.key,
   });
 
@@ -29,6 +33,10 @@ class ProfileEditorForm extends StatelessWidget {
   final bool isSubmitting;
   final VoidCallback onCancelEdit;
   final VoidCallback onSave;
+  final ValueChanged<String?> onFirstNameChanged;
+  final ValueChanged<String?> onLastNameChanged;
+  final ValueChanged<String?> onUsernameChanged;
+  final ValueChanged<String?> onDescriptionChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +62,8 @@ class ProfileEditorForm extends StatelessWidget {
             textInputAction: TextInputAction.next,
             errorText: firstNameError,
             isActive: !isSubmitting,
+            onChanged: onFirstNameChanged,
+            onFocusChange: onFirstNameChanged,
           ),
           const SizedBox(height: 12),
           CustomTextField(
@@ -62,6 +72,8 @@ class ProfileEditorForm extends StatelessWidget {
             textInputAction: TextInputAction.next,
             errorText: lastNameError,
             isActive: !isSubmitting,
+            onChanged: onLastNameChanged,
+            onFocusChange: onLastNameChanged,
           ),
           const SizedBox(height: 12),
           CustomTextField(
@@ -70,6 +82,8 @@ class ProfileEditorForm extends StatelessWidget {
             textInputAction: TextInputAction.next,
             errorText: usernameError,
             isActive: !isSubmitting,
+            onChanged: onUsernameChanged,
+            onFocusChange: onUsernameChanged,
           ),
           const SizedBox(height: 12),
           CustomTextField(
@@ -79,6 +93,8 @@ class ProfileEditorForm extends StatelessWidget {
             minLines: 3,
             expandable: true,
             isActive: !isSubmitting,
+            onChanged: onDescriptionChanged,
+            onFocusChange: onDescriptionChanged,
           ),
           if (screenError != null) ...[
             const SizedBox(height: 10),

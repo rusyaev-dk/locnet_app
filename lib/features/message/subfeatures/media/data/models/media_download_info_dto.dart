@@ -30,17 +30,35 @@ class MediaDownloadInfoDto extends Equatable {
   final String? etag;
 
   factory MediaDownloadInfoDto.fromJson(Map<String, Object?> json) {
+    DateTime parseDate(Object? raw) {
+      if (raw is DateTime) {
+        return raw;
+      }
+      final String fallback = DateTime.now().toUtc().toIso8601String();
+      return DateTime.parse((raw ?? fallback).toString());
+    }
+
+    int parseInt(Object? raw) {
+      if (raw is int) {
+        return raw;
+      }
+      if (raw is num) {
+        return raw.toInt();
+      }
+      return int.tryParse((raw ?? '0').toString()) ?? 0;
+    }
+
     return MediaDownloadInfoDto(
       downloadUrl: (json['downloadUrl'] ?? '') as String,
-      expiresAt: DateTime.parse((json['expiresAt'] ?? '').toString()),
+      expiresAt: parseDate(json['expiresAt']),
       mimeType: (json['mimeType'] ?? '') as String,
-      sizeBytes: (json['sizeBytes'] ?? 0) as int,
+      sizeBytes: parseInt(json['sizeBytes']),
       status: (json['status'] ?? '') as String,
       scope: (json['scope'] ?? '') as String,
-      scopeId: (json['scopeId'] ?? '') as String,
-      ownerUserId: (json['ownerUserId'] ?? '') as String,
-      createdAt: DateTime.parse((json['createdAt'] ?? '').toString()),
-      updatedAt: DateTime.parse((json['updatedAt'] ?? '').toString()),
+      scopeId: (json['scopeId'] ?? '').toString(),
+      ownerUserId: (json['ownerUserId'] ?? '').toString(),
+      createdAt: parseDate(json['createdAt']),
+      updatedAt: parseDate(json['updatedAt']),
       etag: (json['etag'] as String?)?.trim().isEmpty == true
           ? null
           : json['etag'] as String?,

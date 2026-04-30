@@ -185,13 +185,15 @@ class _UnifiedSearchBody extends StatelessWidget {
     BuildContext context, {
     required String companionId,
   }) {
-    final AllConversationsListBloc? conversationsBloc =
-        context.read<AllConversationsListBloc?>();
+    // TODO: избавиться от этого блока и использовать api endpoint
+    final AllConversationsListBloc? conversationsBloc = context
+        .read<AllConversationsListBloc?>();
     if (conversationsBloc == null) {
       return null;
     }
 
-    final AllConversationsListState conversationsState = conversationsBloc.state;
+    final AllConversationsListState conversationsState =
+        conversationsBloc.state;
 
     if (conversationsState is! AllConversationsListLoadedState) {
       return null;
@@ -213,9 +215,28 @@ class _UnifiedSearchBody extends StatelessWidget {
   ) {
     switch (selectedTab) {
       case _UnifiedSearchTab.users:
+        final Map<String, UnifiedSearchConversation> conversationByCompanionId =
+            <String, UnifiedSearchConversation>{};
+
+        for (final UnifiedSearchConversation conversation
+            in loadedState.result.conversations) {
+          final String? companionId = conversation.companion?.userId;
+          if (companionId == null || companionId.isEmpty) {
+            continue;
+          }
+          conversationByCompanionId[companionId] = conversation;
+        }
+
         return loadedState.result.users
-            .map(UnifiedSearchListItem.user)
-            .toList();
+            .map((User user) {
+              final UnifiedSearchConversation? existingConversation =
+                  conversationByCompanionId[user.userId];
+              if (existingConversation != null) {
+                return UnifiedSearchListItem.conversation(existingConversation);
+              }
+              return UnifiedSearchListItem.user(user);
+            })
+            .toList(growable: false);
       case _UnifiedSearchTab.groups:
         return loadedState.result.groups
             .map(UnifiedSearchListItem.conversation)

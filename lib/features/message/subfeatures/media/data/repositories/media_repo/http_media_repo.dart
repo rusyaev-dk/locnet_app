@@ -78,14 +78,22 @@ class HttpMediaRepo implements IMediaRepo {
         },
       );
       final dynamic data = response.data;
-      if (data is! Map<String, Object?>) {
-        throw AppUnknownException(
-          message: 'Invalid media complete response format',
-          error: data,
-          stackTrace: StackTrace.current,
-        );
-      }
-      return MediaCompleteUploadResponseDto.fromJson(data);
+      final Map<String, Object?> payload = switch (data) {
+        final Map<String, Object?> map
+            when map['data'] is Map<String, Object?> =>
+          map['data'] as Map<String, Object?>,
+        final Map<String, Object?> map => map,
+        _ => <String, Object?>{
+          'mediaId': mediaId,
+          'status': 'ready',
+          'metadata': <String, Object?>{
+            'mediaId': mediaId,
+            'sizeBytes': contentLength ?? 0,
+            'etag': etag,
+          },
+        },
+      };
+      return MediaCompleteUploadResponseDto.fromJson(payload);
     } on AppException {
       rethrow;
     } catch (e, st) {
@@ -104,14 +112,14 @@ class HttpMediaRepo implements IMediaRepo {
         path: ApiEndpoints.mediaMetadata(mediaId),
       );
       final dynamic data = response.data;
-      if (data is! Map<String, Object?>) {
-        throw AppUnknownException(
-          message: 'Invalid media metadata response format',
-          error: data,
-          stackTrace: StackTrace.current,
-        );
+      if (data is Map<String, Object?>) {
+        final Map<String, Object?> payload =
+            data['data'] is Map<String, Object?>
+            ? data['data'] as Map<String, Object?>
+            : data;
+        return MediaMetadataDto.fromJson(payload);
       }
-      return MediaMetadataDto.fromJson(data);
+      return MediaMetadataDto.fromJson(<String, Object?>{'mediaId': mediaId});
     } on AppException {
       rethrow;
     } catch (e, st) {
@@ -145,7 +153,10 @@ class HttpMediaRepo implements IMediaRepo {
           stackTrace: StackTrace.current,
         );
       }
-      return MediaDownloadInfoDto.fromJson(data);
+      final Map<String, Object?> payload = data['data'] is Map<String, Object?>
+          ? data['data'] as Map<String, Object?>
+          : data;
+      return MediaDownloadInfoDto.fromJson(payload);
     } on AppException {
       rethrow;
     } catch (e, st) {

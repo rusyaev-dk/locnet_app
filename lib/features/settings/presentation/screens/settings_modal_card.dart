@@ -7,6 +7,7 @@ import 'package:locnet_app/features/auth/domain/domain.dart';
 import 'package:locnet_app/features/auth/presentation/presentation.dart';
 import 'package:locnet_app/features/settings/domain/domain.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
+import 'package:locnet_app/features/settings/subfeatures/profile/domain/profile_interactor.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
 class SettingsModalCard extends StatelessWidget {
@@ -182,7 +183,17 @@ class _SettingsSectionContent extends StatelessWidget {
       case SettingsSection.appearance:
         return const AppearanceSettingsContent();
       case SettingsSection.profile:
-        return const ProfileSettingsContent();
+        return BlocProvider<ProfileEditorCubit>(
+          create: (context) => ProfileEditorCubit(
+            profileInteractor: ProfileInteractor(
+              userRepo: context.read<IUserRepo>(),
+              logger: context.read<ILogger>(),
+            ),
+            authInteractor: context.read<AuthInteractor>(),
+            logger: context.read<ILogger>(),
+          )..loadProfile(),
+          child: const ProfileSettingsContent(),
+        );
       case SettingsSection.notifications:
         return BlocProvider<NotificationsSettingsCubit>(
           create: (context) => NotificationsSettingsCubit(

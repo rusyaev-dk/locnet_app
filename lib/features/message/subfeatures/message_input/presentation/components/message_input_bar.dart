@@ -169,12 +169,11 @@ class _MessageInputBarState extends State<MessageInputBar> {
 
   void _send() {
     final String markdown = _buildMarkdownForSend();
-    if (markdown.isEmpty) {
-      return;
-    }
-
     final List<UploadableFile> files =
         _messageAttachmentsCubit?.state.files ?? [];
+    if (markdown.isEmpty && files.isEmpty) {
+      return;
+    }
 
     switch (widget.conversationType) {
       case ConversationType.private:

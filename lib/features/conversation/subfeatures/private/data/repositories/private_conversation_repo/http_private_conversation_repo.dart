@@ -261,6 +261,7 @@ class HttpPrivateConversationRepo implements IPrivateConversationRepo {
               fallbackTimestamp,
           'editedAt': _normalizeDateValue(message['editedAt']) ?? '',
           'deletedAt': _normalizeDateValue(message['deletedAt']) ?? '',
+          'readAt': _normalizeDateValue(message['readAt']) ?? '',
           'attachments': _normalizeHistoryAttachments(
             raw: message['attachments'],
             messageId: (message['id'] ?? message['messageId'] ?? '').toString(),
@@ -418,9 +419,12 @@ class HttpPrivateConversationRepo implements IPrivateConversationRepo {
         'conversationId': payloadMap['conversationId'] ?? '',
         'senderId': payloadMap['senderId'] ?? payloadMap['deletedById'] ?? '',
         'text': payloadMap['text'] ?? '',
-        'attachments': payloadMap['attachments'] is List
-            ? payloadMap['attachments']
-            : <dynamic>[],
+        'attachments': _normalizeHistoryAttachments(
+          raw: payloadMap['attachments'],
+          messageId: (payloadMap['id'] ?? payloadMap['messageId'] ?? '')
+              .toString(),
+          fallbackTimestamp: fallbackTimestamp,
+        ),
         'createdAt':
             _normalizeDateValue(payloadMap['createdAt']) ??
             _normalizeDateValue(payloadMap['updatedAt']) ??
@@ -440,6 +444,7 @@ class HttpPrivateConversationRepo implements IPrivateConversationRepo {
         'clientMessageId': payloadMap['clientMessageId'],
         'isPinned': payloadMap['isPinned'] ?? false,
         'editedAt': payloadMap['editedAt'],
+        'readAt': _normalizeDateValue(payloadMap['readAt']) ?? '',
       };
 
       final PrivateMessageDto dto = PrivateMessageDto.fromJson(
@@ -536,8 +541,11 @@ class HttpPrivateConversationRepo implements IPrivateConversationRepo {
       }
 
       final Map<String, dynamic> itemMap = Map<String, dynamic>.from(item);
-      final String id = (itemMap['id'] ?? itemMap['attachmentId'] ?? itemMap['mediaId'] ?? '').toString();
-      final String fileId = (itemMap['fileId'] ?? itemMap['mediaId'] ?? '').toString();
+      final String id =
+          (itemMap['id'] ?? itemMap['attachmentId'] ?? itemMap['mediaId'] ?? '')
+              .toString();
+      final String fileId = (itemMap['fileId'] ?? itemMap['mediaId'] ?? '')
+          .toString();
       if (id.isEmpty || fileId.isEmpty) {
         continue;
       }
@@ -546,6 +554,8 @@ class HttpPrivateConversationRepo implements IPrivateConversationRepo {
         'id': id,
         'messageId': messageId,
         'fileId': fileId,
+        'fileType': (itemMap['fileType'] ?? itemMap['mimeType'] ?? '')
+            .toString(),
         'order': itemMap['order'] is int ? itemMap['order'] as int : index,
         'createdAt':
             _normalizeDateValue(itemMap['createdAt']) ?? fallbackTimestamp,

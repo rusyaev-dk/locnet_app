@@ -21,6 +21,7 @@ class PrivateMessage extends Equatable {
     required this.clientMessageId,
     required this.isPinned,
     required this.editedAt,
+    this.readAt,
   });
 
   final String id;
@@ -37,6 +38,7 @@ class PrivateMessage extends Equatable {
   final String? replyToMessageId;
   final bool isPinned;
   final DateTime? editedAt;
+  final DateTime? readAt;
   factory PrivateMessage.fromDto(PrivateMessageDto dto) {
     return PrivateMessage(
       id: dto.id,
@@ -55,6 +57,7 @@ class PrivateMessage extends Equatable {
       replyToMessageId: dto.replyToMessageId,
       isPinned: dto.isPinned,
       editedAt: dto.editedAt,
+      readAt: dto.readAt,
     );
   }
 
@@ -73,6 +76,7 @@ class PrivateMessage extends Equatable {
     String? clientMessageId,
     bool? isPinned,
     DateTime? editedAt,
+    DateTime? readAt,
   }) {
     return PrivateMessage(
       id: id ?? this.id,
@@ -89,6 +93,7 @@ class PrivateMessage extends Equatable {
       replyToMessageId: replyToMessageId ?? this.replyToMessageId,
       isPinned: isPinned ?? this.isPinned,
       editedAt: editedAt ?? this.editedAt,
+      readAt: readAt ?? this.readAt,
     );
   }
 
@@ -108,5 +113,6 @@ class PrivateMessage extends Equatable {
     clientMessageId,
     isPinned,
     editedAt,
+    readAt,
   ];
 }

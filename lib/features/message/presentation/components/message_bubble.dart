@@ -13,6 +13,7 @@ import 'package:locnet_app/features/conversation/subfeatures/private/private.dar
 import 'package:locnet_app/features/message/domain/domain.dart';
 import 'package:locnet_app/features/message/presentation/presentation.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:video_player/video_player.dart';
 
 class MessageBubble extends StatefulWidget {
   const MessageBubble({
@@ -314,20 +315,15 @@ class _MessageBubbleState extends State<MessageBubble> {
                             ],
                           ),
                         ),
-                      if (messageMarkdown.isNotEmpty)
-                        TextSelectionTheme(
-                          data: TextSelectionThemeData(
-                            selectionColor: selectionColor,
-                          ),
-                          child: AppMessageText(
-                            data: messageMarkdown,
-                            textStyle: messageTextStyle,
-                            linkColor: linkColor,
-                            onLinkTap: _onMessageLinkTap,
-                          ),
-                        ),
-                      _buildAttachments(messageTextStyle: messageTextStyle),
-                      if (_hasAttachments()) const SizedBox(height: 6),
+                      _buildMessageContent(
+                        messageMarkdown: messageMarkdown,
+                        selectionColor: selectionColor,
+                        messageTextStyle: messageTextStyle,
+                        linkColor: linkColor,
+                        maxBubbleWidth: maxBubbleWidth,
+                        laneWidth: laneWidth,
+                        isMine: isMine,
+                      ),
                       const SizedBox(height: 4),
                       Align(
                         alignment: Alignment.centerRight,
@@ -348,6 +344,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                               if (_getDeliveryStatus() != null)
                                 MessageDeliveryStatusIndicator(
                                   deliveryStatus: _getDeliveryStatus()!,
+                                  isRead: _isReadByCompanion(),
                                   color:
                                       metaTextStyle.color ??
                                       colorScheme.onSurface,
@@ -408,6 +405,14 @@ class _MessageBubbleState extends State<MessageBubble> {
     return null;
   }
 
+  bool _isReadByCompanion() {
+    final Object m = widget.message;
+    if (m is PrivateMessage) {
+      return m.readAt != null;
+    }
+    return false;
+  }
+
   bool _hasAttachments() {
     final Object m = widget.message;
     if (m is PrivateMessage) {
@@ -416,91 +421,174 @@ class _MessageBubbleState extends State<MessageBubble> {
     return false;
   }
 
-  Widget _buildAttachments({required TextStyle messageTextStyle}) {
+  Widget _buildMessageContent({
+    required String messageMarkdown,
+    required Color selectionColor,
+    required TextStyle messageTextStyle,
+    required Color linkColor,
+    required double maxBubbleWidth,
+    required double laneWidth,
+    required bool isMine,
+  }) {
+    final bool hasAttachments = _hasAttachments();
+    final bool hasText = messageMarkdown.isNotEmpty;
+    final Widget? messageText = hasText
+        ? TextSelectionTheme(
+            data: TextSelectionThemeData(selectionColor: selectionColor),
+            child: AppMessageText(
+              data: messageMarkdown,
+              textStyle: messageTextStyle,
+              linkColor: linkColor,
+              onLinkTap: _onMessageLinkTap,
+            ),
+          )
+        : null;
+
+    if (!hasAttachments) {
+      return messageText ?? const SizedBox.shrink();
+    }
+
+    final Widget attachments = _buildAttachments(
+      messageTextStyle: messageTextStyle,
+      maxBubbleWidth: maxBubbleWidth,
+      laneWidth: laneWidth,
+      isMine: isMine,
+    );
+
+    if (!hasText) {
+      return attachments;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [attachments, const SizedBox(height: 6), messageText!],
+    );
+  }
+
+  Widget _buildAttachments({
+    required TextStyle messageTextStyle,
+    required double maxBubbleWidth,
+    required double laneWidth,
+    required bool isMine,
+  }) {
     final Object m = widget.message;
     if (m is! PrivateMessage || m.attachments.isEmpty) {
       return const SizedBox.shrink();
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: m.attachments
-          .map((PrivateMessageAttachment attachment) {
-            final String mediaId = attachment.fileId;
-            final bool isImage = (attachment.fileType ?? '').startsWith(
-              'image',
-            );
+    return FutureBuilder<List<MediaDownloadInfo>>(
+      future: Future.wait(
+        m.attachments
+            .map(
+              (PrivateMessageAttachment attachment) => _resolveDownloadInfo(
+                mediaId: attachment.fileId,
+                conversationId: m.conversationId,
+              ),
+            )
+            .toList(growable: false),
+      ),
+      builder:
+          (
+            BuildContext context,
+            AsyncSnapshot<List<MediaDownloadInfo>> snapshot,
+          ) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const AspectRatio(
+                aspectRatio: 16 / 9,
+                child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+              );
+            }
 
-            if (!isImage) {
+            if (snapshot.hasError || !snapshot.hasData) {
               return Padding(
                 padding: const EdgeInsets.only(top: 6),
                 child: Text(
-                  'Attachment: $mediaId',
+                  'Failed to load attachment',
                   style: messageTextStyle.copyWith(fontSize: 12.5),
                 ),
               );
             }
 
-            return Padding(
-              padding: const EdgeInsets.only(top: 6),
-              child: FutureBuilder<MediaDownloadInfo>(
-                future: _resolveDownloadInfo(
-                  mediaId: mediaId,
-                  conversationId: m.conversationId,
+            final List<_AttachmentViewData> items = <_AttachmentViewData>[];
+            for (int index = 0; index < m.attachments.length; index++) {
+              final PrivateMessageAttachment attachment = m.attachments[index];
+              final MediaDownloadInfo info = snapshot.data![index];
+              final String kind = attachment.fileType ?? info.mimeType;
+              items.add(
+                _AttachmentViewData(
+                  mediaId: attachment.fileId,
+                  kind: kind,
+                  url: info.downloadUrl,
                 ),
-                builder:
-                    (
-                      BuildContext context,
-                      AsyncSnapshot<MediaDownloadInfo> snapshot,
-                    ) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const AspectRatio(
-                          aspectRatio: 16 / 9,
-                          child: Center(
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          ),
-                        );
-                      }
+              );
+            }
 
-                      if (snapshot.hasError || !snapshot.hasData) {
-                        return Text(
-                          'Failed to load attachment',
-                          style: messageTextStyle.copyWith(fontSize: 12.5),
-                        );
-                      }
+            final double maxAttachmentWidth = (laneWidth * 0.6).clamp(
+              160.0,
+              maxBubbleWidth,
+            );
 
-                      return ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: CachedNetworkImage(
-                          imageUrl: snapshot.data!.downloadUrl,
-                          fit: BoxFit.cover,
-                          placeholder: (BuildContext context, String url) =>
-                              const AspectRatio(
-                                aspectRatio: 16 / 9,
-                                child: Center(
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                ),
-                              ),
-                          errorWidget:
-                              (
-                                BuildContext context,
-                                String url,
-                                Object error,
-                              ) => const AspectRatio(
-                                aspectRatio: 16 / 9,
-                                child: Center(
-                                  child: Icon(Icons.broken_image_outlined),
-                                ),
-                              ),
-                        ),
+            return Align(
+              alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: maxAttachmentWidth),
+                child: _AttachmentsGrid(
+                  items: items,
+                  onTap: (int index) {
+                    final _AttachmentViewData item = items[index];
+                    if (item.isImage) {
+                      final List<String> imageUrls = items
+                          .where((_AttachmentViewData entry) => entry.isImage)
+                          .map((_AttachmentViewData entry) => entry.url)
+                          .toList(growable: false);
+                      final int initialImageIndex = imageUrls.indexOf(item.url);
+                      _openImageViewer(
+                        imageUrls: imageUrls,
+                        initialIndex: initialImageIndex >= 0
+                            ? initialImageIndex
+                            : 0,
                       );
-                    },
+                      return;
+                    }
+                    if (item.isVideo) {
+                      _openVideoPlayer(item.url);
+                      return;
+                    }
+                  },
+                ),
               ),
             );
-          })
-          .toList(growable: false),
+          },
+    );
+  }
+
+  void _openImageViewer({
+    required List<String> imageUrls,
+    required int initialIndex,
+  }) {
+    if (imageUrls.isEmpty) {
+      return;
+    }
+    showDialog<void>(
+      context: context,
+      barrierColor: Colors.black.withAlpha(90),
+      builder: (BuildContext context) {
+        return _ImageGalleryViewer(
+          imageUrls: imageUrls,
+          initialIndex: initialIndex,
+        );
+      },
+    );
+  }
+
+  void _openVideoPlayer(String videoUrl) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (BuildContext context) {
+          return _VideoPlayerScreen(videoUrl: videoUrl);
+        },
+      ),
     );
   }
 
@@ -524,5 +612,412 @@ class _MessageBubbleState extends State<MessageBubble> {
     }
 
     await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+}
+
+final class _AttachmentViewData {
+  const _AttachmentViewData({
+    required this.mediaId,
+    required this.kind,
+    required this.url,
+  });
+
+  final String mediaId;
+  final String kind;
+  final String url;
+
+  bool get isImage => kind.startsWith('image');
+  bool get isVideo => kind.startsWith('video');
+}
+
+class _AttachmentsGrid extends StatelessWidget {
+  const _AttachmentsGrid({required this.items, required this.onTap});
+
+  final List<_AttachmentViewData> items;
+  final ValueChanged<int> onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    if (items.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    if (items.length == 1) {
+      return _AttachmentTile(
+        item: items.first,
+        borderRadius: BorderRadius.circular(10),
+        onTap: () => onTap(0),
+      );
+    }
+
+    if (items.length == 2) {
+      return Row(
+        children: [
+          Expanded(
+            child: _AttachmentTile(
+              item: items[0],
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(10),
+                bottomLeft: Radius.circular(10),
+              ),
+              onTap: () => onTap(0),
+            ),
+          ),
+          const SizedBox(width: 2),
+          Expanded(
+            child: _AttachmentTile(
+              item: items[1],
+              borderRadius: const BorderRadius.only(
+                topRight: Radius.circular(10),
+                bottomRight: Radius.circular(10),
+              ),
+              onTap: () => onTap(1),
+            ),
+          ),
+        ],
+      );
+    }
+
+    if (items.length == 3) {
+      return Column(
+        children: [
+          _AttachmentTile(
+            item: items[0],
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(10),
+              topRight: Radius.circular(10),
+            ),
+            onTap: () => onTap(0),
+          ),
+          const SizedBox(height: 2),
+          Row(
+            children: [
+              Expanded(
+                child: _AttachmentTile(
+                  item: items[1],
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(10),
+                  ),
+                  onTap: () => onTap(1),
+                ),
+              ),
+              const SizedBox(width: 2),
+              Expanded(
+                child: _AttachmentTile(
+                  item: items[2],
+                  borderRadius: const BorderRadius.only(
+                    bottomRight: Radius.circular(10),
+                  ),
+                  onTap: () => onTap(2),
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+    }
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: _AttachmentTile(
+                item: items[0],
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(10),
+                ),
+                onTap: () => onTap(0),
+              ),
+            ),
+            const SizedBox(width: 2),
+            Expanded(
+              child: _AttachmentTile(
+                item: items[1],
+                borderRadius: const BorderRadius.only(
+                  topRight: Radius.circular(10),
+                ),
+                onTap: () => onTap(1),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 2),
+        Row(
+          children: [
+            Expanded(
+              child: _AttachmentTile(
+                item: items[2],
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(10),
+                ),
+                onTap: () => onTap(2),
+              ),
+            ),
+            const SizedBox(width: 2),
+            Expanded(
+              child: _AttachmentTile(
+                item: items[3],
+                borderRadius: const BorderRadius.only(
+                  bottomRight: Radius.circular(10),
+                ),
+                onTap: () => onTap(3),
+                overlayText: items.length > 4 ? '+${items.length - 4}' : null,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _AttachmentTile extends StatelessWidget {
+  const _AttachmentTile({
+    required this.item,
+    required this.borderRadius,
+    required this.onTap,
+    this.overlayText,
+  });
+
+  final _AttachmentViewData item;
+  final BorderRadius borderRadius;
+  final VoidCallback onTap;
+  final String? overlayText;
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isVideo = item.isVideo;
+    return AspectRatio(
+      aspectRatio: 4 / 3,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: borderRadius,
+          onTap: onTap,
+          child: ClipRRect(
+            borderRadius: borderRadius,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                CachedNetworkImage(
+                  imageUrl: item.url,
+                  fit: BoxFit.cover,
+                  placeholder: (BuildContext context, String _) => const Center(
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                  errorWidget: (BuildContext context, String _, Object _) =>
+                      const Center(child: Icon(Icons.broken_image_outlined)),
+                ),
+                if (isVideo)
+                  Center(
+                    child: Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: Colors.black.withAlpha(140),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.play_arrow_rounded,
+                        color: Colors.white,
+                        size: 28,
+                      ),
+                    ),
+                  ),
+                if (overlayText != null)
+                  ColoredBox(
+                    color: Colors.black.withAlpha(120),
+                    child: Center(
+                      child: Text(
+                        overlayText!,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _VideoPlayerScreen extends StatefulWidget {
+  const _VideoPlayerScreen({required this.videoUrl});
+
+  final String videoUrl;
+
+  @override
+  State<_VideoPlayerScreen> createState() => _VideoPlayerScreenState();
+}
+
+class _VideoPlayerScreenState extends State<_VideoPlayerScreen> {
+  late final VideoPlayerController _controller;
+  Future<void>? _initializeFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
+    _initializeFuture = _controller.initialize().then((_) {
+      _controller.play();
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(backgroundColor: Colors.black),
+      body: Center(
+        child: FutureBuilder<void>(
+          future: _initializeFuture,
+          builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+            if (snapshot.connectionState != ConnectionState.done ||
+                !_controller.value.isInitialized) {
+              return const CircularProgressIndicator(strokeWidth: 2);
+            }
+
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AspectRatio(
+                  aspectRatio: _controller.value.aspectRatio,
+                  child: VideoPlayer(_controller),
+                ),
+                const SizedBox(height: 12),
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      if (_controller.value.isPlaying) {
+                        _controller.pause();
+                      } else {
+                        _controller.play();
+                      }
+                    });
+                  },
+                  icon: Icon(
+                    _controller.value.isPlaying
+                        ? Icons.pause_circle_outline
+                        : Icons.play_circle_outline,
+                    color: Colors.white,
+                    size: 36,
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _ImageGalleryViewer extends StatefulWidget {
+  const _ImageGalleryViewer({
+    required this.imageUrls,
+    required this.initialIndex,
+  });
+
+  final List<String> imageUrls;
+  final int initialIndex;
+
+  @override
+  State<_ImageGalleryViewer> createState() => _ImageGalleryViewerState();
+}
+
+class _ImageGalleryViewerState extends State<_ImageGalleryViewer> {
+  late final PageController _pageController;
+  late int _currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex.clamp(0, widget.imageUrls.length - 1);
+    _pageController = PageController(initialPage: _currentIndex);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.of(context).pop(),
+      child: ColoredBox(
+        color: Colors.black.withAlpha(90),
+        child: SafeArea(
+          child: Stack(
+            children: [
+              PageView.builder(
+                controller: _pageController,
+                itemCount: widget.imageUrls.length,
+                onPageChanged: (int index) {
+                  setState(() {
+                    _currentIndex = index;
+                  });
+                },
+                itemBuilder: (BuildContext context, int index) {
+                  return Center(
+                    child: InteractiveViewer(
+                      child: CachedNetworkImage(
+                        imageUrl: widget.imageUrls[index],
+                        fit: BoxFit.contain,
+                        placeholder: (BuildContext context, String _) =>
+                            const CircularProgressIndicator(strokeWidth: 2),
+                        errorWidget:
+                            (BuildContext context, String _, Object _) {
+                              return const Icon(
+                                Icons.broken_image_outlined,
+                                color: Colors.white,
+                                size: 32,
+                              );
+                            },
+                      ),
+                    ),
+                  );
+                },
+              ),
+              Positioned(
+                top: 8,
+                right: 8,
+                child: IconButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Icons.close, color: Colors.white),
+                ),
+              ),
+              if (widget.imageUrls.length > 1)
+                Positioned(
+                  bottom: 16,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: Text(
+                      '${_currentIndex + 1} / ${widget.imageUrls.length}',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
