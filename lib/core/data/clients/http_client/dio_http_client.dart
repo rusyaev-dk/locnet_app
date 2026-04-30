@@ -124,10 +124,12 @@ class DioHttpClient implements IHttpClient {
       final String? headerContentType =
           headers?['Content-Type']?.toString() ??
           headers?['content-type']?.toString();
-      final options = Options(
-        contentType: headerContentType ?? Headers.jsonContentType,
-        headers: headers,
-      );
+      final bool hasExplicitContentType = headerContentType != null;
+      final bool hasRequestBody = data != null;
+      final String? contentType = hasExplicitContentType || hasRequestBody
+          ? (headerContentType ?? Headers.jsonContentType)
+          : null;
+      final options = Options(contentType: contentType, headers: headers);
 
       late final Response response;
 

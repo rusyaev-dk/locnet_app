@@ -232,6 +232,11 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
                           await context
                               .read<PrivateMessageActionsCubit>()
                               .deleteMessage(message: msg);
+                          context.read<PrivateConversationBloc>().add(
+                            PrivateConversationMessageDeletedLocallyEvent(
+                              messageId: msg.id,
+                            ),
+                          );
                         }
 
                         context.read<MessageSelectionCubit>().clearSelection();
@@ -399,8 +404,12 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
                             );
 
                           case PrivateConversationLoadedState():
-                            final List<PrivateMessage> messages =
-                                state.messages;
+                            final List<PrivateMessage> messages = state.messages
+                                .where(
+                                  (PrivateMessage message) =>
+                                      !message.isDeleted,
+                                )
+                                .toList(growable: false);
 
                             if (messages.isEmpty) {
                               return const Text("Empty here...");
@@ -484,6 +493,11 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
                                 await context
                                     .read<PrivateMessageActionsCubit>()
                                     .deleteMessage(message: message);
+                                context.read<PrivateConversationBloc>().add(
+                                  PrivateConversationMessageDeletedLocallyEvent(
+                                    messageId: message.id,
+                                  ),
+                                );
                               },
                             );
                         }

@@ -121,7 +121,8 @@ class PrivateMessageActionsCubit extends Cubit<PrivateMessageActionsState> {
 
     try {
       final User user = await _userInteractor.getCachedUser();
-      final List<PrivateMessageAttachment> attachments = sourceMessage.attachments
+      final List<PrivateMessageAttachment> attachments = sourceMessage
+          .attachments
           .map(
             (PrivateMessageAttachment attachment) => attachment.copyWith(
               id: 'local-attach-${const Uuid().v4()}',
@@ -303,12 +304,10 @@ class PrivateMessageActionsCubit extends Cubit<PrivateMessageActionsState> {
     _upsertOperation(
       existingOperation.copyWith(
         status: PrivateMessageActionStatus.success,
-        message: msg != null
-            ? msg.copyWith(
-                deliveryStatus: MessageDeliveryStatus.sent,
-                updatedAt: DateTime.now(),
-              )
-            : null,
+        message: msg?.copyWith(
+          deliveryStatus: MessageDeliveryStatus.sent,
+          updatedAt: DateTime.now(),
+        ),
       ),
     );
   }
@@ -328,12 +327,10 @@ class PrivateMessageActionsCubit extends Cubit<PrivateMessageActionsState> {
       existingOperation.copyWith(
         status: PrivateMessageActionStatus.failure,
         failure: failure,
-        message: msg != null
-            ? msg.copyWith(
-                deliveryStatus: MessageDeliveryStatus.failed,
-                updatedAt: DateTime.now(),
-              )
-            : null,
+        message: msg?.copyWith(
+          deliveryStatus: MessageDeliveryStatus.failed,
+          updatedAt: DateTime.now(),
+        ),
       ),
     );
   }

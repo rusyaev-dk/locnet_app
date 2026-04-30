@@ -31,6 +31,7 @@ class PrivateConversationBloc
     on<PrivateConversationDraftStartedEvent>(_onDraftStarted);
     on<PrivateConversationSendMessageEvent>(_onSendMessage);
     on<PrivateConversationMessageUpdateReceivedEvent>(_onMessageUpdateReceived);
+    on<PrivateConversationMessageDeletedLocallyEvent>(_onMessageDeletedLocally);
 
     _messagesUpdatesSubscription = _privateConversationInteractor
         .messagesUpdates
@@ -364,6 +365,26 @@ class PrivateConversationBloc
         ),
       );
     }
+  }
+
+  void _onMessageDeletedLocally(
+    PrivateConversationMessageDeletedLocallyEvent event,
+    Emitter<PrivateConversationState> emit,
+  ) {
+    final PrivateConversationState currentState = state;
+    if (currentState is! PrivateConversationLoadedState) {
+      return;
+    }
+
+    final List<PrivateMessage> updatedMessages = currentState.messages
+        .where((PrivateMessage message) => message.id != event.messageId)
+        .toList(growable: false);
+
+    if (updatedMessages.length == currentState.messages.length) {
+      return;
+    }
+
+    emit(currentState.copyWith(messages: updatedMessages));
   }
 
   void _upsertIncomingMessage({
