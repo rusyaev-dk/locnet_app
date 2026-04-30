@@ -187,7 +187,22 @@ class PrivateConversationBloc
           ),
         );
 
-        await _privateMessageInteractor.sendMessage(message: pendingMessage);
+        final PrivateMessage sentMessage = await _privateMessageInteractor
+            .sendMessage(message: pendingMessage);
+        final PrivateConversationState stateAfterSend = state;
+        if (stateAfterSend is! PrivateConversationLoadedState) {
+          return;
+        }
+
+        final List<PrivateMessage> syncedMessages = List<PrivateMessage>.from(
+          stateAfterSend.messages,
+        );
+        _upsertIncomingMessage(
+          messages: syncedMessages,
+          incomingMessage: sentMessage,
+        );
+        _sortMessagesByTime(syncedMessages);
+        emit(stateAfterSend.copyWith(messages: syncedMessages));
         return;
       }
 
@@ -226,7 +241,23 @@ class PrivateConversationBloc
       _sortMessagesByTime(updatedMessages);
 
       emit(currentState.copyWith(messages: updatedMessages));
-      await _privateMessageInteractor.sendMessage(message: pendingMessage);
+
+      final PrivateMessage sentMessage = await _privateMessageInteractor
+          .sendMessage(message: pendingMessage);
+      final PrivateConversationState stateAfterSend = state;
+      if (stateAfterSend is! PrivateConversationLoadedState) {
+        return;
+      }
+
+      final List<PrivateMessage> syncedMessages = List<PrivateMessage>.from(
+        stateAfterSend.messages,
+      );
+      _upsertIncomingMessage(
+        messages: syncedMessages,
+        incomingMessage: sentMessage,
+      );
+      _sortMessagesByTime(syncedMessages);
+      emit(stateAfterSend.copyWith(messages: syncedMessages));
     } catch (e, st) {
       _logger.exception(e, st);
 

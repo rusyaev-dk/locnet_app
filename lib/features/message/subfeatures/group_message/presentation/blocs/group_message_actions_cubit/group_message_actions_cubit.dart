@@ -94,6 +94,73 @@ class GroupMessageActionsCubit extends Cubit<GroupMessageActionsState> {
     }
   }
 
+  Future<void> forwardMessage({
+    required String groupId,
+    required GroupMessage sourceMessage,
+  }) async {
+    final String normalizedText = sourceMessage.text.trim();
+    final bool hasAttachments = sourceMessage.attachments.isNotEmpty;
+    if (normalizedText.isEmpty && !hasAttachments) {
+      return;
+    }
+
+    final String clientMessageId = 'local-${const Uuid().v4()}';
+    final DateTime now = DateTime.now();
+
+    try {
+      final User user = await _userInteractor.getCachedUser();
+      final List<GroupMessageAttachment> attachments = sourceMessage.attachments
+          .map(
+            (GroupMessageAttachment attachment) => attachment.copyWith(
+              id: 'local-attach-${const Uuid().v4()}',
+              messageId: '',
+              createdAt: now,
+            ),
+          )
+          .toList(growable: false);
+
+      final GroupMessage localMessage = GroupMessage(
+        id: '',
+        clientMessageId: clientMessageId,
+        senderId: user.userId,
+        groupId: groupId,
+        attachments: attachments,
+        text: normalizedText,
+        createdAt: now,
+        updatedAt: now,
+        isDeleted: false,
+        deletedById: null,
+        replyToMessageId: null,
+        deliveryStatus: MessageDeliveryStatus.sending,
+        isPinned: false,
+        editedAt: null,
+      );
+
+      _upsertOperation(
+        GroupMessageActionOperation(
+          clientMessageId: clientMessageId,
+          groupId: groupId,
+          type: GroupMessageActionType.send,
+          status: GroupMessageActionStatus.sending,
+          message: localMessage,
+        ),
+      );
+
+      await _groupMessageInteractor.sendMessage(message: localMessage);
+      _markSuccess(clientMessageId: clientMessageId);
+    } catch (e, st) {
+      _logger.exception(e, st);
+      final AppException appException = e is AppException
+          ? e
+          : AppUnknownException(
+              message: e.toString(),
+              error: e,
+              stackTrace: st,
+            );
+      _markFailure(clientMessageId: clientMessageId, failure: appException);
+    }
+  }
+
   Future<void> editMessage({
     required GroupMessage message,
     required String newText,

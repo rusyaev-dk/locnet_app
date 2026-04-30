@@ -189,21 +189,18 @@ class _GroupConversationScreenState extends State<GroupConversationScreen> {
                           (a, b) => a.createdAt.compareTo(b.createdAt),
                         );
 
-                      final text = selectedMessages
-                          .map((m) => m.text)
-                          .join('\n');
-
-                      if (text.trim().isEmpty) return;
-
                       switch (tile.type) {
                         case ConversationTileType.private:
                         case ConversationTileType.group:
-                          await context
-                              .read<GroupMessageActionsCubit>()
-                              .sendMessage(
-                                groupId: tile.id,
-                                text: text,
-                              );
+                          for (final GroupMessage sourceMessage
+                              in selectedMessages) {
+                            await context
+                                .read<GroupMessageActionsCubit>()
+                                .forwardMessage(
+                                  groupId: tile.id,
+                                  sourceMessage: sourceMessage,
+                                );
+                          }
                           break;
                         case ConversationTileType.channel:
                           return;
@@ -302,17 +299,14 @@ class _GroupConversationScreenState extends State<GroupConversationScreen> {
 
                           if (tile == null) return;
 
-                          final text = message.text.trim();
-                          if (text.isEmpty) return;
-
                           switch (tile.type) {
                             case ConversationTileType.private:
                             case ConversationTileType.group:
                               await context
                                   .read<GroupMessageActionsCubit>()
-                                  .sendMessage(
+                                  .forwardMessage(
                                     groupId: tile.id,
-                                    text: text,
+                                    sourceMessage: message,
                                   );
                               break;
                             case ConversationTileType.channel:

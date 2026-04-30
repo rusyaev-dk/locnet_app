@@ -59,8 +59,7 @@ class PrivateMessageDto extends Equatable {
       id: (json['id'] ?? json['messageId']) as String,
       conversationId: json['conversationId'] as String,
       senderId: json['senderId'] as String,
-      deliveryStatus:
-          (json['deliveryStatus'] ?? json['status'] ?? 'SENT') as String,
+      deliveryStatus: (json['deliveryStatus'] ?? 'SENT') as String,
       clientMessageId: json['clientMessageId'] as String?,
       text: (json['text'] ?? '') as String,
       attachments: parsedAttachments,

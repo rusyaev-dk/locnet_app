@@ -36,6 +36,17 @@ class _PrivateMessagesListState extends State<PrivateMessagesList> {
   final Set<String> _visitedIds = <String>{};
   final Map<String, GlobalKey> _messageKeys = <String, GlobalKey>{};
 
+  String _messageRenderKey(PrivateMessage message) {
+    if (message.id.trim().isNotEmpty) {
+      return 'id:${message.id}';
+    }
+    final String? clientId = message.clientMessageId;
+    if (clientId != null && clientId.trim().isNotEmpty) {
+      return 'cid:$clientId';
+    }
+    return 'tmp:${message.createdAt.microsecondsSinceEpoch}:${message.senderId}:${message.text.hashCode}';
+  }
+
   @override
   void didUpdateWidget(covariant PrivateMessagesList oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -96,8 +107,9 @@ class _PrivateMessagesListState extends State<PrivateMessagesList> {
         },
         itemBuilder: (BuildContext context, int index) {
           final PrivateMessage message = widget.messages[index];
-          final GlobalKey itemKey = _messageKeys[message.id] ??= GlobalKey(
-            debugLabel: message.id,
+          final String renderKey = _messageRenderKey(message);
+          final GlobalKey itemKey = _messageKeys[renderKey] ??= GlobalKey(
+            debugLabel: renderKey,
           );
           final bool isHighlighted = widget.highlightedMessageId == message.id;
           final String replyText = message.replyToMessageId != null

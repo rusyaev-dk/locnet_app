@@ -191,23 +191,20 @@ class _ChannelConversationScreenState extends State<ChannelConversationScreen> {
                           (a, b) => a.createdAt.compareTo(b.createdAt),
                         );
 
-                      final text = selectedMessages
-                          .map((m) => m.text ?? '')
-                          .join('\n');
-
-                      if (text.trim().isEmpty) return;
-
                       switch (tile.type) {
                         case ConversationTileType.private:
                         case ConversationTileType.group:
                           return;
                         case ConversationTileType.channel:
-                          await context
-                              .read<ChannelPublicationActionsCubit>()
-                              .sendPublication(
-                                channelId: tile.id,
-                                text: text,
-                              );
+                          for (final ChannelPublication sourcePublication
+                              in selectedMessages) {
+                            await context
+                                .read<ChannelPublicationActionsCubit>()
+                                .forwardPublication(
+                                  channelId: tile.id,
+                                  sourcePublication: sourcePublication,
+                                );
+                          }
                           break;
                       }
 
@@ -293,9 +290,6 @@ class _ChannelConversationScreenState extends State<ChannelConversationScreen> {
 
                       if (tile == null) return;
 
-                      final text = (publication.text ?? '').trim();
-                      if (text.isEmpty) return;
-
                       switch (tile.type) {
                         case ConversationTileType.private:
                         case ConversationTileType.group:
@@ -303,9 +297,9 @@ class _ChannelConversationScreenState extends State<ChannelConversationScreen> {
                         case ConversationTileType.channel:
                           await context
                               .read<ChannelPublicationActionsCubit>()
-                              .sendPublication(
+                              .forwardPublication(
                                 channelId: tile.id,
-                                text: text,
+                                sourcePublication: publication,
                               );
                           break;
                       }

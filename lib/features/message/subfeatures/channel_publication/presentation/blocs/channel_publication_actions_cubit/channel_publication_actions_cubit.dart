@@ -101,6 +101,80 @@ class ChannelPublicationActionsCubit
     }
   }
 
+  Future<void> forwardPublication({
+    required String channelId,
+    required ChannelPublication sourcePublication,
+  }) async {
+    final String normalizedText = (sourcePublication.text ?? '').trim();
+    final bool hasAttachments = sourcePublication.attachments.isNotEmpty;
+    if (normalizedText.isEmpty && !hasAttachments) {
+      return;
+    }
+
+    final String clientPublicationId = 'local-${const Uuid().v4()}';
+    final DateTime now = DateTime.now();
+
+    try {
+      final User user = await _userInteractor.getCachedUser();
+      final List<ChannelPublicationAttachment> attachments =
+          sourcePublication.attachments
+              .map(
+                (ChannelPublicationAttachment attachment) => attachment.copyWith(
+                  attachmentId: 'local-attach-${const Uuid().v4()}',
+                  publicationId: '',
+                  createdAt: now,
+                ),
+              )
+              .toList(growable: false);
+
+      final ChannelPublication localPublication = ChannelPublication(
+        publicationId: '',
+        channelId: channelId,
+        publishedById: user.userId,
+        text: normalizedText,
+        attachments: attachments,
+        avatarFileId: null,
+        replyToPublicationId: null,
+        isDeleted: false,
+        deletedById: null,
+        createdAt: now,
+        updatedAt: now,
+        deliveryStatus: MessageDeliveryStatus.sending,
+        clientPublicationId: clientPublicationId,
+        isPinned: false,
+        editedAt: null,
+      );
+
+      _upsertOperation(
+        ChannelPublicationActionOperation(
+          clientPublicationId: clientPublicationId,
+          channelId: channelId,
+          type: ChannelPublicationActionType.send,
+          status: ChannelPublicationActionStatus.sending,
+          publication: localPublication,
+        ),
+      );
+
+      await _channelPublicationInteractor.sendPublication(
+        publication: localPublication,
+      );
+      _markSuccess(clientPublicationId: clientPublicationId);
+    } catch (e, st) {
+      _logger.exception(e, st);
+      final AppException appException = e is AppException
+          ? e
+          : AppUnknownException(
+              message: e.toString(),
+              error: e,
+              stackTrace: st,
+            );
+      _markFailure(
+        clientPublicationId: clientPublicationId,
+        failure: appException,
+      );
+    }
+  }
+
   Future<void> editPublication({
     required ChannelPublication publication,
     required String newText,

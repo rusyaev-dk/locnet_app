@@ -384,6 +384,9 @@ class HttpPrivateConversationRepo implements IPrivateConversationRepo {
 
       socket.connect();
       _socket = socket;
+    } on StorageException {
+      // Expected before login/session restore: skip socket startup.
+      return;
     } catch (e, st) {
       _logger?.exception(e, st);
       _messagesUpdatesController.addError(
@@ -439,8 +442,7 @@ class HttpPrivateConversationRepo implements IPrivateConversationRepo {
         'isDeleted': payloadMap['isDeleted'] ?? false,
         'deletedById': payloadMap['deletedById'],
         'replyToMessageId': payloadMap['replyToMessageId'],
-        'deliveryStatus':
-            payloadMap['deliveryStatus'] ?? payloadMap['status'] ?? 'SENT',
+        'deliveryStatus': payloadMap['deliveryStatus'] ?? 'SENT',
         'clientMessageId': payloadMap['clientMessageId'],
         'isPinned': payloadMap['isPinned'] ?? false,
         'editedAt': payloadMap['editedAt'],

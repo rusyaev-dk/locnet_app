@@ -28,9 +28,9 @@ final class JWTInterceptor extends Interceptor {
     try {
       final session = await _sessionCacheRepo.loadSession();
       options.headers['Authorization'] = 'Bearer ${session.accessToken}';
-    } on StorageException catch (e, st) {
-      // No session / read failure: do not block request, only log.
-      _logger.exception(e, st);
+    } on StorageException catch (e) {
+      // No session before login is expected. Do not block request.
+      _logger.warning('Skip Authorization header: ${e.message}');
     } catch (e, st) {
       // Any unexpected error: also do not block, only log.
       _logger.exception(e, st);

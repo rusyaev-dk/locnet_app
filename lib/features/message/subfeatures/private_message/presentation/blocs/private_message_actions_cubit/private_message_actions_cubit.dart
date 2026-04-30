@@ -106,6 +106,74 @@ class PrivateMessageActionsCubit extends Cubit<PrivateMessageActionsState> {
     }
   }
 
+  Future<void> forwardMessage({
+    required String conversationId,
+    required PrivateMessage sourceMessage,
+  }) async {
+    final String normalizedText = sourceMessage.text.trim();
+    final bool hasAttachments = sourceMessage.attachments.isNotEmpty;
+    if (normalizedText.isEmpty && !hasAttachments) {
+      return;
+    }
+
+    final String clientMessageId = 'local-${const Uuid().v4()}';
+    final DateTime now = DateTime.now();
+
+    try {
+      final User user = await _userInteractor.getCachedUser();
+      final List<PrivateMessageAttachment> attachments = sourceMessage.attachments
+          .map(
+            (PrivateMessageAttachment attachment) => attachment.copyWith(
+              id: 'local-attach-${const Uuid().v4()}',
+              messageId: '',
+              createdAt: now,
+            ),
+          )
+          .toList(growable: false);
+
+      final PrivateMessage localMessage = PrivateMessage(
+        id: '',
+        clientMessageId: clientMessageId,
+        senderId: user.userId,
+        conversationId: conversationId,
+        attachments: attachments,
+        text: normalizedText,
+        createdAt: now,
+        updatedAt: now,
+        isDeleted: false,
+        deletedById: null,
+        replyToMessageId: null,
+        deliveryStatus: MessageDeliveryStatus.sending,
+        isPinned: false,
+        editedAt: null,
+      );
+
+      _upsertOperation(
+        PrivateMessageActionOperation(
+          clientMessageId: clientMessageId,
+          conversationId: conversationId,
+          type: PrivateMessageActionType.send,
+          status: PrivateMessageActionStatus.sending,
+          message: localMessage,
+        ),
+      );
+
+      await _privateMessageInteractor.sendMessage(message: localMessage);
+      _markSuccess(clientMessageId: clientMessageId);
+    } catch (e, st) {
+      _logger.exception(e, st);
+
+      final AppException appException = e is AppException
+          ? e
+          : AppUnknownException(
+              message: e.toString(),
+              error: e,
+              stackTrace: st,
+            );
+      _markFailure(clientMessageId: clientMessageId, failure: appException);
+    }
+  }
+
   Future<void> editMessage({
     required PrivateMessage message,
     required String newText,

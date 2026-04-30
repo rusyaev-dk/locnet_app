@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
@@ -83,14 +84,24 @@ class AppProvidersWrapper extends StatelessWidget {
             create: (context) => envPreset.createChannelPublicationRepo(),
           ),
           RepositoryProvider<IUserCacheRepo>(
-            create: (context) => LocalUserCacheRepo(
-              storage: appScope.storageAggregator.secureStorage,
-            ),
+            create: (context) {
+              final bool useMacOsFallbackStorage =
+                  !kIsWeb && defaultTargetPlatform == TargetPlatform.macOS;
+              final IKeyValueStorage storageForUser = useMacOsFallbackStorage
+                  ? appScope.storageAggregator.localKeyValueStorage
+                  : appScope.storageAggregator.secureStorage;
+              return LocalUserCacheRepo(storage: storageForUser);
+            },
           ),
           RepositoryProvider<ISessionCacheRepo>(
             create: (context) {
+              final bool useMacOsFallbackStorage =
+                  !kIsWeb && defaultTargetPlatform == TargetPlatform.macOS;
+              final IKeyValueStorage storageForSession = useMacOsFallbackStorage
+                  ? appScope.storageAggregator.localKeyValueStorage
+                  : appScope.storageAggregator.secureStorage;
               final cacheRepo = LocalSessionCacheRepo(
-                storage: appScope.storageAggregator.secureStorage,
+                storage: storageForSession,
               );
               appScope.dio.interceptors.add(
                 JWTInterceptor(

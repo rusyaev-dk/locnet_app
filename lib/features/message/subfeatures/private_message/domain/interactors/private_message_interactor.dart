@@ -7,9 +7,7 @@ final class PrivateMessageInteractor {
 
   final IPrivateMessageRepo _messageRepo;
 
-  Future<PrivateMessage> sendMessage({
-    required PrivateMessage message,
-  }) async {
+  Future<PrivateMessage> sendMessage({required PrivateMessage message}) async {
     return _messageRepo.sendMessage(message: message);
   }
 
@@ -40,4 +38,3 @@ final class PrivateMessageInteractor {
     );
   }
 }
-

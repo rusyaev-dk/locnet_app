@@ -256,9 +256,6 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
 
                         if (tiles == null) return;
 
-                        // Реальный forward предполагает бэкенд-метод forwardMessages.
-                        // Пока реализуем отправку цитатой текста выбранных сообщений.
-
                         final baseState = context
                             .read<PrivateConversationBloc>()
                             .state;
@@ -274,19 +271,16 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
                                 (a, b) => a.createdAt.compareTo(b.createdAt),
                               );
 
-                        final text = selectedMessages
-                            .map((m) => m.text)
-                            .join('\n');
-
-                        if (text.trim().isEmpty) return;
-
                         if (tiles.type == ConversationTileType.private) {
-                          await context
-                              .read<PrivateMessageActionsCubit>()
-                              .sendMessage(
-                                conversationId: tiles.id,
-                                text: text,
-                              );
+                          for (final PrivateMessage sourceMessage
+                              in selectedMessages) {
+                            await context
+                                .read<PrivateMessageActionsCubit>()
+                                .forwardMessage(
+                                  conversationId: tiles.id,
+                                  sourceMessage: sourceMessage,
+                                );
+                          }
                         }
 
                         context.read<MessageSelectionCubit>().clearSelection();
@@ -449,15 +443,12 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
 
                                 if (tile == null) return;
 
-                                final text = message.text.trim();
-                                if (text.isEmpty) return;
-
                                 if (tile.type == ConversationTileType.private) {
                                   await context
                                       .read<PrivateMessageActionsCubit>()
-                                      .sendMessage(
+                                      .forwardMessage(
                                         conversationId: tile.id,
-                                        text: text,
+                                        sourceMessage: message,
                                       );
                                 }
                               },
