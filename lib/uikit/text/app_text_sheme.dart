@@ -4,13 +4,13 @@ import 'package:locnet_app/uikit/uikit.dart';
 /// Typography hierarchy: title, subtitle, body, caption (desktop-compact).
 class AppTextScheme extends ThemeExtension<AppTextScheme> {
   AppTextScheme.base()
-    : display = AppTextStyle.displaySmall.value,
-      headline = AppTextStyle.headlineSmall.value,
-      title = AppTextStyle.titleMedium.value,
-      subtitle = AppTextStyle.titleSmall.value,
-      body = AppTextStyle.bodyMedium.value,
-      label = AppTextStyle.labelMedium.value,
-      caption = AppTextStyle.labelSmall.value;
+    : display = AppTextStyle.displaySmall.dmSans,
+      headline = AppTextStyle.headlineSmall.dmSans,
+      title = AppTextStyle.titleMedium.dmSans,
+      subtitle = AppTextStyle.titleSmall.dmSans,
+      body = AppTextStyle.bodyMedium.dmSans,
+      label = AppTextStyle.labelMedium.dmSans,
+      caption = AppTextStyle.labelSmall.dmSans;
 
   const AppTextScheme._({
     required this.display,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
 /// Accent index: 0 = default, 1 = blue, 2 = green, 3 = purple.
@@ -35,10 +36,8 @@ final class AppThemeData {
     int accentIndex = 0,
     AppColorScheme? lightScheme,
     AppColorScheme? darkScheme,
-  })  : _lightColorScheme =
-            lightScheme ?? _lightSchemeForAccent(accentIndex),
-        _darkColorScheme =
-            darkScheme ?? _darkSchemeForAccent(accentIndex);
+  }) : _lightColorScheme = lightScheme ?? _lightSchemeForAccent(accentIndex),
+       _darkColorScheme = darkScheme ?? _darkSchemeForAccent(accentIndex);
 
   final AppColorScheme _lightColorScheme;
   final AppColorScheme _darkColorScheme;
@@ -61,6 +60,10 @@ final class AppThemeData {
         _designTokens,
       ],
       brightness: Brightness.light,
+      textTheme: GoogleFonts.dmSansTextTheme(ThemeData.light().textTheme).apply(
+        bodyColor: _lightColorScheme.onSurface,
+        displayColor: _lightColorScheme.onSurface,
+      ),
       colorScheme: ColorScheme(
         brightness: Brightness.light,
         primary: _lightColorScheme.primary,
@@ -106,16 +109,20 @@ final class AppThemeData {
         elevation: 0,
       ),
       inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(
-          borderRadius: _radii.defaultRadiusValue,
-        ),
+        border: OutlineInputBorder(borderRadius: _radii.defaultRadiusValue),
         enabledBorder: OutlineInputBorder(
           borderRadius: _radii.defaultRadiusValue,
-          borderSide: BorderSide(color: _lightColorScheme.outlineVariant, width: _borders.thin),
+          borderSide: BorderSide(
+            color: _lightColorScheme.outlineVariant,
+            width: _borders.thin,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: _radii.defaultRadiusValue,
-          borderSide: BorderSide(color: _lightColorScheme.primary, width: _borders.medium),
+          borderSide: BorderSide(
+            color: _lightColorScheme.primary,
+            width: _borders.medium,
+          ),
         ),
         contentPadding: EdgeInsets.symmetric(
           horizontal: _spacing.md,
@@ -139,23 +146,41 @@ final class AppThemeData {
           ),
         ),
       ),
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: _radii.defaultRadiusValue,
+          ),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: _radii.defaultRadiusValue,
+          ),
+        ),
+      ),
+      listTileTheme: ListTileThemeData(
+        shape: RoundedRectangleBorder(borderRadius: _radii.defaultRadiusValue),
+      ),
+      popupMenuTheme: PopupMenuThemeData(
+        shape: RoundedRectangleBorder(borderRadius: _radii.mediumRadius),
+      ),
       dialogTheme: DialogThemeData(
         backgroundColor: _lightColorScheme.surface,
-        shape: RoundedRectangleBorder(
-          borderRadius: _radii.mediumRadius,
-        ),
+        shape: RoundedRectangleBorder(borderRadius: _radii.xlRadius),
         titleTextStyle: _textScheme.headline.copyWith(
-          fontSize: 22,
+          fontSize: 16,
           color: _lightColorScheme.onSurface,
         ),
-        contentTextStyle: _textScheme.label.copyWith(
-          fontSize: 18,
+        contentTextStyle: _textScheme.body.copyWith(
+          fontSize: 14,
           color: _lightColorScheme.onSurface,
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
         labelTextStyle: WidgetStateProperty.all<TextStyle>(
-          const TextStyle(fontSize: 14),
+          GoogleFonts.dmSans(fontSize: 14),
         ),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
@@ -164,12 +189,13 @@ final class AppThemeData {
         unselectedItemColor: _lightColorScheme.onSurface,
       ),
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: _lightColorScheme.primary,
-        contentTextStyle: TextStyle(color: _lightColorScheme.onPrimary),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: _radii.defaultRadiusValue,
+        backgroundColor: _lightColorScheme.surfaceContainerHigh,
+        contentTextStyle: GoogleFonts.dmSans(
+          color: _lightColorScheme.onSurface,
+          fontSize: 13,
         ),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: _radii.mediumRadius),
       ),
     );
   }
@@ -186,6 +212,10 @@ final class AppThemeData {
         _designTokens,
       ],
       brightness: Brightness.dark,
+      textTheme: GoogleFonts.dmSansTextTheme(ThemeData.dark().textTheme).apply(
+        bodyColor: _darkColorScheme.onSurface,
+        displayColor: _darkColorScheme.onSurface,
+      ),
       colorScheme: ColorScheme(
         brightness: Brightness.dark,
         primary: _darkColorScheme.primary,
@@ -231,16 +261,20 @@ final class AppThemeData {
         elevation: 0,
       ),
       inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(
-          borderRadius: _radii.defaultRadiusValue,
-        ),
+        border: OutlineInputBorder(borderRadius: _radii.defaultRadiusValue),
         enabledBorder: OutlineInputBorder(
           borderRadius: _radii.defaultRadiusValue,
-          borderSide: BorderSide(color: _darkColorScheme.outlineVariant, width: _borders.thin),
+          borderSide: BorderSide(
+            color: _darkColorScheme.outlineVariant,
+            width: _borders.thin,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: _radii.defaultRadiusValue,
-          borderSide: BorderSide(color: _darkColorScheme.primary, width: _borders.medium),
+          borderSide: BorderSide(
+            color: _darkColorScheme.primary,
+            width: _borders.medium,
+          ),
         ),
         contentPadding: EdgeInsets.symmetric(
           horizontal: _spacing.md,
@@ -264,36 +298,57 @@ final class AppThemeData {
           ),
         ),
       ),
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: _radii.defaultRadiusValue,
+          ),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: _radii.defaultRadiusValue,
+          ),
+        ),
+      ),
+      listTileTheme: ListTileThemeData(
+        shape: RoundedRectangleBorder(borderRadius: _radii.defaultRadiusValue),
+      ),
+      popupMenuTheme: PopupMenuThemeData(
+        shape: RoundedRectangleBorder(borderRadius: _radii.mediumRadius),
+      ),
       dialogTheme: DialogThemeData(
-        backgroundColor: _darkColorScheme.surface,
+        backgroundColor: _darkColorScheme.surfaceContainerLow,
         shape: RoundedRectangleBorder(
-          borderRadius: _radii.mediumRadius,
+          borderRadius: _radii.xlRadius,
+          side: BorderSide(color: _darkColorScheme.outline),
         ),
         titleTextStyle: _textScheme.headline.copyWith(
-          fontSize: 22,
+          fontSize: 16,
           color: _darkColorScheme.onSurface,
         ),
-        contentTextStyle: _textScheme.label.copyWith(
-          fontSize: 18,
+        contentTextStyle: _textScheme.body.copyWith(
+          fontSize: 14,
           color: _darkColorScheme.onSurface,
         ),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: _darkColorScheme.surface,
+        backgroundColor: _darkColorScheme.surfaceContainerLow,
         selectedItemColor: _darkColorScheme.primary,
-        unselectedItemColor: _darkColorScheme.onSurface,
+        unselectedItemColor: _darkColorScheme.onSurfaceVariant,
       ),
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: _darkColorScheme.primary,
-        contentTextStyle: TextStyle(color: _darkColorScheme.onPrimary),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: _radii.defaultRadiusValue,
+        backgroundColor: _darkColorScheme.surfaceContainerHigh,
+        contentTextStyle: GoogleFonts.dmSans(
+          color: _darkColorScheme.onSurface,
+          fontSize: 13,
         ),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: _radii.mediumRadius),
       ),
     );
   }
 
   final _textScheme = AppTextScheme.base();
 }
-

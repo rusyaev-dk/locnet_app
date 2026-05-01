@@ -40,34 +40,12 @@ final class MessageInlineStyleRange {
 }
 
 final class MessageRichInputController extends TextEditingController {
-  MessageRichInputController({
-    required TextStyle baseStyle,
-    required TextStyle boldStyle,
-    required TextStyle italicStyle,
-    required TextStyle underlineStyle,
-    required TextStyle codeStyle,
-    required TextStyle strikeStyle,
-    required TextStyle linkStyle,
-    required TextStyle codeBlockStyle,
-    String? text,
-  }) : _baseStyle = baseStyle,
-       _boldStyle = boldStyle,
-       _italicStyle = italicStyle,
-       _underlineStyle = underlineStyle,
-       _codeStyle = codeStyle,
-       _strikeStyle = strikeStyle,
-       _linkStyle = linkStyle,
-       _codeBlockStyle = codeBlockStyle,
-       super(text: text);
+  MessageRichInputController({required TextStyle baseStyle, String? text})
+    : _baseStyle = baseStyle,
+      super(text: text);
 
+  /// Initial / fallback style; merged with [TextField.style] in [buildTextSpan].
   final TextStyle _baseStyle;
-  final TextStyle _boldStyle;
-  final TextStyle _italicStyle;
-  final TextStyle _underlineStyle;
-  final TextStyle _codeStyle;
-  final TextStyle _strikeStyle;
-  final TextStyle _linkStyle;
-  final TextStyle _codeBlockStyle;
 
   final List<MessageInlineStyleRange> _ranges = <MessageInlineStyleRange>[];
 
@@ -170,27 +148,55 @@ final class MessageRichInputController extends TextEditingController {
     required bool withComposing,
     TextStyle? style,
   }) {
+    // Merge TextField's live `style` so theme / brightness changes apply without
+    // recreating the controller (see MessageInputField).
+    final ColorScheme materialScheme = Theme.of(context).colorScheme;
+    final TextStyle rootStyle = style != null
+        ? _baseStyle.merge(style)
+        : _baseStyle;
+
+    final TextStyle boldStyle = rootStyle.copyWith(fontWeight: FontWeight.w700);
+    final TextStyle italicStyle = rootStyle.copyWith(
+      fontStyle: FontStyle.italic,
+    );
+    final TextStyle underlineStyle = rootStyle.copyWith(
+      decoration: TextDecoration.underline,
+    );
+    final TextStyle codeStyle = rootStyle.copyWith(fontFamily: 'monospace');
+    final TextStyle strikeStyle = rootStyle.copyWith(
+      decoration: TextDecoration.lineThrough,
+    );
+    final TextStyle linkStyle = rootStyle.copyWith(
+      color: materialScheme.primary,
+      decoration: TextDecoration.none,
+    );
+    final TextStyle codeBlockStyle = rootStyle.copyWith(
+      fontFamily: 'monospace',
+      height: 1.25,
+      backgroundColor: materialScheme.onSurface.withAlpha(18),
+    );
+
     final String plainText = text;
     if (plainText.isEmpty) {
-      return TextSpan(text: '', style: _baseStyle);
+      return TextSpan(text: '', style: rootStyle);
     }
 
     final List<InlineSpan> spans = MessageInlineSpanBuilder.build(
       plainText: plainText,
       ranges: _ranges,
-      baseStyle: _baseStyle,
-      boldStyle: _boldStyle,
-      italicStyle: _italicStyle,
-      underlineStyle: _underlineStyle,
-      codeStyle: _codeStyle,
-      strikeStyle: _strikeStyle,
-      linkStyle: _linkStyle,
-      codeBlockStyle: _codeBlockStyle,
+      baseStyle: rootStyle,
+      boldStyle: boldStyle,
+      italicStyle: italicStyle,
+      underlineStyle: underlineStyle,
+      codeStyle: codeStyle,
+      strikeStyle: strikeStyle,
+      linkStyle: linkStyle,
+      codeBlockStyle: codeBlockStyle,
       onLinkTap: null,
       autoDetectLinks: false,
     );
 
-    return TextSpan(style: _baseStyle, children: spans);
+    return TextSpan(style: rootStyle, children: spans);
   }
 }
 

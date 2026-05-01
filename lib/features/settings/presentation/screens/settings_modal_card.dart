@@ -19,7 +19,7 @@ class SettingsModalCard extends StatelessWidget {
     final colorScheme = context.colorScheme;
 
     return AppModalCard(
-      maxWidth: MediaQuery.of(context).size.width * 0.5,
+      maxWidth: 600,
       child: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (BuildContext context, SettingsState state) {
           switch (state) {
@@ -34,7 +34,7 @@ class SettingsModalCard extends StatelessWidget {
                       const CircularProgressIndicator(),
                       const SizedBox(height: 16),
                       Text(
-                        'Loading settings...',
+                        context.l10n.settingsLoading,
                         style: textScheme.headline.copyWith(
                           color: colorScheme.onSurface,
                         ),
@@ -71,7 +71,7 @@ class SettingsView extends StatefulWidget {
 }
 
 class _SettingsViewState extends State<SettingsView> {
-  SettingsSection _selectedSection = SettingsSection.appearance;
+  SettingsSection _selectedSection = SettingsSection.profile;
 
   void _showLogoutConfirmation(BuildContext context) {
     final l10n = context.l10n;
@@ -108,62 +108,82 @@ class _SettingsViewState extends State<SettingsView> {
       if (state is AuthAuthenticatedState) return state.session;
       return null;
     });
-    final User? user = context.select<AuthCubit, User?>((AuthCubit c) {
-      final state = c.state;
-      if (state is AuthAuthenticatedState) return state.user;
-      return null;
-    });
 
     final colorScheme = context.colorScheme;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SettingsHeader(showBackButton: false),
+        // ── Modal header ──────────────────────────────────────────────
+        Container(
+          padding: const EdgeInsets.fromLTRB(20, 16, 16, 16),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: colorScheme.outline, width: 1),
+            ),
+          ),
+          child: Row(
+            children: [
+              Text(
+                context.l10n.settings,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.onSurface,
+                  height: 1.2,
+                ),
+              ),
+              const Spacer(),
+              GestureDetector(
+                onTap: () => Navigator.of(context).pop(),
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: colorScheme.secondary,
+                    border: Border.all(color: colorScheme.outline, width: 1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.close,
+                    size: 14,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        // ── Sidebar + Content ─────────────────────────────────────────
         Expanded(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final bool isCompactSidebar = constraints.maxWidth < 600;
-
-              return Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: SettingsSidebar(
-                      selectedSection: _selectedSection,
-                      compact: isCompactSidebar,
-                      profileTrailing: user != null
-                          ? SettingsProfilePreview(
-                              user: user,
-                              compact: isCompactSidebar,
-                            )
-                          : null,
-                      onLogout: session != null
-                          ? () => _showLogoutConfirmation(context)
-                          : null,
-                      onSectionSelected: (section) {
-                        setState(() {
-                          _selectedSection = section;
-                        });
-                      },
-                    ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    right: BorderSide(color: colorScheme.outline, width: 1),
                   ),
-                  VerticalDivider(
-                    width: 1,
-                    thickness: 1,
-                    color: colorScheme.outlineVariant,
-                  ),
-                  Expanded(
-                    flex: 5,
-                    child: _SettingsSectionContent(
-                      section: _selectedSection,
-                      session: session,
-                    ),
-                  ),
-                ],
-              );
-            },
+                ),
+                child: SettingsSidebar(
+                  selectedSection: _selectedSection,
+                  onLogout: session != null
+                      ? () => _showLogoutConfirmation(context)
+                      : null,
+                  onSectionSelected: (section) {
+                    setState(() {
+                      _selectedSection = section;
+                    });
+                  },
+                ),
+              ),
+              Expanded(
+                child: _SettingsSectionContent(
+                  section: _selectedSection,
+                  session: session,
+                ),
+              ),
+            ],
           ),
         ),
       ],
@@ -194,6 +214,8 @@ class _SettingsSectionContent extends StatelessWidget {
           )..loadProfile(),
           child: const ProfileSettingsContent(),
         );
+      case SettingsSection.security:
+        return PrivacySettingsContent(session: session);
       case SettingsSection.notifications:
         return BlocProvider<NotificationsSettingsCubit>(
           create: (context) => NotificationsSettingsCubit(

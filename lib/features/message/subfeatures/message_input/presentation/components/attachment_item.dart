@@ -32,6 +32,8 @@ class _ImagePreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
+    final radii = context.radii;
+    final BorderRadius removeRadius = radii.smallRadius;
 
     return Stack(
       children: [
@@ -53,17 +55,17 @@ class _ImagePreview extends StatelessWidget {
           child: Material(
             elevation: 2,
             color: Colors.transparent,
-            shape: const CircleBorder(),
+            borderRadius: removeRadius,
             child: InkWell(
               onTap: () => onRemovePressed(file),
-              customBorder: const CircleBorder(),
+              borderRadius: removeRadius,
               child: Container(
                 width: 24,
                 height: 24,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: colorScheme.surface.withAlpha(180),
-                  shape: BoxShape.circle,
+                  borderRadius: removeRadius,
                 ),
                 child: Icon(
                   Icons.close_rounded,
@@ -89,6 +91,7 @@ class _GenericPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
+    final radii = context.radii;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -112,12 +115,19 @@ class _GenericPreview extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 6),
-          InkWell(
-            onTap: () => onRemovePressed(file),
-            child: Icon(
-              Icons.close,
-              size: 18,
-              color: colorScheme.onSurfaceVariant,
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => onRemovePressed(file),
+              borderRadius: radii.smallRadius,
+              child: Padding(
+                padding: const EdgeInsets.all(4),
+                child: Icon(
+                  Icons.close,
+                  size: 18,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
             ),
           ),
         ],

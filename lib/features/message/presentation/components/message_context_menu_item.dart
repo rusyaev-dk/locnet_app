@@ -44,6 +44,7 @@ class _MessageContextMenuItemState extends State<MessageContextMenuItem> {
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
+    final radii = context.radii;
 
     final Color foregroundColor = widget.isDestructive
         ? colorScheme.error
@@ -67,6 +68,7 @@ class _MessageContextMenuItemState extends State<MessageContextMenuItem> {
           color: _isHovered ? hoverColor : Colors.transparent,
           child: InkWell(
             onTap: widget.onPressed,
+            borderRadius: radii.defaultRadiusValue,
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,
             hoverColor: Colors.transparent,

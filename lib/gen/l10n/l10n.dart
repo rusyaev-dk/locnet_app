@@ -374,6 +374,26 @@ class S {
     return Intl.message('Войти', name: 'signIn', desc: '', args: []);
   }
 
+  /// `Забыли пароль?`
+  String get forgotPassword {
+    return Intl.message(
+      'Забыли пароль?',
+      name: 'forgotPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Создать аккаунт`
+  String get createAccount {
+    return Intl.message(
+      'Создать аккаунт',
+      name: 'createAccount',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Логин`
   String get login {
     return Intl.message('Логин', name: 'login', desc: '', args: []);
@@ -1557,6 +1577,486 @@ class S {
   /// `О приложении`
   String get aboutApp {
     return Intl.message('О приложении', name: 'aboutApp', desc: '', args: []);
+  }
+
+  /// `Загрузка настроек…`
+  String get settingsLoading {
+    return Intl.message(
+      'Загрузка настроек…',
+      name: 'settingsLoading',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Locnet`
+  String get appName {
+    return Intl.message('Locnet', name: 'appName', desc: '', args: []);
+  }
+
+  /// `Тема`
+  String get settingsThemeSection {
+    return Intl.message(
+      'Тема',
+      name: 'settingsThemeSection',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Режим`
+  String get settingsThemeModeLabel {
+    return Intl.message(
+      'Режим',
+      name: 'settingsThemeModeLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Динамическая тема`
+  String get settingsDynamicTheme {
+    return Intl.message(
+      'Динамическая тема',
+      name: 'settingsDynamicTheme',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Подстроить цвета под обои`
+  String get settingsDynamicThemeSubtitle {
+    return Intl.message(
+      'Подстроить цвета под обои',
+      name: 'settingsDynamicThemeSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Интерфейс`
+  String get settingsInterfaceSection {
+    return Intl.message(
+      'Интерфейс',
+      name: 'settingsInterfaceSection',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Размер текста`
+  String get settingsTextScale {
+    return Intl.message(
+      'Размер текста',
+      name: 'settingsTextScale',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Масштаб элементов`
+  String get settingsElementScale {
+    return Intl.message(
+      'Масштаб элементов',
+      name: 'settingsElementScale',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Акцент`
+  String get settingsAccentSection {
+    return Intl.message(
+      'Акцент',
+      name: 'settingsAccentSection',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Предпросмотр`
+  String get settingsPreviewLabel {
+    return Intl.message(
+      'Предпросмотр',
+      name: 'settingsPreviewLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Push`
+  String get settingsPushSection {
+    return Intl.message(
+      'Push',
+      name: 'settingsPushSection',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Push-уведомления`
+  String get settingsAllowPush {
+    return Intl.message(
+      'Push-уведомления',
+      name: 'settingsAllowPush',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Упоминания`
+  String get settingsNotifyMentions {
+    return Intl.message(
+      'Упоминания',
+      name: 'settingsNotifyMentions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Системные`
+  String get settingsNotifySystem {
+    return Intl.message(
+      'Системные',
+      name: 'settingsNotifySystem',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Звуки`
+  String get settingsSoundsSection {
+    return Intl.message(
+      'Звуки',
+      name: 'settingsSoundsSection',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Входящие сообщения`
+  String get settingsSoundNewMessages {
+    return Intl.message(
+      'Входящие сообщения',
+      name: 'settingsSoundNewMessages',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Отправка`
+  String get settingsSoundSend {
+    return Intl.message(
+      'Отправка',
+      name: 'settingsSoundSend',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Системные звуки`
+  String get settingsSoundSystem {
+    return Intl.message(
+      'Системные звуки',
+      name: 'settingsSoundSystem',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Мелодия`
+  String get settingsNotificationSoundTone {
+    return Intl.message(
+      'Мелодия',
+      name: 'settingsNotificationSoundTone',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Стандарт`
+  String get settingsSoundDefault {
+    return Intl.message(
+      'Стандарт',
+      name: 'settingsSoundDefault',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Звонок`
+  String get settingsSoundChime {
+    return Intl.message(
+      'Звонок',
+      name: 'settingsSoundChime',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Пинг`
+  String get settingsSoundPing {
+    return Intl.message('Пинг', name: 'settingsSoundPing', desc: '', args: []);
+  }
+
+  /// `Поведение`
+  String get settingsChatBehaviorSection {
+    return Intl.message(
+      'Поведение',
+      name: 'settingsChatBehaviorSection',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Прокрутка к новым`
+  String get settingsAutoScroll {
+    return Intl.message(
+      'Прокрутка к новым',
+      name: 'settingsAutoScroll',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Отправка по Enter`
+  String get settingsSendOnEnter {
+    return Intl.message(
+      'Отправка по Enter',
+      name: 'settingsSendOnEnter',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter отправляет; Shift+Enter — новая строка ниже`
+  String get settingsSendOnEnterSubtitle {
+    return Intl.message(
+      'Enter отправляет; Shift+Enter — новая строка ниже',
+      name: 'settingsSendOnEnterSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Shift+Enter — новая строка`
+  String get settingsShiftEnterNewLine {
+    return Intl.message(
+      'Shift+Enter — новая строка',
+      name: 'settingsShiftEnterNewLine',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Черновики`
+  String get settingsSaveDrafts {
+    return Intl.message(
+      'Черновики',
+      name: 'settingsSaveDrafts',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Сменить фото`
+  String get profileChangePhoto {
+    return Intl.message(
+      'Сменить фото',
+      name: 'profileChangePhoto',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Язык`
+  String get companionFieldLanguage {
+    return Intl.message(
+      'Язык',
+      name: 'companionFieldLanguage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `О себе`
+  String get companionFieldAbout {
+    return Intl.message(
+      'О себе',
+      name: 'companionFieldAbout',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Звонок`
+  String get companionActionCall {
+    return Intl.message(
+      'Звонок',
+      name: 'companionActionCall',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Видео`
+  String get companionActionVideo {
+    return Intl.message(
+      'Видео',
+      name: 'companionActionVideo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Написать`
+  String get companionActionMessage {
+    return Intl.message(
+      'Написать',
+      name: 'companionActionMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Отправьте сообщение, чтобы начать чат`
+  String get draftChatHint {
+    return Intl.message(
+      'Отправьте сообщение, чтобы начать чат',
+      name: 'draftChatHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Пока нет сообщений`
+  String get conversationNoMessagesYet {
+    return Intl.message(
+      'Пока нет сообщений',
+      name: 'conversationNoMessagesYet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Не беспокоить`
+  String get settingsDoNotDisturb {
+    return Intl.message(
+      'Не беспокоить',
+      name: 'settingsDoNotDisturb',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Неизвестно`
+  String get appVersionUnknown {
+    return Intl.message(
+      'Неизвестно',
+      name: 'appVersionUnknown',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Версия {version}`
+  String appVersionDisplay(Object version) {
+    return Intl.message(
+      'Версия $version',
+      name: 'appVersionDisplay',
+      desc: '',
+      args: [version],
+    );
+  }
+
+  /// `Информация о канале`
+  String get channelMenuViewInfo {
+    return Intl.message(
+      'Информация о канале',
+      name: 'channelMenuViewInfo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Покинуть канал`
+  String get channelMenuLeave {
+    return Intl.message(
+      'Покинуть канал',
+      name: 'channelMenuLeave',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Информация о группе`
+  String get groupMenuViewInfo {
+    return Intl.message(
+      'Информация о группе',
+      name: 'groupMenuViewInfo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Покинуть группу`
+  String get groupMenuLeave {
+    return Intl.message(
+      'Покинуть группу',
+      name: 'groupMenuLeave',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Удалить группу`
+  String get groupMenuDelete {
+    return Intl.message(
+      'Удалить группу',
+      name: 'groupMenuDelete',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Открыть во внешнем приложении`
+  String get mediaOpenExternally {
+    return Intl.message(
+      'Открыть во внешнем приложении',
+      name: 'mediaOpenExternally',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{count} подписчиков`
+  String channelSubscribersCount(Object count) {
+    return Intl.message(
+      '$count подписчиков',
+      name: 'channelSubscribersCount',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{count} участников`
+  String groupParticipantsCount(Object count) {
+    return Intl.message(
+      '$count участников',
+      name: 'groupParticipantsCount',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Не удалось загрузить видео`
+  String get mediaVideoLoadFailed {
+    return Intl.message(
+      'Не удалось загрузить видео',
+      name: 'mediaVideoLoadFailed',
+      desc: '',
+      args: [],
+    );
   }
 }
 

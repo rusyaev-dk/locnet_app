@@ -31,10 +31,13 @@ class SettingsNavTile extends StatelessWidget {
         ? colorScheme.onSurface
         : colorScheme.onSurfaceVariant;
 
+    final radii = context.radii;
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: enabled ? onTap : null,
+        borderRadius: radii.defaultRadiusValue,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
           child: Row(

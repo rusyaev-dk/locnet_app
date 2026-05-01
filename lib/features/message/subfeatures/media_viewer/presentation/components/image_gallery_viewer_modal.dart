@@ -52,8 +52,22 @@ class _ImageGalleryViewerState extends State<_ImageGalleryViewer> {
     super.dispose();
   }
 
+  Future<void> _goToPage(int index) async {
+    final int clamped = index.clamp(0, widget.imageUrls.length - 1);
+    if (clamped == _currentIndex) {
+      return;
+    }
+    await _pageController.animateToPage(
+      clamped,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final bool multi = widget.imageUrls.length > 1;
+
     return GestureDetector(
       onTap: () => Navigator.of(context).pop(),
       child: ColoredBox(
@@ -98,7 +112,31 @@ class _ImageGalleryViewerState extends State<_ImageGalleryViewer> {
                   icon: const Icon(Icons.close, color: Colors.white),
                 ),
               ),
-              if (widget.imageUrls.length > 1)
+              if (multi) ...[
+                Positioned(
+                  left: 4,
+                  top: 0,
+                  bottom: 0,
+                  child: Center(
+                    child: _GalleryNavArrow(
+                      icon: Icons.chevron_left_rounded,
+                      enabled: _currentIndex > 0,
+                      onPressed: () => _goToPage(_currentIndex - 1),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  right: 4,
+                  top: 0,
+                  bottom: 0,
+                  child: Center(
+                    child: _GalleryNavArrow(
+                      icon: Icons.chevron_right_rounded,
+                      enabled: _currentIndex < widget.imageUrls.length - 1,
+                      onPressed: () => _goToPage(_currentIndex + 1),
+                    ),
+                  ),
+                ),
                 Positioned(
                   bottom: 16,
                   left: 0,
@@ -106,11 +144,49 @@ class _ImageGalleryViewerState extends State<_ImageGalleryViewer> {
                   child: Center(
                     child: Text(
                       '${_currentIndex + 1} / ${widget.imageUrls.length}',
-                      style: const TextStyle(color: Colors.white),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ),
+              ],
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _GalleryNavArrow extends StatelessWidget {
+  const _GalleryNavArrow({
+    required this.icon,
+    required this.enabled,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final bool enabled;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.black.withAlpha(110),
+      borderRadius: BorderRadius.circular(10),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: enabled ? onPressed : null,
+        child: SizedBox(
+          width: 44,
+          height: 52,
+          child: Icon(
+            icon,
+            color: enabled ? Colors.white : Colors.white.withAlpha(90),
+            size: 32,
           ),
         ),
       ),

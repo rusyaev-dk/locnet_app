@@ -259,7 +259,7 @@ class _GroupConversationScreenState extends State<GroupConversationScreen> {
                   final List<GroupMessage> messages = state.messages;
 
                   if (messages.isEmpty) {
-                    return const Text("Empty here...");
+                    return Text(context.l10n.conversationNoMessagesYet);
                   }
 
                   return FutureBuilder<User>(

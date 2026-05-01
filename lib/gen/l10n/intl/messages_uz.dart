@@ -20,7 +20,13 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'uz';
 
-  static String m0(min) => "Kamida ${min} ta belgi";
+  static String m0(version) => "Versiya ${version}";
+
+  static String m1(count) => "${count} obunachi";
+
+  static String m2(count) => "${count} ishtirokchi";
+
+  static String m3(min) => "Kamida ${min} ta belgi";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -50,9 +56,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "appException": MessageLookupByLibrary.simpleMessage(
       "Ilovada xatolik yuz berdi",
     ),
+    "appName": MessageLookupByLibrary.simpleMessage("Locnet"),
     "appUnknownException": MessageLookupByLibrary.simpleMessage(
       "Nomaʼlum xatolik yuz berdi",
     ),
+    "appVersionDisplay": m0,
+    "appVersionUnknown": MessageLookupByLibrary.simpleMessage("Noma\'lum"),
     "appearance": MessageLookupByLibrary.simpleMessage("Koʻrinishi"),
     "apply": MessageLookupByLibrary.simpleMessage("Qoʻllash"),
     "authException": MessageLookupByLibrary.simpleMessage(
@@ -74,6 +83,11 @@ class MessageLookup extends MessageLookupByLibrary {
       "Yorugʻ / qorongʻi mavzu",
     ),
     "cancel": MessageLookupByLibrary.simpleMessage("Bekor qilish"),
+    "channelMenuLeave": MessageLookupByLibrary.simpleMessage(
+      "Kanaldan chiqish",
+    ),
+    "channelMenuViewInfo": MessageLookupByLibrary.simpleMessage("Kanal haqida"),
+    "channelSubscribersCount": m1,
     "charactersCountViolationException": MessageLookupByLibrary.simpleMessage(
       "Belgilar soni notoʻgʻri",
     ),
@@ -88,6 +102,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "colorSchemeGreen": MessageLookupByLibrary.simpleMessage("Yashil"),
     "colorSchemePurple": MessageLookupByLibrary.simpleMessage("Binafsha"),
     "colorSchemeTitle": MessageLookupByLibrary.simpleMessage("Rang sxemasi"),
+    "companionActionCall": MessageLookupByLibrary.simpleMessage("Qo‘ng‘iroq"),
+    "companionActionMessage": MessageLookupByLibrary.simpleMessage("Xabar"),
+    "companionActionVideo": MessageLookupByLibrary.simpleMessage("Video"),
+    "companionFieldAbout": MessageLookupByLibrary.simpleMessage("Haqida"),
+    "companionFieldLanguage": MessageLookupByLibrary.simpleMessage("Til"),
     "companionStatusOffline": MessageLookupByLibrary.simpleMessage("Oflayn"),
     "companionStatusOnline": MessageLookupByLibrary.simpleMessage("Onlayn"),
     "confirm": MessageLookupByLibrary.simpleMessage("Tasdiqlash"),
@@ -95,6 +114,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Suhbat yaratish",
     ),
     "conversationDescription": MessageLookupByLibrary.simpleMessage("Tavsif"),
+    "conversationNoMessagesYet": MessageLookupByLibrary.simpleMessage(
+      "Hali xabar yo‘q",
+    ),
     "conversationTitle": MessageLookupByLibrary.simpleMessage("Sarlavha"),
     "conversationType": MessageLookupByLibrary.simpleMessage("Turi"),
     "conversationTypeChannel": MessageLookupByLibrary.simpleMessage("Kanal"),
@@ -114,6 +136,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Hozircha suhbatlar yoʻq",
     ),
     "create": MessageLookupByLibrary.simpleMessage("Yaratish"),
+    "createAccount": MessageLookupByLibrary.simpleMessage("Hisob yaratish"),
     "currentSession": MessageLookupByLibrary.simpleMessage("Joriy sessiya"),
     "delete": MessageLookupByLibrary.simpleMessage("Oʻchirish"),
     "deleteConversation": MessageLookupByLibrary.simpleMessage(
@@ -122,6 +145,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "description": MessageLookupByLibrary.simpleMessage("Tavsif"),
     "deviceThemeMode": MessageLookupByLibrary.simpleMessage(
       "Qurilma sozlamalariga koʻra",
+    ),
+    "draftChatHint": MessageLookupByLibrary.simpleMessage(
+      "Suhbatni boshlash uchun xabar yuboring",
     ),
     "edit": MessageLookupByLibrary.simpleMessage("Tahrirlash"),
     "edited": MessageLookupByLibrary.simpleMessage("Tahrirlangan"),
@@ -151,6 +177,15 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "filters": MessageLookupByLibrary.simpleMessage("Filtrlar"),
     "firstName": MessageLookupByLibrary.simpleMessage("Ism"),
+    "forgotPassword": MessageLookupByLibrary.simpleMessage(
+      "Parolni unutdingizmi?",
+    ),
+    "groupMenuDelete": MessageLookupByLibrary.simpleMessage(
+      "Guruhni oʻchirish",
+    ),
+    "groupMenuLeave": MessageLookupByLibrary.simpleMessage("Guruhdan chiqish"),
+    "groupMenuViewInfo": MessageLookupByLibrary.simpleMessage("Guruh haqida"),
+    "groupParticipantsCount": m2,
     "homePage": MessageLookupByLibrary.simpleMessage("Bosh sahifa"),
     "invalidCharactersException": MessageLookupByLibrary.simpleMessage(
       "Notoʻgʻri belgilar kiritildi",
@@ -167,6 +202,12 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "login": MessageLookupByLibrary.simpleMessage("Login"),
     "logout": MessageLookupByLibrary.simpleMessage("Chiqish"),
+    "mediaOpenExternally": MessageLookupByLibrary.simpleMessage(
+      "Tashqi ilovada ochish",
+    ),
+    "mediaVideoLoadFailed": MessageLookupByLibrary.simpleMessage(
+      "Videoni yuklab boʻlmadi",
+    ),
     "message": MessageLookupByLibrary.simpleMessage("Xabar"),
     "messageContextActionCopyText": MessageLookupByLibrary.simpleMessage(
       "Matnni nusxalash",
@@ -230,7 +271,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "passwordRequirementLowercase": MessageLookupByLibrary.simpleMessage(
       "Kamida bitta kichik harf (a–z)",
     ),
-    "passwordRequirementMinLength": m0,
+    "passwordRequirementMinLength": m3,
     "passwordRequirementSpecial": MessageLookupByLibrary.simpleMessage(
       "Kamida bitta maxsus belgi (!?@#\$%^&*()_-{})",
     ),
@@ -250,6 +291,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Shaxsiy maʼlumotlar",
     ),
     "profile": MessageLookupByLibrary.simpleMessage("Profil"),
+    "profileChangePhoto": MessageLookupByLibrary.simpleMessage(
+      "Fotoni almashtirish",
+    ),
     "profileEditing": MessageLookupByLibrary.simpleMessage(
       "Profilni tahrirlash",
     ),
@@ -314,6 +358,16 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "sessionUserId": MessageLookupByLibrary.simpleMessage("Foydalanuvchi ID"),
     "settings": MessageLookupByLibrary.simpleMessage("Sozlamalar"),
+    "settingsAccentSection": MessageLookupByLibrary.simpleMessage("Aksent"),
+    "settingsAllowPush": MessageLookupByLibrary.simpleMessage(
+      "Push-bildirishnomalar",
+    ),
+    "settingsAutoScroll": MessageLookupByLibrary.simpleMessage(
+      "Yangilariga aylantirish",
+    ),
+    "settingsChatBehaviorSection": MessageLookupByLibrary.simpleMessage(
+      "Xulq-atvor",
+    ),
     "settingsChats": MessageLookupByLibrary.simpleMessage("Chat sozlamalari"),
     "settingsChatsAppearance": MessageLookupByLibrary.simpleMessage(
       "Koʻrinishi",
@@ -324,12 +378,33 @@ class MessageLookup extends MessageLookupByLibrary {
     "settingsChatsShortcutsDescription": MessageLookupByLibrary.simpleMessage(
       "Tugmalar birikmasi keyingi yangilanishda qoʻshiladi.",
     ),
+    "settingsDoNotDisturb": MessageLookupByLibrary.simpleMessage(
+      "Bezovta qilmang",
+    ),
+    "settingsDynamicTheme": MessageLookupByLibrary.simpleMessage(
+      "Dinamik mavzu",
+    ),
+    "settingsDynamicThemeSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Fonda ranglarga moslash",
+    ),
+    "settingsElementScale": MessageLookupByLibrary.simpleMessage(
+      "Elementlar miqyosi",
+    ),
+    "settingsInterfaceSection": MessageLookupByLibrary.simpleMessage(
+      "Interfeys",
+    ),
     "settingsLanguage": MessageLookupByLibrary.simpleMessage("Til"),
+    "settingsLoading": MessageLookupByLibrary.simpleMessage(
+      "Sozlamalar yuklanmoqda…",
+    ),
     "settingsMyProfile": MessageLookupByLibrary.simpleMessage(
       "Mening profilim",
     ),
     "settingsMyProfileDescription": MessageLookupByLibrary.simpleMessage(
       "Profilni koʻrish va tahrirlash",
+    ),
+    "settingsNotificationSoundTone": MessageLookupByLibrary.simpleMessage(
+      "Signal melodiyasi",
     ),
     "settingsNotificationsAndSounds": MessageLookupByLibrary.simpleMessage(
       "Bildirishnomalar va tovushlar",
@@ -337,11 +412,45 @@ class MessageLookup extends MessageLookupByLibrary {
     "settingsNotificationsPlaceholder": MessageLookupByLibrary.simpleMessage(
       "Bildirishnomalar va tovushlarni sozlash",
     ),
+    "settingsNotifyMentions": MessageLookupByLibrary.simpleMessage(
+      "Eslatmalar",
+    ),
+    "settingsNotifySystem": MessageLookupByLibrary.simpleMessage("Tizim"),
+    "settingsPreviewLabel": MessageLookupByLibrary.simpleMessage(
+      "Oldindan ko‘rish",
+    ),
     "settingsPrivacy": MessageLookupByLibrary.simpleMessage("Maxfiylik"),
     "settingsPrivacyPlaceholder": MessageLookupByLibrary.simpleMessage(
       "Sessiya va xavfsizlik",
     ),
+    "settingsPushSection": MessageLookupByLibrary.simpleMessage("Push"),
+    "settingsSaveDrafts": MessageLookupByLibrary.simpleMessage(
+      "Qoralamalarni saqlash",
+    ),
+    "settingsSendOnEnter": MessageLookupByLibrary.simpleMessage(
+      "Enter bilan yuborish",
+    ),
+    "settingsSendOnEnterSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Enter yuboradi; Shift+Enter — yangi qator pastda",
+    ),
+    "settingsShiftEnterNewLine": MessageLookupByLibrary.simpleMessage(
+      "Shift+Enter — yangi qator",
+    ),
     "settingsSound": MessageLookupByLibrary.simpleMessage("Tovush"),
+    "settingsSoundChime": MessageLookupByLibrary.simpleMessage("Zang"),
+    "settingsSoundDefault": MessageLookupByLibrary.simpleMessage("Standart"),
+    "settingsSoundNewMessages": MessageLookupByLibrary.simpleMessage(
+      "Kiruvchi xabarlar",
+    ),
+    "settingsSoundPing": MessageLookupByLibrary.simpleMessage("Ping"),
+    "settingsSoundSend": MessageLookupByLibrary.simpleMessage("Yuborish"),
+    "settingsSoundSystem": MessageLookupByLibrary.simpleMessage(
+      "Tizim tovushlari",
+    ),
+    "settingsSoundsSection": MessageLookupByLibrary.simpleMessage("Tovushlar"),
+    "settingsTextScale": MessageLookupByLibrary.simpleMessage("Matn o‘lchami"),
+    "settingsThemeModeLabel": MessageLookupByLibrary.simpleMessage("Rejim"),
+    "settingsThemeSection": MessageLookupByLibrary.simpleMessage("Mavzu"),
     "share": MessageLookupByLibrary.simpleMessage("Ulashish"),
     "signIn": MessageLookupByLibrary.simpleMessage("Kirish"),
     "storage": MessageLookupByLibrary.simpleMessage("Xotira"),

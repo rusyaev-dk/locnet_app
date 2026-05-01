@@ -7,8 +7,6 @@ import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/conversation_tools/conversation_tools.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/presentation/modals/companion_info_modal_card.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/private.dart';
-import 'package:locnet_app/features/message/domain/domain.dart';
-
 enum _PrivateHeaderMenuAction {
   toggleNotifications,
   blockCompanion,
@@ -34,6 +32,16 @@ class PrivateHeader extends StatefulWidget {
 class _PrivateHeaderState extends State<PrivateHeader> {
   bool areNotificationsEnabled = true;
 
+  void _openCompanionInfo(BuildContext context) {
+    showGeneralDialog(
+      context: context,
+      transitionBuilder: slideFadeDialogTransition,
+      pageBuilder: (context, _, _) {
+        return CompanionInfoModalCard(companion: widget.companion);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -47,48 +55,55 @@ class _PrivateHeaderState extends State<PrivateHeader> {
       title: title,
       avatarText: ProfileDataExtractor.extractUserInitials(widget.companion),
       subtitle: l10n.companionStatusOnline,
-      onTap: () {
-        showGeneralDialog(
-          context: context,
-          transitionBuilder: slideFadeDialogTransition,
-          pageBuilder: (context, _, _) {
-            return CompanionInfoModalCard(companion: widget.companion);
-          },
-        );
-      },
-      trailingActions: hasConversationId
-          ? [
-              _HeaderIconButton(
-                icon: Icons.search,
-                onPressed: () {
-                  showConversationSearchSheet(
-                    context: context,
-                    conversationId: conversationId,
-                    conversationType: ConversationType.private,
-                    onMessageSelected: widget.onSearchResultSelected,
-                    privateConversationBloc: context
-                        .read<PrivateConversationBloc>(),
-                  );
-                },
-              ),
-              _HeaderIconButton(
-                icon: Icons.photo_outlined,
-                onPressed: () {
-                  showConversationSharedMediaSheet(
-                    context: context,
-                    conversationId: conversationId,
-                    conversationType: ConversationType.private,
-                    privateConversationBloc: context
-                        .read<PrivateConversationBloc>(),
-                    mediaInteractor: context.read<MediaInteractor>(),
-                  );
-                },
-              ),
-            ]
-          : const [],
+      isOnline: true,
+      onTap: () => _openCompanionInfo(context),
+      trailingActions: [
+        HeaderActionButton(
+          icon: Icons.call_outlined,
+          onPressed: () {},
+        ),
+        HeaderActionButton(
+          icon: Icons.videocam_outlined,
+          onPressed: () {},
+        ),
+        if (hasConversationId) ...[
+          HeaderActionButton(
+            icon: Icons.search,
+            onPressed: () {
+              showConversationSearchSheet(
+                context: context,
+                conversationId: conversationId,
+                conversationType: ConversationType.private,
+                onMessageSelected: widget.onSearchResultSelected,
+                privateConversationBloc: context.read<PrivateConversationBloc>(),
+              );
+            },
+          ),
+          HeaderActionButton(
+            icon: Icons.photo_library_outlined,
+            onPressed: () {
+              showConversationSharedMediaSheet(
+                context: context,
+                conversationId: conversationId,
+                conversationType: ConversationType.private,
+                companionName: title,
+                privateConversationBloc: context.read<PrivateConversationBloc>(),
+              );
+            },
+          ),
+        ],
+        HeaderActionButton(
+          icon: Icons.info_outline,
+          onPressed: () => _openCompanionInfo(context),
+        ),
+      ],
       menuButton: hasConversationId
           ? PopupMenuButton<_PrivateHeaderMenuAction>(
-              icon: const Icon(Icons.more_vert),
+              icon: Icon(
+                Icons.more_vert,
+                size: 18,
+                color: context.colorScheme.onSurfaceVariant,
+              ),
               onSelected: (action) async {
                 final cubit = context.read<PrivateConversationOptionsCubit>();
 
@@ -134,30 +149,6 @@ class _PrivateHeaderState extends State<PrivateHeader> {
               },
             )
           : null,
-    );
-  }
-}
-
-class _HeaderIconButton extends StatelessWidget {
-  const _HeaderIconButton({required this.icon, required this.onPressed});
-
-  final IconData icon;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = context.colorScheme;
-
-    return Padding(
-      padding: const EdgeInsets.only(right: 4),
-      child: IconButton(
-        tooltip: null,
-        visualDensity: VisualDensity.compact,
-        iconSize: 20,
-        splashRadius: 18,
-        onPressed: onPressed,
-        icon: Icon(icon, color: colorScheme.onSurfaceVariant),
-      ),
     );
   }
 }

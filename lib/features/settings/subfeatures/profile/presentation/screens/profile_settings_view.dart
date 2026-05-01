@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/settings/presentation/components/components.dart';
 import 'package:locnet_app/features/settings/subfeatures/profile/presentation/components/components.dart';
 
 class ProfileSettingsView extends StatelessWidget {
@@ -48,77 +47,107 @@ class ProfileSettingsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
+    final colorScheme = context.colorScheme;
+    final String initials = ProfileDataExtractor.extractUserInitials(user);
+    final String fullName = ProfileDataExtractor.extractUserFullName(user);
+    final String displayName = fullName.isNotEmpty ? fullName : user.username;
+    final String description = (user.description ?? '').trim();
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SettingsGroupCard(children: [ProfileIdentityCard(user: user)]),
-          const SizedBox(height: 16),
-          SettingsGroupCard(
-            title: isEditing ? l10n.edit : l10n.settingsMyProfile,
+          // ── Avatar row ───────────────────────────────────────────
+          Row(
             children: [
-              if (!isEditing) ...[
-                ProfileInfoTile(title: l10n.firstName, value: user.firstName),
-                ProfileInfoTile(title: l10n.lastName, value: user.lastName),
-                ProfileInfoTile(
-                  title: l10n.username,
-                  value: '@${user.username}',
+              Stack(
+                children: [
+                  CompanionAvatar(text: initials, size: 72, isOnline: true),
+                ],
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      displayName,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: colorScheme.onSurface,
+                        height: 1.2,
+                      ),
+                    ),
+                    if (description.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        description,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: colorScheme.onSurfaceVariant,
+                          height: 1.3,
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 10),
+                    GestureDetector(
+                      onTap: () {},
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: colorScheme.secondary,
+                          border: Border.all(
+                            color: colorScheme.outline,
+                            width: 1,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          context.l10n.profileChangePhoto,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: colorScheme.onSurface,
+                            height: 1.2,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                ProfileInfoTile(
-                  title: l10n.language,
-                  value: user.languageCode.toUpperCase(),
-                ),
-                ProfileInfoTile(
-                  title: l10n.description,
-                  value: _descriptionOrFallback(
-                    description: user.description,
-                    fallback: l10n.unknownValue,
-                  ),
-                ),
-              ] else
-                ProfileEditorForm(
-                  firstNameController: firstNameController,
-                  lastNameController: lastNameController,
-                  usernameController: usernameController,
-                  descriptionController: descriptionController,
-                  firstNameError: firstNameError,
-                  lastNameError: lastNameError,
-                  usernameError: usernameError,
-                  screenError: screenError,
-                  isSubmitting: isSubmitting,
-                  onCancelEdit: onCancelEdit,
-                  onSave: onSave,
-                  onFirstNameChanged: onFirstNameChanged,
-                  onLastNameChanged: onLastNameChanged,
-                  onUsernameChanged: onUsernameChanged,
-                  onDescriptionChanged: onDescriptionChanged,
-                ),
-              if (!isEditing)
-                SettingsActionTile(
-                  title: l10n.edit,
-                  leadingIcon: Icons.edit_outlined,
-                  onTap: onStartEdit,
-                ),
+              ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 24),
+          Divider(height: 1, thickness: 1, color: colorScheme.outline),
+          const SizedBox(height: 20),
+          // ── Form fields ──────────────────────────────────────────
+          ProfileEditorForm(
+            firstNameController: firstNameController,
+            lastNameController: lastNameController,
+            usernameController: usernameController,
+            descriptionController: descriptionController,
+            firstNameError: firstNameError,
+            lastNameError: lastNameError,
+            usernameError: usernameError,
+            screenError: screenError,
+            isSubmitting: isSubmitting,
+            onCancelEdit: onCancelEdit,
+            onSave: onSave,
+            onFirstNameChanged: onFirstNameChanged,
+            onLastNameChanged: onLastNameChanged,
+            onUsernameChanged: onUsernameChanged,
+            onDescriptionChanged: onDescriptionChanged,
+          ),
         ],
       ),
     );
-  }
-
-  String _descriptionOrFallback({
-    required String? description,
-    required String fallback,
-  }) {
-    final String normalized = description?.trim() ?? '';
-    if (normalized.isEmpty) {
-      return fallback;
-    }
-
-    return normalized;
   }
 }

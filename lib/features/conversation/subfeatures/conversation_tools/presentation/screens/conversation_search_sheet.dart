@@ -345,10 +345,13 @@ class _ResultTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final radii = context.radii;
+
     return Material(
       color: isActive ? colorScheme.primary.withAlpha(18) : Colors.transparent,
       child: InkWell(
         onTap: onTap,
+        borderRadius: radii.defaultRadiusValue,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           child: Row(

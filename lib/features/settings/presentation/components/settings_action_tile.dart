@@ -26,13 +26,16 @@ class SettingsActionTile extends StatelessWidget {
     final Color color = !enabled
         ? colorScheme.onSurfaceVariant
         : destructive
-            ? colorScheme.error
-            : colorScheme.onSurface;
+        ? colorScheme.error
+        : colorScheme.onSurface;
+
+    final radii = context.radii;
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: enabled ? onTap : null,
+        borderRadius: radii.defaultRadiusValue,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
           child: Row(
@@ -45,8 +48,7 @@ class SettingsActionTile extends StatelessWidget {
                 title,
                 style: textScheme.label.copyWith(
                   color: color,
-                  fontWeight:
-                      destructive ? FontWeight.w500 : FontWeight.w400,
+                  fontWeight: destructive ? FontWeight.w500 : FontWeight.w400,
                 ),
               ),
             ],

@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -20,23 +19,22 @@ class LogInCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
-    final textScheme = context.textScheme;
     final l10n = context.l10n;
 
     final logInCubit = context.read<LogInCubit>();
     final isLoading = context.watch<AuthCubit>().state is AuthLoadingState;
 
     return Container(
-      constraints: const BoxConstraints(maxWidth: 420),
-      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 32),
+      constraints: const BoxConstraints(maxWidth: 400),
       decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(32),
+        color: colorScheme.secondary,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colorScheme.outline, width: 1),
         boxShadow: [
           BoxShadow(
-            color: colorScheme.shadow.withAlpha(20),
-            blurRadius: 28,
-            offset: const Offset(0, 14),
+            color: Colors.black.withAlpha(60),
+            blurRadius: 40,
+            offset: const Offset(0, 20),
           ),
         ],
       ),
@@ -44,97 +42,229 @@ class LogInCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(l10n.authorization, style: textScheme.display),
-          const SizedBox(height: 32),
-          CustomTextField(
-            isActive: !isLoading,
-            controller: usernameController,
-            backgroundColor: colorScheme.surfaceContainerLow,
-            keyboardType: TextInputType.emailAddress,
-            textInputAction: TextInputAction.next,
-            labelText: l10n.login,
-            onSubmitted: (String? value) {
-              logInCubit.updateUsername(updatedUsername: value);
-            },
-            onChanged: (String? value) {
-              logInCubit.updateUsername(updatedUsername: value);
-            },
-            onFocusChange: (String? value) {
-              logInCubit.updateUsername(updatedUsername: value);
-            },
-            errorText: logInCubit.state.usernameException != null
-                ? AuthExceptionsTranslator.translate(
-                    context,
-                    logInCubit.state.usernameException,
-                  )
-                : null,
-          ),
-          const SizedBox(height: 16),
-          CustomTextField(
-            isActive: !isLoading,
-            controller: passwordController,
-            backgroundColor: colorScheme.surfaceContainerLow,
-            obscureText: true,
-            textInputAction: TextInputAction.done,
-            labelText: l10n.password,
-            onSubmitted: (String? value) {
-              logInCubit.updatePassword(updatedPassword: value);
-            },
-            onChanged: (String? value) {
-              logInCubit.updatePassword(updatedPassword: value);
-            },
-            onFocusChange: (String? value) {
-              logInCubit.updatePassword(updatedPassword: value);
-            },
-            errorText: logInCubit.state.passwordException != null
-                ? AuthExceptionsTranslator.translate(
-                    context,
-                    logInCubit.state.passwordException,
-                  )
-                : null,
-          ),
-          const SizedBox(height: 24),
-          AppPrimaryButton(
-            text: l10n.signIn,
-            onPressed: () {
-              final logInState = context.read<LogInCubit>().state;
-
-              context.read<AuthCubit>().logIn(
-                username: logInState.username!,
-                password: logInState.password!,
-              );
-            },
-            isLoading: isLoading,
-            isActive: context.watch<LogInCubit>().canLogIn(),
-          ),
-          const SizedBox(height: 32),
-          RichText(
-            text: TextSpan(
-              style: textScheme.headline.copyWith(
-                color: colorScheme.onSurface.withAlpha(179),
-              ),
+          // ── Branding header ──────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
+            child: Row(
               children: [
-                TextSpan(
-                  text: '${l10n.notRegisteredYetQuestion} ',
-                  style: textScheme.label.copyWith(fontSize: 18),
-                ),
-                TextSpan(
-                  text: l10n.registration,
-                  style: textScheme.label.copyWith(
-                    fontSize: 18,
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
                     color: colorScheme.primary,
-                    fontWeight: FontWeight.w600,
-                    decoration: TextDecoration.underline,
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  recognizer: TapGestureRecognizer()
-                    ..onTap = () {
-                      GoRouter.of(context).go(AppRoutes.registration);
-                    },
+                  child: const Icon(Icons.lock, color: Colors.white, size: 20),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    l10n.appName,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: colorScheme.onSurface,
+                      height: 1.2,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: _AuthTabSwitcher(isSignIn: true),
+          ),
+
+          // ── Form fields ──────────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _AuthFieldLabel(label: l10n.login.toUpperCase()),
+                const SizedBox(height: 6),
+                CustomTextField(
+                  isActive: !isLoading,
+                  controller: usernameController,
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
+                  onSubmitted: (v) =>
+                      logInCubit.updateUsername(updatedUsername: v),
+                  onChanged: (v) =>
+                      logInCubit.updateUsername(updatedUsername: v),
+                  onFocusChange: (v) =>
+                      logInCubit.updateUsername(updatedUsername: v),
+                  errorText: logInCubit.state.usernameException != null
+                      ? AuthExceptionsTranslator.translate(
+                          context,
+                          logInCubit.state.usernameException,
+                        )
+                      : null,
+                ),
+                const SizedBox(height: 16),
+                _AuthFieldLabel(label: l10n.password.toUpperCase()),
+                const SizedBox(height: 6),
+                CustomTextField(
+                  isActive: !isLoading,
+                  controller: passwordController,
+                  obscureText: true,
+                  textInputAction: TextInputAction.done,
+                  onSubmitted: (v) =>
+                      logInCubit.updatePassword(updatedPassword: v),
+                  onChanged: (v) =>
+                      logInCubit.updatePassword(updatedPassword: v),
+                  onFocusChange: (v) =>
+                      logInCubit.updatePassword(updatedPassword: v),
+                  errorText: logInCubit.state.passwordException != null
+                      ? AuthExceptionsTranslator.translate(
+                          context,
+                          logInCubit.state.passwordException,
+                        )
+                      : null,
+                ),
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {},
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: Text(
+                      l10n.forgotPassword,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: colorScheme.primary,
+                        fontWeight: FontWeight.w500,
+                        height: 1.2,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                AppPrimaryButton(
+                  text: l10n.signIn,
+                  onPressed: () {
+                    final s = context.read<LogInCubit>().state;
+                    context.read<AuthCubit>().logIn(
+                      username: s.username!,
+                      password: s.password!,
+                    );
+                  },
+                  isLoading: isLoading,
+                  isActive: context.watch<LogInCubit>().canLogIn(),
                 ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ── Shared helpers ────────────────────────────────────────────────────────────
+
+class _AuthFieldLabel extends StatelessWidget {
+  const _AuthFieldLabel({required this.label});
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    return Text(
+      label,
+      style: TextStyle(
+        fontSize: 10,
+        fontWeight: FontWeight.w600,
+        color: colorScheme.onSurfaceVariant,
+        letterSpacing: 0.8,
+        height: 1.2,
+      ),
+    );
+  }
+}
+
+class _AuthTabSwitcher extends StatelessWidget {
+  const _AuthTabSwitcher({required this.isSignIn});
+  final bool isSignIn;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final l10n = context.l10n;
+
+    return Container(
+      height: 40,
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainer,
+        border: Border.all(color: colorScheme.outline, width: 1),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _AuthTab(
+              label: l10n.signIn,
+              isSelected: isSignIn,
+              onTap: () => GoRouter.of(context).go(AppRoutes.login),
+              colorScheme: colorScheme,
+            ),
+          ),
+          Expanded(
+            child: _AuthTab(
+              label: l10n.createAccount,
+              isSelected: !isSignIn,
+              onTap: () => GoRouter.of(context).go(AppRoutes.registration),
+              colorScheme: colorScheme,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AuthTab extends StatelessWidget {
+  const _AuthTab({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+    required this.colorScheme,
+  });
+
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+  final AppColorScheme colorScheme;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: isSelected ? null : onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 160),
+        decoration: BoxDecoration(
+          color: isSelected ? colorScheme.secondary : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+            color: isSelected
+                ? colorScheme.onSurface
+                : colorScheme.onSurfaceVariant,
+            height: 1.2,
+          ),
+        ),
       ),
     );
   }

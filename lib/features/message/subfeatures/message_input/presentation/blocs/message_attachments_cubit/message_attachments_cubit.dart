@@ -1,9 +1,12 @@
-import 'dart:typed_data';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:locnet_app/features/message/subfeatures/message_input/domain/domain.dart';
+
+import 'package:locnet_app/features/message/subfeatures/message_input/presentation/blocs/message_attachments_cubit/platform_file_bytes.dart'
+    if (dart.library.html)
+      'package:locnet_app/features/message/subfeatures/message_input/presentation/blocs/message_attachments_cubit/platform_file_bytes_stub.dart';
 
 part 'message_attachments_state.dart';
 
@@ -52,7 +55,8 @@ class MessageAttachmentsCubit extends Cubit<MessageAttachmentsState> {
           'rtf',
         ],
         allowMultiple: true,
-        withData: true,
+        // Web needs bytes in-memory; desktop often returns null bytes unless read from path.
+        withData: kIsWeb,
       );
 
       if (result == null) {
@@ -63,9 +67,12 @@ class MessageAttachmentsCubit extends Cubit<MessageAttachmentsState> {
       final List<UploadableFile> newFiles = <UploadableFile>[];
 
       for (final PlatformFile platformFile in result.files) {
-        final Uint8List? fileBytes = platformFile.bytes;
+        final Uint8List? fileBytes = await resolvePlatformFileBytes(
+          bytes: platformFile.bytes,
+          path: platformFile.path,
+        );
 
-        if (fileBytes == null) {
+        if (fileBytes == null || fileBytes.isEmpty) {
           continue;
         }
 

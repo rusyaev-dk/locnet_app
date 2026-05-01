@@ -13,11 +13,10 @@ class RegistrationScreenWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<RegistrationCubit>(
-      create: (BuildContext context) =>
-          RegistrationCubit(
-            authInteractor: context.read<AuthInteractor>(),
-            logger: context.read<ILogger>(),
-          ),
+      create: (BuildContext context) => RegistrationCubit(
+        authInteractor: context.read<AuthInteractor>(),
+        logger: context.read<ILogger>(),
+      ),
       child: child,
     );
   }
@@ -127,70 +126,34 @@ class _RegistrationScrollableForm extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        final bool isWide = constraints.maxWidth >= 900;
-
         return SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
           child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: constraints.maxHeight - 64),
+            constraints: BoxConstraints(minHeight: constraints.maxHeight - 80),
             child: Center(
               child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: isWide ? 960 : 480),
-                child: isWide
-                    ? Row(
-                        children: <Widget>[
-                          const Expanded(
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: LocNetBranding(),
-                            ),
-                          ),
-                          const SizedBox(width: 48),
-                          Expanded(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: <Widget>[
-                                const Align(
-                                  alignment: Alignment.topRight,
-                                  child: LanguageSwitcherButton(),
-                                ),
-                                const SizedBox(height: 24),
-                                RegistrationCard(
-                                  firstNameController: firstNameController,
-                                  lastNameController: lastNameController,
-                                  descriptionController: jobPositionController,
-                                  usernameController: loginController,
-                                  passwordController: passwordController,
-                                  repeatPasswordController:
-                                      repeatPasswordController,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      )
-                    : Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: <Widget>[
-                          const Align(
-                            alignment: Alignment.topRight,
-                            child: LanguageSwitcherButton(),
-                          ),
-                          const SizedBox(height: 24),
-                          const LocNetBranding(),
-                          const SizedBox(height: 32),
-                          RegistrationCard(
-                            firstNameController: firstNameController,
-                            lastNameController: lastNameController,
-                            descriptionController: jobPositionController,
-                            usernameController: loginController,
-                            passwordController: passwordController,
-                            repeatPasswordController: repeatPasswordController,
-                          ),
-                        ],
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: const LanguageSwitcherButton(),
                       ),
+                    ),
+                    RegistrationCard(
+                      firstNameController: firstNameController,
+                      lastNameController: lastNameController,
+                      descriptionController: jobPositionController,
+                      usernameController: loginController,
+                      passwordController: passwordController,
+                      repeatPasswordController: repeatPasswordController,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

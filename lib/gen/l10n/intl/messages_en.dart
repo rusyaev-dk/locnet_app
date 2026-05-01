@@ -20,7 +20,13 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
-  static String m0(min) => "At least ${min} characters";
+  static String m0(version) => "Version ${version}";
+
+  static String m1(count) => "${count} subscribers";
+
+  static String m2(count) => "${count} participants";
+
+  static String m3(min) => "At least ${min} characters";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -50,9 +56,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "appException": MessageLookupByLibrary.simpleMessage(
       "An application error occurred",
     ),
+    "appName": MessageLookupByLibrary.simpleMessage("Locnet"),
     "appUnknownException": MessageLookupByLibrary.simpleMessage(
       "An unknown error occurred",
     ),
+    "appVersionDisplay": m0,
+    "appVersionUnknown": MessageLookupByLibrary.simpleMessage("Unknown"),
     "appearance": MessageLookupByLibrary.simpleMessage("Appearance"),
     "apply": MessageLookupByLibrary.simpleMessage("Apply"),
     "authException": MessageLookupByLibrary.simpleMessage(
@@ -72,6 +81,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "blockCompanion": MessageLookupByLibrary.simpleMessage("Block"),
     "brightnessTitle": MessageLookupByLibrary.simpleMessage("Brightness"),
     "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
+    "channelMenuLeave": MessageLookupByLibrary.simpleMessage("Leave channel"),
+    "channelMenuViewInfo": MessageLookupByLibrary.simpleMessage(
+      "View channel info",
+    ),
+    "channelSubscribersCount": m1,
     "charactersCountViolationException": MessageLookupByLibrary.simpleMessage(
       "Invalid number of characters",
     ),
@@ -86,6 +100,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "colorSchemeGreen": MessageLookupByLibrary.simpleMessage("Green"),
     "colorSchemePurple": MessageLookupByLibrary.simpleMessage("Purple"),
     "colorSchemeTitle": MessageLookupByLibrary.simpleMessage("Color scheme"),
+    "companionActionCall": MessageLookupByLibrary.simpleMessage("Call"),
+    "companionActionMessage": MessageLookupByLibrary.simpleMessage("Message"),
+    "companionActionVideo": MessageLookupByLibrary.simpleMessage("Video"),
+    "companionFieldAbout": MessageLookupByLibrary.simpleMessage("About"),
+    "companionFieldLanguage": MessageLookupByLibrary.simpleMessage("Language"),
     "companionStatusOffline": MessageLookupByLibrary.simpleMessage("Offline"),
     "companionStatusOnline": MessageLookupByLibrary.simpleMessage("Online"),
     "confirm": MessageLookupByLibrary.simpleMessage("Confirm"),
@@ -94,6 +113,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "conversationDescription": MessageLookupByLibrary.simpleMessage(
       "Description",
+    ),
+    "conversationNoMessagesYet": MessageLookupByLibrary.simpleMessage(
+      "No messages yet",
     ),
     "conversationTitle": MessageLookupByLibrary.simpleMessage("Title"),
     "conversationType": MessageLookupByLibrary.simpleMessage("Type"),
@@ -114,6 +136,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "No conversations yet",
     ),
     "create": MessageLookupByLibrary.simpleMessage("Create"),
+    "createAccount": MessageLookupByLibrary.simpleMessage("Create account"),
     "currentSession": MessageLookupByLibrary.simpleMessage("Current session"),
     "delete": MessageLookupByLibrary.simpleMessage("Delete"),
     "deleteConversation": MessageLookupByLibrary.simpleMessage(
@@ -122,6 +145,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "description": MessageLookupByLibrary.simpleMessage("Description"),
     "deviceThemeMode": MessageLookupByLibrary.simpleMessage(
       "Use device settings",
+    ),
+    "draftChatHint": MessageLookupByLibrary.simpleMessage(
+      "Send a message to start the chat",
     ),
     "edit": MessageLookupByLibrary.simpleMessage("Edit"),
     "edited": MessageLookupByLibrary.simpleMessage("Edited"),
@@ -149,6 +175,13 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "filters": MessageLookupByLibrary.simpleMessage("Filters"),
     "firstName": MessageLookupByLibrary.simpleMessage("First name"),
+    "forgotPassword": MessageLookupByLibrary.simpleMessage("Forgot password?"),
+    "groupMenuDelete": MessageLookupByLibrary.simpleMessage("Delete group"),
+    "groupMenuLeave": MessageLookupByLibrary.simpleMessage("Leave group"),
+    "groupMenuViewInfo": MessageLookupByLibrary.simpleMessage(
+      "View group info",
+    ),
+    "groupParticipantsCount": m2,
     "homePage": MessageLookupByLibrary.simpleMessage("Home page"),
     "invalidCharactersException": MessageLookupByLibrary.simpleMessage(
       "Invalid characters entered",
@@ -165,6 +198,12 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "login": MessageLookupByLibrary.simpleMessage("Login"),
     "logout": MessageLookupByLibrary.simpleMessage("Log out"),
+    "mediaOpenExternally": MessageLookupByLibrary.simpleMessage(
+      "Open externally",
+    ),
+    "mediaVideoLoadFailed": MessageLookupByLibrary.simpleMessage(
+      "Could not load video",
+    ),
     "message": MessageLookupByLibrary.simpleMessage("Message"),
     "messageContextActionCopyText": MessageLookupByLibrary.simpleMessage(
       "Copy text",
@@ -222,7 +261,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "passwordRequirementLowercase": MessageLookupByLibrary.simpleMessage(
       "At least one lowercase letter (a–z)",
     ),
-    "passwordRequirementMinLength": m0,
+    "passwordRequirementMinLength": m3,
     "passwordRequirementSpecial": MessageLookupByLibrary.simpleMessage(
       "At least one special character (!?@#\$%^&*()_-{})",
     ),
@@ -242,6 +281,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Personal information",
     ),
     "profile": MessageLookupByLibrary.simpleMessage("Profile"),
+    "profileChangePhoto": MessageLookupByLibrary.simpleMessage("Change photo"),
     "profileEditing": MessageLookupByLibrary.simpleMessage("Edit profile"),
     "registration": MessageLookupByLibrary.simpleMessage("Registration"),
     "repeatPassword": MessageLookupByLibrary.simpleMessage("Repeat password"),
@@ -294,6 +334,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "sessionUpdatedAt": MessageLookupByLibrary.simpleMessage("Updated at"),
     "sessionUserId": MessageLookupByLibrary.simpleMessage("User ID"),
     "settings": MessageLookupByLibrary.simpleMessage("Settings"),
+    "settingsAccentSection": MessageLookupByLibrary.simpleMessage("Accent"),
+    "settingsAllowPush": MessageLookupByLibrary.simpleMessage(
+      "Push notifications",
+    ),
+    "settingsAutoScroll": MessageLookupByLibrary.simpleMessage(
+      "Scroll to new messages",
+    ),
+    "settingsChatBehaviorSection": MessageLookupByLibrary.simpleMessage(
+      "Behavior",
+    ),
     "settingsChats": MessageLookupByLibrary.simpleMessage("Chats"),
     "settingsChatsAppearance": MessageLookupByLibrary.simpleMessage(
       "Appearance",
@@ -304,10 +354,29 @@ class MessageLookup extends MessageLookupByLibrary {
     "settingsChatsShortcutsDescription": MessageLookupByLibrary.simpleMessage(
       "Shortcuts will be available in a future update.",
     ),
+    "settingsDoNotDisturb": MessageLookupByLibrary.simpleMessage(
+      "Do not disturb",
+    ),
+    "settingsDynamicTheme": MessageLookupByLibrary.simpleMessage(
+      "Dynamic theme",
+    ),
+    "settingsDynamicThemeSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Match wallpaper tint",
+    ),
+    "settingsElementScale": MessageLookupByLibrary.simpleMessage("UI density"),
+    "settingsInterfaceSection": MessageLookupByLibrary.simpleMessage(
+      "Interface",
+    ),
     "settingsLanguage": MessageLookupByLibrary.simpleMessage("Language"),
+    "settingsLoading": MessageLookupByLibrary.simpleMessage(
+      "Loading settings…",
+    ),
     "settingsMyProfile": MessageLookupByLibrary.simpleMessage("My profile"),
     "settingsMyProfileDescription": MessageLookupByLibrary.simpleMessage(
       "View and edit your profile",
+    ),
+    "settingsNotificationSoundTone": MessageLookupByLibrary.simpleMessage(
+      "Alert tone",
     ),
     "settingsNotificationsAndSounds": MessageLookupByLibrary.simpleMessage(
       "Notifications and sounds",
@@ -315,11 +384,41 @@ class MessageLookup extends MessageLookupByLibrary {
     "settingsNotificationsPlaceholder": MessageLookupByLibrary.simpleMessage(
       "Configure notifications and sounds",
     ),
+    "settingsNotifyMentions": MessageLookupByLibrary.simpleMessage("Mentions"),
+    "settingsNotifySystem": MessageLookupByLibrary.simpleMessage(
+      "System alerts",
+    ),
+    "settingsPreviewLabel": MessageLookupByLibrary.simpleMessage("Preview"),
     "settingsPrivacy": MessageLookupByLibrary.simpleMessage("Privacy"),
     "settingsPrivacyPlaceholder": MessageLookupByLibrary.simpleMessage(
       "Session and security",
     ),
+    "settingsPushSection": MessageLookupByLibrary.simpleMessage("Push"),
+    "settingsSaveDrafts": MessageLookupByLibrary.simpleMessage("Save drafts"),
+    "settingsSendOnEnter": MessageLookupByLibrary.simpleMessage(
+      "Send with Enter",
+    ),
+    "settingsSendOnEnterSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Enter sends; use Shift+Enter for newline below",
+    ),
+    "settingsShiftEnterNewLine": MessageLookupByLibrary.simpleMessage(
+      "Shift+Enter for new line",
+    ),
     "settingsSound": MessageLookupByLibrary.simpleMessage("Sound"),
+    "settingsSoundChime": MessageLookupByLibrary.simpleMessage("Chime"),
+    "settingsSoundDefault": MessageLookupByLibrary.simpleMessage("Default"),
+    "settingsSoundNewMessages": MessageLookupByLibrary.simpleMessage(
+      "Incoming messages",
+    ),
+    "settingsSoundPing": MessageLookupByLibrary.simpleMessage("Ping"),
+    "settingsSoundSend": MessageLookupByLibrary.simpleMessage("Outgoing send"),
+    "settingsSoundSystem": MessageLookupByLibrary.simpleMessage(
+      "System sounds",
+    ),
+    "settingsSoundsSection": MessageLookupByLibrary.simpleMessage("Sounds"),
+    "settingsTextScale": MessageLookupByLibrary.simpleMessage("Text size"),
+    "settingsThemeModeLabel": MessageLookupByLibrary.simpleMessage("Mode"),
+    "settingsThemeSection": MessageLookupByLibrary.simpleMessage("Theme"),
     "share": MessageLookupByLibrary.simpleMessage("Share"),
     "signIn": MessageLookupByLibrary.simpleMessage("Sign in"),
     "storage": MessageLookupByLibrary.simpleMessage("Storage"),

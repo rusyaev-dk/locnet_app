@@ -100,9 +100,21 @@ class _App extends StatelessWidget {
         final locale = loaded?.locale ?? const Locale(AppLanguages.ru);
         final themeType = loaded?.themeType ?? AppThemeType.light;
         final textScaleFactor = loaded?.textScaleFactor ?? 1.0;
+        final elementScaleFactor = loaded?.elementScaleFactor ?? 1.0;
         final appTheme = AppThemeData(accentIndex: themeType.accentIndex);
-        final theme = appTheme.getLightTheme();
-        final darkTheme = appTheme.getDarkTheme();
+        final density = ((elementScaleFactor - 1.0) * 8).clamp(-1.2, 1.2);
+        final theme = appTheme.getLightTheme().copyWith(
+          visualDensity: VisualDensity(
+            horizontal: density,
+            vertical: density,
+          ),
+        );
+        final darkTheme = appTheme.getDarkTheme().copyWith(
+          visualDensity: VisualDensity(
+            horizontal: density,
+            vertical: density,
+          ),
+        );
         final themeMode = themeType.isLight ? ThemeMode.light : ThemeMode.dark;
 
         return MaterialApp.router(

@@ -4,7 +4,7 @@ import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/features/settings/presentation/components/components.dart';
 import 'package:locnet_app/features/settings/subfeatures/chat_settings/presentation/blocs/blocs.dart';
 
-/// Chats settings section.
+/// Chat composer behavior.
 class ChatSettingsContent extends StatelessWidget {
   const ChatSettingsContent({super.key});
 
@@ -61,43 +61,31 @@ class _ChatSettingsBody extends StatelessWidget {
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: SettingsGroupCard(
+        title: l10n.settingsChatBehaviorSection,
         children: [
-          SettingsSectionHeader(
-            title: l10n.settingsChats,
-            description: 'Настройте поведение чатов и параметры отображения.',
+          SettingsSwitchTile(
+            title: l10n.settingsAutoScroll,
+            value: autoScroll,
+            onChanged: onAutoScrollChanged,
           ),
-
-          // ── Поведение ─────────────────────────────────────
-          SettingsGroupCard(
-            title: 'Поведение чатов',
-            children: [
-              SettingsSwitchTile(
-                title: 'Автопрокрутка к новым сообщениям',
-                value: autoScroll,
-                onChanged: onAutoScrollChanged,
-              ),
-              SettingsSwitchTile(
-                title: 'Отправка по Enter',
-                subtitle: 'Нажмите Enter, чтобы отправить сообщение',
-                value: sendOnEnter,
-                onChanged: onSendOnEnterChanged,
-              ),
-              SettingsSwitchTile(
-                title: 'Shift+Enter — новая строка',
-                enabled: sendOnEnter,
-                value: shiftEnterNewLine,
-                onChanged: onShiftEnterNewLineChanged,
-              ),
-              SettingsSwitchTile(
-                title: 'Сохранять черновики',
-                value: saveDrafts,
-                onChanged: onSaveDraftsChanged,
-              ),
-            ],
+          SettingsSwitchTile(
+            title: l10n.settingsSendOnEnter,
+            subtitle: l10n.settingsSendOnEnterSubtitle,
+            value: sendOnEnter,
+            onChanged: onSendOnEnterChanged,
           ),
-          const SizedBox(height: 8),
+          SettingsSwitchTile(
+            title: l10n.settingsShiftEnterNewLine,
+            enabled: sendOnEnter,
+            value: shiftEnterNewLine,
+            onChanged: onShiftEnterNewLineChanged,
+          ),
+          SettingsSwitchTile(
+            title: l10n.settingsSaveDrafts,
+            value: saveDrafts,
+            onChanged: onSaveDraftsChanged,
+          ),
         ],
       ),
     );

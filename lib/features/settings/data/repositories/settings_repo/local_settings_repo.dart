@@ -9,6 +9,7 @@ class LocalSettingsRepo implements ISettingsRepo {
   final String _languageCodeKey = "language_code";
   final String _themeKey = "theme";
   final String _textScaleKey = "text_scale";
+  final String _elementScaleKey = "element_scale";
   final String _chatPrefix = 'chat_setting_';
   final String _notificationPrefix = 'notification_setting_';
   final String _notificationSoundIndexKey = 'notification_sound_index';
@@ -50,6 +51,20 @@ class LocalSettingsRepo implements ISettingsRepo {
   Future<String> getCurrentTextScaleCode() async {
     return await _storage.read<String>(key: _textScaleKey) ??
         AppConfig.defaultTextScale;
+  }
+
+  @override
+  Future<bool> changeElementScale({required String newElementScaleCode}) async {
+    return await _storage.write<String>(
+      key: _elementScaleKey,
+      value: newElementScaleCode,
+    );
+  }
+
+  @override
+  Future<String> getCurrentElementScaleCode() async {
+    return await _storage.read<String>(key: _elementScaleKey) ??
+        AppConfig.defaultElementScale;
   }
 
   @override

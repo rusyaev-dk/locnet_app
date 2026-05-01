@@ -5,15 +5,25 @@ import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
 
 class ConversationAvatar extends StatelessWidget {
-  const ConversationAvatar({super.key, this.text, this.url, this.size = 44})
-    : assert(
-        text != null || url != null,
-        'Either text or url must be provided',
-      );
+  const ConversationAvatar({
+    super.key,
+    this.text,
+    this.url,
+    this.size = 44,
+    this.isOnline,
+  }) : assert(
+         text != null || url != null,
+         'Either text or url must be provided',
+       );
 
   final String? text;
   final String? url;
   final double size;
+
+  /// When non-null, shows the online indicator dot.
+  final bool? isOnline;
+
+  static const Color _onlineColor = Color(0xFF4CAF79);
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +40,9 @@ class ConversationAvatar extends StatelessWidget {
       border: Border.all(color: colorScheme.outlineVariant),
     );
 
+    Widget avatar;
     if (url != null) {
-      return ClipOval(
+      avatar = ClipOval(
         child: CachedNetworkImage(
           imageUrl: url!,
           width: size,
@@ -43,9 +54,42 @@ class ConversationAvatar extends StatelessWidget {
               _Placeholder(size: size, decoration: decoration, text: text),
         ),
       );
+    } else {
+      avatar = _Placeholder(size: size, decoration: decoration, text: text);
     }
 
-    return _Placeholder(size: size, decoration: decoration, text: text);
+    if (isOnline == null) {
+      return avatar;
+    }
+
+    final double dotSize = (size * 0.28).clamp(7.0, 14.0);
+    final double borderWidth = dotSize * 0.22;
+
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Stack(
+        children: [
+          avatar,
+          Positioned(
+            right: 0,
+            bottom: 0,
+            child: Container(
+              width: dotSize,
+              height: dotSize,
+              decoration: BoxDecoration(
+                color: isOnline! ? _onlineColor : colorScheme.onSurfaceVariant,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: colorScheme.secondary,
+                  width: borderWidth,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Gradient _generateAvatarGradient({required String seed}) {

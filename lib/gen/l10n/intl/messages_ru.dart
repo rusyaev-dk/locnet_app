@@ -20,7 +20,13 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'ru';
 
-  static String m0(min) => "Не менее ${min} символов";
+  static String m0(version) => "Версия ${version}";
+
+  static String m1(count) => "${count} подписчиков";
+
+  static String m2(count) => "${count} участников";
+
+  static String m3(min) => "Не менее ${min} символов";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -50,9 +56,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "appException": MessageLookupByLibrary.simpleMessage(
       "Произошла ошибка приложения",
     ),
+    "appName": MessageLookupByLibrary.simpleMessage("Locnet"),
     "appUnknownException": MessageLookupByLibrary.simpleMessage(
       "Произошла неизвестная ошибка",
     ),
+    "appVersionDisplay": m0,
+    "appVersionUnknown": MessageLookupByLibrary.simpleMessage("Неизвестно"),
     "appearance": MessageLookupByLibrary.simpleMessage("Внешний вид"),
     "apply": MessageLookupByLibrary.simpleMessage("Применить"),
     "authException": MessageLookupByLibrary.simpleMessage("Ошибка авторизации"),
@@ -72,6 +81,11 @@ class MessageLookup extends MessageLookupByLibrary {
       "Светлая / тёмная тема",
     ),
     "cancel": MessageLookupByLibrary.simpleMessage("Отмена"),
+    "channelMenuLeave": MessageLookupByLibrary.simpleMessage("Покинуть канал"),
+    "channelMenuViewInfo": MessageLookupByLibrary.simpleMessage(
+      "Информация о канале",
+    ),
+    "channelSubscribersCount": m1,
     "charactersCountViolationException": MessageLookupByLibrary.simpleMessage(
       "Недопустимое количество символов",
     ),
@@ -88,6 +102,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "colorSchemeTitle": MessageLookupByLibrary.simpleMessage(
       "Цветовое оформление",
     ),
+    "companionActionCall": MessageLookupByLibrary.simpleMessage("Звонок"),
+    "companionActionMessage": MessageLookupByLibrary.simpleMessage("Написать"),
+    "companionActionVideo": MessageLookupByLibrary.simpleMessage("Видео"),
+    "companionFieldAbout": MessageLookupByLibrary.simpleMessage("О себе"),
+    "companionFieldLanguage": MessageLookupByLibrary.simpleMessage("Язык"),
     "companionStatusOffline": MessageLookupByLibrary.simpleMessage("Не в сети"),
     "companionStatusOnline": MessageLookupByLibrary.simpleMessage("В сети"),
     "confirm": MessageLookupByLibrary.simpleMessage("Подтвердить"),
@@ -95,6 +114,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Создание переписки",
     ),
     "conversationDescription": MessageLookupByLibrary.simpleMessage("Описание"),
+    "conversationNoMessagesYet": MessageLookupByLibrary.simpleMessage(
+      "Пока нет сообщений",
+    ),
     "conversationTitle": MessageLookupByLibrary.simpleMessage("Название"),
     "conversationType": MessageLookupByLibrary.simpleMessage("Тип"),
     "conversationTypeChannel": MessageLookupByLibrary.simpleMessage("Канал"),
@@ -114,6 +136,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Пока нет переписок",
     ),
     "create": MessageLookupByLibrary.simpleMessage("Создать"),
+    "createAccount": MessageLookupByLibrary.simpleMessage("Создать аккаунт"),
     "currentSession": MessageLookupByLibrary.simpleMessage("Текущая сессия"),
     "delete": MessageLookupByLibrary.simpleMessage("Удалить"),
     "deleteConversation": MessageLookupByLibrary.simpleMessage(
@@ -122,6 +145,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "description": MessageLookupByLibrary.simpleMessage("Описание"),
     "deviceThemeMode": MessageLookupByLibrary.simpleMessage(
       "Как на устройстве",
+    ),
+    "draftChatHint": MessageLookupByLibrary.simpleMessage(
+      "Отправьте сообщение, чтобы начать чат",
     ),
     "edit": MessageLookupByLibrary.simpleMessage("Редактировать"),
     "edited": MessageLookupByLibrary.simpleMessage("Изменено"),
@@ -147,6 +173,13 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "filters": MessageLookupByLibrary.simpleMessage("Фильтры"),
     "firstName": MessageLookupByLibrary.simpleMessage("Имя"),
+    "forgotPassword": MessageLookupByLibrary.simpleMessage("Забыли пароль?"),
+    "groupMenuDelete": MessageLookupByLibrary.simpleMessage("Удалить группу"),
+    "groupMenuLeave": MessageLookupByLibrary.simpleMessage("Покинуть группу"),
+    "groupMenuViewInfo": MessageLookupByLibrary.simpleMessage(
+      "Информация о группе",
+    ),
+    "groupParticipantsCount": m2,
     "homePage": MessageLookupByLibrary.simpleMessage("Домашняя страница"),
     "invalidCharactersException": MessageLookupByLibrary.simpleMessage(
       "Введены некорректные символы",
@@ -165,6 +198,12 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "login": MessageLookupByLibrary.simpleMessage("Логин"),
     "logout": MessageLookupByLibrary.simpleMessage("Выйти"),
+    "mediaOpenExternally": MessageLookupByLibrary.simpleMessage(
+      "Открыть во внешнем приложении",
+    ),
+    "mediaVideoLoadFailed": MessageLookupByLibrary.simpleMessage(
+      "Не удалось загрузить видео",
+    ),
     "message": MessageLookupByLibrary.simpleMessage("Сообщение"),
     "messageContextActionCopyText": MessageLookupByLibrary.simpleMessage(
       "Скопировать текст",
@@ -226,7 +265,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "passwordRequirementLowercase": MessageLookupByLibrary.simpleMessage(
       "Хотя бы одна строчная буква (a–z)",
     ),
-    "passwordRequirementMinLength": m0,
+    "passwordRequirementMinLength": m3,
     "passwordRequirementSpecial": MessageLookupByLibrary.simpleMessage(
       "Хотя бы один специальный символ (!?@#\$%^&*()_-{})",
     ),
@@ -246,6 +285,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Личная информация",
     ),
     "profile": MessageLookupByLibrary.simpleMessage("Профиль"),
+    "profileChangePhoto": MessageLookupByLibrary.simpleMessage("Сменить фото"),
     "profileEditing": MessageLookupByLibrary.simpleMessage(
       "Редактирование профиля",
     ),
@@ -298,6 +338,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "sessionUpdatedAt": MessageLookupByLibrary.simpleMessage("Обновлена"),
     "sessionUserId": MessageLookupByLibrary.simpleMessage("ID пользователя"),
     "settings": MessageLookupByLibrary.simpleMessage("Настройки"),
+    "settingsAccentSection": MessageLookupByLibrary.simpleMessage("Акцент"),
+    "settingsAllowPush": MessageLookupByLibrary.simpleMessage(
+      "Push-уведомления",
+    ),
+    "settingsAutoScroll": MessageLookupByLibrary.simpleMessage(
+      "Прокрутка к новым",
+    ),
+    "settingsChatBehaviorSection": MessageLookupByLibrary.simpleMessage(
+      "Поведение",
+    ),
     "settingsChats": MessageLookupByLibrary.simpleMessage("Настройки чатов"),
     "settingsChatsAppearance": MessageLookupByLibrary.simpleMessage(
       "Внешний вид",
@@ -308,10 +358,31 @@ class MessageLookup extends MessageLookupByLibrary {
     "settingsChatsShortcutsDescription": MessageLookupByLibrary.simpleMessage(
       "Сочетания клавиш будут доступны в следующем обновлении.",
     ),
+    "settingsDoNotDisturb": MessageLookupByLibrary.simpleMessage(
+      "Не беспокоить",
+    ),
+    "settingsDynamicTheme": MessageLookupByLibrary.simpleMessage(
+      "Динамическая тема",
+    ),
+    "settingsDynamicThemeSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Подстроить цвета под обои",
+    ),
+    "settingsElementScale": MessageLookupByLibrary.simpleMessage(
+      "Масштаб элементов",
+    ),
+    "settingsInterfaceSection": MessageLookupByLibrary.simpleMessage(
+      "Интерфейс",
+    ),
     "settingsLanguage": MessageLookupByLibrary.simpleMessage("Язык"),
+    "settingsLoading": MessageLookupByLibrary.simpleMessage(
+      "Загрузка настроек…",
+    ),
     "settingsMyProfile": MessageLookupByLibrary.simpleMessage("Мой профиль"),
     "settingsMyProfileDescription": MessageLookupByLibrary.simpleMessage(
       "Просмотр и редактирование профиля",
+    ),
+    "settingsNotificationSoundTone": MessageLookupByLibrary.simpleMessage(
+      "Мелодия",
     ),
     "settingsNotificationsAndSounds": MessageLookupByLibrary.simpleMessage(
       "Уведомления и звуки",
@@ -319,13 +390,45 @@ class MessageLookup extends MessageLookupByLibrary {
     "settingsNotificationsPlaceholder": MessageLookupByLibrary.simpleMessage(
       "Настройка уведомлений и звуков",
     ),
+    "settingsNotifyMentions": MessageLookupByLibrary.simpleMessage(
+      "Упоминания",
+    ),
+    "settingsNotifySystem": MessageLookupByLibrary.simpleMessage("Системные"),
+    "settingsPreviewLabel": MessageLookupByLibrary.simpleMessage(
+      "Предпросмотр",
+    ),
     "settingsPrivacy": MessageLookupByLibrary.simpleMessage(
       "Конфиденциальность",
     ),
     "settingsPrivacyPlaceholder": MessageLookupByLibrary.simpleMessage(
       "Сессия и безопасность",
     ),
+    "settingsPushSection": MessageLookupByLibrary.simpleMessage("Push"),
+    "settingsSaveDrafts": MessageLookupByLibrary.simpleMessage("Черновики"),
+    "settingsSendOnEnter": MessageLookupByLibrary.simpleMessage(
+      "Отправка по Enter",
+    ),
+    "settingsSendOnEnterSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Enter отправляет; Shift+Enter — новая строка ниже",
+    ),
+    "settingsShiftEnterNewLine": MessageLookupByLibrary.simpleMessage(
+      "Shift+Enter — новая строка",
+    ),
     "settingsSound": MessageLookupByLibrary.simpleMessage("Звук"),
+    "settingsSoundChime": MessageLookupByLibrary.simpleMessage("Звонок"),
+    "settingsSoundDefault": MessageLookupByLibrary.simpleMessage("Стандарт"),
+    "settingsSoundNewMessages": MessageLookupByLibrary.simpleMessage(
+      "Входящие сообщения",
+    ),
+    "settingsSoundPing": MessageLookupByLibrary.simpleMessage("Пинг"),
+    "settingsSoundSend": MessageLookupByLibrary.simpleMessage("Отправка"),
+    "settingsSoundSystem": MessageLookupByLibrary.simpleMessage(
+      "Системные звуки",
+    ),
+    "settingsSoundsSection": MessageLookupByLibrary.simpleMessage("Звуки"),
+    "settingsTextScale": MessageLookupByLibrary.simpleMessage("Размер текста"),
+    "settingsThemeModeLabel": MessageLookupByLibrary.simpleMessage("Режим"),
+    "settingsThemeSection": MessageLookupByLibrary.simpleMessage("Тема"),
     "share": MessageLookupByLibrary.simpleMessage("Поделиться"),
     "signIn": MessageLookupByLibrary.simpleMessage("Войти"),
     "storage": MessageLookupByLibrary.simpleMessage("Хранилище"),

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:locnet_app/app/app.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
 
@@ -102,6 +103,7 @@ class _MessageVideoPlayerScreenState extends State<MessageVideoPlayerScreen> {
       body: FutureBuilder<void>(
         future: _initializeFuture,
         builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+          final l10n = context.l10n;
           final bool hasPlayerError =
               _initializationError != null || snapshot.hasError;
           if (hasPlayerError) {
@@ -117,9 +119,9 @@ class _MessageVideoPlayerScreenState extends State<MessageVideoPlayerScreen> {
                       size: 32,
                     ),
                     const SizedBox(height: 10),
-                    const Text(
-                      'Failed to load video',
-                      style: TextStyle(color: Colors.white),
+                    Text(
+                      l10n.mediaVideoLoadFailed,
+                      style: const TextStyle(color: Colors.white),
                     ),
                     const SizedBox(height: 14),
                     Wrap(
@@ -149,15 +151,15 @@ class _MessageVideoPlayerScreenState extends State<MessageVideoPlayerScreen> {
                                   }
                                 });
                           },
-                          child: const Text('Retry'),
+                          child: Text(l10n.retry),
                         ),
                         OutlinedButton(
                           onPressed: _openExternally,
-                          child: const Text('Open externally'),
+                          child: Text(l10n.mediaOpenExternally),
                         ),
                         OutlinedButton(
                           onPressed: () => Navigator.of(context).pop(),
-                          child: const Text('Close'),
+                          child: Text(l10n.close),
                         ),
                       ],
                     ),

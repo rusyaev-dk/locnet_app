@@ -5,6 +5,7 @@ final class AppConfig {
   static const String defaultLanguageCode = AppLanguages.ru;
   static const String defaultThemeMode = "system";
   static const String defaultTextScale = "1.0";
+  static const String defaultElementScale = "1.0";
 }
 
 abstract class AppLanguages {

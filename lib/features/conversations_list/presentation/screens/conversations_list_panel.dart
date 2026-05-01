@@ -7,11 +7,13 @@ import 'package:go_router/go_router.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/conversation/subfeatures/channel/presentation/presentation.dart';
+import 'package:locnet_app/features/conversation/subfeatures/conversation_creator/presentation/modals/conversation_creator_modal_card.dart';
 import 'package:locnet_app/features/conversation/subfeatures/group/presentation/presentation.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/presentation/presentation.dart';
 import 'package:locnet_app/features/conversations_list/data/data.dart';
 import 'package:locnet_app/features/conversations_list/domain/domain.dart';
 import 'package:locnet_app/features/conversations_list/presentation/presentation.dart';
+import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/presentation/presentation.dart';
 
 class ConversationsPanelWrapper extends StatelessWidget {
   const ConversationsPanelWrapper({required this.child, super.key});
@@ -297,7 +299,7 @@ class _ConversationsListPanel extends StatelessWidget {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ChipsBar(isCompact: isCompact),
+                  _ConversationsListHeader(isCompact: isCompact),
                   Expanded(
                     child: tiles.isEmpty
                         ? Center(
@@ -398,6 +400,121 @@ class _ConversationsListPanel extends StatelessWidget {
           }
         },
       ),
+    );
+  }
+}
+
+class _ConversationsListHeader extends StatelessWidget {
+  const _ConversationsListHeader({required this.isCompact});
+
+  final bool isCompact;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final l10n = context.l10n;
+
+    if (isCompact) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+        child: IconButton(
+          icon: Icon(
+            Icons.search,
+            color: colorScheme.onSurfaceVariant,
+            size: 20,
+          ),
+          onPressed: () => _openUnifiedSearch(context),
+        ),
+      );
+    }
+
+    return Container(
+      color: colorScheme.secondary,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 12, 10),
+            child: Row(
+              children: [
+                Text(
+                  l10n.conversations,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: colorScheme.onSurface,
+                    height: 1.2,
+                  ),
+                ),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () {
+                    showGeneralDialog(
+                      context: context,
+                      transitionBuilder: slideFadeDialogTransition,
+                      pageBuilder: (_, _, _) {
+                        return const ConversationCreatorModalWrapper(
+                          child: ConversationCreatorModalCard(),
+                        );
+                      },
+                    );
+                  },
+                  child: Icon(
+                    Icons.edit_outlined,
+                    size: 18,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+            child: GestureDetector(
+              onTap: () => _openUnifiedSearch(context),
+              child: Container(
+                height: 34,
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainer,
+                  border: Border.all(color: colorScheme.outline, width: 1),
+                  borderRadius: BorderRadius.circular(9),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.search,
+                      size: 16,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      '${l10n.search}…',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: colorScheme.onSurfaceVariant,
+                        height: 1.2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _openUnifiedSearch(BuildContext context) {
+    showGeneralDialog(
+      context: context,
+      transitionBuilder: slideFadeDialogTransition,
+      pageBuilder: (_, _, _) {
+        return const UnifiedSearchModalCardWrapper(
+          child: UnifiedSearchModalCard(),
+        );
+      },
     );
   }
 }

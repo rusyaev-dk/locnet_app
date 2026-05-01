@@ -3,22 +3,25 @@ import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/features/settings/presentation/models/models.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
-/// Sidebar for settings modal: section list and optional trailing (e.g. profile).
+/// Sidebar for settings modal: 4 main tabs + Sign Out at bottom.
 class SettingsSidebar extends StatelessWidget {
   const SettingsSidebar({
     required this.selectedSection,
     required this.onSectionSelected,
     this.compact = false,
-    this.profileTrailing,
     this.onLogout,
+    // kept for backward compat but ignored
+    this.profileTrailing,
     super.key,
   });
 
   final SettingsSection selectedSection;
   final ValueChanged<SettingsSection> onSectionSelected;
   final bool compact;
-  final Widget? profileTrailing;
   final VoidCallback? onLogout;
+  final Widget? profileTrailing;
+
+  static const double _sidebarWidth = 160;
 
   @override
   Widget build(BuildContext context) {
@@ -27,23 +30,22 @@ class SettingsSidebar extends StatelessWidget {
     final l10n = context.l10n;
 
     final List<(SettingsSection section, IconData icon, String label)> items = [
+      (SettingsSection.profile, Icons.person_outline, l10n.settingsMyProfile),
       (SettingsSection.appearance, Icons.palette_outlined, l10n.appearance),
       (
         SettingsSection.notifications,
         Icons.notifications_outlined,
         l10n.settingsNotificationsAndSounds,
       ),
-      (SettingsSection.chats, Icons.chat_bubble_outline, l10n.settingsChats),
-      (SettingsSection.language, Icons.language, l10n.settingsLanguage),
-      (SettingsSection.privacy, Icons.lock_outline, l10n.settingsPrivacy),
+      (SettingsSection.privacy, Icons.visibility_outlined, l10n.settingsPrivacy),
     ];
 
-    return Column(
+    Widget sidebar = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Expanded(
           child: ListView.separated(
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+            padding: const EdgeInsets.fromLTRB(10, 12, 10, 8),
             itemBuilder: (context, index) {
               final item = items[index];
               return _SettingsSidebarItem(
@@ -56,35 +58,31 @@ class SettingsSidebar extends StatelessWidget {
                 textScheme: textScheme,
               );
             },
-            separatorBuilder: (_, _) => const SizedBox(height: 4),
+            separatorBuilder: (_, _) => const SizedBox(height: 2),
             itemCount: items.length,
           ),
         ),
-        if (profileTrailing != null || onLogout != null) ...[
-          Divider(height: 1, color: colorScheme.outlineVariant),
-          if (onLogout != null)
-            _SettingsLogoutTile(
+        if (onLogout != null) ...[
+          Divider(height: 1, color: colorScheme.outline),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(10, 8, 10, 12),
+            child: _SettingsLogoutTile(
               compact: compact,
               onTap: onLogout!,
               title: l10n.logOut,
               colorScheme: colorScheme,
               textScheme: textScheme,
             ),
-          if (profileTrailing != null)
-            Material(
-              color: selectedSection == SettingsSection.profile
-                  ? colorScheme.surfaceContainerHigh
-                  : Colors.transparent,
-              borderRadius: BorderRadius.circular(12),
-              child: InkWell(
-                onTap: () => onSectionSelected(SettingsSection.profile),
-                borderRadius: BorderRadius.circular(12),
-                child: profileTrailing!,
-              ),
-            ),
+          ),
         ],
       ],
     );
+
+    if (!compact) {
+      sidebar = SizedBox(width: _sidebarWidth, child: sidebar);
+    }
+
+    return sidebar;
   }
 }
 
@@ -107,9 +105,10 @@ class _SettingsLogoutTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
+      borderRadius: BorderRadius.circular(10),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         child: Padding(
           padding: EdgeInsets.symmetric(
             horizontal: compact ? 8 : 12,
@@ -117,20 +116,24 @@ class _SettingsLogoutTile extends StatelessWidget {
           ),
           child: compact
               ? Center(
-                  child: Icon(Icons.logout, size: 18, color: colorScheme.error),
+                  child: Icon(
+                    Icons.logout,
+                    size: 16,
+                    color: colorScheme.error,
+                  ),
                 )
               : Row(
                   children: [
-                    Icon(Icons.logout, size: 18, color: colorScheme.error),
+                    Icon(Icons.logout, size: 16, color: colorScheme.error),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
                         title,
-                        maxLines: 2,
+                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: textScheme.label.copyWith(
                           color: colorScheme.error,
-                          fontSize: 14,
+                          fontSize: 13,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -165,18 +168,18 @@ class _SettingsSidebarItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color backgroundColor = isSelected
-        ? colorScheme.surfaceContainerHigh
+        ? colorScheme.primaryContainer
         : Colors.transparent;
     final Color foregroundColor = isSelected
-        ? colorScheme.onSurface
+        ? colorScheme.primary
         : colorScheme.onSurfaceVariant;
 
     return Material(
       color: backgroundColor,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(10),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         child: Padding(
           padding: EdgeInsets.symmetric(
             horizontal: compact ? 8 : 12,
@@ -195,10 +198,10 @@ class _SettingsSidebarItem extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: textScheme.label.copyWith(
                           color: foregroundColor,
-                          fontSize: 14,
+                          fontSize: 13,
                           fontWeight: isSelected
                               ? FontWeight.w600
-                              : FontWeight.w400,
+                              : FontWeight.w500,
                         ),
                       ),
                     ),

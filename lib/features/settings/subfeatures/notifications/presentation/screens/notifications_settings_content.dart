@@ -4,7 +4,7 @@ import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/features/settings/presentation/components/components.dart';
 import 'package:locnet_app/features/settings/subfeatures/notifications/presentation/blocs/blocs.dart';
 
-/// Notifications & sounds section.
+/// Notifications & sounds.
 class NotificationsSettingsContent extends StatelessWidget {
   const NotificationsSettingsContent({super.key});
 
@@ -23,7 +23,6 @@ class NotificationsSettingsContent extends StatelessWidget {
           sendSound: state.sendSound,
           systemSounds: state.systemSounds,
           soundIndex: state.soundIndex,
-          showPreview: state.showPreview,
           doNotDisturb: state.doNotDisturb,
           onMessageNotificationsChanged: (v) => context
               .read<NotificationsSettingsCubit>()
@@ -45,9 +44,6 @@ class NotificationsSettingsContent extends StatelessWidget {
           onSoundIndexChanged: (i) => context
               .read<NotificationsSettingsCubit>()
               .setSoundIndex(value: i),
-          onShowPreviewChanged: (v) => context
-              .read<NotificationsSettingsCubit>()
-              .setShowPreview(value: v),
           onDoNotDisturbChanged: (v) => context
               .read<NotificationsSettingsCubit>()
               .setDoNotDisturb(value: v),
@@ -66,7 +62,6 @@ class _NotificationsBody extends StatelessWidget {
     required this.sendSound,
     required this.systemSounds,
     required this.soundIndex,
-    required this.showPreview,
     required this.doNotDisturb,
     required this.onMessageNotificationsChanged,
     required this.onMentionNotificationsChanged,
@@ -75,7 +70,6 @@ class _NotificationsBody extends StatelessWidget {
     required this.onSendSoundChanged,
     required this.onSystemSoundsChanged,
     required this.onSoundIndexChanged,
-    required this.onShowPreviewChanged,
     required this.onDoNotDisturbChanged,
   });
 
@@ -86,7 +80,6 @@ class _NotificationsBody extends StatelessWidget {
   final bool sendSound;
   final bool systemSounds;
   final int soundIndex;
-  final bool showPreview;
   final bool doNotDisturb;
   final ValueChanged<bool> onMessageNotificationsChanged;
   final ValueChanged<bool> onMentionNotificationsChanged;
@@ -95,7 +88,6 @@ class _NotificationsBody extends StatelessWidget {
   final ValueChanged<bool> onSendSoundChanged;
   final ValueChanged<bool> onSystemSoundsChanged;
   final ValueChanged<int> onSoundIndexChanged;
-  final ValueChanged<bool> onShowPreviewChanged;
   final ValueChanged<bool> onDoNotDisturbChanged;
 
   @override
@@ -107,75 +99,66 @@ class _NotificationsBody extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SettingsSectionHeader(
-            title: l10n.settingsNotificationsAndSounds,
-            description:
-                'Управляйте тем, когда и как вы получаете уведомления.',
-          ),
-
-          // ── Push-уведомления ──────────────────────────────
           SettingsGroupCard(
-            title: 'Push-уведомления',
+            title: l10n.settingsPushSection,
             children: [
               SettingsSwitchTile(
-                title: 'Разрешить push-уведомления',
+                title: l10n.settingsAllowPush,
                 value: messageNotifications,
                 onChanged: onMessageNotificationsChanged,
               ),
               SettingsSwitchTile(
-                title: 'Уведомления о новых сообщениях',
-                value: messageNotifications && messageNotifications,
-                enabled: messageNotifications,
-                onChanged: (_) {},
-              ),
-              SettingsSwitchTile(
-                title: 'Уведомления об упоминаниях',
+                title: l10n.settingsNotifyMentions,
                 value: mentionNotifications,
                 enabled: messageNotifications,
                 onChanged: onMentionNotificationsChanged,
               ),
               SettingsSwitchTile(
-                title: 'Системные уведомления',
+                title: l10n.settingsNotifySystem,
                 value: systemNotifications,
                 enabled: messageNotifications,
                 onChanged: onSystemNotificationsChanged,
               ),
+              SettingsSwitchTile(
+                title: l10n.settingsDoNotDisturb,
+                value: doNotDisturb,
+                onChanged: onDoNotDisturbChanged,
+              ),
             ],
           ),
-          const SizedBox(height: 20),
-
-          // ── Звуки ────────────────────────────────────────
+          const SizedBox(height: 16),
           SettingsGroupCard(
-            title: 'Звуки',
+            title: l10n.settingsSoundsSection,
             children: [
               SettingsSwitchTile(
-                title: 'Звук новых сообщений',
+                title: l10n.settingsSoundNewMessages,
                 value: soundEnabled,
                 onChanged: onSoundEnabledChanged,
               ),
               SettingsSwitchTile(
-                title: 'Звук отправки сообщения',
+                title: l10n.settingsSoundSend,
                 value: sendSound,
                 enabled: soundEnabled,
                 onChanged: onSendSoundChanged,
               ),
               SettingsSwitchTile(
-                title: 'Системные звуки',
+                title: l10n.settingsSoundSystem,
                 value: systemSounds,
                 enabled: soundEnabled,
                 onChanged: onSystemSoundsChanged,
               ),
               SettingsSegmentedTile(
-                title: 'Звук уведомлений',
-                options: const ['Default', 'Chime', 'Ping'],
-                selectedIndex: soundIndex,
+                title: l10n.settingsNotificationSoundTone,
+                options: [
+                  l10n.settingsSoundDefault,
+                  l10n.settingsSoundChime,
+                  l10n.settingsSoundPing,
+                ],
+                selectedIndex: soundIndex.clamp(0, 2),
                 onSelected: onSoundIndexChanged,
               ),
             ],
           ),
-          const SizedBox(height: 20),
-
-          const SizedBox(height: 8),
         ],
       ),
     );

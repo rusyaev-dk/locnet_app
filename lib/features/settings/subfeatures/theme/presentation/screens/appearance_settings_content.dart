@@ -6,18 +6,9 @@ import 'package:locnet_app/features/settings/presentation/blocs/blocs.dart';
 import 'package:locnet_app/features/settings/presentation/components/components.dart';
 import 'package:locnet_app/features/settings/subfeatures/theme/presentation/components/color_scheme_selector.dart';
 
-/// Appearance section: theme brightness, interface density, animations.
-class AppearanceSettingsContent extends StatefulWidget {
+/// Appearance: theme mode, text/UI scale, accent.
+class AppearanceSettingsContent extends StatelessWidget {
   const AppearanceSettingsContent({super.key});
-
-  @override
-  State<AppearanceSettingsContent> createState() =>
-      _AppearanceSettingsContentState();
-}
-
-class _AppearanceSettingsContentState
-    extends State<AppearanceSettingsContent> {
-  bool _dynamicTheme = false;
 
   @override
   Widget build(BuildContext context) {
@@ -37,8 +28,8 @@ class _AppearanceSettingsContentState
           SettingsLoadedState() => _AppearanceBody(
               isLight: state.themeType.isLight,
               accentIndex: state.themeType.accentIndex,
-              dynamicTheme: _dynamicTheme,
               textScaleFactor: state.textScaleFactor,
+              elementScaleFactor: state.elementScaleFactor,
               onBrightnessChanged: (light) {
                 final newType = AppThemeType.fromAccentAndBrightness(
                   accentIndex: state.themeType.accentIndex,
@@ -53,10 +44,10 @@ class _AppearanceSettingsContentState
                 );
                 context.read<SettingsCubit>().changeThemeType(newType);
               },
-              onDynamicThemeChanged: (v) =>
-                  setState(() => _dynamicTheme = v),
               onTextScaleChanged: (v) =>
                   context.read<SettingsCubit>().changeTextScale(v),
+              onElementScaleChanged: (v) =>
+                  context.read<SettingsCubit>().changeElementScale(v),
             ),
         };
       },
@@ -68,22 +59,22 @@ class _AppearanceBody extends StatelessWidget {
   const _AppearanceBody({
     required this.isLight,
     required this.accentIndex,
-    required this.dynamicTheme,
     required this.textScaleFactor,
+    required this.elementScaleFactor,
     required this.onBrightnessChanged,
     required this.onAccentChanged,
-    required this.onDynamicThemeChanged,
     required this.onTextScaleChanged,
+    required this.onElementScaleChanged,
   });
 
   final bool isLight;
   final int accentIndex;
-  final bool dynamicTheme;
   final double textScaleFactor;
+  final double elementScaleFactor;
   final ValueChanged<bool> onBrightnessChanged;
   final ValueChanged<int> onAccentChanged;
-  final ValueChanged<bool> onDynamicThemeChanged;
   final ValueChanged<double> onTextScaleChanged;
+  final ValueChanged<double> onElementScaleChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -94,39 +85,24 @@ class _AppearanceBody extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SettingsSectionHeader(
-            title: l10n.appearance,
-            description: 'Настройте тему оформления и параметры интерфейса.',
-          ),
-
-          // ── Тема ───────────────────────────────────────────
           SettingsGroupCard(
-            title: 'Тема',
+            title: l10n.settingsThemeSection,
             children: [
               SettingsSegmentedTile(
-                title: 'Режим темы',
+                title: l10n.settingsThemeModeLabel,
                 options: [
                   l10n.themeModeLight,
                   l10n.themeModeDark,
-                  l10n.themeModeSystem,
                 ],
                 selectedIndex: isLight ? 0 : 1,
                 onSelected: (i) => onBrightnessChanged(i == 0),
               ),
-              SettingsSwitchTile(
-                title: 'Динамическая тема',
-                subtitle: 'Адаптировать цвета к обоям устройства',
-                value: dynamicTheme,
-                onChanged: onDynamicThemeChanged,
-              ),
               _ThemePreviewTile(),
             ],
           ),
-          const SizedBox(height: 20),
-
-          // ── Интерфейс ─────────────────────────────────────
+          const SizedBox(height: 16),
           SettingsGroupCard(
-            title: 'Интерфейс',
+            title: l10n.settingsInterfaceSection,
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
@@ -137,7 +113,7 @@ class _AppearanceBody extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Размер текста',
+                          l10n.settingsTextScale,
                           style: context.textScheme.title.copyWith(
                             color: context.colorScheme.onSurface,
                           ),
@@ -166,16 +142,48 @@ class _AppearanceBody extends StatelessWidget {
                         onChanged: onTextScaleChanged,
                       ),
                     ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          l10n.settingsElementScale,
+                          style: context.textScheme.title.copyWith(
+                            color: context.colorScheme.onSurface,
+                          ),
+                        ),
+                        Text(
+                          '${(elementScaleFactor * 100).round()}%',
+                          style: context.textScheme.label.copyWith(
+                            color: context.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SliderTheme(
+                      data: SliderTheme.of(context).copyWith(
+                        overlayShape: const RoundSliderOverlayShape(),
+                        thumbShape: const RoundSliderThumbShape(
+                          enabledThumbRadius: 8,
+                        ),
+                        trackHeight: 4,
+                      ),
+                      child: Slider(
+                        value: elementScaleFactor,
+                        min: 0.9,
+                        max: 1.15,
+                        divisions: 5,
+                        onChanged: onElementScaleChanged,
+                      ),
+                    ),
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 20),
-
-          // ── Акцент ────────────────────────────────────────
+          const SizedBox(height: 16),
           SettingsGroupCard(
-            title: 'Акцентный цвет',
+            title: l10n.settingsAccentSection,
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
@@ -186,7 +194,6 @@ class _AppearanceBody extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 8),
         ],
       ),
     );
@@ -198,6 +205,7 @@ class _ThemePreviewTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
+    final l10n = context.l10n;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -244,7 +252,7 @@ class _ThemePreviewTile extends StatelessWidget {
               ),
             ),
             Text(
-              'Предпросмотр',
+              l10n.settingsPreviewLabel,
               style: textScheme.caption.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),

@@ -47,9 +47,20 @@ Future<void> showConversationSharedMediaSheet({
   required BuildContext context,
   required String conversationId,
   required ConversationType conversationType,
+  String? companionName,
   PrivateConversationBloc? privateConversationBloc,
   MediaInteractor? mediaInteractor,
 }) {
+  MediaInteractor? resolvedMediaInteractor = mediaInteractor;
+  try {
+    resolvedMediaInteractor ??= Provider.of<MediaInteractor?>(
+      context,
+      listen: false,
+    );
+  } catch (_) {
+    // Keep null when MediaInteractor is not available in the current scope.
+  }
+
   return showGeneralDialog<void>(
     context: context,
     barrierDismissible: true,
@@ -58,12 +69,14 @@ Future<void> showConversationSharedMediaSheet({
     transitionDuration: const Duration(milliseconds: 200),
     transitionBuilder: slideFadeDialogTransition,
     pageBuilder: (dialogContext, _, __) => AppModalCard(
-      maxWidth: 480,
-      verticalInset: 60,
-      child: privateConversationBloc == null && mediaInteractor == null
+      maxWidth: 520,
+      verticalInset: 48,
+      child: privateConversationBloc == null && resolvedMediaInteractor == null
           ? ConversationSharedMediaSheet(
               conversationId: conversationId,
               conversationType: conversationType,
+              companionName: companionName,
+              mediaInteractor: resolvedMediaInteractor,
             )
           : MultiProvider(
               providers: [
@@ -71,12 +84,16 @@ Future<void> showConversationSharedMediaSheet({
                   BlocProvider<PrivateConversationBloc>.value(
                     value: privateConversationBloc,
                   ),
-                if (mediaInteractor != null)
-                  Provider<MediaInteractor>.value(value: mediaInteractor),
+                if (resolvedMediaInteractor != null)
+                  Provider<MediaInteractor>.value(
+                    value: resolvedMediaInteractor,
+                  ),
               ],
               child: ConversationSharedMediaSheet(
                 conversationId: conversationId,
                 conversationType: conversationType,
+                companionName: companionName,
+                mediaInteractor: resolvedMediaInteractor,
               ),
             ),
     ),

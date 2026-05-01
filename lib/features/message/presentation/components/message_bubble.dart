@@ -164,30 +164,25 @@ class _MessageBubbleState extends State<MessageBubble> {
         ? CrossAxisAlignment.end
         : CrossAxisAlignment.start;
 
-    final EdgeInsetsGeometry margin = EdgeInsets.only(
-      left: isMine ? 60 : 0,
-      right: isMine ? 0 : 60,
-    );
-
     final Color bubbleColor = isMine
-        ? colorScheme.surfaceContainerHigh
-        : colorScheme.primaryContainer;
+        ? colorScheme.primary
+        : colorScheme.secondary;
 
     final TextStyle messageTextStyle = isMine
         ? textScheme.label.copyWith(
-            color: colorScheme.onSurface,
+            color: Colors.white,
             fontSize: 14.5,
           )
         : textScheme.label.copyWith(
-            color: colorScheme.onPrimaryContainer,
+            color: colorScheme.onSurface,
             fontSize: 14.5,
           );
 
     final TextStyle metaTextStyle = messageTextStyle.copyWith(
-      fontSize: (messageTextStyle.fontSize!) * 0.8,
+      fontSize: 10,
       color: isMine
-          ? messageTextStyle.color!.withAlpha(150)
-          : colorScheme.onPrimaryContainer.withAlpha(150),
+          ? Colors.white.withAlpha(170)
+          : colorScheme.onSurfaceVariant,
     );
 
     final BorderRadius borderRadius = BorderRadius.only(
@@ -204,12 +199,12 @@ class _MessageBubbleState extends State<MessageBubble> {
     final bool hasReplyPreview = replyPreviewText.isNotEmpty;
 
     final Color selectionColor = isMine
-        ? colorScheme.onSurface.withAlpha(80)
-        : colorScheme.onPrimaryContainer.withAlpha(80);
+        ? Colors.white.withAlpha(80)
+        : colorScheme.primary.withAlpha(80);
 
     final Color linkColor = isMine
-        ? colorScheme.primary
-        : colorScheme.onPrimaryContainer;
+        ? Colors.white.withAlpha(220)
+        : colorScheme.primary;
 
     return Listener(
       onPointerDown: _handlePointerDown,
@@ -219,7 +214,7 @@ class _MessageBubbleState extends State<MessageBubble> {
           final double laneWidth = constraints.maxWidth.isFinite
               ? constraints.maxWidth
               : screenWidth;
-          final double maxBubbleWidth = min(laneWidth, screenWidth * 0.7);
+          final double maxBubbleWidth = min(laneWidth, laneWidth * 0.62);
 
           return Align(
             alignment: alignment,
@@ -227,7 +222,6 @@ class _MessageBubbleState extends State<MessageBubble> {
               constraints: BoxConstraints(maxWidth: maxBubbleWidth),
               child: IntrinsicWidth(
                 child: Container(
-                  margin: margin,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 8,
@@ -235,6 +229,9 @@ class _MessageBubbleState extends State<MessageBubble> {
                   decoration: BoxDecoration(
                     color: bubbleColor,
                     borderRadius: borderRadius,
+                    border: isMine
+                        ? null
+                        : Border.all(color: colorScheme.outline, width: 1),
                   ),
                   child: Column(
                     crossAxisAlignment: crossAxisAlignment,
@@ -249,10 +246,8 @@ class _MessageBubbleState extends State<MessageBubble> {
                               widget.sender!,
                               style: textScheme.label.copyWith(
                                 color: isMine
-                                    ? colorScheme.onSurface.withAlpha(200)
-                                    : colorScheme.onPrimaryContainer.withAlpha(
-                                        230,
-                                      ),
+                                    ? Colors.white.withAlpha(200)
+                                    : colorScheme.primary,
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -269,14 +264,14 @@ class _MessageBubbleState extends State<MessageBubble> {
                           ),
                           decoration: BoxDecoration(
                             color: isMine
-                                ? colorScheme.onSurface.withAlpha(14)
-                                : colorScheme.onPrimaryContainer.withAlpha(24),
+                                ? Colors.white.withAlpha(20)
+                                : colorScheme.onSurface.withAlpha(14),
                             borderRadius: BorderRadius.circular(10),
                             border: Border(
                               left: BorderSide(
                                 color: isMine
-                                    ? colorScheme.primary
-                                    : colorScheme.onPrimaryContainer,
+                                    ? Colors.white.withAlpha(180)
+                                    : colorScheme.primary,
                                 width: 3,
                               ),
                             ),

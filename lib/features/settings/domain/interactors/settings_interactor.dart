@@ -62,6 +62,16 @@ class SettingsInteractor {
     return await _settingsRepo.getCurrentTextScaleCode();
   }
 
+  Future<bool> changeElementScale({required String newElementScaleCode}) async {
+    return await _settingsRepo.changeElementScale(
+      newElementScaleCode: newElementScaleCode,
+    );
+  }
+
+  Future<String> getCurrentElementScaleCode() async {
+    return await _settingsRepo.getCurrentElementScaleCode();
+  }
+
   Future<AppThemeType> getCurrentThemeType() async {
     return await _themeRepository.getThemeType();
   }

@@ -34,7 +34,10 @@ class _ChannelHeaderState extends State<ChannelHeader> {
 
   @override
   Widget build(BuildContext context) {
-    final String subtitle = '${widget.subscribersCount} subscribers';
+    final l10n = context.l10n;
+    final String subtitle = l10n.channelSubscribersCount(
+      widget.subscribersCount.toString(),
+    );
 
     return ConversationProfileHeaderBase(
       title: widget.conversation.title,
@@ -45,9 +48,7 @@ class _ChannelHeaderState extends State<ChannelHeader> {
           context: context,
           transitionBuilder: slideFadeDialogTransition,
           pageBuilder: (context, _, _) {
-            return ChannelInfoModalCard(
-              conversation: widget.conversation,
-            );
+            return ChannelInfoModalCard(conversation: widget.conversation);
           },
         );
       },
@@ -98,17 +99,17 @@ class _ChannelHeaderState extends State<ChannelHeader> {
               value: _ChannelHeaderMenuAction.toggleNotifications,
               child: Text(
                 areNotificationsEnabled
-                    ? 'Mute'
-                    : 'Unmute',
+                    ? l10n.toggleNotificationsOff
+                    : l10n.toggleNotificationsOn,
               ),
             ),
             PopupMenuItem(
               value: _ChannelHeaderMenuAction.viewChannelInfo,
-              child: const Text('View Channel Info'),
+              child: Text(l10n.channelMenuViewInfo),
             ),
             PopupMenuItem(
               value: _ChannelHeaderMenuAction.leaveChannel,
-              child: const Text('Leave Channel'),
+              child: Text(l10n.channelMenuLeave),
             ),
           ];
         },
@@ -118,10 +119,7 @@ class _ChannelHeaderState extends State<ChannelHeader> {
 }
 
 class _HeaderIconButton extends StatelessWidget {
-  const _HeaderIconButton({
-    required this.icon,
-    required this.onPressed,
-  });
+  const _HeaderIconButton({required this.icon, required this.onPressed});
 
   final IconData icon;
   final VoidCallback onPressed;
@@ -136,14 +134,9 @@ class _HeaderIconButton extends StatelessWidget {
         tooltip: null,
         visualDensity: VisualDensity.compact,
         iconSize: 20,
-        splashRadius: 18,
         onPressed: onPressed,
-        icon: Icon(
-          icon,
-          color: colorScheme.onSurfaceVariant,
-        ),
+        icon: Icon(icon, color: colorScheme.onSurfaceVariant),
       ),
     );
   }
 }
-

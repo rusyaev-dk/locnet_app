@@ -94,61 +94,30 @@ class _AuthScrollableForm extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        final bool isWide = constraints.maxWidth >= 900;
-
         return SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
           child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: constraints.maxHeight - 64),
+            constraints: BoxConstraints(minHeight: constraints.maxHeight - 80),
             child: Center(
               child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: isWide ? 960 : 480),
-                child: isWide
-                    ? Row(
-                        children: [
-                          const Expanded(
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: LocNetBranding(),
-                            ),
-                          ),
-                          const SizedBox(width: 48),
-                          Expanded(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                const Align(
-                                  alignment: Alignment.topRight,
-                                  child: LanguageSwitcherButton(),
-                                ),
-                                const SizedBox(height: 24),
-                                LogInCard(
-                                  usernameController: loginController,
-                                  passwordController: passwordController,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      )
-                    : Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          const Align(
-                            alignment: Alignment.topRight,
-                            child: LanguageSwitcherButton(),
-                          ),
-                          const SizedBox(height: 24),
-                          const LocNetBranding(),
-                          const SizedBox(height: 32),
-                          LogInCard(
-                            usernameController: loginController,
-                            passwordController: passwordController,
-                          ),
-                        ],
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: const LanguageSwitcherButton(),
                       ),
+                    ),
+                    LogInCard(
+                      usernameController: loginController,
+                      passwordController: passwordController,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

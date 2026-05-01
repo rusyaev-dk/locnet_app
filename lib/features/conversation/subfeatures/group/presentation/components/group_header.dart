@@ -36,7 +36,9 @@ class _GroupHeaderState extends State<GroupHeader> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
 
-    final String subtitle = '${widget.participantsCount} participants';
+    final String subtitle = l10n.groupParticipantsCount(
+      widget.participantsCount.toString(),
+    );
 
     return ConversationProfileHeaderBase(
       title: widget.conversation.title,
@@ -113,17 +115,17 @@ class _GroupHeaderState extends State<GroupHeader> {
                     : l10n.toggleNotificationsOn,
               ),
             ),
-            const PopupMenuItem(
+            PopupMenuItem(
               value: _GroupHeaderMenuAction.viewGroupInfo,
-              child: Text('View Group Info'),
+              child: Text(l10n.groupMenuViewInfo),
             ),
-            const PopupMenuItem(
+            PopupMenuItem(
               value: _GroupHeaderMenuAction.leaveGroup,
-              child: Text('Leave Group'),
+              child: Text(l10n.groupMenuLeave),
             ),
-            const PopupMenuItem(
+            PopupMenuItem(
               value: _GroupHeaderMenuAction.deleteGroup,
-              child: Text('Delete Group'),
+              child: Text(l10n.groupMenuDelete),
             ),
           ];
         },
@@ -147,7 +149,6 @@ class _HeaderIconButton extends StatelessWidget {
       child: IconButton(
         visualDensity: VisualDensity.compact,
         iconSize: 20,
-        splashRadius: 18,
         onPressed: onPressed,
         icon: Icon(icon, color: colorScheme.onSurfaceVariant),
       ),

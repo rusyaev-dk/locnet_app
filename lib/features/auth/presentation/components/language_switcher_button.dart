@@ -5,6 +5,7 @@ import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
 import 'package:locnet_app/gen/gen.dart';
 
+/// Compact language control aligned with auth cards (outline + surface container).
 class LanguageSwitcherButton extends StatelessWidget {
   const LanguageSwitcherButton({super.key});
 
@@ -12,6 +13,8 @@ class LanguageSwitcherButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final settingsState = context.watch<SettingsCubit>().state;
     final colorScheme = context.colorScheme;
+    final textScheme = context.textScheme;
+    final radii = context.radii;
 
     Locale? currentLocale;
     if (settingsState is SettingsLoadedState) {
@@ -26,7 +29,7 @@ class LanguageSwitcherButton extends StatelessWidget {
       onSelected: (Locale locale) async {
         await context.read<SettingsCubit>().changeLanguageCode(locale);
       },
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: radii.defaultRadiusValue,
       itemBuilder: (BuildContext context) {
         return const <PopupMenuEntry<Locale>>[
           PopupMenuItem<Locale>(
@@ -44,20 +47,32 @@ class LanguageSwitcherButton extends StatelessWidget {
         ];
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: colorScheme.outline.withOpacity(0.4)),
-          color: colorScheme.surface.withOpacity(0.9),
+          color: colorScheme.surfaceContainer,
+          borderRadius: radii.defaultRadiusValue,
+          border: Border.all(color: colorScheme.outline),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             currentIcon.svg(width: 20, height: 20),
             const SizedBox(width: 8),
-            Text(currentCode.toUpperCase()),
-            const SizedBox(width: 4),
-            const Icon(Icons.keyboard_arrow_down, size: 18),
+            Text(
+              currentCode.toUpperCase(),
+              style: textScheme.label.copyWith(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: colorScheme.onSurface,
+                height: 1.2,
+              ),
+            ),
+            const SizedBox(width: 2),
+            Icon(
+              Icons.keyboard_arrow_down_rounded,
+              size: 20,
+              color: colorScheme.onSurfaceVariant,
+            ),
           ],
         ),
       ),

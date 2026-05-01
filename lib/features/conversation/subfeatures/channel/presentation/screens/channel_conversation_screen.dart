@@ -261,7 +261,7 @@ class _ChannelConversationScreenState extends State<ChannelConversationScreen> {
                   final List<ChannelPublication> messages = state.messages;
 
                   if (messages.isEmpty) {
-                    return const Text("Empty here...");
+                    return Text(context.l10n.conversationNoMessagesYet);
                   }
 
                   return ChannelMessagesList(

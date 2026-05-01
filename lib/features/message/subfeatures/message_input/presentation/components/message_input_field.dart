@@ -465,6 +465,8 @@ class _MessageInputFieldState extends State<MessageInputField> {
   void _submit() {
     final String plainText = _controller.text;
     if (plainText.trim().isEmpty) {
+      // Parent (`MessageInputBar`) may still send attachments-only.
+      widget.onSubmitted('');
       return;
     }
 
@@ -487,15 +489,19 @@ class _MessageInputFieldState extends State<MessageInputField> {
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color inputForeground = isDark ? Colors.white : colorScheme.onSurface;
 
     final MediaQueryData mediaQuery = MediaQuery.of(context);
     final double visibleViewportHeight =
-        (mediaQuery.size.height - mediaQuery.viewInsets.bottom)
-            .clamp(120.0, double.infinity);
+        (mediaQuery.size.height - mediaQuery.viewInsets.bottom).clamp(
+          120.0,
+          double.infinity,
+        );
     final double maxHeight = visibleViewportHeight * 0.35;
 
     final TextStyle baseStyle = textScheme.label.copyWith(
-      color: colorScheme.onSurface,
+      color: inputForeground,
       fontSize: 16,
     );
 
@@ -639,7 +645,9 @@ class _MessageInputFieldState extends State<MessageInputField> {
                   isCollapsed: true,
                   hintText: widget.hintText,
                   hintStyle: textScheme.label.copyWith(
-                    color: colorScheme.onSurfaceVariant.withAlpha(150),
+                    color: isDark
+                        ? Colors.white.withAlpha(140)
+                        : colorScheme.onSurfaceVariant.withAlpha(150),
                     fontSize: 16,
                   ),
                   counterText: '',

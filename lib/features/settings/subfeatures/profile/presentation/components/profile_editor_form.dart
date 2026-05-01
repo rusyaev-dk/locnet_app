@@ -41,22 +41,14 @@ class ProfileEditorForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final textScheme = context.textScheme;
     final colorScheme = context.colorScheme;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            l10n.settingsMyProfileDescription,
-            style: textScheme.caption.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: 14),
-          CustomTextField(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _FormField(
+          label: 'DISPLAY NAME',
+          child: CustomTextField(
             controller: firstNameController,
             labelText: l10n.firstName,
             textInputAction: TextInputAction.next,
@@ -65,8 +57,11 @@ class ProfileEditorForm extends StatelessWidget {
             onChanged: onFirstNameChanged,
             onFocusChange: onFirstNameChanged,
           ),
-          const SizedBox(height: 12),
-          CustomTextField(
+        ),
+        const SizedBox(height: 16),
+        _FormField(
+          label: 'LAST NAME',
+          child: CustomTextField(
             controller: lastNameController,
             labelText: l10n.lastName,
             textInputAction: TextInputAction.next,
@@ -75,8 +70,11 @@ class ProfileEditorForm extends StatelessWidget {
             onChanged: onLastNameChanged,
             onFocusChange: onLastNameChanged,
           ),
-          const SizedBox(height: 12),
-          CustomTextField(
+        ),
+        const SizedBox(height: 16),
+        _FormField(
+          label: 'USERNAME',
+          child: CustomTextField(
             controller: usernameController,
             labelText: l10n.username,
             textInputAction: TextInputAction.next,
@@ -85,49 +83,82 @@ class ProfileEditorForm extends StatelessWidget {
             onChanged: onUsernameChanged,
             onFocusChange: onUsernameChanged,
           ),
-          const SizedBox(height: 12),
-          CustomTextField(
+        ),
+        const SizedBox(height: 16),
+        _FormField(
+          label: 'ABOUT',
+          child: CustomTextField(
             controller: descriptionController,
             labelText: l10n.description,
-            maxLines: 5,
-            minLines: 3,
+            maxLines: 4,
+            minLines: 2,
             expandable: true,
             isActive: !isSubmitting,
             onChanged: onDescriptionChanged,
             onFocusChange: onDescriptionChanged,
           ),
-          if (screenError != null) ...[
-            const SizedBox(height: 10),
-            Text(
-              screenError!,
-              style: textScheme.caption.copyWith(color: colorScheme.error),
-            ),
-          ],
-          const SizedBox(height: 14),
-          Align(
-            alignment: Alignment.centerRight,
-            child: Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              children: [
-                OutlinedButton(
-                  onPressed: isSubmitting ? null : onCancelEdit,
-                  child: Text(l10n.cancel),
-                ),
-                SizedBox(
-                  width: 160,
-                  child: AppPrimaryButton(
-                    text: l10n.apply,
-                    onPressed: onSave,
-                    isLoading: isSubmitting,
-                    isActive: !isSubmitting,
-                  ),
-                ),
-              ],
+        ),
+        if (screenError != null) ...[
+          const SizedBox(height: 10),
+          Text(
+            screenError!,
+            style: TextStyle(
+              fontSize: 12,
+              color: colorScheme.error,
+              height: 1.3,
             ),
           ),
         ],
-      ),
+        const SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            OutlinedButton(
+              onPressed: isSubmitting ? null : onCancelEdit,
+              child: Text(l10n.cancel),
+            ),
+            const SizedBox(width: 10),
+            SizedBox(
+              width: 140,
+              child: AppPrimaryButton(
+                text: l10n.apply,
+                onPressed: onSave,
+                isLoading: isSubmitting,
+                isActive: !isSubmitting,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _FormField extends StatelessWidget {
+  const _FormField({required this.label, required this.child});
+
+  final String label;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.w600,
+            color: colorScheme.onSurfaceVariant,
+            letterSpacing: 0.8,
+            height: 1.2,
+          ),
+        ),
+        const SizedBox(height: 6),
+        child,
+      ],
     );
   }
 }

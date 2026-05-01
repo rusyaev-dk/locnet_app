@@ -13,7 +13,7 @@ class PanelScreen extends StatelessWidget {
     final colorScheme = context.colorScheme;
 
     return Scaffold(
-      backgroundColor: colorScheme.surfaceBright,
+      backgroundColor: colorScheme.surface,
       body: Row(
         children: [
           const PanelSidebar(),

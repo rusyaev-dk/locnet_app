@@ -412,7 +412,7 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
                                 .toList(growable: false);
 
                             if (messages.isEmpty) {
-                              return const Text("Empty here...");
+                              return Text(context.l10n.conversationNoMessagesYet);
                             }
 
                             return PrivateMessagesList(

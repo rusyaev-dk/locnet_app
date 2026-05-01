@@ -139,6 +139,120 @@ class AppMessageText extends StatelessWidget {
   }
 }
 
+/// Single-line preview for conversation list (inline markdown only).
+class ConversationMarkdownPreview extends StatelessWidget {
+  const ConversationMarkdownPreview({
+    required this.markdown,
+    required this.baseStyle,
+    required this.linkColor,
+    this.prefixText,
+    this.prefixStyle,
+    super.key,
+  });
+
+  final String markdown;
+  final TextStyle baseStyle;
+  final Color linkColor;
+  final String? prefixText;
+  final TextStyle? prefixStyle;
+
+  static List<InlineSpan> buildPreviewSpans({
+    required String markdown,
+    required TextStyle baseStyle,
+    required Color linkColor,
+  }) {
+    final MessageMarkdownDocument doc =
+        MessageMarkdownCodec.decodeDocument(markdown.trim());
+    if (doc.isEmpty) {
+      if (markdown.isEmpty) {
+        return const <InlineSpan>[];
+      }
+      return <InlineSpan>[TextSpan(text: markdown, style: baseStyle)];
+    }
+
+    for (final MessageMarkdownBlock block in doc.blocks) {
+      if (block is MessageMarkdownParagraph && block.text.isNotEmpty) {
+        final TextStyle linkStyle = baseStyle.copyWith(
+          color: linkColor,
+          decoration: TextDecoration.none,
+        );
+        final TextStyle boldStyle =
+            baseStyle.copyWith(fontWeight: FontWeight.w700);
+        final TextStyle italicStyle =
+            baseStyle.copyWith(fontStyle: FontStyle.italic);
+        final TextStyle underlineStyle = baseStyle.copyWith(
+          decoration: TextDecoration.underline,
+        );
+        final TextStyle codeStyle = baseStyle.copyWith(
+          fontFamily: 'monospace',
+          backgroundColor: (baseStyle.color ?? Colors.black).withAlpha(18),
+        );
+        final TextStyle strikeStyle = baseStyle.copyWith(
+          decoration: TextDecoration.lineThrough,
+        );
+
+        return MessageInlineSpanBuilder.build(
+          plainText: block.text,
+          ranges: block.ranges,
+          baseStyle: baseStyle,
+          boldStyle: boldStyle,
+          italicStyle: italicStyle,
+          underlineStyle: underlineStyle,
+          codeStyle: codeStyle,
+          strikeStyle: strikeStyle,
+          linkStyle: linkStyle,
+          codeBlockStyle: null,
+          onLinkTap: null,
+          autoDetectLinks: true,
+        );
+      }
+
+      if (block is MessageMarkdownCodeBlock) {
+        final List<String> lines =
+            block.code.replaceAll('\r\n', '\n').split('\n');
+        String line = lines.isEmpty ? '' : lines.first.trimRight();
+        if (line.length > 80) {
+          line = '${line.substring(0, 80)}…';
+        }
+        return <InlineSpan>[
+          TextSpan(
+            text: line.isEmpty ? '…' : line,
+            style: baseStyle.copyWith(fontFamily: 'monospace'),
+          ),
+        ];
+      }
+    }
+
+    return <InlineSpan>[TextSpan(text: markdown, style: baseStyle)];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final List<InlineSpan> spans = <InlineSpan>[];
+    if (prefixText != null && prefixText!.isNotEmpty) {
+      spans.add(
+        TextSpan(
+          text: prefixText,
+          style: prefixStyle ?? baseStyle,
+        ),
+      );
+    }
+    spans.addAll(
+      buildPreviewSpans(
+        markdown: markdown,
+        baseStyle: baseStyle,
+        linkColor: linkColor,
+      ),
+    );
+
+    return RichText(
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      text: TextSpan(children: spans),
+    );
+  }
+}
+
 final class _CodeBlock extends StatelessWidget {
   const _CodeBlock({
     required this.code,

@@ -83,6 +83,15 @@ class _ProfileSettingsContentState extends State<ProfileSettingsContent> {
           );
         }
 
+        // Auto-start editing so form is always shown
+        if (!state.isEditing && !state.isSubmitting) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (context.mounted) {
+              context.read<ProfileEditorCubit>().startEditing();
+            }
+          });
+        }
+
         return ProfileSettingsView(
           user: loadedUser,
           isEditing: state.isEditing,

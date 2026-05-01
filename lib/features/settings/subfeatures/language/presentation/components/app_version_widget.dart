@@ -12,11 +12,12 @@ class AppVersionWidget extends StatelessWidget {
     final textScheme = context.textScheme;
 
     final String? version = dotenv.env['VERSION'];
-    final String displayVersion = version ?? 'Unknown';
+    final String displayVersion =
+        version ?? context.l10n.appVersionUnknown;
 
     return Center(
       child: Text(
-        'Version $displayVersion',
+        context.l10n.appVersionDisplay(displayVersion),
         style: textScheme.label.copyWith(
           color: colorScheme.onSurfaceVariant,
           fontSize: 13,

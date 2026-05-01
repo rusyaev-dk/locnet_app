@@ -33,6 +33,8 @@ class MessageInputBar extends StatefulWidget {
 class _MessageInputBarState extends State<MessageInputBar> {
   MessageRichInputController? _textEditingController;
   MessageAttachmentsCubit? _messageAttachmentsCubit;
+  final EmojiSelectorController _emojiController = EmojiSelectorController();
+  final GlobalKey _emojiButtonKey = GlobalKey();
   bool _emojiWarmUpStarted = false;
   bool _didRestoreDraft = false;
 
@@ -64,29 +66,15 @@ class _MessageInputBarState extends State<MessageInputBar> {
 
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color inputForeground = isDark ? Colors.white : colorScheme.onSurface;
 
     final TextStyle baseStyle = textScheme.label.copyWith(
       fontSize: 16,
-      color: colorScheme.onSurface,
+      color: inputForeground,
     );
 
-    _textEditingController = MessageRichInputController(
-      baseStyle: baseStyle,
-      boldStyle: baseStyle.copyWith(fontWeight: FontWeight.w700),
-      italicStyle: baseStyle.copyWith(fontStyle: FontStyle.italic),
-      underlineStyle: baseStyle.copyWith(decoration: TextDecoration.underline),
-      codeStyle: baseStyle.copyWith(fontFamily: 'monospace'),
-      codeBlockStyle: baseStyle.copyWith(
-        fontFamily: 'monospace',
-        height: 1.25,
-        backgroundColor: colorScheme.onSurface.withAlpha(18),
-      ),
-      strikeStyle: baseStyle.copyWith(decoration: TextDecoration.lineThrough),
-      linkStyle: baseStyle.copyWith(
-        color: colorScheme.primary,
-        decoration: TextDecoration.none,
-      ),
-    );
+    _textEditingController = MessageRichInputController(baseStyle: baseStyle);
     _textEditingController!.addListener(_persistDraft);
     _restoreDraftIfNeeded();
   }
@@ -96,6 +84,7 @@ class _MessageInputBarState extends State<MessageInputBar> {
     _persistDraft();
     _textEditingController?.removeListener(_persistDraft);
     _textEditingController?.dispose();
+    _emojiController.dispose();
     super.dispose();
   }
 
@@ -150,8 +139,74 @@ class _MessageInputBarState extends State<MessageInputBar> {
     );
   }
 
-  void _handleAttachPressed() {
-    _messageAttachmentsCubit?.pickFiles();
+  Future<void> _handleAttachPressed() async {
+    await _messageAttachmentsCubit?.pickFiles();
+  }
+
+  void _toggleEmojiPicker() {
+    if (_emojiController.isShown) {
+      _emojiController.hide();
+      return;
+    }
+    _showEmojiPicker();
+  }
+
+  void _showEmojiPicker() {
+    final OverlayState? overlayState = Overlay.maybeOf(
+      context,
+      rootOverlay: true,
+    );
+    if (overlayState == null) {
+      return;
+    }
+    final RenderObject? overlayObject = overlayState.context.findRenderObject();
+    final BuildContext? buttonContext = _emojiButtonKey.currentContext;
+
+    if (overlayObject is! RenderBox || buttonContext == null) {
+      return;
+    }
+
+    final RenderObject? buttonObject = buttonContext.findRenderObject();
+    if (buttonObject is! RenderBox) {
+      return;
+    }
+
+    final Offset buttonGlobal = buttonObject.localToGlobal(Offset.zero);
+    final Offset buttonInOverlay = overlayObject.globalToLocal(buttonGlobal);
+
+    final double overlayWidth = overlayObject.size.width;
+    final double overlayHeight = overlayObject.size.height;
+
+    final double panelHeight = overlayHeight * 0.35;
+    const double gap = 8;
+
+    final double desiredLeft = buttonInOverlay.dx;
+    final double desiredTop = buttonInOverlay.dy - panelHeight - gap;
+
+    final double clampedLeft = desiredLeft.clamp(8, overlayWidth - 8);
+    final double clampedTop = desiredTop.clamp(8, overlayHeight - 8);
+
+    final RelativeRect position = RelativeRect.fromRect(
+      Rect.fromLTWH(
+        clampedLeft,
+        clampedTop,
+        buttonObject.size.width,
+        buttonObject.size.height,
+      ),
+      Offset.zero & overlayObject.size,
+    );
+
+    final MessageRichInputController controller = _textEditingController!;
+
+    _emojiController.show(
+      context: context,
+      position: position,
+      textController: controller,
+      onDismiss: () {
+        _emojiController.hide();
+      },
+      onOverlayHoverChanged: ({required bool isHovered}) {},
+    );
   }
 
   String _buildMarkdownForSend() {
@@ -215,68 +270,176 @@ class _MessageInputBarState extends State<MessageInputBar> {
     final colorScheme = context.colorScheme;
     final l10n = context.l10n;
 
-    return BlocBuilder<MessageAttachmentsCubit, MessageAttachmentsState>(
-      builder: (context, state) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!mounted) {
-            return;
-          }
-          _persistDraft();
-        });
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            if (state.files.isNotEmpty)
-              MessageAttachmentsPreview(
-                files: state.files,
-                onRemovePressed: (UploadableFile file) {
-                  context.read<MessageAttachmentsCubit>().removeFile(file);
-                },
-                onOrderChanged: (List<UploadableFile> newOrder) {
-                  context.read<MessageAttachmentsCubit>().applyNewOrder(
-                    newOrder,
-                  );
-                },
-              ),
-            SafeArea(
-              top: false,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                color: colorScheme.surfaceBright,
-                child: Row(
-                  children: <Widget>[
-                    RoundedIconButton(
-                      icon: Icons.attach_file,
-                      backgroundColor: colorScheme.surfaceBright,
-                      onPressed: _handleAttachPressed,
-                      buttonSize: 35,
-                      iconSize: 25,
+    // Rebuild when the input text changes (BlocBuilder alone only listens to attachments).
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (BuildContext context, Widget? _) {
+        return BlocBuilder<MessageAttachmentsCubit, MessageAttachmentsState>(
+          builder: (context, state) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted) {
+                return;
+              }
+              _persistDraft();
+            });
+
+            final bool hasText = controller.text.trim().isNotEmpty;
+            final String inputHint = widget.draftContextId != null
+                ? l10n.draftChatHint
+                : '${l10n.message}…';
+
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                if (state.files.isNotEmpty)
+                  MessageAttachmentsPreview(
+                    files: state.files,
+                    onRemovePressed: (UploadableFile file) {
+                      context.read<MessageAttachmentsCubit>().removeFile(file);
+                    },
+                    onOrderChanged: (List<UploadableFile> newOrder) {
+                      context.read<MessageAttachmentsCubit>().applyNewOrder(
+                        newOrder,
+                      );
+                    },
+                  ),
+                SafeArea(
+                  top: false,
+                  child: Container(
+                    color: colorScheme.surface,
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: colorScheme.secondary,
+                            border: Border.all(
+                              color: colorScheme.outline,
+                              width: 1,
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 4,
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              _InputBarButton(
+                                icon: Icons.attach_file,
+                                size: 36,
+                                iconSize: 20,
+                                color: colorScheme.onSurfaceVariant,
+                                onPressed: () => _handleAttachPressed(),
+                              ),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: ConstrainedBox(
+                                  constraints: const BoxConstraints(
+                                    maxHeight: 120,
+                                  ),
+                                  child: MessageInputField(
+                                    controller: controller,
+                                    hintText: inputHint,
+                                    maxSymbols: 4096,
+                                    onSubmitted: (_) => _send(),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              _InputBarButton(
+                                key: _emojiButtonKey,
+                                icon: Icons.sentiment_satisfied_alt_outlined,
+                                size: 36,
+                                iconSize: 20,
+                                color: colorScheme.onSurfaceVariant,
+                                onPressed: _toggleEmojiPicker,
+                              ),
+                              const SizedBox(width: 6),
+                              _SendButton(
+                                enabled: hasText || state.files.isNotEmpty,
+                                colorScheme: colorScheme,
+                                onPressed: _send,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 5),
-                    Expanded(
-                      child: MessageInputField(
-                        controller: controller,
-                        hintText: '${l10n.message}...',
-                        maxSymbols: 4096,
-                        onSubmitted: (_) => _send(),
-                      ),
-                    ),
-                    const SizedBox(width: 5),
-                    EmojiButton(textController: controller),
-                    const SizedBox(width: 5),
-                    RoundedIconButton(
-                      icon: Icons.send,
-                      backgroundColor: colorScheme.surfaceBright,
-                      onPressed: _send,
-                      buttonSize: 35,
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          ],
+              ],
+            );
+          },
         );
       },
+    );
+  }
+}
+
+class _InputBarButton extends StatelessWidget {
+  const _InputBarButton({
+    required this.icon,
+    required this.size,
+    required this.color,
+    required this.onPressed,
+    this.iconSize = 18,
+    super.key,
+  });
+
+  final IconData icon;
+  final double size;
+  final double iconSize;
+  final Color color;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      padding: EdgeInsets.zero,
+      constraints: BoxConstraints.tight(Size(size, size)),
+      style: IconButton.styleFrom(
+        foregroundColor: color,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        visualDensity: VisualDensity.compact,
+      ),
+      icon: Icon(icon, size: iconSize),
+      onPressed: onPressed,
+    );
+  }
+}
+
+class _SendButton extends StatelessWidget {
+  const _SendButton({
+    required this.enabled,
+    required this.colorScheme,
+    required this.onPressed,
+  });
+
+  final bool enabled;
+  final AppColorScheme colorScheme;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      padding: EdgeInsets.zero,
+      constraints: BoxConstraints.tight(const Size(36, 36)),
+      style: IconButton.styleFrom(
+        backgroundColor: enabled
+            ? colorScheme.primary
+            : colorScheme.surfaceContainer,
+        foregroundColor: enabled ? Colors.white : colorScheme.onSurfaceVariant,
+        disabledBackgroundColor: colorScheme.surfaceContainer,
+        disabledForegroundColor: colorScheme.onSurfaceVariant,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        visualDensity: VisualDensity.compact,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+      icon: const Icon(Icons.send, size: 18),
+      onPressed: enabled ? onPressed : null,
     );
   }
 }

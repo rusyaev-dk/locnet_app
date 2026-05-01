@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/private.dart';
@@ -10,23 +11,13 @@ import 'package:locnet_app/uikit/uikit.dart';
 
 // ── Tab definitions ───────────────────────────────────────────────────────────
 
-enum _MediaTab { media, files, links, voice, music }
+enum _MediaTab { media, files, links }
 
 extension _MediaTabExt on _MediaTab {
   String get label => switch (this) {
-    _MediaTab.media => 'Media',
+    _MediaTab.media => 'Photos & Media',
     _MediaTab.files => 'Files',
     _MediaTab.links => 'Links',
-    _MediaTab.voice => 'Voice',
-    _MediaTab.music => 'Music',
-  };
-
-  IconData get icon => switch (this) {
-    _MediaTab.media => Icons.photo_library_outlined,
-    _MediaTab.files => Icons.insert_drive_file_outlined,
-    _MediaTab.links => Icons.link_rounded,
-    _MediaTab.voice => Icons.mic_none_rounded,
-    _MediaTab.music => Icons.music_note_outlined,
   };
 }
 
@@ -36,11 +27,15 @@ class ConversationSharedMediaSheet extends StatefulWidget {
   const ConversationSharedMediaSheet({
     required this.conversationId,
     required this.conversationType,
+    this.companionName,
+    this.mediaInteractor,
     super.key,
   });
 
   final String conversationId;
   final ConversationType conversationType;
+  final String? companionName;
+  final MediaInteractor? mediaInteractor;
 
   @override
   State<ConversationSharedMediaSheet> createState() =>
@@ -57,59 +52,92 @@ class _ConversationSharedMediaSheetState
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
+    final String? companion = widget.companionName;
+
+    final Map<_MediaTab, int> tabCounts = _resolveTabCounts();
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // ── Header — matches ConversationInfoHeroHeader layout ────────
-        Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Shared Media',
-                  style: textScheme.headline.copyWith(
-                    color: colorScheme.onSurface,
-                    fontSize: 16,
+        // ── Header ────────────────────────────────────────────────────
+        Container(
+          padding: const EdgeInsets.fromLTRB(20, 18, 16, 14),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: colorScheme.outline, width: 1),
+            ),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Shared Media',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: colorScheme.onSurface,
+                        height: 1.2,
+                      ),
+                    ),
+                    if (companion != null && companion.isNotEmpty) ...[
+                      const SizedBox(height: 3),
+                      Text(
+                        'with $companion',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: colorScheme.onSurfaceVariant,
+                          height: 1.2,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: () => Navigator.of(context).maybePop(),
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: colorScheme.secondary,
+                    border: Border.all(color: colorScheme.outline, width: 1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.close,
+                    size: 14,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
               ),
-            ),
-            Positioned(
-              top: 6,
-              right: 6,
-              child: RoundedIconButton(
-                icon: Icons.close,
-                foregroundColor: colorScheme.onSurfaceVariant,
-                onPressed: () => Navigator.of(context).maybePop(),
-                tooltip: 'Close',
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
 
-        // ── Scrollable tab row ────────────────────────────────────────
-        SizedBox(
-          height: 32,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 14),
+        // ── Underline tab row ─────────────────────────────────────────
+        Container(
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: colorScheme.outline, width: 1),
+            ),
+          ),
+          child: Row(
             children: _MediaTab.values.map((tab) {
-              return _TabChip(
+              return _UnderlineTab(
                 label: tab.label,
+                count: tabCounts[tab] ?? 0,
                 isSelected: _activeTab == tab,
                 colorScheme: colorScheme,
-                textScheme: textScheme,
                 onTap: () => setState(() => _activeTab = tab),
               );
             }).toList(),
           ),
         ),
-
-        const SizedBox(height: 8),
-        Divider(height: 1, thickness: 1, color: colorScheme.outlineVariant),
 
         // ── Content ───────────────────────────────────────────────────
         Expanded(
@@ -120,6 +148,21 @@ class _ConversationSharedMediaSheetState
         ),
       ],
     );
+  }
+
+  Map<_MediaTab, int> _resolveTabCounts() {
+    final List<_SharedMediaItem> media = _resolveSharedMediaItems();
+    final int imageVideoCount = media
+        .where((i) => i.isImage || i.isVideo)
+        .length;
+    final int fileCount = media
+        .where((i) => !i.isImage && !i.isVideo)
+        .length;
+    return {
+      _MediaTab.media: imageVideoCount,
+      _MediaTab.files: fileCount,
+      _MediaTab.links: 0,
+    };
   }
 
   Widget _buildTabContent(
@@ -146,20 +189,6 @@ class _ConversationSharedMediaSheetState
       ),
       _MediaTab.links => _LinksList(
         key: const ValueKey('links'),
-        colorScheme: colorScheme,
-        textScheme: textScheme,
-      ),
-      _MediaTab.voice => _EmptyTabState(
-        key: const ValueKey('voice'),
-        icon: _MediaTab.voice.icon,
-        label: 'No voice messages',
-        colorScheme: colorScheme,
-        textScheme: textScheme,
-      ),
-      _MediaTab.music => _EmptyTabState(
-        key: const ValueKey('music'),
-        icon: _MediaTab.music.icon,
-        label: 'No music files',
         colorScheme: colorScheme,
         textScheme: textScheme,
       ),
@@ -206,7 +235,14 @@ class _ConversationSharedMediaSheetState
   Future<MediaDownloadInfo> _resolveDownloadInfo(_SharedMediaItem item) {
     final String cacheKey = '${item.mediaId}::${item.conversationId}';
     return _downloadInfoCache.putIfAbsent(cacheKey, () {
-      return context.read<MediaInteractor>().getDownloadInfo(
+      final MediaInteractor? mediaInteractor = widget.mediaInteractor;
+      if (mediaInteractor == null) {
+        return Future<MediaDownloadInfo>.error(
+          StateError('MediaInteractor not available'),
+        );
+      }
+
+      return mediaInteractor.getDownloadInfo(
         mediaId: item.mediaId,
         scope: 'private_conversation',
         scopeId: item.conversationId,
@@ -215,49 +251,75 @@ class _ConversationSharedMediaSheetState
   }
 }
 
-// ── Tab chip — uses radii.defaultRadiusValue (6 px) ──────────────────────────
+// ── Underline tab ─────────────────────────────────────────────────────────────
 
-class _TabChip extends StatelessWidget {
-  const _TabChip({
+class _UnderlineTab extends StatelessWidget {
+  const _UnderlineTab({
     required this.label,
+    required this.count,
     required this.isSelected,
     required this.colorScheme,
-    required this.textScheme,
     required this.onTap,
   });
 
   final String label;
+  final int count;
   final bool isSelected;
   final AppColorScheme colorScheme;
-  final AppTextScheme textScheme;
   final VoidCallback onTap;
-
-  static const _duration = Duration(milliseconds: 150);
 
   @override
   Widget build(BuildContext context) {
-    final radii = context.radii;
-
     return GestureDetector(
       onTap: onTap,
-      child: AnimatedContainer(
-        duration: _duration,
-        margin: const EdgeInsets.only(right: 6),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected
-              ? colorScheme.primary
-              : colorScheme.surfaceContainerHigh,
-          borderRadius: radii.defaultRadiusValue,
-        ),
-        child: Text(
-          label,
-          style: textScheme.caption.copyWith(
-            color: isSelected
-                ? colorScheme.onPrimary
-                : colorScheme.onSurfaceVariant,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+          border: Border(
+            bottom: BorderSide(
+              color: isSelected ? colorScheme.primary : Colors.transparent,
+              width: 2,
+            ),
           ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                color: isSelected
+                    ? colorScheme.primary
+                    : colorScheme.onSurfaceVariant,
+                height: 1.2,
+              ),
+            ),
+            if (count > 0) ...[
+              const SizedBox(width: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? colorScheme.primary.withAlpha(30)
+                      : colorScheme.surfaceContainer,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  '$count',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: isSelected
+                        ? colorScheme.primary
+                        : colorScheme.onSurfaceVariant,
+                    height: 1.2,
+                  ),
+                ),
+              ),
+            ],
+          ],
         ),
       ),
     );
@@ -265,6 +327,18 @@ class _TabChip extends StatelessWidget {
 }
 
 // ── Media grid ────────────────────────────────────────────────────────────────
+
+// Deterministic icon accent colors for media placeholder icons
+const List<Color> _kMediaIconColors = [
+  Color(0xFF4B7BEC),
+  Color(0xFF26A65B),
+  Color(0xFF8B5CF6),
+  Color(0xFFE67E22),
+  Color(0xFF3498DB),
+  Color(0xFFC0392B),
+  Color(0xFF1ABC9C),
+  Color(0xFFE74C3C),
+];
 
 class _MediaGrid extends StatelessWidget {
   const _MediaGrid({
@@ -281,8 +355,6 @@ class _MediaGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final radii = context.radii;
-
     if (items.isEmpty) {
       return _EmptyTabState(
         icon: Icons.photo_library_outlined,
@@ -293,15 +365,17 @@ class _MediaGrid extends StatelessWidget {
     }
 
     return GridView.builder(
-      padding: const EdgeInsets.all(3),
+      padding: const EdgeInsets.all(12),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
-        crossAxisSpacing: 3,
-        mainAxisSpacing: 3,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+        childAspectRatio: 0.85,
       ),
       itemCount: items.length,
       itemBuilder: (context, index) {
         final _SharedMediaItem item = items[index];
+        final Color accentColor = _kMediaIconColors[index % _kMediaIconColors.length];
         return FutureBuilder<MediaDownloadInfo>(
           future: loadDownloadInfo(item),
           builder:
@@ -309,89 +383,156 @@ class _MediaGrid extends StatelessWidget {
                 BuildContext context,
                 AsyncSnapshot<MediaDownloadInfo> snapshot,
               ) {
-                if (snapshot.connectionState != ConnectionState.done ||
-                    !snapshot.hasData) {
-                  return ClipRRect(
-                    borderRadius: radii.smallRadius,
-                    child: Container(
-                      color: colorScheme.surfaceContainer,
-                      child: const Center(
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    ),
-                  );
-                }
-                final MediaDownloadInfo info = snapshot.data!;
-                final String type = item.kind.isEmpty
-                    ? info.mimeType
-                    : item.kind;
-                final bool isVideo = type.startsWith('video');
-                final bool isImage = type.startsWith('image');
-
-                return Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () {
-                      if (isImage) {
-                        showImageGalleryViewerModal(
-                          context: context,
-                          imageUrls: [info.downloadUrl],
-                          initialIndex: 0,
-                        );
-                        return;
-                      }
-                      if (isVideo) {
-                        Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => MessageVideoPlayerScreen(
-                              videoUrl: info.downloadUrl,
-                            ),
-                          ),
-                        );
-                      }
-                    },
-                    child: ClipRRect(
-                      borderRadius: radii.smallRadius,
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          CachedNetworkImage(
-                            imageUrl: info.downloadUrl,
-                            fit: BoxFit.cover,
-                            errorWidget:
-                                (BuildContext context, String _, Object _) {
-                                  return Container(
-                                    color: colorScheme.surfaceContainerHigh,
-                                    child: Icon(
-                                      Icons.image_not_supported_outlined,
-                                      color: colorScheme.onSurfaceVariant,
-                                    ),
-                                  );
-                                },
-                          ),
-                          if (isVideo)
-                            Center(
-                              child: Container(
-                                width: 34,
-                                height: 34,
-                                decoration: BoxDecoration(
-                                  color: Colors.black.withAlpha(130),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.play_arrow_rounded,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
+                return _MediaCard(
+                  colorScheme: colorScheme,
+                  accentColor: accentColor,
+                  mediaId: item.mediaId,
+                  snapshot: snapshot,
+                  item: item,
                 );
               },
         );
       },
+    );
+  }
+}
+
+class _MediaCard extends StatelessWidget {
+  const _MediaCard({
+    required this.colorScheme,
+    required this.accentColor,
+    required this.mediaId,
+    required this.snapshot,
+    required this.item,
+  });
+
+  final AppColorScheme colorScheme;
+  final Color accentColor;
+  final String mediaId;
+  final AsyncSnapshot<MediaDownloadInfo> snapshot;
+  final _SharedMediaItem item;
+
+  String get _shortName {
+    final String id = mediaId;
+    if (id.length > 20) return '${id.substring(0, 18)}…';
+    return id;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool loading = snapshot.connectionState != ConnectionState.done;
+    final MediaDownloadInfo? info = snapshot.data;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainer,
+        border: Border.all(color: colorScheme.outline, width: 1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: info == null
+              ? null
+              : () {
+                  final String type = item.kind.isEmpty
+                      ? info.mimeType
+                      : item.kind;
+                  if (type.startsWith('image')) {
+                    showImageGalleryViewerModal(
+                      context: context,
+                      imageUrls: [info.downloadUrl],
+                      initialIndex: 0,
+                    );
+                  } else if (type.startsWith('video')) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => MessageVideoPlayerScreen(
+                          videoUrl: info.downloadUrl,
+                        ),
+                      ),
+                    );
+                  }
+                },
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Center(
+                    child: loading
+                        ? SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: accentColor,
+                            ),
+                          )
+                        : (info != null && _isImageOrVideo(info, item))
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: CachedNetworkImage(
+                                  imageUrl: info.downloadUrl,
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  errorWidget:
+                                      (_, _, _) => _MediaIconPlaceholder(
+                                        accentColor: accentColor,
+                                      ),
+                                ),
+                              )
+                            : _MediaIconPlaceholder(accentColor: accentColor),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  _shortName,
+                  style: GoogleFonts.dmMono(
+                    fontSize: 9,
+                    color: colorScheme.onSurfaceVariant,
+                    height: 1.3,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  bool _isImageOrVideo(MediaDownloadInfo info, _SharedMediaItem item) {
+    final String type = item.kind.isEmpty ? info.mimeType : item.kind;
+    return type.startsWith('image') || type.startsWith('video');
+  }
+}
+
+class _MediaIconPlaceholder extends StatelessWidget {
+  const _MediaIconPlaceholder({required this.accentColor});
+  final Color accentColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 52,
+      height: 52,
+      decoration: BoxDecoration(
+        color: accentColor.withAlpha(36),
+        border: Border.all(color: accentColor.withAlpha(80), width: 1),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Icon(
+        Icons.remove_red_eye_outlined,
+        size: 22,
+        color: accentColor,
+      ),
     );
   }
 }
@@ -755,7 +896,6 @@ class _EmptyTabState extends StatelessWidget {
     required this.label,
     required this.colorScheme,
     required this.textScheme,
-    super.key,
   });
 
   final IconData icon;

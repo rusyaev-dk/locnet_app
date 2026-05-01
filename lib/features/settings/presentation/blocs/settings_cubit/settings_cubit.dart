@@ -105,6 +105,7 @@ class SettingsCubit extends Cubit<SettingsState> {
         _themeConstructorInteractor.loadAppTheme(),
         _settingsInteractor.getCurrentThemeType(),
         _settingsInteractor.getCurrentTextScaleCode(),
+        _settingsInteractor.getCurrentElementScaleCode(),
       ]);
 
       final String localeCode = results[0] as String;
@@ -112,6 +113,7 @@ class SettingsCubit extends Cubit<SettingsState> {
       final AppTheme appTheme = results[2] as AppTheme;
       final AppThemeType themeType = results[3] as AppThemeType;
       final String textScaleCode = results[4] as String;
+      final String elementScaleCode = results[5] as String;
 
       emit(
         SettingsLoadedState(
@@ -120,6 +122,7 @@ class SettingsCubit extends Cubit<SettingsState> {
           appTheme: appTheme,
           themeType: themeType,
           textScaleFactor: _decodeTextScaleCode(textScaleCode),
+          elementScaleFactor: _decodeElementScaleCode(elementScaleCode),
         ),
       );
     } catch (e, st) {
@@ -230,6 +233,43 @@ class SettingsCubit extends Cubit<SettingsState> {
     }
   }
 
+  Future<void> changeElementScale(double newFactor) async {
+    try {
+      if (state is! SettingsLoadedState) {
+        return;
+      }
+      final prevState = state as SettingsLoadedState;
+      final clamped = newFactor.clamp(0.9, 1.15);
+      final code = clamped.toStringAsFixed(2);
+
+      final bool success = await _settingsInteractor.changeElementScale(
+        newElementScaleCode: code,
+      );
+
+      if (!success) {
+        final failure = AppUnknownException(
+          message: 'Failed to update element scale',
+        );
+        emit(prevState.copyWith(failure: failure));
+        _logger.exception(failure, StackTrace.current);
+        return;
+      }
+
+      if ((prevState.elementScaleFactor - clamped).abs() > 0.001) {
+        emit(prevState.copyWith(elementScaleFactor: clamped));
+      }
+    } catch (e, st) {
+      _logger.exception(e, st);
+      emit(
+        SettingsFailureState(
+          failure: e is AppException
+              ? e
+              : AppUnknownException(message: e.toString(), stackTrace: st),
+        ),
+      );
+    }
+  }
+
   double _decodeTextScaleCode(String code) {
     switch (code) {
       case 's':
@@ -242,5 +282,11 @@ class SettingsCubit extends Cubit<SettingsState> {
     final value = double.tryParse(code);
     if (value == null || value < 0.85 || value > 1.2) return 1.0;
     return value.clamp(0.85, 1.2);
+  }
+
+  double _decodeElementScaleCode(String code) {
+    final value = double.tryParse(code);
+    if (value == null || value < 0.9 || value > 1.15) return 1.0;
+    return value.clamp(0.9, 1.15);
   }
 }

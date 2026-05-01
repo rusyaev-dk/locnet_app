@@ -7,6 +7,8 @@ abstract interface class ISettingsRepo {
 
   Future<bool> changeTextScale({required String newTextScaleCode});
   Future<String> getCurrentTextScaleCode();
+  Future<bool> changeElementScale({required String newElementScaleCode});
+  Future<String> getCurrentElementScaleCode();
 
   Future<bool> saveChatSetting({required String key, required bool value});
   Future<bool> getChatSetting({required String key, required bool fallback});
