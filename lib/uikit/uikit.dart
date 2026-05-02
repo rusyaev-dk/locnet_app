@@ -6,3 +6,4 @@ export 'buttons/buttons.dart';
 export 'dialogs/dialogs.dart';
 export 'text_fields/text_fields.dart';
 export 'tabbars/tabbars.dart';
+export 'modals/modals.dart';

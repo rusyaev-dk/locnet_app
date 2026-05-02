@@ -28,9 +28,11 @@ class UnifiedSearchHeader extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          RoundedIconButton(
-            buttonSize: 35,
+          SurfaceIconButton(
+            dimension: 35,
             iconSize: 18.5,
+            margin: EdgeInsets.zero,
+            tooltip: l10n.close,
             onPressed: () => Navigator.of(context).pop(),
             icon: Icons.close,
           ),

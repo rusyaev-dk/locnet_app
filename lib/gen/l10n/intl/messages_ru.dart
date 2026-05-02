@@ -342,6 +342,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "settingsAllowPush": MessageLookupByLibrary.simpleMessage(
       "Push-уведомления",
     ),
+    "settingsAppVersionTitle": MessageLookupByLibrary.simpleMessage("Сборка"),
     "settingsAutoScroll": MessageLookupByLibrary.simpleMessage(
       "Прокрутка к новым",
     ),
@@ -402,6 +403,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "settingsPrivacyPlaceholder": MessageLookupByLibrary.simpleMessage(
       "Сессия и безопасность",
+    ),
+    "settingsPrivacyTimingSection": MessageLookupByLibrary.simpleMessage(
+      "Срок действия сессии",
     ),
     "settingsPushSection": MessageLookupByLibrary.simpleMessage("Push"),
     "settingsSaveDrafts": MessageLookupByLibrary.simpleMessage("Черновики"),

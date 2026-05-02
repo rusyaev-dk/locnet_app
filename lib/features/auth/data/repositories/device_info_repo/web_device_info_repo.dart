@@ -1,10 +1,10 @@
 // device_info_repo_web.dart
-import 'package:locnet_app/features/auth/data/data.dart';
+import 'package:locnet_app/features/auth/data/repositories/device_info_repo/i_device_info_repo.dart';
 import 'package:locnet_app/features/auth/domain/domain.dart';
 import 'package:web/web.dart' as web;
 
-final class DeviceInfoRepo implements IDeviceInfoRepo {
-  const DeviceInfoRepo();
+final class WebDeviceInfoRepo implements IDeviceInfoRepo {
+  const WebDeviceInfoRepo();
 
   @override
   Future<DeviceInfo> getDeviceInfo() async {

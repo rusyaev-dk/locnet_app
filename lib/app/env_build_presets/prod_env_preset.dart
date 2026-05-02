@@ -118,7 +118,7 @@ final class ProdEnvPreset implements IAppEnvPreset {
 
   @override
   IDeviceInfoRepo createDeviceInfoRepo() {
-    return const DeviceInfoRepo();
+    return createPlatformDeviceInfoRepo();
   }
 
   @override

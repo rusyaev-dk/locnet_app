@@ -1,5 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:locnet_app/app/app.dart';
+import 'package:locnet_app/uikit/uikit.dart';
 
 Future<void> showImageGalleryViewerModal({
   required BuildContext context,
@@ -107,9 +109,13 @@ class _ImageGalleryViewerState extends State<_ImageGalleryViewer> {
               Positioned(
                 top: 8,
                 right: 8,
-                child: IconButton(
+                child: SurfaceIconButton(
+                  variant: SurfaceIconVariant.ghost,
+                  icon: Icons.close,
                   onPressed: () => Navigator.of(context).pop(),
-                  icon: const Icon(Icons.close, color: Colors.white),
+                  margin: EdgeInsets.zero,
+                  foregroundColor: Colors.white,
+                  tooltip: context.l10n.close,
                 ),
               ),
               if (multi) ...[

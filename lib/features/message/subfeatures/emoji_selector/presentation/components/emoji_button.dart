@@ -2,6 +2,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/features/message/subfeatures/emoji_selector/presentation/presentation.dart';
 import 'package:locnet_app/uikit/buttons/buttons.dart';
 
@@ -130,15 +131,16 @@ class _EmojiButtonState extends State<EmojiButton> {
         _isPointerOverButton = false;
         _scheduleClose();
       },
-      child: RoundedIconButton(
+      child: SurfaceIconButton(
         key: _buttonKey,
-        tooltip: 'Emoji',
+        dimension: 35,
+        iconSize: 25,
+        margin: EdgeInsets.zero,
+        tooltip: context.l10n.searchEmoji,
         onPressed: _emojiController.isShown
             ? _emojiController.hide
             : _showEmojiPicker,
         icon: Icons.emoji_emotions_outlined,
-        buttonSize: 35,
-        iconSize: 25,
       ),
     );
   }

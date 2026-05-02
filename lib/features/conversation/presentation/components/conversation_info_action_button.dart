@@ -18,32 +18,37 @@ class ConversationInfoActionButton extends StatelessWidget {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          height: 58,
-          decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerLow,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 20, color: colorScheme.primary),
-              const SizedBox(height: 5),
-              Text(
-                label,
-                style: textScheme.caption.copyWith(
-                  color: colorScheme.onSurface,
-                  fontWeight: FontWeight.w500,
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(12),
+          hoverColor: colorScheme.onSurface.withValues(alpha: 0.06),
+          splashColor: colorScheme.primary.withValues(alpha: 0.12),
+          child: Container(
+            height: 58,
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerLow,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, size: 20, color: colorScheme.primary),
+                const SizedBox(height: 5),
+                Text(
+                  label,
+                  style: textScheme.caption.copyWith(
+                    color: colorScheme.onSurface,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

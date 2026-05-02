@@ -85,8 +85,10 @@ class _ForwardTargetPickerModalCardState
                           ),
                         ),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.close),
+                      SurfaceIconButton(
+                        icon: Icons.close,
+                        margin: EdgeInsets.zero,
+                        tooltip: l10n.close,
                         onPressed: () => Navigator.of(context).maybePop(),
                       ),
                     ],

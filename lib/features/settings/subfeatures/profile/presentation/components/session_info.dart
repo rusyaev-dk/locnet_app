@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/features/auth/domain/domain.dart';
-import 'package:locnet_app/gen/gen.dart';
+import 'package:locnet_app/features/settings/presentation/components/components.dart';
+import 'package:locnet_app/gen/l10n/l10n.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
+/// Session details for Privacy / profile: status + device + validity rows.
 class SessionInfo extends StatelessWidget {
   const SessionInfo({required this.session, super.key});
 
@@ -14,8 +16,8 @@ class SessionInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = context.colorScheme;
     final l10n = context.l10n;
+    final colorScheme = context.colorScheme;
 
     final SessionStatusViewModel status = _buildStatus(
       l10n: l10n,
@@ -23,17 +25,78 @@ class SessionInfo extends StatelessWidget {
       session: session,
     );
 
-    final List<SessionInfoItem> items = _buildItems(
-      l10n: l10n,
-      session: session,
-    );
-
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _SessionStatusChip(label: status.label, color: status.color),
-        const SizedBox(height: 15),
-        SessionInfoCard(items: items),
+        SettingsGroupCard(
+          title: l10n.currentSession,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 6),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: _SessionStatusChip(label: status.label, color: status.color),
+              ),
+            ),
+            SettingsValueTile(
+              label: l10n.sessionDeviceName,
+              value: _nullableOrDash(session.deviceName),
+              leadingIcon: Icons.smartphone_outlined,
+            ),
+            SettingsValueTile(
+              label: l10n.sessionDeviceType,
+              value: _nullableOrDash(session.deviceType),
+              leadingIcon: Icons.devices_outlined,
+            ),
+            SettingsValueTile(
+              label: l10n.sessionOs,
+              value: _nullableOrDash(session.os),
+              leadingIcon: Icons.memory_outlined,
+            ),
+            SettingsValueTile(
+              label: l10n.sessionIpAddress,
+              value: _nullableOrDash(session.ipAddress),
+              leadingIcon: Icons.language_outlined,
+            ),
+            SettingsValueTile(
+              label: l10n.sessionMacAddress,
+              value: _nullableOrDash(session.macAddress),
+              leadingIcon: Icons.router_outlined,
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        SettingsGroupCard(
+          title: l10n.settingsPrivacyTimingSection,
+          children: [
+            SettingsValueTile(
+              label: l10n.sessionCreatedAt,
+              value: _dateTimeFormatter.format(session.createdAt),
+              leadingIcon: Icons.schedule_outlined,
+            ),
+            SettingsValueTile(
+              label: l10n.sessionUpdatedAt,
+              value: _dateTimeFormatter.format(session.updatedAt),
+              leadingIcon: Icons.update_outlined,
+            ),
+            SettingsValueTile(
+              label: l10n.sessionAccessExpiresAt,
+              value: _dateTimeFormatter.format(session.accessExpiresAt),
+              leadingIcon: Icons.timer_outlined,
+            ),
+            SettingsValueTile(
+              label: l10n.sessionRefreshExpiresAt,
+              value: _dateTimeFormatter.format(session.refreshExpiresAt),
+              leadingIcon: Icons.refresh_outlined,
+            ),
+            if (session.terminatedAt != null)
+              SettingsValueTile(
+                label: l10n.sessionTerminatedAt,
+                value: _dateTimeFormatter.format(session.terminatedAt!),
+                leadingIcon: Icons.block_outlined,
+              ),
+          ],
+        ),
       ],
     );
   }
@@ -66,58 +129,6 @@ class SessionInfo extends StatelessWidget {
     );
   }
 
-  static List<SessionInfoItem> _buildItems({
-    required S l10n,
-    required Session session,
-  }) {
-    final List<SessionInfoItem> items = [
-      SessionInfoItem(
-        title: l10n.sessionDeviceName,
-        value: _nullableOrDash(session.deviceName),
-      ),
-      SessionInfoItem(
-        title: l10n.sessionDeviceType,
-        value: _nullableOrDash(session.deviceType),
-      ),
-      SessionInfoItem(title: l10n.sessionOs, value: _nullableOrDash(session.os)),
-      SessionInfoItem(
-        title: l10n.sessionIpAddress,
-        value: _nullableOrDash(session.ipAddress),
-      ),
-      SessionInfoItem(
-        title: l10n.sessionMacAddress,
-        value: _nullableOrDash(session.macAddress),
-      ),
-      SessionInfoItem(
-        title: l10n.sessionCreatedAt,
-        value: _dateTimeFormatter.format(session.createdAt),
-      ),
-      SessionInfoItem(
-        title: l10n.sessionUpdatedAt,
-        value: _dateTimeFormatter.format(session.updatedAt),
-      ),
-      SessionInfoItem(
-        title: l10n.sessionAccessExpiresAt,
-        value: _dateTimeFormatter.format(session.accessExpiresAt),
-      ),
-      SessionInfoItem(
-        title: l10n.sessionRefreshExpiresAt,
-        value: _dateTimeFormatter.format(session.refreshExpiresAt),
-      ),
-    ];
-
-    if (session.terminatedAt != null) {
-      items.add(
-        SessionInfoItem(
-          title: l10n.sessionTerminatedAt,
-          value: _dateTimeFormatter.format(session.terminatedAt!),
-        ),
-      );
-    }
-
-    return items;
-  }
-
   static String _nullableOrDash(String? value) {
     final String normalized = value?.trim() ?? '';
     if (normalized.isEmpty) {
@@ -138,109 +149,22 @@ class _SessionStatusChip extends StatelessWidget {
     final textScheme = context.textScheme;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
       decoration: BoxDecoration(
-        color: color.withAlpha(0x1F),
+        color: color.withAlpha(0x24),
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: color.withAlpha(0x5A)),
+        border: Border.all(color: color.withAlpha(0x66)),
       ),
-      child: Text(label, style: textScheme.label.copyWith(color: color)),
-    );
-  }
-}
-
-class SessionInfoCard extends StatelessWidget {
-  const SessionInfoCard({required this.items, super.key});
-
-  final List<SessionInfoItem> items;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = context.colorScheme;
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        children: items
-            .asMap()
-            .entries
-            .map(
-              (entry) {
-                final int index = entry.key;
-                final SessionInfoItem item = entry.value;
-                final bool isLast = index == items.length - 1;
-
-                return Column(
-                  children: [
-                    SessionInfoRow(item: item),
-                    if (!isLast) ...[
-                      const SizedBox(height: 12),
-                      Divider(
-                        height: 1,
-                        color: colorScheme.outlineVariant,
-                      ),
-                      const SizedBox(height: 12),
-                    ],
-                  ],
-                );
-              },
-            )
-            .toList(),
-      ),
-    );
-  }
-}
-
-class SessionInfoRow extends StatelessWidget {
-  const SessionInfoRow({required this.item, super.key});
-
-  final SessionInfoItem item;
-
-  @override
-  Widget build(BuildContext context) {
-    final textScheme = context.textScheme;
-    final colorScheme = context.colorScheme;
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          flex: 2,
-          child: Text(
-            item.title,
-            style: textScheme.label.copyWith(
-              color: colorScheme.onSurfaceVariant,
-              fontSize: 13,
-            ),
-          ),
+      child: Text(
+        label,
+        style: textScheme.label.copyWith(
+          color: color,
+          fontWeight: FontWeight.w600,
+          fontSize: 13,
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          flex: 3,
-          child: Text(
-            item.value,
-            style: textScheme.label.copyWith(
-              color: colorScheme.onSurface,
-              fontSize: 14,
-            ),
-            textAlign: TextAlign.end,
-          ),
-        ),
-      ],
+      ),
     );
   }
-}
-
-class SessionInfoItem {
-  const SessionInfoItem({required this.title, required this.value});
-
-  final String title;
-  final String value;
 }
 
 class SessionStatusViewModel {

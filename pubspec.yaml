@@ -45,6 +45,8 @@ dependencies:
   js: ^0.7.2
   socket_io_client: ^3.1.4
   google_fonts: ^8.1.0
+  device_info_plus: ^12.4.0
+  network_info_plus: ^7.0.0
  
 dev_dependencies:
   flutter_test:

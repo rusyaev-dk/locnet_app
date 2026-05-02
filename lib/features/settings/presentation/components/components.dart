@@ -1,4 +1,5 @@
 export 'language_selector.dart';
+export 'settings_app_version_tile.dart';
 export 'settings_action_tile.dart';
 export 'settings_group_card.dart';
 export 'settings_header.dart';
@@ -9,3 +10,4 @@ export 'settings_section_widget.dart';
 export 'settings_segmented_tile.dart';
 export 'settings_sidebar.dart';
 export 'settings_switch_tile.dart';
+export 'settings_value_tile.dart';

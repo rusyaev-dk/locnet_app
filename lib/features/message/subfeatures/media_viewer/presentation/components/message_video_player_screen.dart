@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
+import 'package:locnet_app/uikit/uikit.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
 
@@ -195,9 +196,13 @@ class _MessageVideoPlayerScreenState extends State<MessageVideoPlayerScreen> {
                     opacity: _showControls ? 1 : 0,
                     child: IgnorePointer(
                       ignoring: !_showControls,
-                      child: IconButton(
+                      child: SurfaceIconButton(
+                        variant: SurfaceIconVariant.ghost,
+                        icon: Icons.close,
                         onPressed: () => Navigator.of(context).pop(),
-                        icon: const Icon(Icons.close, color: Colors.white),
+                        margin: EdgeInsets.zero,
+                        foregroundColor: Colors.white,
+                        tooltip: context.l10n.close,
                       ),
                     ),
                   ),
@@ -214,14 +219,16 @@ class _MessageVideoPlayerScreenState extends State<MessageVideoPlayerScreen> {
                         color: Colors.black.withAlpha(120),
                         child: Row(
                           children: [
-                            IconButton(
+                            SurfaceIconButton(
+                              variant: SurfaceIconVariant.ghost,
+                              icon: _controller.value.isPlaying
+                                  ? Icons.pause_rounded
+                                  : Icons.play_arrow_rounded,
                               onPressed: _togglePlayPause,
-                              icon: Icon(
-                                _controller.value.isPlaying
-                                    ? Icons.pause_rounded
-                                    : Icons.play_arrow_rounded,
-                                color: Colors.white,
-                              ),
+                              margin: EdgeInsets.zero,
+                              dimension: 40,
+                              iconSize: 28,
+                              foregroundColor: Colors.white,
                             ),
                             Expanded(
                               child: VideoProgressIndicator(

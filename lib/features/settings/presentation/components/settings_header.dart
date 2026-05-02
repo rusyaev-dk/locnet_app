@@ -25,10 +25,14 @@ class SettingsHeader extends StatelessWidget {
       child: Row(
         children: [
           if (showBackButton)
-            RoundedIconButton(
-              onPressed: () => Navigator.of(context).pop(),
+            SurfaceIconButton(
+              variant: SurfaceIconVariant.ghost,
               icon: Icons.chevron_left,
-              backgroundColor: Colors.transparent,
+              dimension: 36,
+              iconSize: 22,
+              margin: EdgeInsets.zero,
+              onPressed: () => Navigator.of(context).pop(),
+              tooltip: context.l10n.back,
             ),
           if (showBackButton) const SizedBox(width: 8),
           Expanded(
@@ -44,9 +48,11 @@ class SettingsHeader extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          RoundedIconButton(
-            buttonSize: 35,
+          SurfaceIconButton(
+            dimension: 35,
             iconSize: 18.5,
+            margin: EdgeInsets.zero,
+            tooltip: context.l10n.close,
             onPressed: () {
               for (int i = 0; i < popsOnClose; i++) {
                 if (context.mounted) Navigator.of(context).pop();

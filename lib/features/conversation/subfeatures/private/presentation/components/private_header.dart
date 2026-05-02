@@ -7,6 +7,7 @@ import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/conversation_tools/conversation_tools.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/presentation/modals/companion_info_modal_card.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/private.dart';
+import 'package:locnet_app/uikit/uikit.dart';
 enum _PrivateHeaderMenuAction {
   toggleNotifications,
   blockCompanion,
@@ -58,16 +59,8 @@ class _PrivateHeaderState extends State<PrivateHeader> {
       isOnline: true,
       onTap: () => _openCompanionInfo(context),
       trailingActions: [
-        HeaderActionButton(
-          icon: Icons.call_outlined,
-          onPressed: () {},
-        ),
-        HeaderActionButton(
-          icon: Icons.videocam_outlined,
-          onPressed: () {},
-        ),
         if (hasConversationId) ...[
-          HeaderActionButton(
+          SurfaceIconButton(
             icon: Icons.search,
             onPressed: () {
               showConversationSearchSheet(
@@ -79,7 +72,7 @@ class _PrivateHeaderState extends State<PrivateHeader> {
               );
             },
           ),
-          HeaderActionButton(
+          SurfaceIconButton(
             icon: Icons.photo_library_outlined,
             onPressed: () {
               showConversationSharedMediaSheet(
@@ -92,17 +85,16 @@ class _PrivateHeaderState extends State<PrivateHeader> {
             },
           ),
         ],
-        HeaderActionButton(
-          icon: Icons.info_outline,
-          onPressed: () => _openCompanionInfo(context),
-        ),
       ],
       menuButton: hasConversationId
           ? PopupMenuButton<_PrivateHeaderMenuAction>(
-              icon: Icon(
-                Icons.more_vert,
-                size: 18,
-                color: context.colorScheme.onSurfaceVariant,
+              padding: EdgeInsets.zero,
+              child: const Material(
+                color: Colors.transparent,
+                child: SurfaceIconShell(
+                  icon: Icons.more_vert,
+                  margin: EdgeInsets.only(left: 6),
+                ),
               ),
               onSelected: (action) async {
                 final cubit = context.read<PrivateConversationOptionsCubit>();

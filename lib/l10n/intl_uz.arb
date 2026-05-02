@@ -227,5 +227,7 @@
   "mediaOpenExternally": "Tashqi ilovada ochish",
   "channelSubscribersCount": "{count} obunachi",
   "groupParticipantsCount": "{count} ishtirokchi",
-  "mediaVideoLoadFailed": "Videoni yuklab boʻlmadi"
+  "mediaVideoLoadFailed": "Videoni yuklab boʻlmadi",
+  "settingsPrivacyTimingSection": "Sessiya muddati",
+  "settingsAppVersionTitle": "Yigʻma"
 }

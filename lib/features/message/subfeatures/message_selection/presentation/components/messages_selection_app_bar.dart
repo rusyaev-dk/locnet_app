@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
+import 'package:locnet_app/uikit/uikit.dart';
 
 class MessagesSelectionAppBar extends StatelessWidget
     implements PreferredSizeWidget {
@@ -29,8 +30,11 @@ class MessagesSelectionAppBar extends StatelessWidget
     final colorScheme = context.colorScheme;
 
     return AppBar(
-      leading: IconButton(
-        icon: const Icon(Icons.close),
+      leading: SurfaceIconButton(
+        variant: SurfaceIconVariant.ghost,
+        icon: Icons.close,
+        margin: EdgeInsets.zero,
+        tooltip: l10n.close,
         onPressed: onClosePressed,
       ),
       title: Text(
@@ -41,15 +45,31 @@ class MessagesSelectionAppBar extends StatelessWidget
             ?.copyWith(color: colorScheme.onSurface),
       ),
       actions: <Widget>[
-        IconButton(
-          icon: const Icon(Icons.forward),
-          onPressed: canForward ? onForwardPressed : null,
-          tooltip: l10n.messageContextActionForward,
+        Opacity(
+          opacity: canForward ? 1 : 0.45,
+          child: IgnorePointer(
+            ignoring: !canForward,
+            child: SurfaceIconButton(
+              variant: SurfaceIconVariant.ghost,
+              icon: Icons.forward,
+              margin: EdgeInsets.zero,
+              tooltip: l10n.messageContextActionForward,
+              onPressed: onForwardPressed,
+            ),
+          ),
         ),
-        IconButton(
-          icon: const Icon(Icons.delete_outline),
-          onPressed: canDelete ? onDeletePressed : null,
-          tooltip: l10n.messageContextActionDelete,
+        Opacity(
+          opacity: canDelete ? 1 : 0.45,
+          child: IgnorePointer(
+            ignoring: !canDelete,
+            child: SurfaceIconButton(
+              variant: SurfaceIconVariant.ghost,
+              icon: Icons.delete_outline,
+              margin: EdgeInsets.zero,
+              tooltip: l10n.messageContextActionDelete,
+              onPressed: onDeletePressed,
+            ),
+          ),
         ),
       ],
     );

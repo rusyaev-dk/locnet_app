@@ -14,6 +14,7 @@ import 'package:locnet_app/features/conversations_list/data/data.dart';
 import 'package:locnet_app/features/conversations_list/domain/domain.dart';
 import 'package:locnet_app/features/conversations_list/presentation/presentation.dart';
 import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/presentation/presentation.dart';
+import 'package:locnet_app/uikit/uikit.dart';
 
 class ConversationsPanelWrapper extends StatelessWidget {
   const ConversationsPanelWrapper({required this.child, super.key});
@@ -417,12 +418,11 @@ class _ConversationsListHeader extends StatelessWidget {
     if (isCompact) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-        child: IconButton(
-          icon: Icon(
-            Icons.search,
-            color: colorScheme.onSurfaceVariant,
-            size: 20,
-          ),
+        child: SurfaceIconButton(
+          icon: Icons.search,
+          margin: EdgeInsets.zero,
+          iconSize: 20,
+          tooltip: l10n.search,
           onPressed: () => _openUnifiedSearch(context),
         ),
       );

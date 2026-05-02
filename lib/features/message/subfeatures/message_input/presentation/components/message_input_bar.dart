@@ -397,16 +397,14 @@ class _InputBarButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      padding: EdgeInsets.zero,
-      constraints: BoxConstraints.tight(Size(size, size)),
-      style: IconButton.styleFrom(
-        foregroundColor: color,
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        visualDensity: VisualDensity.compact,
-      ),
-      icon: Icon(icon, size: iconSize),
+    return SurfaceIconButton(
+      variant: SurfaceIconVariant.ghost,
+      icon: icon,
       onPressed: onPressed,
+      dimension: size,
+      iconSize: iconSize,
+      margin: EdgeInsets.zero,
+      foregroundColor: color,
     );
   }
 }

@@ -227,5 +227,7 @@
   "mediaOpenExternally": "Open externally",
   "channelSubscribersCount": "{count} subscribers",
   "groupParticipantsCount": "{count} participants",
-  "mediaVideoLoadFailed": "Could not load video"
+  "mediaVideoLoadFailed": "Could not load video",
+  "settingsPrivacyTimingSection": "Session validity",
+  "settingsAppVersionTitle": "App build"
 }

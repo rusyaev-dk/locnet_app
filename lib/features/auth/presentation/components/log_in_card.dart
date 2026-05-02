@@ -83,11 +83,10 @@ class LogInCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _AuthFieldLabel(label: l10n.login.toUpperCase()),
-                const SizedBox(height: 6),
                 CustomTextField(
                   isActive: !isLoading,
                   controller: usernameController,
+                  labelText: l10n.login,
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
                   onSubmitted: (v) =>
@@ -104,11 +103,10 @@ class LogInCard extends StatelessWidget {
                       : null,
                 ),
                 const SizedBox(height: 16),
-                _AuthFieldLabel(label: l10n.password.toUpperCase()),
-                const SizedBox(height: 6),
                 CustomTextField(
                   isActive: !isLoading,
                   controller: passwordController,
+                  labelText: l10n.password,
                   obscureText: true,
                   textInputAction: TextInputAction.done,
                   onSubmitted: (v) =>
@@ -168,26 +166,6 @@ class LogInCard extends StatelessWidget {
 }
 
 // ── Shared helpers ────────────────────────────────────────────────────────────
-
-class _AuthFieldLabel extends StatelessWidget {
-  const _AuthFieldLabel({required this.label});
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = context.colorScheme;
-    return Text(
-      label,
-      style: TextStyle(
-        fontSize: 10,
-        fontWeight: FontWeight.w600,
-        color: colorScheme.onSurfaceVariant,
-        letterSpacing: 0.8,
-        height: 1.2,
-      ),
-    );
-  }
-}
 
 class _AuthTabSwitcher extends StatelessWidget {
   const _AuthTabSwitcher({required this.isSignIn});

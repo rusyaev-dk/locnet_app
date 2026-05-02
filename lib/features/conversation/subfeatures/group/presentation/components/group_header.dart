@@ -5,6 +5,7 @@ import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversation/presentation/presentation.dart';
 import 'package:locnet_app/features/conversation/subfeatures/conversation_tools/conversation_tools.dart';
 import 'package:locnet_app/features/conversation/subfeatures/group/group.dart';
+import 'package:locnet_app/uikit/uikit.dart';
 
 enum _GroupHeaderMenuAction {
   toggleNotifications,
@@ -54,7 +55,7 @@ class _GroupHeaderState extends State<GroupHeader> {
         );
       },
       trailingActions: [
-        _HeaderIconButton(
+        SurfaceIconButton(
           icon: Icons.search,
           onPressed: () {
             showConversationSearchSheet(
@@ -64,7 +65,7 @@ class _GroupHeaderState extends State<GroupHeader> {
             );
           },
         ),
-        _HeaderIconButton(
+        SurfaceIconButton(
           icon: Icons.photo_outlined,
           onPressed: () {
             showConversationSharedMediaSheet(
@@ -76,7 +77,14 @@ class _GroupHeaderState extends State<GroupHeader> {
         ),
       ],
       menuButton: PopupMenuButton<_GroupHeaderMenuAction>(
-        icon: const Icon(Icons.more_vert),
+        padding: EdgeInsets.zero,
+        child: const Material(
+          color: Colors.transparent,
+          child: SurfaceIconShell(
+            icon: Icons.more_vert,
+            margin: EdgeInsets.only(left: 6),
+          ),
+        ),
         onSelected: (action) async {
           // TODO: Implement GroupConversationOptionsCubit
           // final cubit = context.read<GroupConversationOptionsCubit>();
@@ -129,28 +137,6 @@ class _GroupHeaderState extends State<GroupHeader> {
             ),
           ];
         },
-      ),
-    );
-  }
-}
-
-class _HeaderIconButton extends StatelessWidget {
-  const _HeaderIconButton({required this.icon, required this.onPressed});
-
-  final IconData icon;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = context.colorScheme;
-
-    return Padding(
-      padding: const EdgeInsets.only(right: 4),
-      child: IconButton(
-        visualDensity: VisualDensity.compact,
-        iconSize: 20,
-        onPressed: onPressed,
-        icon: Icon(icon, color: colorScheme.onSurfaceVariant),
       ),
     );
   }

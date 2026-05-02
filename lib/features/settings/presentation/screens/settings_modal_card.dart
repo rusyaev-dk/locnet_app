@@ -134,22 +134,14 @@ class _SettingsViewState extends State<SettingsView> {
                 ),
               ),
               const Spacer(),
-              GestureDetector(
-                onTap: () => Navigator.of(context).pop(),
-                child: Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: colorScheme.secondary,
-                    border: Border.all(color: colorScheme.outline, width: 1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    Icons.close,
-                    size: 14,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
+              SurfaceIconButton(
+                icon: Icons.close,
+                dimension: 32,
+                iconSize: 14,
+                margin: EdgeInsets.zero,
+                foregroundColor: colorScheme.onSurfaceVariant,
+                tooltip: context.l10n.close,
+                onPressed: () => Navigator.of(context).pop(),
               ),
             ],
           ),

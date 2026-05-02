@@ -65,11 +65,14 @@ class ConversationInfoHeroHeader extends StatelessWidget {
         ),
         Align(
           alignment: Alignment.topRight,
-          child: RoundedIconButton(
+          child: SurfaceIconButton(
             icon: Icons.close,
+            dimension: 32,
+            iconSize: 14,
+            margin: EdgeInsets.zero,
             foregroundColor: colorScheme.onSurfaceVariant,
+            tooltip: context.l10n.close,
             onPressed: () => Navigator.of(context).maybePop(),
-            tooltip: 'Close',
           ),
         ),
       ],

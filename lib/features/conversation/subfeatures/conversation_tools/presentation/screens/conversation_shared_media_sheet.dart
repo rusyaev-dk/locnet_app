@@ -98,22 +98,11 @@ class _ConversationSharedMediaSheetState
                 ),
               ),
               const SizedBox(width: 8),
-              GestureDetector(
-                onTap: () => Navigator.of(context).maybePop(),
-                child: Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: colorScheme.secondary,
-                    border: Border.all(color: colorScheme.outline, width: 1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    Icons.close,
-                    size: 14,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
+              SurfaceIconButton(
+                icon: Icons.close,
+                onPressed: () => Navigator.of(context).maybePop(),
+                margin: EdgeInsets.zero,
+                tooltip: context.l10n.close,
               ),
             ],
           ),

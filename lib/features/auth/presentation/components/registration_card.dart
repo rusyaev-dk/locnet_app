@@ -103,66 +103,49 @@ class RegistrationCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _AuthFieldLabel(
-                                label: l10n.firstName.toUpperCase(),
-                              ),
-                              const SizedBox(height: 6),
-                              CustomTextField(
-                                isActive: !isLoading,
-                                controller: firstNameController,
-                                textInputAction: TextInputAction.next,
-                                onChanged: (v) =>
-                                    reg.updateFirstName(newFirstName: v),
-                                onFocusChange: (v) =>
-                                    reg.updateFirstName(newFirstName: v),
-                                errorText: reg.state.firstNameException != null
-                                    ? AuthExceptionsTranslator.translate(
-                                        context,
-                                        reg.state.firstNameException,
-                                      )
-                                    : null,
-                              ),
-                            ],
+                          child: CustomTextField(
+                            isActive: !isLoading,
+                            controller: firstNameController,
+                            labelText: l10n.firstName,
+                            textInputAction: TextInputAction.next,
+                            onChanged: (v) =>
+                                reg.updateFirstName(newFirstName: v),
+                            onFocusChange: (v) =>
+                                reg.updateFirstName(newFirstName: v),
+                            errorText: reg.state.firstNameException != null
+                                ? AuthExceptionsTranslator.translate(
+                                    context,
+                                    reg.state.firstNameException,
+                                  )
+                                : null,
                           ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _AuthFieldLabel(
-                                label: l10n.lastName.toUpperCase(),
-                              ),
-                              const SizedBox(height: 6),
-                              CustomTextField(
-                                isActive: !isLoading,
-                                controller: lastNameController,
-                                textInputAction: TextInputAction.next,
-                                onChanged: (v) =>
-                                    reg.updateLastName(newLastName: v),
-                                onFocusChange: (v) =>
-                                    reg.updateLastName(newLastName: v),
-                                errorText: reg.state.lastNameException != null
-                                    ? AuthExceptionsTranslator.translate(
-                                        context,
-                                        reg.state.lastNameException,
-                                      )
-                                    : null,
-                              ),
-                            ],
+                          child: CustomTextField(
+                            isActive: !isLoading,
+                            controller: lastNameController,
+                            labelText: l10n.lastName,
+                            textInputAction: TextInputAction.next,
+                            onChanged: (v) =>
+                                reg.updateLastName(newLastName: v),
+                            onFocusChange: (v) =>
+                                reg.updateLastName(newLastName: v),
+                            errorText: reg.state.lastNameException != null
+                                ? AuthExceptionsTranslator.translate(
+                                    context,
+                                    reg.state.lastNameException,
+                                  )
+                                : null,
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 16),
-                    _AuthFieldLabel(label: l10n.description.toUpperCase()),
-                    const SizedBox(height: 6),
                     CustomTextField(
                       isActive: !isLoading,
                       controller: descriptionController,
+                      labelText: l10n.description,
                       textInputAction: TextInputAction.next,
                       onChanged: (v) =>
                           reg.updateDescription(newUserDescription: v),
@@ -174,13 +157,15 @@ class RegistrationCard extends StatelessWidget {
                               reg.state.descriptionException,
                             )
                           : null,
+                      maxLines: 4,
+                      minLines: 2,
+                      expandable: true,
                     ),
                     const SizedBox(height: 16),
-                    _AuthFieldLabel(label: l10n.username.toUpperCase()),
-                    const SizedBox(height: 6),
                     CustomTextField(
                       isActive: !isLoading,
                       controller: usernameController,
+                      labelText: l10n.username,
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
                       onChanged: (v) => reg.updateUsername(newUsername: v),
@@ -193,11 +178,10 @@ class RegistrationCard extends StatelessWidget {
                           : null,
                     ),
                     const SizedBox(height: 16),
-                    _AuthFieldLabel(label: l10n.password.toUpperCase()),
-                    const SizedBox(height: 6),
                     CustomTextField(
                       isActive: !isLoading,
                       controller: passwordController,
+                      labelText: l10n.password,
                       obscureText: true,
                       textInputAction: TextInputAction.next,
                       onChanged: (v) => reg.updatePassword(newPassword: v),
@@ -215,11 +199,10 @@ class RegistrationCard extends StatelessWidget {
                       isActive: !isLoading,
                     ),
                     const SizedBox(height: 16),
-                    _AuthFieldLabel(label: l10n.repeatPassword.toUpperCase()),
-                    const SizedBox(height: 6),
                     CustomTextField(
                       isActive: !isLoading,
                       controller: repeatPasswordController,
+                      labelText: l10n.repeatPassword,
                       obscureText: true,
                       textInputAction: TextInputAction.done,
                       onChanged: (v) =>
@@ -262,27 +245,7 @@ class RegistrationCard extends StatelessWidget {
   }
 }
 
-// ── Shared helpers (tab switcher, field label) ────────────────────────────────
-
-class _AuthFieldLabel extends StatelessWidget {
-  const _AuthFieldLabel({required this.label});
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = context.colorScheme;
-    return Text(
-      label,
-      style: TextStyle(
-        fontSize: 10,
-        fontWeight: FontWeight.w600,
-        color: colorScheme.onSurfaceVariant,
-        letterSpacing: 0.8,
-        height: 1.2,
-      ),
-    );
-  }
-}
+// ── Shared helpers (tab switcher) ───────────────────────────────────────────
 
 class _AuthTabSwitcher extends StatelessWidget {
   const _AuthTabSwitcher({required this.isSignIn});

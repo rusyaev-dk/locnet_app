@@ -52,11 +52,14 @@ class CompanionInfoHeader extends StatelessWidget {
         ),
         Align(
           alignment: Alignment.topRight,
-          child: RoundedIconButton(
+          child: SurfaceIconButton(
             icon: Icons.close,
+            dimension: 32,
+            iconSize: 14,
+            margin: EdgeInsets.zero,
             foregroundColor: colorScheme.onSurfaceVariant,
-            onPressed: () => GoRouter.of(context).pop(),
             tooltip: l10n.close,
+            onPressed: () => GoRouter.of(context).pop(),
           ),
         ),
       ],

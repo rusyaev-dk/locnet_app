@@ -2058,6 +2058,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Срок действия сессии`
+  String get settingsPrivacyTimingSection {
+    return Intl.message(
+      'Срок действия сессии',
+      name: 'settingsPrivacyTimingSection',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Сборка`
+  String get settingsAppVersionTitle {
+    return Intl.message(
+      'Сборка',
+      name: 'settingsAppVersionTitle',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

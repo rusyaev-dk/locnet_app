@@ -5,7 +5,7 @@ import 'package:locnet_app/features/conversation/presentation/presentation.dart'
 /// Base layout for conversation headers (private, group, channel).
 ///
 /// Provides:
-/// - Left: avatar (38px) with online dot + name + status.
+/// - Left: avatar (38px), name + status (no online dot on avatar).
 /// - Right: custom trailing actions + overflow menu.
 class ConversationProfileHeaderBase extends StatelessWidget {
   const ConversationProfileHeaderBase({
@@ -25,7 +25,7 @@ class ConversationProfileHeaderBase extends StatelessWidget {
   final bool? isOnline;
   final VoidCallback onTap;
 
-  /// Small icon buttons (e.g. phone, video, info) placed before the menu button.
+  /// Small icon buttons placed before the menu button.
   final List<Widget> trailingActions;
 
   /// Typically a [PopupMenuButton] configured by the caller.
@@ -57,7 +57,7 @@ class ConversationProfileHeaderBase extends StatelessWidget {
               child: ConversationAvatar(
                 text: avatarText,
                 size: 38,
-                isOnline: isOnline,
+                isOnline: null,
               ),
             ),
           ),
@@ -81,32 +81,17 @@ class ConversationProfileHeaderBase extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 2),
-                  Row(
-                    children: [
-                      Container(
-                        width: 6,
-                        height: 6,
-                        margin: const EdgeInsets.only(right: 4),
-                        decoration: BoxDecoration(
-                          color: online
-                              ? _onlineColor
-                              : colorScheme.onSurfaceVariant,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      Text(
-                        online
-                            ? context.l10n.companionStatusOnline
-                            : (subtitle ?? context.l10n.companionStatusOffline),
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: online
-                              ? _onlineColor
-                              : colorScheme.onSurfaceVariant,
-                          height: 1.2,
-                        ),
-                      ),
-                    ],
+                  Text(
+                    online
+                        ? context.l10n.companionStatusOnline
+                        : (subtitle ?? context.l10n.companionStatusOffline),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: online
+                          ? _onlineColor
+                          : colorScheme.onSurfaceVariant,
+                      height: 1.2,
+                    ),
                   ),
                 ],
               ),
@@ -116,37 +101,6 @@ class ConversationProfileHeaderBase extends StatelessWidget {
           ...trailingActions,
           if (menuButton != null) menuButton!,
         ],
-      ),
-    );
-  }
-}
-
-/// A styled header action button (34×34, secondary bg, outline border, radius 8).
-class HeaderActionButton extends StatelessWidget {
-  const HeaderActionButton({
-    required this.icon,
-    required this.onPressed,
-    super.key,
-  });
-
-  final IconData icon;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = context.colorScheme;
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        width: 34,
-        height: 34,
-        margin: const EdgeInsets.only(left: 6),
-        decoration: BoxDecoration(
-          color: colorScheme.secondary,
-          border: Border.all(color: colorScheme.outline, width: 1),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Icon(icon, size: 16, color: colorScheme.onSurfaceVariant),
       ),
     );
   }

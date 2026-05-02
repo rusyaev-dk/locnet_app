@@ -227,5 +227,7 @@
   "mediaOpenExternally": "Открыть во внешнем приложении",
   "channelSubscribersCount": "{count} подписчиков",
   "groupParticipantsCount": "{count} участников",
-  "mediaVideoLoadFailed": "Не удалось загрузить видео"
+  "mediaVideoLoadFailed": "Не удалось загрузить видео",
+  "settingsPrivacyTimingSection": "Срок действия сессии",
+  "settingsAppVersionTitle": "Сборка"
 }

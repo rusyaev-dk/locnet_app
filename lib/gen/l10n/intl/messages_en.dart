@@ -338,6 +338,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "settingsAllowPush": MessageLookupByLibrary.simpleMessage(
       "Push notifications",
     ),
+    "settingsAppVersionTitle": MessageLookupByLibrary.simpleMessage(
+      "App build",
+    ),
     "settingsAutoScroll": MessageLookupByLibrary.simpleMessage(
       "Scroll to new messages",
     ),
@@ -392,6 +395,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "settingsPrivacy": MessageLookupByLibrary.simpleMessage("Privacy"),
     "settingsPrivacyPlaceholder": MessageLookupByLibrary.simpleMessage(
       "Session and security",
+    ),
+    "settingsPrivacyTimingSection": MessageLookupByLibrary.simpleMessage(
+      "Session validity",
     ),
     "settingsPushSection": MessageLookupByLibrary.simpleMessage("Push"),
     "settingsSaveDrafts": MessageLookupByLibrary.simpleMessage("Save drafts"),

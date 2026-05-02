@@ -46,57 +46,45 @@ class ProfileEditorForm extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _FormField(
-          label: 'DISPLAY NAME',
-          child: CustomTextField(
-            controller: firstNameController,
-            labelText: l10n.firstName,
-            textInputAction: TextInputAction.next,
-            errorText: firstNameError,
-            isActive: !isSubmitting,
-            onChanged: onFirstNameChanged,
-            onFocusChange: onFirstNameChanged,
-          ),
+        CustomTextField(
+          controller: firstNameController,
+          labelText: l10n.firstName,
+          textInputAction: TextInputAction.next,
+          errorText: firstNameError,
+          isActive: !isSubmitting,
+          onChanged: onFirstNameChanged,
+          onFocusChange: onFirstNameChanged,
         ),
         const SizedBox(height: 16),
-        _FormField(
-          label: 'LAST NAME',
-          child: CustomTextField(
-            controller: lastNameController,
-            labelText: l10n.lastName,
-            textInputAction: TextInputAction.next,
-            errorText: lastNameError,
-            isActive: !isSubmitting,
-            onChanged: onLastNameChanged,
-            onFocusChange: onLastNameChanged,
-          ),
+        CustomTextField(
+          controller: lastNameController,
+          labelText: l10n.lastName,
+          textInputAction: TextInputAction.next,
+          errorText: lastNameError,
+          isActive: !isSubmitting,
+          onChanged: onLastNameChanged,
+          onFocusChange: onLastNameChanged,
         ),
         const SizedBox(height: 16),
-        _FormField(
-          label: 'USERNAME',
-          child: CustomTextField(
-            controller: usernameController,
-            labelText: l10n.username,
-            textInputAction: TextInputAction.next,
-            errorText: usernameError,
-            isActive: !isSubmitting,
-            onChanged: onUsernameChanged,
-            onFocusChange: onUsernameChanged,
-          ),
+        CustomTextField(
+          controller: usernameController,
+          labelText: l10n.username,
+          textInputAction: TextInputAction.next,
+          errorText: usernameError,
+          isActive: !isSubmitting,
+          onChanged: onUsernameChanged,
+          onFocusChange: onUsernameChanged,
         ),
         const SizedBox(height: 16),
-        _FormField(
-          label: 'ABOUT',
-          child: CustomTextField(
-            controller: descriptionController,
-            labelText: l10n.description,
-            maxLines: 4,
-            minLines: 2,
-            expandable: true,
-            isActive: !isSubmitting,
-            onChanged: onDescriptionChanged,
-            onFocusChange: onDescriptionChanged,
-          ),
+        CustomTextField(
+          controller: descriptionController,
+          labelText: l10n.description,
+          maxLines: 4,
+          minLines: 2,
+          expandable: true,
+          isActive: !isSubmitting,
+          onChanged: onDescriptionChanged,
+          onFocusChange: onDescriptionChanged,
         ),
         if (screenError != null) ...[
           const SizedBox(height: 10),
@@ -129,35 +117,6 @@ class ProfileEditorForm extends StatelessWidget {
             ),
           ],
         ),
-      ],
-    );
-  }
-}
-
-class _FormField extends StatelessWidget {
-  const _FormField({required this.label, required this.child});
-
-  final String label;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = context.colorScheme;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 10,
-            fontWeight: FontWeight.w600,
-            color: colorScheme.onSurfaceVariant,
-            letterSpacing: 0.8,
-            height: 1.2,
-          ),
-        ),
-        const SizedBox(height: 6),
-        child,
       ],
     );
   }

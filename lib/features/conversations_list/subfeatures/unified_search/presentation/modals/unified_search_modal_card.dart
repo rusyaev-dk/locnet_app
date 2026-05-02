@@ -309,22 +309,19 @@ class _UnifiedSearchModalCardState extends State<UnifiedSearchModalCard> {
                       ),
                       child: Row(
                         children: [
-                          _KeyHint(
-                            icon: '↵',
-                            label: 'Select',
-                            colorScheme: colorScheme,
+                          ModalKeyboardHint(
+                            keyLabel: '↵',
+                            description: 'Select',
                           ),
                           const SizedBox(width: 12),
-                          _KeyHint(
-                            icon: '↑↓',
-                            label: 'Navigate',
-                            colorScheme: colorScheme,
+                          ModalKeyboardHint(
+                            keyLabel: '↑↓',
+                            description: 'Navigate',
                           ),
                           const SizedBox(width: 12),
-                          _KeyHint(
-                            icon: 'Esc',
-                            label: 'Close',
-                            colorScheme: colorScheme,
+                          ModalKeyboardHint(
+                            keyLabel: 'Esc',
+                            description: 'Close',
                           ),
                         ],
                       ),
@@ -696,53 +693,6 @@ class _HighlightedText extends StatelessWidget {
 }
 
 // ── Keyboard hint chip ────────────────────────────────────────────────────────
-
-class _KeyHint extends StatelessWidget {
-  const _KeyHint({
-    required this.icon,
-    required this.label,
-    required this.colorScheme,
-  });
-
-  final String icon;
-  final String label;
-  final AppColorScheme colorScheme;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-          decoration: BoxDecoration(
-            color: colorScheme.surfaceContainer,
-            border: Border.all(color: colorScheme.outline, width: 1),
-            borderRadius: BorderRadius.circular(5),
-          ),
-          child: Text(
-            icon,
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-              color: colorScheme.onSurfaceVariant,
-              height: 1.2,
-            ),
-          ),
-        ),
-        const SizedBox(width: 5),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 11,
-            color: colorScheme.onSurfaceVariant,
-            height: 1.2,
-          ),
-        ),
-      ],
-    );
-  }
-}
 
 // ── Empty / initial placeholder ───────────────────────────────────────────────
 

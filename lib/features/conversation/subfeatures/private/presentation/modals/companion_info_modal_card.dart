@@ -54,25 +54,14 @@ class CompanionInfoModalCard extends StatelessWidget {
                 Positioned(
                   top: 8,
                   right: 8,
-                  child: GestureDetector(
-                    onTap: () => Navigator.of(context).pop(),
-                    child: Container(
-                      width: 28,
-                      height: 28,
-                      decoration: BoxDecoration(
-                        color: colorScheme.secondary,
-                        border: Border.all(
-                          color: colorScheme.outline,
-                          width: 1,
-                        ),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Icon(
-                        Icons.close,
-                        size: 14,
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
+                  child: SurfaceIconButton(
+                    icon: Icons.close,
+                    dimension: 28,
+                    iconSize: 14,
+                    margin: EdgeInsets.zero,
+                    foregroundColor: colorScheme.onSurfaceVariant,
+                    tooltip: context.l10n.close,
+                    onPressed: () => Navigator.of(context).pop(),
                   ),
                 ),
               ],
@@ -86,7 +75,7 @@ class CompanionInfoModalCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ConversationAvatar(text: initials, size: 80, isOnline: true),
+                  ConversationAvatar(text: initials, size: 80),
                   const SizedBox(height: 10),
                   Text(
                     fullName,
@@ -107,26 +96,13 @@ class CompanionInfoModalCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Container(
-                        width: 7,
-                        height: 7,
-                        margin: const EdgeInsets.only(right: 5),
-                        decoration: const BoxDecoration(
-                          color: _onlineColor,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      Text(
-                        context.l10n.companionStatusOnline,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: _onlineColor,
-                          height: 1.2,
-                        ),
-                      ),
-                    ],
+                  Text(
+                    context.l10n.companionStatusOnline,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: _onlineColor,
+                      height: 1.2,
+                    ),
                   ),
                 ],
               ),
@@ -156,7 +132,7 @@ class CompanionInfoModalCard extends StatelessWidget {
                       if ((companion.description ?? '').trim().isNotEmpty) ...[
                         const SizedBox(height: 8),
                         _InfoRow(
-                          icon: Icons.info_outline,
+                          icon: Icons.article_outlined,
                           label: context.l10n.companionFieldAbout,
                           value: companion.description!.trim(),
                           colorScheme: colorScheme,
@@ -169,37 +145,12 @@ class CompanionInfoModalCard extends StatelessWidget {
                 // ── Action row ────────────────────────────────────────
                 Padding(
                   padding: const EdgeInsets.all(16),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: _ActionButton(
-                          icon: Icons.call_outlined,
-                          label: context.l10n.companionActionCall,
-                          onPressed: () {},
-                          colorScheme: colorScheme,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: _ActionButton(
-                          icon: Icons.videocam_outlined,
-                          label: context.l10n.companionActionVideo,
-                          onPressed: () {},
-                          colorScheme: colorScheme,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        flex: 2,
-                        child: _ActionButton(
-                          icon: Icons.chat_bubble_outline,
-                          label: context.l10n.companionActionMessage,
-                          onPressed: () => Navigator.of(context).pop(),
-                          colorScheme: colorScheme,
-                          isPrimary: true,
-                        ),
-                      ),
-                    ],
+                  child: _ActionButton(
+                    icon: Icons.chat_bubble_outline,
+                    label: context.l10n.companionActionMessage,
+                    onPressed: () => Navigator.of(context).pop(),
+                    colorScheme: colorScheme,
+                    isPrimary: true,
                   ),
                 ),
               ],
@@ -273,81 +224,51 @@ class _ActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(
-          color: isPrimary ? colorScheme.primary : colorScheme.secondary,
-          border: Border.all(color: colorScheme.outline, width: 1),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 18,
-              color: isPrimary ? Colors.white : colorScheme.onSurfaceVariant,
+    final Color bg = isPrimary ? colorScheme.primary : colorScheme.secondary;
+    final BorderRadius br = BorderRadius.circular(8);
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: br,
+          hoverColor: colorScheme.onSurface.withValues(alpha: 0.08),
+          splashColor: colorScheme.primary.withValues(alpha: 0.15),
+          child: Ink(
+            decoration: BoxDecoration(
+              color: bg,
+              border: Border.all(color: colorScheme.outline, width: 1),
+              borderRadius: br,
             ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 11,
-                color: isPrimary ? Colors.white : colorScheme.onSurfaceVariant,
-                height: 1.2,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    icon,
+                    size: 18,
+                    color: isPrimary ? Colors.white : colorScheme.onSurfaceVariant,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: isPrimary
+                          ? Colors.white
+                          : colorScheme.onSurfaceVariant,
+                      height: 1.2,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
+          ),
         ),
       ),
-    );
-  }
-}
-
-class CompanionInfoActionRow extends StatelessWidget {
-  const CompanionInfoActionRow({
-    required this.onChatPressed,
-    required this.onMutePressed,
-    required this.onCallPressed,
-    required this.onMorePressed,
-    super.key,
-  });
-
-  final VoidCallback onChatPressed;
-  final VoidCallback onMutePressed;
-  final VoidCallback onCallPressed;
-  final VoidCallback onMorePressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: ConversationInfoActionButton(
-            icon: Icons.chat_bubble_outline,
-            label: 'Chat',
-            onPressed: onChatPressed,
-          ),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: ConversationInfoActionButton(
-            icon: Icons.call_outlined,
-            label: 'Call',
-            onPressed: onCallPressed,
-          ),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: ConversationInfoActionButton(
-            icon: Icons.more_horiz,
-            label: 'More',
-            onPressed: onMorePressed,
-          ),
-        ),
-      ],
     );
   }
 }

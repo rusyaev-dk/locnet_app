@@ -15,6 +15,7 @@ import 'package:locnet_app/features/message/subfeatures/message_selection/presen
 import 'package:locnet_app/features/message/subfeatures/message_selection/presentation/components/messages_selection_app_bar.dart';
 import 'package:locnet_app/features/message/subfeatures/message_selection/presentation/modals/forward_target_picker_modal_card.dart';
 import 'package:locnet_app/features/conversations_list/domain/domain.dart';
+import 'package:locnet_app/uikit/uikit.dart';
 
 class GroupConversationScreenWrapper extends StatelessWidget {
   const GroupConversationScreenWrapper({
@@ -384,8 +385,13 @@ class _GroupConversationScreenState extends State<GroupConversationScreen> {
                     ],
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.close),
+                SurfaceIconButton(
+                  variant: SurfaceIconVariant.ghost,
+                  icon: Icons.close,
+                  margin: EdgeInsets.zero,
+                  dimension: 32,
+                  iconSize: 20,
+                  tooltip: l10n.close,
                   onPressed: () {
                     setState(() {
                       _replyTo = null;

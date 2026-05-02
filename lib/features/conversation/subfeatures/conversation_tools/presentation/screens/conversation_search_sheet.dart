@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/features/conversation/domain/domain.dart';
@@ -87,7 +88,7 @@ class _ConversationSearchSheetState extends State<ConversationSearchSheet> {
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
-    final radii = context.radii;
+    final l10n = context.l10n;
     final hasQuery = _query.isNotEmpty;
     final List<_SearchResultItem> results = _buildResults(context);
     final int totalResults = results.length;
@@ -95,115 +96,153 @@ class _ConversationSearchSheetState extends State<ConversationSearchSheet> {
         ? 0
         : _currentResult.clamp(0, totalResults - 1);
 
-    return Column(
-      children: [
-        // ── Header: search field + close ──────────────────────────────
-        Padding(
-          padding: const EdgeInsets.fromLTRB(14, 10, 6, 10),
-          child: Row(
-            children: [
-              Expanded(
-                child: Container(
-                  height: 34,
-                  decoration: BoxDecoration(
-                    color: colorScheme.surfaceContainerHigh,
-                    borderRadius: radii.defaultRadiusValue,
-                  ),
+    return CallbackShortcuts(
+      bindings: {
+        const SingleActivator(LogicalKeyboardKey.escape): () =>
+            Navigator.of(context).maybePop(),
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // ── Search bar (aligned with [UnifiedSearchModalCard]) ─────
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(color: colorScheme.outline),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.search,
+                  size: 20,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
                   child: TextField(
                     controller: _controller,
                     focusNode: _focusNode,
                     autofocus: true,
                     textAlignVertical: TextAlignVertical.center,
-                    style: textScheme.body.copyWith(
+                    style: TextStyle(
+                      fontSize: 15,
                       color: colorScheme.onSurface,
-                      fontSize: 14,
+                      height: 1.2,
                     ),
                     decoration: InputDecoration(
-                      isDense: true,
+                      hintText: 'Search messages in this conversation…',
+                      hintStyle: TextStyle(
+                        fontSize: 15,
+                        color: colorScheme.onSurfaceVariant,
+                        height: 1.2,
+                      ),
                       border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      isDense: true,
                       contentPadding: EdgeInsets.zero,
-                      prefixIcon: Icon(
-                        Icons.search_rounded,
-                        size: 18,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                ValueListenableBuilder<TextEditingValue>(
+                  valueListenable: _controller,
+                  builder: (_, value, _) {
+                    if (value.text.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+                    return SurfaceIconButton(
+                      icon: Icons.close,
+                      onPressed: _clear,
+                      dimension: 28,
+                      iconSize: 13,
+                      margin: const EdgeInsets.only(right: 6),
+                      tooltip: l10n.clear,
+                      foregroundColor: colorScheme.onSurfaceVariant,
+                    );
+                  },
+                ),
+                GestureDetector(
+                  onTap: () => Navigator.of(context).maybePop(),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainer,
+                      border: Border.all(color: colorScheme.outline),
+                      borderRadius: BorderRadius.circular(7),
+                    ),
+                    child: Text(
+                      'Esc',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
                         color: colorScheme.onSurfaceVariant,
-                      ),
-                      suffixIcon: hasQuery
-                          ? GestureDetector(
-                              onTap: _clear,
-                              child: Icon(
-                                Icons.close_rounded,
-                                size: 16,
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                            )
-                          : null,
-                      hintText: 'Search in conversation',
-                      hintStyle: textScheme.body.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                        fontSize: 14,
+                        height: 1.2,
                       ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 2),
-              // Close button — same as ConversationInfoHeroHeader
-              RoundedIconButton(
-                icon: Icons.close,
-                foregroundColor: colorScheme.onSurfaceVariant,
-                onPressed: () => Navigator.of(context).maybePop(),
-                tooltip: 'Close',
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
 
-        Divider(height: 1, thickness: 1, color: colorScheme.outlineVariant),
+          Expanded(
+            child: hasQuery
+                ? _ResultsBody(
+                    query: _query,
+                    activeResultIndex: activeResultIndex,
+                    results: results,
+                    onResultTap: (item) => _selectResult(item, closeSheet: true),
+                    colorScheme: colorScheme,
+                    textScheme: textScheme,
+                  )
+                : _ConversationSearchEmptyState(colorScheme: colorScheme),
+          ),
 
-        // ── Body ──────────────────────────────────────────────────────
-        Expanded(
-          child: hasQuery
-              ? _ResultsBody(
-                  query: _query,
-                  activeResultIndex: activeResultIndex,
-                  results: results,
-                  onResultTap: (item) => _selectResult(item, closeSheet: true),
-                  colorScheme: colorScheme,
-                  textScheme: textScheme,
-                )
-              : Center(
-                  child: Text(
-                    'Type to search messages',
-                    style: textScheme.caption.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-        ),
+          if (hasQuery)
+            _SearchNavBar(
+              current: totalResults == 0 ? 0 : activeResultIndex + 1,
+              total: totalResults,
+              onPrev: () {
+                _prevResult(totalResults);
+                if (totalResults > 0) {
+                  _selectResult(results[_currentResult], closeSheet: false);
+                }
+              },
+              onNext: () {
+                _nextResult(totalResults);
+                if (totalResults > 0) {
+                  _selectResult(results[_currentResult], closeSheet: false);
+                }
+              },
+              colorScheme: colorScheme,
+              textScheme: textScheme,
+            ),
 
-        // ── Navigation bar ────────────────────────────────────────────
-        if (hasQuery) ...[
-          Divider(height: 1, thickness: 1, color: colorScheme.outlineVariant),
-          _SearchNavBar(
-            current: totalResults == 0 ? 0 : activeResultIndex + 1,
-            total: totalResults,
-            onPrev: () {
-              _prevResult(totalResults);
-              if (totalResults > 0) {
-                _selectResult(results[_currentResult], closeSheet: false);
-              }
-            },
-            onNext: () {
-              _nextResult(totalResults);
-              if (totalResults > 0) {
-                _selectResult(results[_currentResult], closeSheet: false);
-              }
-            },
-            colorScheme: colorScheme,
-            textScheme: textScheme,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(color: colorScheme.outline),
+              ),
+            ),
+            child: Row(
+              children: const [
+                ModalKeyboardHint(keyLabel: '↵', description: 'Select'),
+                SizedBox(width: 12),
+                ModalKeyboardHint(keyLabel: '↑↓', description: 'Navigate'),
+                SizedBox(width: 12),
+                ModalKeyboardHint(keyLabel: 'Esc', description: 'Close'),
+              ],
+            ),
           ),
         ],
-      ],
+      ),
     );
   }
 
@@ -259,6 +298,53 @@ class _ConversationSearchSheetState extends State<ConversationSearchSheet> {
       return 'Yesterday';
     }
     return '$daysAgo days ago';
+  }
+}
+
+// ── Empty state (no query) ───────────────────────────────────────────────────
+
+class _ConversationSearchEmptyState extends StatelessWidget {
+  const _ConversationSearchEmptyState({required this.colorScheme});
+
+  final AppColorScheme colorScheme;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.search_rounded,
+              size: 36,
+              color: colorScheme.onSurfaceVariant,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Search messages in this chat',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: colorScheme.onSurface,
+                height: 1.2,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Type a query to find messages in this conversation.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13,
+                color: colorScheme.onSurfaceVariant,
+                height: 1.2,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -496,37 +582,50 @@ class _SearchNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool hasResults = total > 0;
-    return SizedBox(
-      height: 42,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14),
-        child: Row(
-          children: [
-            Text(
-              '$current of $total',
-              style: textScheme.caption.copyWith(
-                color: colorScheme.onSurfaceVariant,
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(color: colorScheme.outline),
+        ),
+      ),
+      child: SizedBox(
+        height: 42,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          child: Row(
+            children: [
+              Text(
+                '$current of $total',
+                style: textScheme.caption.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ),
-            ),
-            const Spacer(),
-            RoundedIconButton(
-              icon: Icons.keyboard_arrow_up_rounded,
-              foregroundColor: current > 1
-                  ? colorScheme.primary
-                  : colorScheme.onSurfaceVariant.withAlpha(80),
-              onPressed: hasResults ? onPrev : () {},
-              iconSize: 22,
-            ),
-            const SizedBox(width: 2),
-            RoundedIconButton(
-              icon: Icons.keyboard_arrow_down_rounded,
-              foregroundColor: current < total
-                  ? colorScheme.primary
-                  : colorScheme.onSurfaceVariant.withAlpha(80),
-              onPressed: hasResults ? onNext : () {},
-              iconSize: 22,
-            ),
-          ],
+              const Spacer(),
+              SurfaceIconButton(
+                variant: SurfaceIconVariant.ghost,
+                icon: Icons.keyboard_arrow_up_rounded,
+                dimension: 34,
+                iconSize: 22,
+                margin: EdgeInsets.zero,
+                foregroundColor: current > 1
+                    ? colorScheme.primary
+                    : colorScheme.onSurfaceVariant.withAlpha(80),
+                onPressed: hasResults ? onPrev : () {},
+              ),
+              const SizedBox(width: 2),
+              SurfaceIconButton(
+                variant: SurfaceIconVariant.ghost,
+                icon: Icons.keyboard_arrow_down_rounded,
+                dimension: 34,
+                iconSize: 22,
+                margin: EdgeInsets.zero,
+                foregroundColor: current < total
+                    ? colorScheme.primary
+                    : colorScheme.onSurfaceVariant.withAlpha(80),
+                onPressed: hasResults ? onNext : () {},
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -55,12 +55,15 @@ class EmojiSelectorHeader extends StatelessWidget {
           ),
           const SizedBox(width: 8),
 
-          RoundedIconButton(
+          SurfaceIconButton(
+            variant: SurfaceIconVariant.ghost,
             icon: Icons.close,
-            onPressed: onClose,
-            buttonSize: 33,
+            dimension: 33,
             iconSize: 20,
+            margin: EdgeInsets.zero,
             foregroundColor: colorScheme.onSurfaceVariant.withAlpha(160),
+            tooltip: l10n.close,
+            onPressed: onClose,
           ),
         ],
       ),

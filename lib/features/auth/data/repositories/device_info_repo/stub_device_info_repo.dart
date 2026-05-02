@@ -1,9 +1,9 @@
 // device_info_repo_stub.dart
-import 'package:locnet_app/features/auth/data/data.dart';
+import 'package:locnet_app/features/auth/data/repositories/device_info_repo/i_device_info_repo.dart';
 import 'package:locnet_app/features/auth/domain/domain.dart';
 
-final class DeviceInfoRepo implements IDeviceInfoRepo {
-  const DeviceInfoRepo();
+final class StubDeviceInfoRepo implements IDeviceInfoRepo {
+  const StubDeviceInfoRepo();
 
   @override
   Future<DeviceInfo> getDeviceInfo() async {

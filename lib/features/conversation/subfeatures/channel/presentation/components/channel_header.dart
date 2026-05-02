@@ -4,8 +4,8 @@ import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/conversation/subfeatures/channel/channel.dart';
 import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversation/presentation/presentation.dart';
-import 'package:locnet_app/features/conversation/subfeatures/channel/presentation/modals/channel_info_modal_card.dart';
 import 'package:locnet_app/features/conversation/subfeatures/conversation_tools/conversation_tools.dart';
+import 'package:locnet_app/uikit/uikit.dart';
 
 enum _ChannelHeaderMenuAction {
   toggleNotifications,
@@ -53,7 +53,7 @@ class _ChannelHeaderState extends State<ChannelHeader> {
         );
       },
       trailingActions: [
-        _HeaderIconButton(
+        SurfaceIconButton(
           icon: Icons.search,
           onPressed: () {
             showConversationSearchSheet(
@@ -63,7 +63,7 @@ class _ChannelHeaderState extends State<ChannelHeader> {
             );
           },
         ),
-        _HeaderIconButton(
+        SurfaceIconButton(
           icon: Icons.photo_outlined,
           onPressed: () {
             showConversationSharedMediaSheet(
@@ -75,7 +75,14 @@ class _ChannelHeaderState extends State<ChannelHeader> {
         ),
       ],
       menuButton: PopupMenuButton<_ChannelHeaderMenuAction>(
-        icon: const Icon(Icons.more_vert),
+        padding: EdgeInsets.zero,
+        child: const Material(
+          color: Colors.transparent,
+          child: SurfaceIconShell(
+            icon: Icons.more_vert,
+            margin: EdgeInsets.only(left: 6),
+          ),
+        ),
         onSelected: (action) async {
           switch (action) {
             case _ChannelHeaderMenuAction.toggleNotifications:
@@ -113,29 +120,6 @@ class _ChannelHeaderState extends State<ChannelHeader> {
             ),
           ];
         },
-      ),
-    );
-  }
-}
-
-class _HeaderIconButton extends StatelessWidget {
-  const _HeaderIconButton({required this.icon, required this.onPressed});
-
-  final IconData icon;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = context.colorScheme;
-
-    return Padding(
-      padding: const EdgeInsets.only(right: 4),
-      child: IconButton(
-        tooltip: null,
-        visualDensity: VisualDensity.compact,
-        iconSize: 20,
-        onPressed: onPressed,
-        icon: Icon(icon, color: colorScheme.onSurfaceVariant),
       ),
     );
   }

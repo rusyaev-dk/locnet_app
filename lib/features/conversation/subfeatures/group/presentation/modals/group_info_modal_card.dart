@@ -59,7 +59,7 @@ class GroupInfoModalCard extends StatelessWidget {
                         AppTileButton(
                           title: 'Description',
                           value: description,
-                          icon: Icons.info_outline,
+                          icon: Icons.article_outlined,
                           onPressed: () {},
                         ),
                     ],

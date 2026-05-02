@@ -65,19 +65,34 @@ class ChipButton extends StatelessWidget {
       height: height ?? 32,
       child: TextButton(
         onPressed: onPressed,
-        style: TextButton.styleFrom(
-          padding: resolvedPadding,
-          minimumSize: const Size(0, 0),
-          backgroundColor: resolvedBackground,
-          shape: RoundedRectangleBorder(
-            borderRadius: resolvedBorderRadius,
-            side: resolvedBorderColor != null
-                ? BorderSide(
-                    color: resolvedBorderColor,
-                    width: resolvedBorderWidth,
-                  )
-                : BorderSide.none,
+        style: ButtonStyle(
+          padding: WidgetStatePropertyAll(resolvedPadding),
+          minimumSize: const WidgetStatePropertyAll(Size(0, 0)),
+          backgroundColor: WidgetStateProperty.resolveWith((Set<WidgetState> s) {
+            if (s.contains(WidgetState.hovered) ||
+                s.contains(WidgetState.focused)) {
+              return Color.alphaBlend(
+                colorScheme.onSurface.withValues(alpha: 0.08),
+                resolvedBackground,
+              );
+            }
+            return resolvedBackground;
+          }),
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(
+              borderRadius: resolvedBorderRadius,
+              side: resolvedBorderColor != null
+                  ? BorderSide(
+                      color: resolvedBorderColor,
+                      width: resolvedBorderWidth,
+                    )
+                  : BorderSide.none,
+            ),
           ),
+          overlayColor: WidgetStatePropertyAll(
+            colorScheme.primary.withValues(alpha: 0.08),
+          ),
+          foregroundColor: WidgetStatePropertyAll(resolvedTextColor),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

@@ -362,6 +362,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "settingsAllowPush": MessageLookupByLibrary.simpleMessage(
       "Push-bildirishnomalar",
     ),
+    "settingsAppVersionTitle": MessageLookupByLibrary.simpleMessage("Yigʻma"),
     "settingsAutoScroll": MessageLookupByLibrary.simpleMessage(
       "Yangilariga aylantirish",
     ),
@@ -422,6 +423,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "settingsPrivacy": MessageLookupByLibrary.simpleMessage("Maxfiylik"),
     "settingsPrivacyPlaceholder": MessageLookupByLibrary.simpleMessage(
       "Sessiya va xavfsizlik",
+    ),
+    "settingsPrivacyTimingSection": MessageLookupByLibrary.simpleMessage(
+      "Sessiya muddati",
     ),
     "settingsPushSection": MessageLookupByLibrary.simpleMessage("Push"),
     "settingsSaveDrafts": MessageLookupByLibrary.simpleMessage(

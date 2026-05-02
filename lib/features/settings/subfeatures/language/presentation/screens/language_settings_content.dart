@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/features/settings/presentation/blocs/blocs.dart';
 import 'package:locnet_app/features/settings/presentation/components/components.dart';
-import 'package:locnet_app/features/settings/subfeatures/language/presentation/components/components.dart';
 
 /// Interface language.
 class LanguageSettingsContent extends StatelessWidget {
