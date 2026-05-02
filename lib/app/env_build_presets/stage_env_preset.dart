@@ -1,14 +1,19 @@
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/data/data.dart';
+import 'package:locnet_app/core/data/storage/db/db.dart';
 import 'package:locnet_app/di/di.dart';
 import 'package:locnet_app/features/auth/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/channel/data/repositories/channel_repo/i_channel_repo.dart';
 import 'package:locnet_app/features/conversation/subfeatures/group/data/repositories/group_repo/i_group_repo.dart';
+import 'package:locnet_app/features/conversation/subfeatures/private/data/repositories/private_conversation_repo/drift_cached_private_conversation_repo.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/data/repositories/private_conversation_repo/http_private_conversation_repo.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/data/repositories/private_conversation_repo/i_private_conversation_repo.dart';
 import 'package:locnet_app/features/conversations_list/data/data.dart';
+import 'package:locnet_app/features/conversations_list/data/repositories/conversations_list_repo/drift_cached_conversations_list_repo.dart';
 import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/data/data.dart';
 import 'package:locnet_app/features/message/data/data.dart';
+import 'package:locnet_app/features/message/subfeatures/media/data/repositories/media_download_cache_repo/drift_media_download_cache_repo.dart';
+import 'package:locnet_app/features/message/subfeatures/media/data/repositories/media_download_cache_repo/i_media_download_cache_repo.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
 import 'package:locnet_app/features/settings/domain/domain.dart';
 import 'package:locnet_app/features/theme_editor/data/data.dart';
@@ -24,6 +29,8 @@ final class StageEnvPreset implements IAppEnvPreset {
 
   final AppScope _appScope;
   final IHttpClient _httpClient;
+
+  AppDatabase get _db => _appScope.db;
 
   @override
   IAuthRepo createAuthRepo() {
@@ -53,13 +60,16 @@ final class StageEnvPreset implements IAppEnvPreset {
 
   @override
   IConversationsListRepo createConversationsListRepo() {
-    return HttpConversationsListRepo(
-      httpClient: _httpClient,
-      apiConfig: _appScope.apiConfig,
-      sessionCacheRepo: LocalSessionCacheRepo(
-        storage: _appScope.storageAggregator.secureStorage,
+    return DriftCachedConversationsListRepo(
+      network: HttpConversationsListRepo(
+        httpClient: _httpClient,
+        apiConfig: _appScope.apiConfig,
+        sessionCacheRepo: LocalSessionCacheRepo(
+          storage: _appScope.storageAggregator.secureStorage,
+        ),
+        logger: _appScope.logger,
       ),
-      logger: _appScope.logger,
+      tilesDao: _db.conversationTilesDao,
     );
   }
 
@@ -97,15 +107,22 @@ final class StageEnvPreset implements IAppEnvPreset {
 
   @override
   IPrivateConversationRepo createPrivateConversationRepo() {
-    return HttpPrivateConversationRepo(
-      httpClient: _httpClient,
-      apiConfig: _appScope.apiConfig,
-      sessionCacheRepo: LocalSessionCacheRepo(
-        storage: _appScope.storageAggregator.secureStorage,
+    return DriftCachedPrivateConversationRepo(
+      network: HttpPrivateConversationRepo(
+        httpClient: _httpClient,
+        apiConfig: _appScope.apiConfig,
+        sessionCacheRepo: LocalSessionCacheRepo(
+          storage: _appScope.storageAggregator.secureStorage,
+        ),
+        logger: _appScope.logger,
       ),
-      logger: _appScope.logger,
+      messagesDao: _db.privateMessagesDao,
     );
   }
+
+  @override
+  IMediaDownloadCacheRepo createMediaDownloadCacheRepo() =>
+      DriftMediaDownloadCacheRepo(dao: _db.mediaDownloadCacheDao);
 
   @override
   IUserRepo createUserRepo() {

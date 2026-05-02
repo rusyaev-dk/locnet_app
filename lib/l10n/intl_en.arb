@@ -229,5 +229,22 @@
   "groupParticipantsCount": "{count} participants",
   "mediaVideoLoadFailed": "Could not load video",
   "settingsPrivacyTimingSection": "Session validity",
-  "settingsAppVersionTitle": "App build"
+  "settingsAppVersionTitle": "App build",
+  "settingsStorageSection": "Storage",
+  "settingsStorageByType": "Storage by type",
+  "settingsStorageActions": "Actions",
+  "settingsStorageClearAll": "Clear all cache",
+  "settingsStorageClearAllTitle": "Clear cache",
+  "settingsStorageClearAllBody": "All cached conversations, messages and media info will be removed. This cannot be undone.",
+  "settingsStorageCacheEmpty": "Cache is empty",
+  "settingsStorageCacheEmptyHint": "No data is currently cached locally.",
+  "settingsStorageClearCacheHint": "Clearing the cache will not delete any messages or media from the server.",
+  "settingsStorageAlreadyEmpty": "Cache is already empty.",
+  "settingsStoragePhotos": "Photos",
+  "settingsStorageVideos": "Videos",
+  "settingsStorageAudio": "Audio",
+  "settingsStorageMessages": "Messages",
+  "settingsStorageOtherFiles": "Other files",
+  "settingsStorageCached": "{size} cached",
+  "settingsStorageTotalCached": "{size} total cached"
 }

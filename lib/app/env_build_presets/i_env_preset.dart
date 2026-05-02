@@ -8,8 +8,9 @@ import 'package:locnet_app/features/conversation/subfeatures/private/data/data.d
 import 'package:locnet_app/features/conversations_list/data/data.dart';
 import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/data/data.dart';
 import 'package:locnet_app/features/message/data/data.dart';
-import 'package:locnet_app/features/settings/domain/domain.dart';
+import 'package:locnet_app/features/message/subfeatures/media/data/repositories/media_download_cache_repo/i_media_download_cache_repo.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
+import 'package:locnet_app/features/settings/domain/domain.dart';
 import 'package:locnet_app/features/theme_editor/data/data.dart';
 import 'package:locnet_app/mock/mock.dart';
 
@@ -36,6 +37,7 @@ abstract interface class IAppEnvPreset {
   IThemeEditorRepo createThemeEditorRepo();
 
   IDeviceInfoRepo createDeviceInfoRepo();
+  IMediaDownloadCacheRepo createMediaDownloadCacheRepo();
 }
 
 sealed class AppEnvPresetsFactory {

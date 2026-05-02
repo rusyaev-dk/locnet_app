@@ -65,8 +65,6 @@ class _MessageBubbleState extends State<MessageBubble> {
 
   final MessageContextMenuController _menuController =
       MessageContextMenuController();
-  final Map<String, Future<MediaDownloadInfo>> _downloadInfoCache =
-      <String, Future<MediaDownloadInfo>>{};
 
   @override
   void dispose() {
@@ -585,13 +583,11 @@ class _MessageBubbleState extends State<MessageBubble> {
     required String mediaId,
     required String conversationId,
   }) {
-    return _downloadInfoCache.putIfAbsent(mediaId, () {
-      return context.read<MediaInteractor>().getDownloadInfo(
-        mediaId: mediaId,
-        scope: 'private_conversation',
-        scopeId: conversationId,
-      );
-    });
+    return context.read<MediaInteractor>().getDownloadInfo(
+      mediaId: mediaId,
+      scope: 'private_conversation',
+      scopeId: conversationId,
+    );
   }
 
   void _onMessageLinkTap(Uri uri) async {

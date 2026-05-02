@@ -47,15 +47,25 @@ class AppAlertDialogAction extends StatelessWidget {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
 
+    final Color fg = isDestructiveAction
+        ? colorScheme.error
+        : isDefaultAction
+        ? colorScheme.primary
+        : colorScheme.onSurfaceVariant;
+
     return TextButton(
       onPressed: onPressed,
       style:
           style ??
           TextButton.styleFrom(
+            foregroundColor: fg,
             textStyle: textScheme.label.copyWith(
-              fontSize: 18,
-              color: colorScheme.onSurface,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
             ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
       child: child,
     );

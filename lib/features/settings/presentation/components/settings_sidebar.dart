@@ -38,6 +38,7 @@ class SettingsSidebar extends StatelessWidget {
         l10n.settingsNotificationsAndSounds,
       ),
       (SettingsSection.privacy, Icons.visibility_outlined, l10n.settingsPrivacy),
+      (SettingsSection.storage, Icons.folder_outlined, l10n.settingsStorageSection),
     ];
 
     Widget sidebar = Column(

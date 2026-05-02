@@ -6,4 +6,5 @@ enum SettingsSection {
   chats,
   language,
   privacy,
+  storage,
 }

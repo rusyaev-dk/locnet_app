@@ -1,13 +1,18 @@
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/data/data.dart';
+import 'package:locnet_app/core/data/storage/db/db.dart';
 import 'package:locnet_app/di/di.dart';
 import 'package:locnet_app/features/auth/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/channel/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/group/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/data/data.dart';
+import 'package:locnet_app/features/conversation/subfeatures/private/data/repositories/private_conversation_repo/drift_cached_private_conversation_repo.dart';
 import 'package:locnet_app/features/conversations_list/data/data.dart';
+import 'package:locnet_app/features/conversations_list/data/repositories/conversations_list_repo/drift_cached_conversations_list_repo.dart';
 import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/data/repositories/repositories.dart';
 import 'package:locnet_app/features/message/data/data.dart';
+import 'package:locnet_app/features/message/subfeatures/media/data/repositories/media_download_cache_repo/drift_media_download_cache_repo.dart';
+import 'package:locnet_app/features/message/subfeatures/media/data/repositories/media_download_cache_repo/i_media_download_cache_repo.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
 import 'package:locnet_app/features/settings/domain/domain.dart';
 import 'package:locnet_app/features/theme_editor/data/data.dart';
@@ -23,6 +28,8 @@ final class DevEnvPreset implements IAppEnvPreset {
   final AppScope _appScope;
   final MockInMemoryBackend _mockInMemoryBackend;
   static const bool _useHttpPrivateMessaging = false;
+
+  AppDatabase get _db => _appScope.db;
 
   @override
   IAuthRepo createAuthRepo() {
@@ -58,7 +65,10 @@ final class DevEnvPreset implements IAppEnvPreset {
 
   @override
   IConversationsListRepo createConversationsListRepo() {
-    return MockConversationsListRepo(backendStorage: _mockInMemoryBackend);
+    return DriftCachedConversationsListRepo(
+      network: MockConversationsListRepo(backendStorage: _mockInMemoryBackend),
+      tilesDao: _db.conversationTilesDao,
+    );
   }
 
   @override
@@ -107,22 +117,29 @@ final class DevEnvPreset implements IAppEnvPreset {
 
   @override
   IPrivateConversationRepo createPrivateConversationRepo() {
-    if (_useHttpPrivateMessaging) {
-      return HttpPrivateConversationRepo(
-        httpClient: DioHttpClient(
-          dio: _appScope.dio,
-          apiConfig: _appScope.apiConfig,
-        ),
-        apiConfig: _appScope.apiConfig,
-        sessionCacheRepo: LocalSessionCacheRepo(
-          storage: _appScope.storageAggregator.secureStorage,
-        ),
-        logger: _appScope.logger,
-      );
-    }
+    final IPrivateConversationRepo networkRepo = _useHttpPrivateMessaging
+        ? HttpPrivateConversationRepo(
+            httpClient: DioHttpClient(
+              dio: _appScope.dio,
+              apiConfig: _appScope.apiConfig,
+            ),
+            apiConfig: _appScope.apiConfig,
+            sessionCacheRepo: LocalSessionCacheRepo(
+              storage: _appScope.storageAggregator.secureStorage,
+            ),
+            logger: _appScope.logger,
+          )
+        : MockPrivateConversationRepo(backendStorage: _mockInMemoryBackend);
 
-    return MockPrivateConversationRepo(backendStorage: _mockInMemoryBackend);
+    return DriftCachedPrivateConversationRepo(
+      network: networkRepo,
+      messagesDao: _db.privateMessagesDao,
+    );
   }
+
+  @override
+  IMediaDownloadCacheRepo createMediaDownloadCacheRepo() =>
+      DriftMediaDownloadCacheRepo(dao: _db.mediaDownloadCacheDao);
 
   @override
   IUserRepo createUserRepo() {

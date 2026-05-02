@@ -8,6 +8,8 @@ import 'package:locnet_app/features/auth/presentation/presentation.dart';
 import 'package:locnet_app/features/settings/domain/domain.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
 import 'package:locnet_app/features/settings/subfeatures/profile/domain/profile_interactor.dart';
+import 'package:locnet_app/features/settings/subfeatures/storage/presentation/blocs/storage_cubit.dart';
+import 'package:locnet_app/features/settings/subfeatures/storage/presentation/screens/storage_settings_content.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
 class SettingsModalCard extends StatelessWidget {
@@ -73,31 +75,26 @@ class SettingsView extends StatefulWidget {
 class _SettingsViewState extends State<SettingsView> {
   SettingsSection _selectedSection = SettingsSection.profile;
 
-  void _showLogoutConfirmation(BuildContext context) {
+  Future<void> _showLogoutConfirmation(BuildContext context) {
     final l10n = context.l10n;
-    showGeneralDialog<void>(
+    return showAppAlertDialog<void>(
       context: context,
-      transitionBuilder: slideFadeDialogTransition,
-      pageBuilder: (dialogContext, _, __) {
-        return AppAlertDialog(
-          title: Text(l10n.logOut),
-          content: Text(l10n.logOutConfirmation),
-          actions: [
-            AppAlertDialogAction(
-              child: Text(l10n.cancel),
-              onPressed: () => Navigator.of(dialogContext).pop(),
-            ),
-            AppAlertDialogAction(
-              isDestructiveAction: true,
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-                context.read<AuthCubit>().logOut();
-              },
-              child: Text(l10n.yesLabel),
-            ),
-          ],
-        );
-      },
+      buildActions: (dialogContext) => [
+        AppAlertDialogAction(
+          child: Text(l10n.cancel),
+          onPressed: () => Navigator.of(dialogContext).pop(),
+        ),
+        AppAlertDialogAction(
+          isDestructiveAction: true,
+          onPressed: () {
+            Navigator.of(dialogContext).pop();
+            context.read<AuthCubit>().logOut();
+          },
+          child: Text(l10n.yesLabel),
+        ),
+      ],
+      title: Text(l10n.logOut),
+      content: Text(l10n.logOutConfirmation),
     );
   }
 
@@ -118,9 +115,7 @@ class _SettingsViewState extends State<SettingsView> {
         Container(
           padding: const EdgeInsets.fromLTRB(20, 16, 16, 16),
           decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(color: colorScheme.outline, width: 1),
-            ),
+            border: Border(bottom: BorderSide(color: colorScheme.outline)),
           ),
           child: Row(
             children: [
@@ -153,9 +148,7 @@ class _SettingsViewState extends State<SettingsView> {
             children: [
               Container(
                 decoration: BoxDecoration(
-                  border: Border(
-                    right: BorderSide(color: colorScheme.outline, width: 1),
-                  ),
+                  border: Border(right: BorderSide(color: colorScheme.outline)),
                 ),
                 child: SettingsSidebar(
                   selectedSection: _selectedSection,
@@ -226,6 +219,14 @@ class _SettingsSectionContent extends StatelessWidget {
         return const LanguageSettingsContent();
       case SettingsSection.privacy:
         return PrivacySettingsContent(session: session);
+      case SettingsSection.storage:
+        return BlocProvider<StorageCubit>(
+          create: (context) => StorageCubit(
+            cacheDatabaseInteractor: context
+                .read<SettingsCacheDatabaseInteractor>(),
+          ),
+          child: const StorageSettingsContent(),
+        );
     }
   }
 }

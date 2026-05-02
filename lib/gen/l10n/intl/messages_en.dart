@@ -28,6 +28,10 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m3(min) => "At least ${min} characters";
 
+  static String m4(size) => "${size} cached";
+
+  static String m5(size) => "${size} total cached";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "aboutApp": MessageLookupByLibrary.simpleMessage("About"),
@@ -422,6 +426,41 @@ class MessageLookup extends MessageLookupByLibrary {
       "System sounds",
     ),
     "settingsSoundsSection": MessageLookupByLibrary.simpleMessage("Sounds"),
+    "settingsStorageActions": MessageLookupByLibrary.simpleMessage("Actions"),
+    "settingsStorageAlreadyEmpty": MessageLookupByLibrary.simpleMessage(
+      "Cache is already empty.",
+    ),
+    "settingsStorageAudio": MessageLookupByLibrary.simpleMessage("Audio"),
+    "settingsStorageByType": MessageLookupByLibrary.simpleMessage(
+      "Storage by type",
+    ),
+    "settingsStorageCacheEmpty": MessageLookupByLibrary.simpleMessage(
+      "Cache is empty",
+    ),
+    "settingsStorageCacheEmptyHint": MessageLookupByLibrary.simpleMessage(
+      "No data is currently cached locally.",
+    ),
+    "settingsStorageCached": m4,
+    "settingsStorageClearAll": MessageLookupByLibrary.simpleMessage(
+      "Clear all cache",
+    ),
+    "settingsStorageClearAllBody": MessageLookupByLibrary.simpleMessage(
+      "All cached conversations, messages and media info will be removed. This cannot be undone.",
+    ),
+    "settingsStorageClearAllTitle": MessageLookupByLibrary.simpleMessage(
+      "Clear cache",
+    ),
+    "settingsStorageClearCacheHint": MessageLookupByLibrary.simpleMessage(
+      "Clearing the cache will not delete any messages or media from the server.",
+    ),
+    "settingsStorageMessages": MessageLookupByLibrary.simpleMessage("Messages"),
+    "settingsStorageOtherFiles": MessageLookupByLibrary.simpleMessage(
+      "Other files",
+    ),
+    "settingsStoragePhotos": MessageLookupByLibrary.simpleMessage("Photos"),
+    "settingsStorageSection": MessageLookupByLibrary.simpleMessage("Storage"),
+    "settingsStorageTotalCached": m5,
+    "settingsStorageVideos": MessageLookupByLibrary.simpleMessage("Videos"),
     "settingsTextScale": MessageLookupByLibrary.simpleMessage("Text size"),
     "settingsThemeModeLabel": MessageLookupByLibrary.simpleMessage("Mode"),
     "settingsThemeSection": MessageLookupByLibrary.simpleMessage("Theme"),

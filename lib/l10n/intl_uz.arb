@@ -229,5 +229,22 @@
   "groupParticipantsCount": "{count} ishtirokchi",
   "mediaVideoLoadFailed": "Videoni yuklab boʻlmadi",
   "settingsPrivacyTimingSection": "Sessiya muddati",
-  "settingsAppVersionTitle": "Yigʻma"
+  "settingsAppVersionTitle": "Yigʻma",
+  "settingsStorageSection": "Saqlash joyi",
+  "settingsStorageByType": "Tur bo'yicha",
+  "settingsStorageActions": "Amallar",
+  "settingsStorageClearAll": "Keshni tozalash",
+  "settingsStorageClearAllTitle": "Keshni tozalash",
+  "settingsStorageClearAllBody": "Barcha keşlangan suhbatlar, xabarlar va media ma'lumotlari o'chiriladi. Bu amalni qaytarib bo'lmaydi.",
+  "settingsStorageCacheEmpty": "Kesh bo'sh",
+  "settingsStorageCacheEmptyHint": "Mahalliy keşlangan ma'lumot yo'q.",
+  "settingsStorageClearCacheHint": "Keshni tozalash xabarlar yoki medialarni serverdan o'chirmaydi.",
+  "settingsStorageAlreadyEmpty": "Kesh allaqachon bo'sh.",
+  "settingsStoragePhotos": "Rasmlar",
+  "settingsStorageVideos": "Videolar",
+  "settingsStorageAudio": "Audio",
+  "settingsStorageMessages": "Xabarlar",
+  "settingsStorageOtherFiles": "Boshqa fayllar",
+  "settingsStorageCached": "{size} keshda",
+  "settingsStorageTotalCached": "{size} jami keshda"
 }

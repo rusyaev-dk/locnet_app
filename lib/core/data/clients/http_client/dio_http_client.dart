@@ -143,6 +143,9 @@ class DioHttpClient implements IHttpClient {
         case 'PUT':
           response = await _dio.putUri(uri, data: data, options: options);
           break;
+        case 'PATCH':
+          response = await _dio.patchUri(uri, data: data, options: options);
+          break;
         case 'DELETE':
           response = await _dio.deleteUri(uri, options: options);
           break;

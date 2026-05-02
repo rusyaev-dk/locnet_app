@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:locnet_app/core/data/data.dart' hide MockUserRepo;
+import 'package:locnet_app/core/data/storage/db/db.dart';
 import 'package:locnet_app/core/domain/models/user.dart';
 import 'package:locnet_app/features/auth/domain/domain.dart';
 import 'package:mocktail/mocktail.dart';
@@ -11,6 +12,8 @@ import '../../data/repositories/mock_auth_repo.dart';
 import '../../data/repositories/mock_device_info_repo.dart';
 import '../../data/repositories/mock_session_cache_repo.dart';
 
+class MockAppDatabase extends Mock implements AppDatabase {}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -20,6 +23,7 @@ void main() {
   late MockUserCacheRepo mockUserCacheRepo;
   late MockDeviceInfoRepo mockDeviceInfoRepo;
   late MockLogger mockLogger;
+  late MockAppDatabase mockAppDatabase;
 
   late AuthInteractor interactor;
 
@@ -69,10 +73,14 @@ void main() {
     mockUserCacheRepo = MockUserCacheRepo();
     mockDeviceInfoRepo = MockDeviceInfoRepo();
     mockLogger = MockLogger();
+    mockAppDatabase = MockAppDatabase();
 
     when(
       () => mockDeviceInfoRepo.getDeviceInfo(),
     ).thenAnswer((_) async => deviceInfo);
+    when(
+      () => mockAppDatabase.clearAll(),
+    ).thenAnswer((_) async {});
 
     interactor = AuthInteractor(
       authRepo: mockAuthRepo,
@@ -81,6 +89,7 @@ void main() {
       userCacheRepo: mockUserCacheRepo,
       deviceInfoRepo: mockDeviceInfoRepo,
       logger: mockLogger,
+      db: mockAppDatabase,
     );
 
     user = User(

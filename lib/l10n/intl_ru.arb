@@ -229,5 +229,22 @@
   "groupParticipantsCount": "{count} участников",
   "mediaVideoLoadFailed": "Не удалось загрузить видео",
   "settingsPrivacyTimingSection": "Срок действия сессии",
-  "settingsAppVersionTitle": "Сборка"
+  "settingsAppVersionTitle": "Сборка",
+  "settingsStorageSection": "Хранилище",
+  "settingsStorageByType": "По типу данных",
+  "settingsStorageActions": "Действия",
+  "settingsStorageClearAll": "Очистить кеш",
+  "settingsStorageClearAllTitle": "Очистить кеш",
+  "settingsStorageClearAllBody": "Все кешированные чаты, сообщения и данные медиа будут удалены. Это действие необратимо.",
+  "settingsStorageCacheEmpty": "Кеш пуст",
+  "settingsStorageCacheEmptyHint": "Данные не кешированы локально.",
+  "settingsStorageClearCacheHint": "Очистка кеша не удалит сообщения или медиафайлы с сервера.",
+  "settingsStorageAlreadyEmpty": "Кеш уже пуст.",
+  "settingsStoragePhotos": "Фотографии",
+  "settingsStorageVideos": "Видео",
+  "settingsStorageAudio": "Аудио",
+  "settingsStorageMessages": "Сообщения",
+  "settingsStorageOtherFiles": "Другие файлы",
+  "settingsStorageCached": "{size} в кеше",
+  "settingsStorageTotalCached": "{size} всего в кеше"
 }

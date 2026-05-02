@@ -1,19 +1,32 @@
 import 'package:dio/dio.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/auth/data/data.dart';
+import 'package:locnet_app/features/auth/domain/domain.dart';
 
 final class JWTInterceptor extends Interceptor {
   JWTInterceptor({
+    required Dio dio,
     required ISessionCacheRepo sessionCacheRepo,
+    required IAuthRepo authRepo,
+    required IDeviceInfoRepo deviceInfoRepo,
     required UnauthorizedEventBus unauthorizedEventBus,
     required ILogger logger,
-  }) : _sessionCacheRepo = sessionCacheRepo,
+  }) : _dio = dio,
+       _sessionCacheRepo = sessionCacheRepo,
+       _authRepo = authRepo,
+       _deviceInfoRepo = deviceInfoRepo,
        _unauthorizedEventBus = unauthorizedEventBus,
        _logger = logger;
 
+  final Dio _dio;
   final ISessionCacheRepo _sessionCacheRepo;
+  final IAuthRepo _authRepo;
+  final IDeviceInfoRepo _deviceInfoRepo;
   final UnauthorizedEventBus _unauthorizedEventBus;
   final ILogger _logger;
+  Future<Session>? _refreshInFlight;
+  static const Duration _refreshLeeway = Duration(seconds: 30);
+  static const String _retryMarker = '__jwtRefreshRetried__';
 
   @override
   void onRequest(
@@ -26,11 +39,15 @@ final class JWTInterceptor extends Interceptor {
     }
 
     try {
-      final session = await _sessionCacheRepo.loadSession();
+      Session session = await _sessionCacheRepo.loadSession();
+      session = await _ensureValidSession(session);
       options.headers['Authorization'] = 'Bearer ${session.accessToken}';
     } on StorageException catch (e) {
       // No session before login is expected. Do not block request.
       _logger.warning('Skip Authorization header: ${e.message}');
+    } on ApiUnauthorizedException catch (e, st) {
+      _logger.exception(e, st);
+      _unauthorizedEventBus.emit();
     } catch (e, st) {
       // Any unexpected error: also do not block, only log.
       _logger.exception(e, st);
@@ -40,17 +57,95 @@ final class JWTInterceptor extends Interceptor {
   }
 
   @override
-  void onError(DioException err, ErrorInterceptorHandler handler) {
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
+    if (err.response?.statusCode == 401 &&
+        !_isAuthEndpoint(err.requestOptions.path) &&
+        !_isPresignedS3Request(err.requestOptions) &&
+        err.requestOptions.extra[_retryMarker] != true) {
+      await _retryWithRefreshedToken(err, handler);
+      return;
+    }
     if (err.response?.statusCode == 401) {
       _unauthorizedEventBus.emit();
     }
     handler.next(err);
   }
 
+  Future<void> _retryWithRefreshedToken(
+    DioException err,
+    ErrorInterceptorHandler handler,
+  ) async {
+    try {
+      final Session currentSession = await _sessionCacheRepo.loadSession();
+      final Session refreshedSession = await _refreshSession(currentSession);
+      final RequestOptions retriedRequest = err.requestOptions.copyWith(
+        headers: <String, dynamic>{
+          ...err.requestOptions.headers,
+          'Authorization': 'Bearer ${refreshedSession.accessToken}',
+        },
+        extra: <String, dynamic>{
+          ...err.requestOptions.extra,
+          _retryMarker: true,
+        },
+      );
+      final Response<dynamic> response = await _dio.fetch<dynamic>(
+        retriedRequest,
+      );
+      handler.resolve(response);
+    } catch (e, st) {
+      _logger.exception(e, st);
+      _unauthorizedEventBus.emit();
+      handler.next(err);
+    }
+  }
+
+  Future<Session> _ensureValidSession(Session session) async {
+    final DateTime refreshThreshold = DateTime.now().add(_refreshLeeway);
+    if (session.accessExpiresAt.isAfter(refreshThreshold)) {
+      return session;
+    }
+    return _refreshSession(session);
+  }
+
+  Future<Session> _refreshSession(Session session) async {
+    final DateTime now = DateTime.now();
+    if (!session.refreshExpiresAt.isAfter(now)) {
+      throw ApiUnauthorizedException(message: 'Refresh token expired');
+    }
+
+    final Future<Session>? inFlight = _refreshInFlight;
+    if (inFlight != null) {
+      return inFlight;
+    }
+
+    final Future<Session> refreshFuture = _performRefresh(session);
+    _refreshInFlight = refreshFuture;
+    try {
+      return await refreshFuture;
+    } finally {
+      if (identical(_refreshInFlight, refreshFuture)) {
+        _refreshInFlight = null;
+      }
+    }
+  }
+
+  Future<Session> _performRefresh(Session session) async {
+    final DeviceInfo deviceInfo = await _deviceInfoRepo.getDeviceInfo();
+    final Session refreshed = await _authRepo.refresh(
+      refreshToken: session.refreshToken,
+      sessionId: session.sessionId,
+      deviceInfo: deviceInfo,
+    );
+    await _sessionCacheRepo.saveSession(session: refreshed);
+    _logger.info('Access token refreshed.');
+    return refreshed;
+  }
+
   bool _isAuthEndpoint(String path) {
-    return path == ApiEndpoints.logIn ||
-        path == ApiEndpoints.register ||
-        path == ApiEndpoints.refresh;
+    final String normalizedPath = Uri.tryParse(path)?.path ?? path;
+    return normalizedPath == ApiEndpoints.logIn ||
+        normalizedPath == ApiEndpoints.register ||
+        normalizedPath == ApiEndpoints.refresh;
   }
 
   bool _isPresignedS3Request(RequestOptions options) {

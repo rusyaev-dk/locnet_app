@@ -1,5 +1,6 @@
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/data/data.dart';
+import 'package:locnet_app/core/data/storage/db/db.dart';
 import 'package:locnet_app/di/di.dart';
 import 'package:locnet_app/features/auth/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/channel/data/repositories/channel_repo/i_channel_repo.dart';
@@ -8,10 +9,12 @@ import 'package:locnet_app/features/conversation/subfeatures/private/data/reposi
 import 'package:locnet_app/features/conversations_list/data/repositories/conversations_list_repo/i_conversations_list_repo.dart';
 import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/data/data.dart';
 import 'package:locnet_app/features/message/data/data.dart';
-import 'package:locnet_app/mock/mock.dart';
-import 'package:locnet_app/features/settings/domain/domain.dart';
+import 'package:locnet_app/features/message/subfeatures/media/data/repositories/media_download_cache_repo/drift_media_download_cache_repo.dart';
+import 'package:locnet_app/features/message/subfeatures/media/data/repositories/media_download_cache_repo/i_media_download_cache_repo.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
+import 'package:locnet_app/features/settings/domain/domain.dart';
 import 'package:locnet_app/features/theme_editor/data/data.dart';
+import 'package:locnet_app/mock/mock.dart';
 
 final class ProdEnvPreset implements IAppEnvPreset {
   ProdEnvPreset({required AppScope appScope})
@@ -23,6 +26,8 @@ final class ProdEnvPreset implements IAppEnvPreset {
 
   final AppScope _appScope;
   final IHttpClient _httpClient;
+
+  AppDatabase get _db => _appScope.db;
 
   @override
   IAuthRepo createAuthRepo() {
@@ -120,6 +125,10 @@ final class ProdEnvPreset implements IAppEnvPreset {
   IDeviceInfoRepo createDeviceInfoRepo() {
     return createPlatformDeviceInfoRepo();
   }
+
+  @override
+  IMediaDownloadCacheRepo createMediaDownloadCacheRepo() =>
+      DriftMediaDownloadCacheRepo(dao: _db.mediaDownloadCacheDao);
 
   @override
   IUnifiedSearchRepo createUnifiedSearchRepo() {

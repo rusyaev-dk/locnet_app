@@ -14,6 +14,7 @@ import 'package:locnet_app/features/message/data/data.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
 import 'package:locnet_app/features/settings/domain/domain.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
+import 'package:locnet_app/features/settings/subfeatures/storage/data/repositories/settings_cache_database_repo/drift_settings_cache_database_repo.dart';
 import 'package:locnet_app/features/theme_editor/data/data.dart';
 import 'package:locnet_app/features/theme_editor/domain/domain.dart';
 import 'package:provider/provider.dart';
@@ -105,7 +106,10 @@ class AppProvidersWrapper extends StatelessWidget {
               );
               appScope.dio.interceptors.add(
                 JWTInterceptor(
+                  dio: appScope.dio,
                   sessionCacheRepo: cacheRepo,
+                  authRepo: context.read<IAuthRepo>(),
+                  deviceInfoRepo: context.read<IDeviceInfoRepo>(),
                   unauthorizedEventBus: context.read<UnauthorizedEventBus>(),
                   logger: appScope.logger,
                 ),
@@ -138,6 +142,13 @@ class AppProvidersWrapper extends StatelessWidget {
               searchRepo: context.read<IUnifiedSearchRepo>(),
             ),
           ),
+          RepositoryProvider<SettingsCacheDatabaseInteractor>(
+            create: (context) => SettingsCacheDatabaseInteractor(
+              settingsCacheDatabaseRepo: DriftSettingsCacheDatabaseRepo(
+                db: appScope.db,
+              ),
+            ),
+          ),
           RepositoryProvider<AuthInteractor>(
             lazy: false,
             create: (context) => AuthInteractor(
@@ -147,6 +158,7 @@ class AppProvidersWrapper extends StatelessWidget {
               userCacheRepo: context.read<IUserCacheRepo>(),
               deviceInfoRepo: context.read<IDeviceInfoRepo>(),
               logger: context.read<ILogger>(),
+              db: appScope.db,
             ),
           ),
         ],

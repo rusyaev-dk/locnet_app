@@ -114,28 +114,23 @@ class _GroupConversationScreenState extends State<GroupConversationScreen> {
 
                       final l10n = context.l10n;
 
-                      final bool? confirm = await showDialog<bool>(
+                      final bool? confirm = await showAppAlertDialog<bool>(
                         context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: Text(l10n.messageContextActionDelete),
-                            content: Text(
-                              l10n.logOutConfirmation,
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () =>
-                                    Navigator.of(context).pop(false),
-                                child: Text(l10n.cancel),
-                              ),
-                              TextButton(
-                                onPressed: () =>
-                                    Navigator.of(context).pop(true),
-                                child: Text(l10n.yesLabel),
-                              ),
-                            ],
-                          );
-                        },
+                        title: Text(l10n.messageContextActionDelete),
+                        content: Text(
+                          l10n.logOutConfirmation,
+                        ),
+                        buildActions: (d) => [
+                          AppAlertDialogAction(
+                            child: Text(l10n.cancel),
+                            onPressed: () => Navigator.of(d).pop(false),
+                          ),
+                          AppAlertDialogAction(
+                            isDefaultAction: true,
+                            child: Text(l10n.yesLabel),
+                            onPressed: () => Navigator.of(d).pop(true),
+                          ),
+                        ],
                       );
 
                       if (confirm != true) return;
@@ -317,28 +312,25 @@ class _GroupConversationScreenState extends State<GroupConversationScreen> {
                         onDelete: (message) async {
                           final l10n = context.l10n;
 
-                          final bool? confirm = await showDialog<bool>(
+                          final bool? confirm = await showAppAlertDialog<bool>(
                             context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: Text(l10n.messageContextActionDelete),
-                                content: Text(
-                                  l10n.logOutConfirmation,
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(false),
-                                    child: Text(l10n.cancel),
-                                  ),
-                                  TextButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(true),
-                                    child: Text(l10n.yesLabel),
-                                  ),
-                                ],
-                              );
-                            },
+                            title: Text(l10n.messageContextActionDelete),
+                            content: Text(
+                              l10n.logOutConfirmation,
+                            ),
+                            buildActions: (d) => [
+                              AppAlertDialogAction(
+                                child: Text(l10n.cancel),
+                                onPressed: () =>
+                                    Navigator.of(d).pop(false),
+                              ),
+                              AppAlertDialogAction(
+                                isDefaultAction: true,
+                                child: Text(l10n.yesLabel),
+                                onPressed: () =>
+                                    Navigator.of(d).pop(true),
+                              ),
+                            ],
                           );
 
                           if (confirm != true) return;

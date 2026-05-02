@@ -21,14 +21,11 @@ class $EnvGen {
   /// File path: env/dev.env
   String get dev => 'env/dev.env';
 
-  /// File path: env/prod.env
-  String get prod => 'env/prod.env';
-
   /// File path: env/stage.env
   String get stage => 'env/stage.env';
 
   /// List of all assets
-  List<String> get values => [dev, prod, stage];
+  List<String> get values => [dev, stage];
 }
 
 class $AssetsFontsGen {

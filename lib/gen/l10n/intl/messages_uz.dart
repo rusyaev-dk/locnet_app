@@ -28,6 +28,10 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m3(min) => "Kamida ${min} ta belgi";
 
+  static String m4(size) => "${size} keshda";
+
+  static String m5(size) => "${size} jami keshda";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "aboutApp": MessageLookupByLibrary.simpleMessage("Ilova haqida"),
@@ -452,6 +456,43 @@ class MessageLookup extends MessageLookupByLibrary {
       "Tizim tovushlari",
     ),
     "settingsSoundsSection": MessageLookupByLibrary.simpleMessage("Tovushlar"),
+    "settingsStorageActions": MessageLookupByLibrary.simpleMessage("Amallar"),
+    "settingsStorageAlreadyEmpty": MessageLookupByLibrary.simpleMessage(
+      "Kesh allaqachon bo\'sh.",
+    ),
+    "settingsStorageAudio": MessageLookupByLibrary.simpleMessage("Audio"),
+    "settingsStorageByType": MessageLookupByLibrary.simpleMessage(
+      "Tur bo\'yicha",
+    ),
+    "settingsStorageCacheEmpty": MessageLookupByLibrary.simpleMessage(
+      "Kesh bo\'sh",
+    ),
+    "settingsStorageCacheEmptyHint": MessageLookupByLibrary.simpleMessage(
+      "Mahalliy keşlangan ma\'lumot yo\'q.",
+    ),
+    "settingsStorageCached": m4,
+    "settingsStorageClearAll": MessageLookupByLibrary.simpleMessage(
+      "Keshni tozalash",
+    ),
+    "settingsStorageClearAllBody": MessageLookupByLibrary.simpleMessage(
+      "Barcha keşlangan suhbatlar, xabarlar va media ma\'lumotlari o\'chiriladi. Bu amalni qaytarib bo\'lmaydi.",
+    ),
+    "settingsStorageClearAllTitle": MessageLookupByLibrary.simpleMessage(
+      "Keshni tozalash",
+    ),
+    "settingsStorageClearCacheHint": MessageLookupByLibrary.simpleMessage(
+      "Keshni tozalash xabarlar yoki medialarni serverdan o\'chirmaydi.",
+    ),
+    "settingsStorageMessages": MessageLookupByLibrary.simpleMessage("Xabarlar"),
+    "settingsStorageOtherFiles": MessageLookupByLibrary.simpleMessage(
+      "Boshqa fayllar",
+    ),
+    "settingsStoragePhotos": MessageLookupByLibrary.simpleMessage("Rasmlar"),
+    "settingsStorageSection": MessageLookupByLibrary.simpleMessage(
+      "Saqlash joyi",
+    ),
+    "settingsStorageTotalCached": m5,
+    "settingsStorageVideos": MessageLookupByLibrary.simpleMessage("Videolar"),
     "settingsTextScale": MessageLookupByLibrary.simpleMessage("Matn o‘lchami"),
     "settingsThemeModeLabel": MessageLookupByLibrary.simpleMessage("Rejim"),
     "settingsThemeSection": MessageLookupByLibrary.simpleMessage("Mavzu"),

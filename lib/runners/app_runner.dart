@@ -10,6 +10,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/data/data.dart';
+import 'package:locnet_app/core/data/storage/db/db.dart';
 import 'package:locnet_app/core/presentation/navigation/router.dart';
 import 'package:locnet_app/core/utils/utils.dart';
 import 'package:locnet_app/di/di.dart';
@@ -142,9 +143,12 @@ class AppRunner {
     final localKeyValueStorage = LocalKeyValueStorage(
       sharedPreferences: sharedPrefs,
     );
+    final db = AppDatabase();
+    unawaited(db.evictStale());
     final storageAggregator = StorageAggregator(
       secureStorage: secureStorage,
       localKeyValueStorage: localKeyValueStorage,
+      db: db,
     );
 
     final apiConfig = ApiConfig(

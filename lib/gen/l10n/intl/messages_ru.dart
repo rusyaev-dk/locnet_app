@@ -28,6 +28,10 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m3(min) => "Не менее ${min} символов";
 
+  static String m4(size) => "${size} в кеше";
+
+  static String m5(size) => "${size} всего в кеше";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "aboutApp": MessageLookupByLibrary.simpleMessage("О приложении"),
@@ -430,6 +434,43 @@ class MessageLookup extends MessageLookupByLibrary {
       "Системные звуки",
     ),
     "settingsSoundsSection": MessageLookupByLibrary.simpleMessage("Звуки"),
+    "settingsStorageActions": MessageLookupByLibrary.simpleMessage("Действия"),
+    "settingsStorageAlreadyEmpty": MessageLookupByLibrary.simpleMessage(
+      "Кеш уже пуст.",
+    ),
+    "settingsStorageAudio": MessageLookupByLibrary.simpleMessage("Аудио"),
+    "settingsStorageByType": MessageLookupByLibrary.simpleMessage(
+      "По типу данных",
+    ),
+    "settingsStorageCacheEmpty": MessageLookupByLibrary.simpleMessage(
+      "Кеш пуст",
+    ),
+    "settingsStorageCacheEmptyHint": MessageLookupByLibrary.simpleMessage(
+      "Данные не кешированы локально.",
+    ),
+    "settingsStorageCached": m4,
+    "settingsStorageClearAll": MessageLookupByLibrary.simpleMessage(
+      "Очистить кеш",
+    ),
+    "settingsStorageClearAllBody": MessageLookupByLibrary.simpleMessage(
+      "Все кешированные чаты, сообщения и данные медиа будут удалены. Это действие необратимо.",
+    ),
+    "settingsStorageClearAllTitle": MessageLookupByLibrary.simpleMessage(
+      "Очистить кеш",
+    ),
+    "settingsStorageClearCacheHint": MessageLookupByLibrary.simpleMessage(
+      "Очистка кеша не удалит сообщения или медиафайлы с сервера.",
+    ),
+    "settingsStorageMessages": MessageLookupByLibrary.simpleMessage(
+      "Сообщения",
+    ),
+    "settingsStorageOtherFiles": MessageLookupByLibrary.simpleMessage(
+      "Другие файлы",
+    ),
+    "settingsStoragePhotos": MessageLookupByLibrary.simpleMessage("Фотографии"),
+    "settingsStorageSection": MessageLookupByLibrary.simpleMessage("Хранилище"),
+    "settingsStorageTotalCached": m5,
+    "settingsStorageVideos": MessageLookupByLibrary.simpleMessage("Видео"),
     "settingsTextScale": MessageLookupByLibrary.simpleMessage("Размер текста"),
     "settingsThemeModeLabel": MessageLookupByLibrary.simpleMessage("Режим"),
     "settingsThemeSection": MessageLookupByLibrary.simpleMessage("Тема"),

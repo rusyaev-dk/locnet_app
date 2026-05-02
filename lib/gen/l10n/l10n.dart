@@ -2078,6 +2078,176 @@ class S {
       args: [],
     );
   }
+
+  /// `Хранилище`
+  String get settingsStorageSection {
+    return Intl.message(
+      'Хранилище',
+      name: 'settingsStorageSection',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `По типу данных`
+  String get settingsStorageByType {
+    return Intl.message(
+      'По типу данных',
+      name: 'settingsStorageByType',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Действия`
+  String get settingsStorageActions {
+    return Intl.message(
+      'Действия',
+      name: 'settingsStorageActions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Очистить кеш`
+  String get settingsStorageClearAll {
+    return Intl.message(
+      'Очистить кеш',
+      name: 'settingsStorageClearAll',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Очистить кеш`
+  String get settingsStorageClearAllTitle {
+    return Intl.message(
+      'Очистить кеш',
+      name: 'settingsStorageClearAllTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Все кешированные чаты, сообщения и данные медиа будут удалены. Это действие необратимо.`
+  String get settingsStorageClearAllBody {
+    return Intl.message(
+      'Все кешированные чаты, сообщения и данные медиа будут удалены. Это действие необратимо.',
+      name: 'settingsStorageClearAllBody',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Кеш пуст`
+  String get settingsStorageCacheEmpty {
+    return Intl.message(
+      'Кеш пуст',
+      name: 'settingsStorageCacheEmpty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Данные не кешированы локально.`
+  String get settingsStorageCacheEmptyHint {
+    return Intl.message(
+      'Данные не кешированы локально.',
+      name: 'settingsStorageCacheEmptyHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Очистка кеша не удалит сообщения или медиафайлы с сервера.`
+  String get settingsStorageClearCacheHint {
+    return Intl.message(
+      'Очистка кеша не удалит сообщения или медиафайлы с сервера.',
+      name: 'settingsStorageClearCacheHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Кеш уже пуст.`
+  String get settingsStorageAlreadyEmpty {
+    return Intl.message(
+      'Кеш уже пуст.',
+      name: 'settingsStorageAlreadyEmpty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Фотографии`
+  String get settingsStoragePhotos {
+    return Intl.message(
+      'Фотографии',
+      name: 'settingsStoragePhotos',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Видео`
+  String get settingsStorageVideos {
+    return Intl.message(
+      'Видео',
+      name: 'settingsStorageVideos',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Аудио`
+  String get settingsStorageAudio {
+    return Intl.message(
+      'Аудио',
+      name: 'settingsStorageAudio',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Сообщения`
+  String get settingsStorageMessages {
+    return Intl.message(
+      'Сообщения',
+      name: 'settingsStorageMessages',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Другие файлы`
+  String get settingsStorageOtherFiles {
+    return Intl.message(
+      'Другие файлы',
+      name: 'settingsStorageOtherFiles',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{size} в кеше`
+  String settingsStorageCached(Object size) {
+    return Intl.message(
+      '$size в кеше',
+      name: 'settingsStorageCached',
+      desc: '',
+      args: [size],
+    );
+  }
+
+  /// `{size} всего в кеше`
+  String settingsStorageTotalCached(Object size) {
+    return Intl.message(
+      '$size всего в кеше',
+      name: 'settingsStorageTotalCached',
+      desc: '',
+      args: [size],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

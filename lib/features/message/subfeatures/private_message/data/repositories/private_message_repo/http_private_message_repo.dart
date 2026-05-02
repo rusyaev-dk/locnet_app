@@ -29,11 +29,12 @@ class HttpPrivateMessageRepo implements IPrivateMessageRepo {
   @override
   Future<PrivateMessage> sendMessage({required PrivateMessage message}) async {
     try {
+      final String normalizedText = message.text.trim();
       final String? replyToMessageId = _normalizeReplyToMessageId(
         message.replyToMessageId,
       );
       final Map<String, dynamic> body = <String, dynamic>{
-        'text': message.text,
+        if (normalizedText.isNotEmpty) 'text': normalizedText,
         if (message.clientMessageId != null)
           'clientMessageId': message.clientMessageId,
         if (replyToMessageId != null) 'replyToMessageId': replyToMessageId,
@@ -53,27 +54,42 @@ class HttpPrivateMessageRepo implements IPrivateMessageRepo {
         data: body,
       );
 
-      final dynamic data = httpResponse.data;
-      if (data is! Map<String, dynamic>) {
-        throw AppUnknownException(
-          message: 'Invalid API response format',
-          error: data,
-          stackTrace: StackTrace.current,
-        );
-      }
+      final DateTime now = DateTime.now();
+      final String fallbackTimestamp = now.toIso8601String();
+      final dynamic rawResponse = httpResponse.data;
+      final Map<String, dynamic> payload = _extractMessagePayload(rawResponse);
+      final String normalizedCreatedAt =
+          _normalizeDateValue(payload['createdAt']) ?? fallbackTimestamp;
+      final String messageId =
+          (payload['id'] ?? payload['messageId'] ?? '').toString();
+      final String normalizedTextFromResponse =
+          (payload['text'] as String?) ?? normalizedText;
+      final List<Map<String, dynamic>> normalizedAttachments =
+          _normalizeAttachments(
+            raw: payload['attachments'],
+            messageId: messageId,
+            fallbackTimestamp: normalizedCreatedAt,
+          );
 
       final Map<String, dynamic> normalized = <String, dynamic>{
-        ...data,
-        'id': data['id'] ?? data['messageId'],
-        'conversationId': data['conversationId'] ?? message.conversationId,
-        'clientMessageId': data['clientMessageId'] ?? message.clientMessageId,
-        'createdAt':
-            _normalizeDateValue(data['createdAt']) ??
-            DateTime.now().toIso8601String(),
+        ...payload,
+        'id': messageId,
+        'conversationId': payload['conversationId'] ?? message.conversationId,
+        'senderId': payload['senderId'] ?? message.senderId,
+        'deliveryStatus':
+            payload['deliveryStatus'] ?? payload['status'] ?? 'SENT',
+        'clientMessageId': payload['clientMessageId'] ?? message.clientMessageId,
+        'text': normalizedTextFromResponse,
+        'attachments': normalizedAttachments,
+        'isDeleted': payload['isDeleted'] ?? false,
+        'isPinned': payload['isPinned'] ?? false,
+        'deletedById': payload['deletedById'],
+        'replyToMessageId': payload['replyToMessageId'] ?? replyToMessageId,
+        'editedAt': payload['editedAt'],
+        'readAt': payload['readAt'],
+        'createdAt': normalizedCreatedAt,
         'updatedAt':
-            _normalizeDateValue(data['updatedAt']) ??
-            _normalizeDateValue(data['createdAt']) ??
-            DateTime.now().toIso8601String(),
+            _normalizeDateValue(payload['updatedAt']) ?? normalizedCreatedAt,
       };
 
       final PrivateMessageDto dto = PrivateMessageDto.fromJson(normalized);
@@ -96,6 +112,65 @@ class HttpPrivateMessageRepo implements IPrivateMessageRepo {
         stackTrace: st,
       );
     }
+  }
+
+  Map<String, dynamic> _extractMessagePayload(dynamic raw) {
+    if (raw is! Map<String, dynamic>) {
+      throw AppUnknownException(
+        message: 'Invalid API response format',
+        error: raw,
+        stackTrace: StackTrace.current,
+      );
+    }
+
+    final dynamic nested = raw['data'] ?? raw['message'];
+    if (nested is Map<String, dynamic>) {
+      return nested;
+    }
+
+    return raw;
+  }
+
+  List<Map<String, dynamic>> _normalizeAttachments({
+    required Object? raw,
+    required String messageId,
+    required String fallbackTimestamp,
+  }) {
+    if (raw is! List) {
+      return <Map<String, dynamic>>[];
+    }
+
+    final List<Map<String, dynamic>> normalized = <Map<String, dynamic>>[];
+    for (int index = 0; index < raw.length; index++) {
+      final dynamic item = raw[index];
+      if (item is! Map) {
+        continue;
+      }
+      final Map<String, dynamic> itemMap = Map<String, dynamic>.from(item);
+      final String fileId = (itemMap['fileId'] ?? itemMap['mediaId'] ?? '')
+          .toString();
+      if (fileId.isEmpty) {
+        continue;
+      }
+      final String id =
+          (itemMap['id'] ??
+                  itemMap['attachmentId'] ??
+                  itemMap['mediaId'] ??
+                  'att-$messageId-$index')
+              .toString();
+      normalized.add(<String, dynamic>{
+        'id': id,
+        'messageId': messageId,
+        'fileId': fileId,
+        'fileType': (itemMap['fileType'] ?? itemMap['mimeType'] ?? '')
+            .toString(),
+        'order': itemMap['order'] is int ? itemMap['order'] as int : index,
+        'createdAt':
+            _normalizeDateValue(itemMap['createdAt']) ?? fallbackTimestamp,
+      });
+    }
+
+    return normalized;
   }
 
   @override

@@ -1,5 +1,6 @@
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/core/data/storage/db/db.dart';
 import 'package:locnet_app/features/auth/data/data.dart';
 import 'package:locnet_app/features/auth/domain/domain.dart';
 
@@ -11,12 +12,14 @@ class AuthInteractor {
     required IUserCacheRepo userCacheRepo,
     required IDeviceInfoRepo deviceInfoRepo,
     required ILogger logger,
+    required AppDatabase db,
   }) : _authRepo = authRepo,
        _userRepo = userRepo,
        _sessionCacheRepo = sessionCacheRepo,
        _userCacheRepo = userCacheRepo,
        _deviceInfoRepo = deviceInfoRepo,
-       _logger = logger;
+       _logger = logger,
+       _db = db;
 
   final IAuthRepo _authRepo;
   final IUserRepo _userRepo;
@@ -24,6 +27,7 @@ class AuthInteractor {
   final IUserCacheRepo _userCacheRepo;
   final IDeviceInfoRepo _deviceInfoRepo;
   final ILogger _logger;
+  final AppDatabase _db;
 
   Future<(Session, User)> register({
     required String username,
@@ -231,6 +235,7 @@ class AuthInteractor {
   Future<void> logOut() async {
     await _sessionCacheRepo.clearSession();
     await _userCacheRepo.clearUser();
+    await _db.clearAll();
   }
 
   Future<Session> getCachedSession() async {
