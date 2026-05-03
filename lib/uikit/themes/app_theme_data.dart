@@ -2,16 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
-/// Accent index: 0 = default, 1 = blue, 2 = green, 3 = purple.
+/// Accent index 0–9: Locnet default, blue, green, purple, orange, teal, amber,
+/// pink, indigo, red.
 /// Returns full [AppColorScheme] for light theme (all colors tuned for the accent).
 AppColorScheme _lightSchemeForAccent(int accentIndex) {
-  switch (accentIndex.clamp(0, 3)) {
+  switch (accentIndex.clamp(0, 9)) {
     case 1:
       return const AppColorScheme.lightBlue();
     case 2:
       return const AppColorScheme.lightGreen();
     case 3:
       return const AppColorScheme.lightPurple();
+    case 4:
+      return const AppColorScheme.lightOrange();
+    case 5:
+      return const AppColorScheme.lightTeal();
+    case 6:
+      return const AppColorScheme.lightAmber();
+    case 7:
+      return const AppColorScheme.lightPink();
+    case 8:
+      return const AppColorScheme.lightIndigo();
+    case 9:
+      return const AppColorScheme.lightRed();
     default:
       return const AppColorScheme.light();
   }
@@ -19,13 +32,25 @@ AppColorScheme _lightSchemeForAccent(int accentIndex) {
 
 /// Returns full [AppColorScheme] for dark theme (all colors tuned for the accent).
 AppColorScheme _darkSchemeForAccent(int accentIndex) {
-  switch (accentIndex.clamp(0, 3)) {
+  switch (accentIndex.clamp(0, 9)) {
     case 1:
       return const AppColorScheme.darkBlue();
     case 2:
       return const AppColorScheme.darkGreen();
     case 3:
       return const AppColorScheme.darkPurple();
+    case 4:
+      return const AppColorScheme.darkOrange();
+    case 5:
+      return const AppColorScheme.darkTeal();
+    case 6:
+      return const AppColorScheme.darkAmber();
+    case 7:
+      return const AppColorScheme.darkPink();
+    case 8:
+      return const AppColorScheme.darkIndigo();
+    case 9:
+      return const AppColorScheme.darkRed();
     default:
       return const AppColorScheme.dark();
   }

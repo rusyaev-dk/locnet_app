@@ -5,8 +5,9 @@ import 'package:locnet_app/features/settings/domain/domain.dart';
 import 'package:locnet_app/features/settings/presentation/blocs/blocs.dart';
 import 'package:locnet_app/features/settings/presentation/components/components.dart';
 import 'package:locnet_app/features/settings/subfeatures/theme/presentation/components/color_scheme_selector.dart';
+import 'package:locnet_app/features/settings/subfeatures/theme/presentation/components/theme_preview_colors.dart';
 
-/// Appearance: theme mode, text/UI scale, accent.
+/// Appearance: theme mode, accent colors, text scale.
 class AppearanceSettingsContent extends StatelessWidget {
   const AppearanceSettingsContent({super.key});
 
@@ -26,10 +27,8 @@ class AppearanceSettingsContent extends StatelessWidget {
               ),
             ),
           SettingsLoadedState() => _AppearanceBody(
-              isLight: state.themeType.isLight,
-              accentIndex: state.themeType.accentIndex,
+              themeType: state.themeType,
               textScaleFactor: state.textScaleFactor,
-              elementScaleFactor: state.elementScaleFactor,
               onBrightnessChanged: (light) {
                 final newType = AppThemeType.fromAccentAndBrightness(
                   accentIndex: state.themeType.accentIndex,
@@ -46,8 +45,6 @@ class AppearanceSettingsContent extends StatelessWidget {
               },
               onTextScaleChanged: (v) =>
                   context.read<SettingsCubit>().changeTextScale(v),
-              onElementScaleChanged: (v) =>
-                  context.read<SettingsCubit>().changeElementScale(v),
             ),
         };
       },
@@ -57,28 +54,24 @@ class AppearanceSettingsContent extends StatelessWidget {
 
 class _AppearanceBody extends StatelessWidget {
   const _AppearanceBody({
-    required this.isLight,
-    required this.accentIndex,
+    required this.themeType,
     required this.textScaleFactor,
-    required this.elementScaleFactor,
     required this.onBrightnessChanged,
     required this.onAccentChanged,
     required this.onTextScaleChanged,
-    required this.onElementScaleChanged,
   });
 
-  final bool isLight;
-  final int accentIndex;
+  final AppThemeType themeType;
   final double textScaleFactor;
-  final double elementScaleFactor;
   final ValueChanged<bool> onBrightnessChanged;
   final ValueChanged<int> onAccentChanged;
   final ValueChanged<double> onTextScaleChanged;
-  final ValueChanged<double> onElementScaleChanged;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final isLight = themeType.isLight;
+    final accentIndex = themeType.accentIndex;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -86,7 +79,7 @@ class _AppearanceBody extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SettingsGroupCard(
-            title: l10n.settingsThemeSection,
+            title: l10n.colorSchemeTitle,
             children: [
               SettingsSegmentedTile(
                 title: l10n.settingsThemeModeLabel,
@@ -97,7 +90,14 @@ class _AppearanceBody extends StatelessWidget {
                 selectedIndex: isLight ? 0 : 1,
                 onSelected: (i) => onBrightnessChanged(i == 0),
               ),
-              _ThemePreviewTile(),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 2, 16, 8),
+                child: ColorSchemeSelector(
+                  selectedAccentIndex: accentIndex,
+                  onAccentSelected: onAccentChanged,
+                ),
+              ),
+              _ThemePreviewStrip(themeType: themeType),
             ],
           ),
           const SizedBox(height: 16),
@@ -105,7 +105,7 @@ class _AppearanceBody extends StatelessWidget {
             title: l10n.settingsInterfaceSection,
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -114,18 +114,19 @@ class _AppearanceBody extends StatelessWidget {
                       children: [
                         Text(
                           l10n.settingsTextScale,
-                          style: context.textScheme.title.copyWith(
+                          style: context.textScheme.label.copyWith(
                             color: context.colorScheme.onSurface,
                           ),
                         ),
                         Text(
                           '${(textScaleFactor * 100).round()}%',
-                          style: context.textScheme.label.copyWith(
+                          style: context.textScheme.caption.copyWith(
                             color: context.colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
                     ),
+                    const SizedBox(height: 10),
                     SliderTheme(
                       data: SliderTheme.of(context).copyWith(
                         overlayShape: const RoundSliderOverlayShape(),
@@ -142,54 +143,7 @@ class _AppearanceBody extends StatelessWidget {
                         onChanged: onTextScaleChanged,
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          l10n.settingsElementScale,
-                          style: context.textScheme.title.copyWith(
-                            color: context.colorScheme.onSurface,
-                          ),
-                        ),
-                        Text(
-                          '${(elementScaleFactor * 100).round()}%',
-                          style: context.textScheme.label.copyWith(
-                            color: context.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SliderTheme(
-                      data: SliderTheme.of(context).copyWith(
-                        overlayShape: const RoundSliderOverlayShape(),
-                        thumbShape: const RoundSliderThumbShape(
-                          enabledThumbRadius: 8,
-                        ),
-                        trackHeight: 4,
-                      ),
-                      child: Slider(
-                        value: elementScaleFactor,
-                        min: 0.9,
-                        max: 1.15,
-                        divisions: 5,
-                        onChanged: onElementScaleChanged,
-                      ),
-                    ),
                   ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          SettingsGroupCard(
-            title: l10n.settingsAccentSection,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-                child: ColorSchemeSelector(
-                  selectedAccentIndex: accentIndex,
-                  onAccentSelected: onAccentChanged,
                 ),
               ),
             ],
@@ -200,57 +154,54 @@ class _AppearanceBody extends StatelessWidget {
   }
 }
 
-class _ThemePreviewTile extends StatelessWidget {
+class _ThemePreviewStrip extends StatelessWidget {
+  const _ThemePreviewStrip({required this.themeType});
+
+  final AppThemeType themeType;
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
+    final radii = context.radii;
     final l10n = context.l10n;
+    final palette = themePreviewColors(themeType);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: colorScheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: colorScheme.outlineVariant),
+          borderRadius: radii.largeRadius,
+          border: Border.all(color: colorScheme.outlineVariant.withAlpha(0xAA)),
         ),
         child: Row(
           children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: colorScheme.primary,
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            const SizedBox(width: 12),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
                 children: [
-                  Container(
-                    height: 9,
-                    width: 90,
-                    decoration: BoxDecoration(
-                      color: colorScheme.onSurface.withAlpha(200),
-                      borderRadius: BorderRadius.circular(4),
+                  for (int i = 0; i < palette.length; i++) ...[
+                    if (i > 0) const SizedBox(width: 6),
+                    Expanded(
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: palette[i],
+                            borderRadius: radii.mediumRadius,
+                            border: Border.all(
+                              color: colorScheme.outlineVariant.withAlpha(0x66),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 6),
-                  Container(
-                    height: 7,
-                    width: 60,
-                    decoration: BoxDecoration(
-                      color: colorScheme.onSurfaceVariant.withAlpha(120),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
+                  ],
                 ],
               ),
             ),
+            const SizedBox(width: 12),
             Text(
               l10n.settingsPreviewLabel,
               style: textScheme.caption.copyWith(

@@ -8,7 +8,7 @@ import 'package:locnet_app/features/passcode/presentation/blocs/passcode_lock_cu
 import 'package:locnet_app/features/passcode/presentation/passcode_constants.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
-enum PasscodeSetupMode { create, change }
+enum PasscodeSetupMode { create, change, disable }
 
 class PasscodeSetupScreen extends StatefulWidget {
   const PasscodeSetupScreen({required this.mode, super.key});
@@ -67,12 +67,15 @@ class _PasscodeSetupScreenState extends State<PasscodeSetupScreen> {
       PasscodeSetupMode.create => l10n.passcodeConfirmPin,
       PasscodeSetupMode.change when _step == 0 => l10n.passcodeCurrentPin,
       PasscodeSetupMode.change when _step == 1 => l10n.passcodeEnterPin,
-      _ => l10n.passcodeConfirmPin,
+      PasscodeSetupMode.change => l10n.passcodeConfirmPin,
+      PasscodeSetupMode.disable => l10n.passcodeCurrentPin,
     };
 
-    final String screenTitle = widget.mode == PasscodeSetupMode.create
-        ? l10n.passcodeSetupTitle
-        : l10n.passcodeChangeTitle;
+    final String screenTitle = switch (widget.mode) {
+      PasscodeSetupMode.create => l10n.passcodeSetupTitle,
+      PasscodeSetupMode.change => l10n.passcodeChangeTitle,
+      PasscodeSetupMode.disable => l10n.passcodeDisableTitle,
+    };
 
     return Scaffold(
           backgroundColor: colorScheme.surface,
@@ -216,6 +219,27 @@ class _PasscodeSetupScreenState extends State<PasscodeSetupScreen> {
         await _handleCreate(context, pin);
       case PasscodeSetupMode.change:
         await _handleChange(context, pin);
+      case PasscodeSetupMode.disable:
+        await _handleDisable(context, pin);
+    }
+  }
+
+  Future<void> _handleDisable(BuildContext context, String pin) async {
+    setState(() => _busy = true);
+    try {
+      final PasscodeLockCubit cubit = context.read<PasscodeLockCubit>();
+      await cubit.disablePasscode(pin);
+      if (!context.mounted) return;
+      Navigator.of(context).pop(true);
+    } on PasscodeWrongPinException {
+      if (!context.mounted) return;
+      setState(() {
+        _errorText = context.l10n.passcodeWrongPin;
+      });
+      _pinController.clear();
+      _pinFocus.requestFocus();
+    } finally {
+      if (mounted) setState(() => _busy = false);
     }
   }
 

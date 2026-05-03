@@ -143,11 +143,115 @@ class _MessageBubbleState extends State<MessageBubble> {
     _showContextMenu(TapDownDetails(globalPosition: event.position));
   }
 
+  Widget _buildReplyPreview(
+    BuildContext context, {
+    required bool isMine,
+    required String replyPreviewText,
+    required String? replyPreviewAuthor,
+  }) {
+    final colorScheme = context.colorScheme;
+    final textScheme = context.textScheme;
+    final radii = context.radii;
+    final borders = context.borders;
+    final spacing = context.designTokens.spacing;
+
+    final String? authorRaw = replyPreviewAuthor?.trim();
+    final bool hasAuthor = authorRaw != null && authorRaw.isNotEmpty;
+
+    final Color stripeColor = isMine
+        ? Colors.white.withAlpha(0xE6)
+        : colorScheme.primary;
+
+    final Color bgColor = isMine
+        ? colorScheme.onPrimary.withAlpha(0x2A)
+        : colorScheme.surfaceContainerHighest;
+
+    final Color borderColor = isMine
+        ? colorScheme.onPrimary.withAlpha(0x44)
+        : colorScheme.outlineVariant;
+
+    final TextStyle authorStyle = isMine
+        ? textScheme.label.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          )
+        : textScheme.label.copyWith(
+            color: colorScheme.primary,
+            fontWeight: FontWeight.w600,
+          );
+
+    final TextStyle snippetStyle = isMine
+        ? textScheme.caption.copyWith(
+            color: Colors.white.withAlpha(0xCC),
+            fontSize: 12,
+            height: 1.35,
+          )
+        : textScheme.caption.copyWith(
+            color: colorScheme.onSurfaceVariant,
+            fontSize: 12,
+            height: 1.35,
+          );
+
+    return Padding(
+      padding: EdgeInsets.only(bottom: spacing.xs),
+      child: ClipRRect(
+        borderRadius: radii.mediumRadius,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: bgColor,
+            border: Border.all(color: borderColor, width: borders.thin),
+          ),
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(
+                  width: 3,
+                  color: stripeColor,
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(
+                      spacing.sm,
+                      spacing.xs + 1,
+                      spacing.sm,
+                      spacing.xs + 1,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (hasAuthor) ...[
+                          Text(
+                            authorRaw,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: authorStyle,
+                          ),
+                          SizedBox(height: spacing.xxs),
+                        ],
+                        Text(
+                          replyPreviewText,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: snippetStyle,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
-
     final bool isMine = widget.forceLeft
         ? false
         : widget.currentUserId != null
@@ -229,7 +333,10 @@ class _MessageBubbleState extends State<MessageBubble> {
                     borderRadius: borderRadius,
                     border: isMine
                         ? null
-                        : Border.all(color: colorScheme.outline, width: 1),
+                        : Border.all(
+                            color: colorScheme.outline,
+                            width: context.borders.thin,
+                          ),
                   ),
                   child: Column(
                     crossAxisAlignment: crossAxisAlignment,
@@ -253,59 +360,11 @@ class _MessageBubbleState extends State<MessageBubble> {
                           ),
                         ),
                       if (hasReplyPreview)
-                        Container(
-                          width: double.infinity,
-                          margin: const EdgeInsets.only(bottom: 8),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 7,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isMine
-                                ? Colors.white.withAlpha(20)
-                                : colorScheme.onSurface.withAlpha(14),
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border(
-                              left: BorderSide(
-                                color: isMine
-                                    ? Colors.white.withAlpha(180)
-                                    : colorScheme.primary,
-                                width: 3,
-                              ),
-                            ),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (replyPreviewAuthor != null &&
-                                  replyPreviewAuthor.trim().isNotEmpty)
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 2),
-                                  child: Text(
-                                    replyPreviewAuthor,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: messageTextStyle.copyWith(
-                                      fontSize: 12.5,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              Text(
-                                replyPreviewText,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: messageTextStyle.copyWith(
-                                  fontSize: 12.5,
-                                  color:
-                                      (messageTextStyle.color ??
-                                              colorScheme.onSurface)
-                                          .withAlpha(180),
-                                ),
-                              ),
-                            ],
-                          ),
+                        _buildReplyPreview(
+                          context,
+                          isMine: isMine,
+                          replyPreviewText: replyPreviewText,
+                          replyPreviewAuthor: replyPreviewAuthor,
                         ),
                       _buildMessageContent(
                         messageMarkdown: messageMarkdown,
