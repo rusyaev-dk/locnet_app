@@ -17,30 +17,27 @@ class SettingsSectionHeader extends StatelessWidget {
     final textScheme = context.textScheme;
     final colorScheme = context.colorScheme;
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: textScheme.headline.copyWith(
+            color: colorScheme.onSurface,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        if (description != null) ...[
+          const SizedBox(height: 6),
           Text(
-            title,
-            style: textScheme.headline.copyWith(
-              color: colorScheme.onSurface,
-              fontWeight: FontWeight.w700,
+            description!,
+            style: textScheme.label.copyWith(
+              color: colorScheme.onSurfaceVariant,
+              height: 1.4,
             ),
           ),
-          if (description != null) ...[
-            const SizedBox(height: 6),
-            Text(
-              description!,
-              style: textScheme.label.copyWith(
-                color: colorScheme.onSurfaceVariant,
-                height: 1.4,
-              ),
-            ),
-          ],
         ],
-      ),
+      ],
     );
   }
 }

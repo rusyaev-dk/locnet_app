@@ -100,13 +100,11 @@ class _SettingsViewState extends State<SettingsView> {
 
   @override
   Widget build(BuildContext context) {
-    final Session? session = context.select<AuthCubit, Session?>((AuthCubit c) {
-      final state = c.state;
-      if (state is AuthAuthenticatedState) return state.session;
-      return null;
-    });
-
     final colorScheme = context.colorScheme;
+
+    final bool isAuthenticated = context.select<AuthCubit, bool>(
+      (AuthCubit c) => c.state is AuthAuthenticatedState,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,7 +150,7 @@ class _SettingsViewState extends State<SettingsView> {
                 ),
                 child: SettingsSidebar(
                   selectedSection: _selectedSection,
-                  onLogout: session != null
+                  onLogout: isAuthenticated
                       ? () => _showLogoutConfirmation(context)
                       : null,
                   onSectionSelected: (section) {
@@ -163,10 +161,7 @@ class _SettingsViewState extends State<SettingsView> {
                 ),
               ),
               Expanded(
-                child: _SettingsSectionContent(
-                  section: _selectedSection,
-                  session: session,
-                ),
+                child: _SettingsSectionContent(section: _selectedSection),
               ),
             ],
           ),
@@ -177,10 +172,9 @@ class _SettingsViewState extends State<SettingsView> {
 }
 
 class _SettingsSectionContent extends StatelessWidget {
-  const _SettingsSectionContent({required this.section, required this.session});
+  const _SettingsSectionContent({required this.section});
 
   final SettingsSection section;
-  final Session? session;
 
   @override
   Widget build(BuildContext context) {
@@ -195,12 +189,13 @@ class _SettingsSectionContent extends StatelessWidget {
               logger: context.read<ILogger>(),
             ),
             authInteractor: context.read<AuthInteractor>(),
+            authCubit: context.read<AuthCubit>(),
             logger: context.read<ILogger>(),
           )..loadProfile(),
           child: const ProfileSettingsContent(),
         );
       case SettingsSection.security:
-        return PrivacySettingsContent(session: session);
+        return const PrivacySettingsContent();
       case SettingsSection.notifications:
         return BlocProvider<NotificationsSettingsCubit>(
           create: (context) => NotificationsSettingsCubit(
@@ -218,7 +213,7 @@ class _SettingsSectionContent extends StatelessWidget {
       case SettingsSection.language:
         return const LanguageSettingsContent();
       case SettingsSection.privacy:
-        return PrivacySettingsContent(session: session);
+        return const PrivacySettingsContent();
       case SettingsSection.storage:
         return BlocProvider<StorageCubit>(
           create: (context) => StorageCubit(

@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:locnet_app/app/app.dart';
+import 'package:locnet_app/uikit/tokens/app_spacing.dart';
 
+/// Text field aligned with [AppThemeData] input decoration: outlined surface,
+/// `outlineVariant` / `primary` borders, [AppBorders] widths, [AppSpacing] padding.
 class CustomTextField extends StatelessWidget {
   const CustomTextField({
     required this.controller,
     super.key,
+    this.focusNode,
     this.labelText,
     this.hintText,
     this.obscureText = false,
@@ -33,9 +37,12 @@ class CustomTextField extends StatelessWidget {
     this.maxSymbols,
     this.height,
     this.expandable = false,
+    this.extraInputFormatters,
   });
 
   final TextEditingController controller;
+
+  final FocusNode? focusNode;
 
   final String? labelText;
   final String? hintText;
@@ -74,6 +81,9 @@ class CustomTextField extends StatelessWidget {
   final double? height;
   final bool expandable;
 
+  /// Merged before the optional [maxSymbols] length limit.
+  final List<TextInputFormatter>? extraInputFormatters;
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
@@ -81,25 +91,94 @@ class CustomTextField extends StatelessWidget {
 
     final radii = context.radii;
     final borders = context.borders;
+    final spacing =
+        Theme.of(context).extension<AppSpacing>() ?? AppSpacing.standard();
 
     final BorderRadius resolvedBorderRadius =
         borderRadius ?? radii.defaultRadiusValue;
 
+    final bool chromeEnabled = enabled && isActive;
+
     final Color resolvedBackgroundColor =
-        backgroundColor ?? colorScheme.surface;
+        backgroundColor ??
+        (chromeEnabled
+            ? colorScheme.surface
+            : colorScheme.surfaceContainerHigh);
+
+    final Color resolvedBorder = borderColor ?? colorScheme.outlineVariant;
+    final Color resolvedFocusedBorder =
+        focusedBorderColor ?? colorScheme.primary;
 
     final EdgeInsetsGeometry resolvedContentPadding =
         contentPadding ??
-        const EdgeInsets.symmetric(horizontal: 16, vertical: 12);
+        EdgeInsets.symmetric(
+          horizontal: spacing.md,
+          vertical: (maxLines > 1 || expandable) ? spacing.sm : 14,
+        );
 
-    final List<TextInputFormatter> inputFormatters = maxSymbols != null
-        ? <TextInputFormatter>[LengthLimitingTextInputFormatter(maxSymbols)]
-        : const <TextInputFormatter>[];
+    final List<TextInputFormatter> inputFormatters = <TextInputFormatter>[
+      ...?extraInputFormatters,
+      if (maxSymbols != null) LengthLimitingTextInputFormatter(maxSymbols!),
+    ];
 
     final bool isExpandable = expandable && !obscureText;
 
+    final TextStyle resolvedLabelStyle =
+        labelStyle ??
+        textScheme.label.copyWith(
+          color: colorScheme.onSurfaceVariant,
+          fontWeight: FontWeight.w500,
+          fontSize: 13,
+        );
+
+    final WidgetStateTextStyle floatingLabelStyle =
+        WidgetStateTextStyle.resolveWith((Set<WidgetState> states) {
+          final TextStyle base = textScheme.label.copyWith(
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
+          );
+          if (states.contains(WidgetState.error)) {
+            return base.copyWith(color: colorScheme.error);
+          }
+          if (states.contains(WidgetState.focused)) {
+            return base.copyWith(color: resolvedFocusedBorder);
+          }
+          return base.copyWith(color: colorScheme.onSurfaceVariant);
+        });
+
+    final TextStyle resolvedHintStyle =
+        hintStyle ??
+        textScheme.body.copyWith(
+          color: colorScheme.onSurfaceVariant.withValues(alpha: 0.55),
+          height: 1.25,
+        );
+
+    final OutlineInputBorder outlineBase = OutlineInputBorder(
+      borderRadius: resolvedBorderRadius,
+      borderSide: BorderSide(color: resolvedBorder, width: borders.thin),
+    );
+
+    final OutlineInputBorder outlineFocused = OutlineInputBorder(
+      borderRadius: resolvedBorderRadius,
+      borderSide: BorderSide(
+        color: resolvedFocusedBorder,
+        width: borders.medium,
+      ),
+    );
+
+    final OutlineInputBorder outlineError = OutlineInputBorder(
+      borderRadius: resolvedBorderRadius,
+      borderSide: BorderSide(color: colorScheme.error, width: borders.thin),
+    );
+
+    final OutlineInputBorder outlineErrorFocused = OutlineInputBorder(
+      borderRadius: resolvedBorderRadius,
+      borderSide: BorderSide(color: colorScheme.error, width: borders.medium),
+    );
+
     final TextField textField = TextField(
       controller: controller,
+      focusNode: focusNode,
       enabled: enabled,
       readOnly: !isActive,
       obscureText: obscureText,
@@ -118,15 +197,18 @@ class CustomTextField extends StatelessWidget {
               required int? maxLength,
             }) {
               final bool isLimitExceeded = currentLength > maxSymbols!;
-              final TextStyle counterTextStyle = textScheme.label.copyWith(
+              final TextStyle counterTextStyle = textScheme.caption.copyWith(
                 color: isLimitExceeded
                     ? colorScheme.error
-                    : colorScheme.onSurfaceVariant.withAlpha(179),
+                    : colorScheme.onSurfaceVariant.withValues(alpha: 0.55),
               );
 
-              return Text(
-                '$currentLength/$maxSymbols',
-                style: counterTextStyle,
+              return Padding(
+                padding: EdgeInsets.only(top: spacing.xxs),
+                child: Text(
+                  '$currentLength/$maxSymbols',
+                  style: counterTextStyle,
+                ),
               );
             }
           : null,
@@ -149,48 +231,49 @@ class CustomTextField extends StatelessWidget {
             }
           : null,
       style:
-          textStyle ?? textScheme.body.copyWith(color: colorScheme.onSurface),
+          textStyle ??
+          textScheme.body.copyWith(
+            color: chromeEnabled
+                ? colorScheme.onSurface
+                : colorScheme.onSurfaceVariant,
+            fontSize: 15,
+            height: 1.25,
+          ),
       decoration: InputDecoration(
+        isDense: false,
+        filled: true,
+        fillColor: resolvedBackgroundColor,
         labelText: labelText,
         hintText: hintText,
         helperText: helperText,
         errorText: errorText,
-        labelStyle:
-            labelStyle ??
-            textScheme.subtitle.copyWith(color: colorScheme.onSurfaceVariant),
-        hintStyle:
-            hintStyle ??
-            textScheme.body.copyWith(
-              color: colorScheme.onSurfaceVariant.withAlpha(179),
-            ),
-        filled: true,
-        fillColor: resolvedBackgroundColor,
+        floatingLabelBehavior: FloatingLabelBehavior.auto,
+        floatingLabelStyle: floatingLabelStyle,
+        labelStyle: resolvedLabelStyle,
+        hintStyle: resolvedHintStyle,
+        helperStyle: textScheme.caption.copyWith(
+          color: colorScheme.onSurfaceVariant,
+          height: 1.35,
+        ),
+        errorStyle: textScheme.caption.copyWith(
+          color: colorScheme.error,
+          height: 1.35,
+        ),
         contentPadding: resolvedContentPadding,
         prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: resolvedBorderRadius,
-          borderSide: BorderSide.none,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: resolvedBorderRadius,
-          borderSide: BorderSide.none,
-        ),
+        enabledBorder: outlineBase,
+        focusedBorder: outlineFocused,
         disabledBorder: OutlineInputBorder(
           borderRadius: resolvedBorderRadius,
-          borderSide: BorderSide.none,
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: resolvedBorderRadius,
-          borderSide: BorderSide(color: colorScheme.error, width: borders.thin),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: resolvedBorderRadius,
           borderSide: BorderSide(
-            color: colorScheme.error,
-            width: borders.medium,
+            color: colorScheme.outlineVariant.withValues(alpha: 0.45),
+            width: borders.thin,
           ),
         ),
+        border: outlineBase,
+        errorBorder: outlineError,
+        focusedErrorBorder: outlineErrorFocused,
       ),
     );
 

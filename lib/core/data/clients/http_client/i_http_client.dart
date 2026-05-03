@@ -38,4 +38,8 @@ abstract interface class IHttpClient {
     Map<String, dynamic>? uriParameters,
     Map<String, dynamic>? headers,
   });
+
+  /// Replays a low-level request (e.g. same [RequestOptions] after refreshing JWT).
+  /// Does not apply success status validation — mirrors [Dio.fetch] behavior.
+  Future<Response> fetch(RequestOptions requestOptions);
 }

@@ -3,7 +3,7 @@ import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/features/settings/presentation/models/models.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
-/// Sidebar for settings modal: 4 main tabs + Sign Out at bottom.
+/// Sidebar for settings modal: section list + Sign Out at bottom.
 class SettingsSidebar extends StatelessWidget {
   const SettingsSidebar({
     required this.selectedSection,
@@ -32,6 +32,7 @@ class SettingsSidebar extends StatelessWidget {
     final List<(SettingsSection section, IconData icon, String label)> items = [
       (SettingsSection.profile, Icons.person_outline, l10n.settingsMyProfile),
       (SettingsSection.appearance, Icons.palette_outlined, l10n.appearance),
+      (SettingsSection.language, Icons.translate_outlined, l10n.settingsLanguage),
       (
         SettingsSection.notifications,
         Icons.notifications_outlined,

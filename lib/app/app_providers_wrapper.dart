@@ -10,6 +10,9 @@ import 'package:locnet_app/features/auth/presentation/presentation.dart';
 import 'package:locnet_app/features/conversations_list/data/data.dart';
 import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/data/data.dart';
 import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/domain/domain.dart';
+import 'package:locnet_app/features/passcode/data/data.dart';
+import 'package:locnet_app/features/passcode/domain/domain.dart';
+import 'package:locnet_app/features/passcode/presentation/presentation.dart';
 import 'package:locnet_app/features/message/data/data.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
 import 'package:locnet_app/features/settings/domain/domain.dart';
@@ -94,6 +97,30 @@ class AppProvidersWrapper extends StatelessWidget {
               return LocalUserCacheRepo(storage: storageForUser);
             },
           ),
+          RepositoryProvider<IAuthTokenRefreshRepo>(
+            create: (context) => HttpAuthTokenRefreshRepo(
+              httpClient: context.read<IHttpClient>(),
+              deviceInfoRepo: context.read<IDeviceInfoRepo>(),
+            ),
+          ),
+          RepositoryProvider<IPasscodeRepo>(
+            create: (context) {
+              final bool useMacOsFallbackStorage =
+                  !kIsWeb && defaultTargetPlatform == TargetPlatform.macOS;
+              final IKeyValueStorage secureStorage = useMacOsFallbackStorage
+                  ? appScope.storageAggregator.localKeyValueStorage
+                  : appScope.storageAggregator.secureStorage;
+              return LocalPasscodeRepo(
+                secureStorage: secureStorage,
+                localStorage: appScope.storageAggregator.localKeyValueStorage,
+              );
+            },
+          ),
+          RepositoryProvider<PasscodeInteractor>(
+            create: (context) => PasscodeInteractor(
+              passcodeRepo: context.read<IPasscodeRepo>(),
+            ),
+          ),
           RepositoryProvider<ISessionCacheRepo>(
             create: (context) {
               final bool useMacOsFallbackStorage =
@@ -106,10 +133,9 @@ class AppProvidersWrapper extends StatelessWidget {
               );
               appScope.dio.interceptors.add(
                 JWTInterceptor(
-                  dio: appScope.dio,
+                  httpClient: context.read<IHttpClient>(),
                   sessionCacheRepo: cacheRepo,
-                  authRepo: context.read<IAuthRepo>(),
-                  deviceInfoRepo: context.read<IDeviceInfoRepo>(),
+                  authTokenRefreshRepo: context.read<IAuthTokenRefreshRepo>(),
                   unauthorizedEventBus: context.read<UnauthorizedEventBus>(),
                   logger: appScope.logger,
                 ),
@@ -185,6 +211,13 @@ class _BlocProviders extends StatelessWidget {
             logger: appScope.logger,
           )..tryRestoreSession(),
           lazy: false,
+        ),
+        BlocProvider(
+          lazy: false,
+          create: (context) => PasscodeLockCubit(
+            passcodeInteractor: context.read<PasscodeInteractor>(),
+            authCubit: context.read<AuthCubit>(),
+          ),
         ),
         BlocProvider(
           create: (context) => SettingsCubit(

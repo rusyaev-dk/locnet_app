@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/auth/presentation/presentation.dart';
+import 'package:locnet_app/features/passcode/presentation/presentation.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
@@ -41,15 +42,21 @@ class PanelSidebar extends StatelessWidget {
       child: Column(
         children: [
           const SizedBox(height: 14),
-          // Logo
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              color: colorScheme.primary,
-              borderRadius: BorderRadius.circular(10),
+          Material(
+            color: colorScheme.primary,
+            borderRadius: BorderRadius.circular(10),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: () {
+                context.read<PasscodeLockCubit>().lockNow();
+              },
+              hoverColor: colorScheme.onPrimary.withValues(alpha: 0.12),
+              child: const SizedBox(
+                width: 34,
+                height: 34,
+                child: Icon(Icons.lock, color: Colors.white, size: 18),
+              ),
             ),
-            child: const Icon(Icons.lock, color: Colors.white, size: 18),
           ),
           const SizedBox(height: 20),
           // Chat nav button

@@ -39,68 +39,73 @@ class ConversationProfileHeaderBase extends StatelessWidget {
 
     final bool online = isOnline ?? false;
 
-    return Container(
-      height: 64,
-      decoration: BoxDecoration(
-        color: colorScheme.secondary,
-        border: Border(
-          bottom: BorderSide(color: colorScheme.outline, width: 1),
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: Container(
+        height: 64,
+        decoration: BoxDecoration(
+          color: colorScheme.secondary,
+          border: Border(
+            bottom: BorderSide(color: colorScheme.outline, width: 1),
+          ),
         ),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: onTap,
-            child: MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: ConversationAvatar(
-                text: avatarText,
-                size: 38,
-                isOnline: null,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        child: Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: onTap,
+                child: Row(
+                  children: [
+                    ConversationAvatar(
+                      text: avatarText,
+                      size: 38,
+                      isOnline: null,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: colorScheme.onSurface,
+                              height: 1.2,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            online
+                                ? context.l10n.companionStatusOnline
+                                : (subtitle ??
+                                    context.l10n.companionStatusOffline),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: online
+                                  ? _onlineColor
+                                  : colorScheme.onSurfaceVariant,
+                              height: 1.2,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: GestureDetector(
-              onTap: onTap,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: colorScheme.onSurface,
-                      height: 1.2,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    online
-                        ? context.l10n.companionStatusOnline
-                        : (subtitle ?? context.l10n.companionStatusOffline),
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: online
-                          ? _onlineColor
-                          : colorScheme.onSurfaceVariant,
-                      height: 1.2,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          ...trailingActions,
-          if (menuButton != null) menuButton!,
-        ],
+            const SizedBox(width: 8),
+            ...trailingActions,
+            if (menuButton != null) menuButton!,
+          ],
+        ),
       ),
     );
   }

@@ -6,6 +6,7 @@ abstract class AppRoutes {
   static const String storage = '/storage';
   static const String settings = '/settings';
   static const String profile = '/profile';
+  static const String passcodeLock = '/passcode-lock';
 
   static String conversation(String conversationId) =>
       "/conversations/$conversationId";

@@ -164,28 +164,15 @@ class _ConversationSearchSheetState extends State<ConversationSearchSheet> {
                     );
                   },
                 ),
-                GestureDetector(
-                  onTap: () => Navigator.of(context).maybePop(),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 5,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colorScheme.surfaceContainer,
-                      border: Border.all(color: colorScheme.outline),
-                      borderRadius: BorderRadius.circular(7),
-                    ),
-                    child: Text(
-                      'Esc',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: colorScheme.onSurfaceVariant,
-                        height: 1.2,
-                      ),
-                    ),
-                  ),
+                SurfaceIconButton(
+                  variant: SurfaceIconVariant.ghost,
+                  icon: Icons.close,
+                  onPressed: () => Navigator.of(context).maybePop(),
+                  dimension: 28,
+                  iconSize: 18,
+                  margin: EdgeInsets.zero,
+                  tooltip: l10n.close,
+                  foregroundColor: colorScheme.onSurfaceVariant,
                 ),
               ],
             ),
@@ -231,13 +218,11 @@ class _ConversationSearchSheetState extends State<ConversationSearchSheet> {
                 top: BorderSide(color: colorScheme.outline),
               ),
             ),
-            child: Row(
-              children: const [
+            child: const Row(
+              children: [
                 ModalKeyboardHint(keyLabel: '↵', description: 'Select'),
                 SizedBox(width: 12),
                 ModalKeyboardHint(keyLabel: '↑↓', description: 'Navigate'),
-                SizedBox(width: 12),
-                ModalKeyboardHint(keyLabel: 'Esc', description: 'Close'),
               ],
             ),
           ),

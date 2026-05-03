@@ -26,11 +26,13 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m2(count) => "${count} участников";
 
-  static String m3(min) => "Не менее ${min} символов";
+  static String m3(count) => "${count} мин.";
 
-  static String m4(size) => "${size} в кеше";
+  static String m4(min) => "Не менее ${min} символов";
 
-  static String m5(size) => "${size} всего в кеше";
+  static String m5(size) => "${size} в кеше";
+
+  static String m6(size) => "${size} всего в кеше";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -259,6 +261,41 @@ class MessageLookup extends MessageLookupByLibrary {
     "notSpecified": MessageLookupByLibrary.simpleMessage("Не задано"),
     "nothingFound": MessageLookupByLibrary.simpleMessage("Ничего не найдено"),
     "ok": MessageLookupByLibrary.simpleMessage("ОК"),
+    "passcode15Minutes": MessageLookupByLibrary.simpleMessage("15 минут"),
+    "passcode1Hour": MessageLookupByLibrary.simpleMessage("1 час"),
+    "passcode1Minute": MessageLookupByLibrary.simpleMessage("1 минута"),
+    "passcode30Minutes": MessageLookupByLibrary.simpleMessage("30 минут"),
+    "passcode5Minutes": MessageLookupByLibrary.simpleMessage("5 минут"),
+    "passcodeAppLock": MessageLookupByLibrary.simpleMessage(
+      "Блокировка приложения",
+    ),
+    "passcodeChange": MessageLookupByLibrary.simpleMessage("Сменить PIN"),
+    "passcodeChangeTitle": MessageLookupByLibrary.simpleMessage("Смена PIN"),
+    "passcodeConfirmPin": MessageLookupByLibrary.simpleMessage("Повторите PIN"),
+    "passcodeCurrentPin": MessageLookupByLibrary.simpleMessage("Текущий PIN"),
+    "passcodeDisableTitle": MessageLookupByLibrary.simpleMessage(
+      "Отключить блокировку",
+    ),
+    "passcodeEnterPin": MessageLookupByLibrary.simpleMessage("Введите PIN"),
+    "passcodeImmediate": MessageLookupByLibrary.simpleMessage("Немедленно"),
+    "passcodeLockAfter": MessageLookupByLibrary.simpleMessage(
+      "Блокировать через",
+    ),
+    "passcodeLogOut": MessageLookupByLibrary.simpleMessage("Выйти из аккаунта"),
+    "passcodeMinutesCount": m3,
+    "passcodeNever": MessageLookupByLibrary.simpleMessage("Никогда"),
+    "passcodePinsMismatch": MessageLookupByLibrary.simpleMessage(
+      "PIN не совпадает. Попробуйте снова.",
+    ),
+    "passcodeSectionTitle": MessageLookupByLibrary.simpleMessage("Код доступа"),
+    "passcodeSetupTitle": MessageLookupByLibrary.simpleMessage("Установка PIN"),
+    "passcodeUnlockButton": MessageLookupByLibrary.simpleMessage(
+      "Разблокировать",
+    ),
+    "passcodeUnlockTitle": MessageLookupByLibrary.simpleMessage(
+      "Введите PIN, чтобы продолжить",
+    ),
+    "passcodeWrongPin": MessageLookupByLibrary.simpleMessage("Неверный PIN"),
     "password": MessageLookupByLibrary.simpleMessage("Пароль"),
     "passwordRequirementAllowedChars": MessageLookupByLibrary.simpleMessage(
       "Допустимы только буквы, цифры и спец. символы",
@@ -269,7 +306,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "passwordRequirementLowercase": MessageLookupByLibrary.simpleMessage(
       "Хотя бы одна строчная буква (a–z)",
     ),
-    "passwordRequirementMinLength": m3,
+    "passwordRequirementMinLength": m4,
     "passwordRequirementSpecial": MessageLookupByLibrary.simpleMessage(
       "Хотя бы один специальный символ (!?@#\$%^&*()_-{})",
     ),
@@ -448,7 +485,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "settingsStorageCacheEmptyHint": MessageLookupByLibrary.simpleMessage(
       "Данные не кешированы локально.",
     ),
-    "settingsStorageCached": m4,
+    "settingsStorageCached": m5,
     "settingsStorageClearAll": MessageLookupByLibrary.simpleMessage(
       "Очистить кеш",
     ),
@@ -469,7 +506,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "settingsStoragePhotos": MessageLookupByLibrary.simpleMessage("Фотографии"),
     "settingsStorageSection": MessageLookupByLibrary.simpleMessage("Хранилище"),
-    "settingsStorageTotalCached": m5,
+    "settingsStorageTotalCached": m6,
     "settingsStorageVideos": MessageLookupByLibrary.simpleMessage("Видео"),
     "settingsTextScale": MessageLookupByLibrary.simpleMessage("Размер текста"),
     "settingsThemeModeLabel": MessageLookupByLibrary.simpleMessage("Режим"),

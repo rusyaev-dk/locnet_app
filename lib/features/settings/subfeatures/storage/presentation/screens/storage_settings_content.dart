@@ -39,8 +39,10 @@ class _StorageSettingsContentState extends State<StorageSettingsContent> {
       builder: (context, state) {
         return switch (state) {
           StorageLoadingState() => const _LoadingBody(),
-          StorageClearingState(:final prevStats) =>
-            _StorageBody(stats: prevStats, isClearing: true),
+          StorageClearingState(:final prevStats) => _StorageBody(
+            stats: prevStats,
+            isClearing: true,
+          ),
           StorageLoadedState() => _StorageBody(stats: state),
           StorageErrorState(:final error) => _ErrorBody(error: error),
         };
@@ -90,15 +92,12 @@ class _StorageBody extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Section header ──────────────────────────────────────────
           SettingsSectionHeader(title: l10n.settingsStorageSection),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
 
-          // ── Stats card ──────────────────────────────────────────────
           _StatsCard(stats: stats, categories: categories),
           const SizedBox(height: 20),
 
-          // ── Breakdown by type ────────────────────────────────────────
           SettingsGroupCard(
             title: l10n.settingsStorageByType,
             children: [
@@ -130,42 +129,42 @@ class _StorageBody extends StatelessWidget {
   }
 
   List<_CategoryData> _buildCategories(dynamic l10n) => [
-        _CategoryData(
-          icon: Icons.image_outlined,
-          label: l10n.settingsStoragePhotos as String,
-          color: _colorPhotos,
-          bytes: stats.photoBytes,
-          fraction: stats.fractionOf(stats.photoBytes),
-        ),
-        _CategoryData(
-          icon: Icons.videocam_outlined,
-          label: l10n.settingsStorageVideos as String,
-          color: _colorVideos,
-          bytes: stats.videoBytes,
-          fraction: stats.fractionOf(stats.videoBytes),
-        ),
-        _CategoryData(
-          icon: Icons.forum_outlined,
-          label: l10n.settingsStorageMessages as String,
-          color: _colorText,
-          bytes: stats.textBytes,
-          fraction: stats.fractionOf(stats.textBytes),
-        ),
-        _CategoryData(
-          icon: Icons.headphones_outlined,
-          label: l10n.settingsStorageAudio as String,
-          color: _colorAudio,
-          bytes: stats.audioBytes,
-          fraction: stats.fractionOf(stats.audioBytes),
-        ),
-        _CategoryData(
-          icon: Icons.insert_drive_file_outlined,
-          label: l10n.settingsStorageOtherFiles as String,
-          color: _colorOther,
-          bytes: stats.otherBytes,
-          fraction: stats.fractionOf(stats.otherBytes),
-        ),
-      ];
+    _CategoryData(
+      icon: Icons.image_outlined,
+      label: l10n.settingsStoragePhotos as String,
+      color: _colorPhotos,
+      bytes: stats.photoBytes,
+      fraction: stats.fractionOf(stats.photoBytes),
+    ),
+    _CategoryData(
+      icon: Icons.videocam_outlined,
+      label: l10n.settingsStorageVideos as String,
+      color: _colorVideos,
+      bytes: stats.videoBytes,
+      fraction: stats.fractionOf(stats.videoBytes),
+    ),
+    _CategoryData(
+      icon: Icons.forum_outlined,
+      label: l10n.settingsStorageMessages as String,
+      color: _colorText,
+      bytes: stats.textBytes,
+      fraction: stats.fractionOf(stats.textBytes),
+    ),
+    _CategoryData(
+      icon: Icons.headphones_outlined,
+      label: l10n.settingsStorageAudio as String,
+      color: _colorAudio,
+      bytes: stats.audioBytes,
+      fraction: stats.fractionOf(stats.audioBytes),
+    ),
+    _CategoryData(
+      icon: Icons.insert_drive_file_outlined,
+      label: l10n.settingsStorageOtherFiles as String,
+      color: _colorOther,
+      bytes: stats.otherBytes,
+      fraction: stats.fractionOf(stats.otherBytes),
+    ),
+  ];
 }
 
 // ─── Stats hero card ──────────────────────────────────────────────────────────
@@ -187,14 +186,13 @@ class _StatsCard extends StatelessWidget {
         : l10n.settingsStorageTotalCached(formatBytes(stats.totalBytes));
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
         children: [
-          // Donut chart
           SizedBox(
             width: 92,
             height: 92,
@@ -398,8 +396,7 @@ class _CategoryTile extends StatelessWidget {
               value: category.fraction.clamp(0.0, 1.0),
               minHeight: 4,
               backgroundColor: colorScheme.outlineVariant,
-              valueColor:
-                  AlwaysStoppedAnimation<Color>(category.color),
+              valueColor: AlwaysStoppedAnimation<Color>(category.color),
             ),
           ),
         ],
@@ -455,14 +452,14 @@ class _ErrorBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Center(
-        child: Text(
-          '${context.l10n.storageException}\n$error',
-          textAlign: TextAlign.center,
-          style: context.textScheme.label.copyWith(
-            color: context.colorScheme.onSurfaceVariant,
-          ),
-        ),
-      );
+    child: Text(
+      '${context.l10n.storageException}\n$error',
+      textAlign: TextAlign.center,
+      style: context.textScheme.label.copyWith(
+        color: context.colorScheme.onSurfaceVariant,
+      ),
+    ),
+  );
 }
 
 // ─── Data model ───────────────────────────────────────────────────────────────

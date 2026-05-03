@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
+import 'package:locnet_app/uikit/uikit.dart';
 
-/// Switch list tile for notification toggles in settings.
+/// Standalone notification toggle row (matches [SettingsSwitchTile] visuals).
 class NotificationSwitchTile extends StatelessWidget {
   const NotificationSwitchTile({
     required this.title,
@@ -24,26 +25,42 @@ class NotificationSwitchTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Material(
-        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(12),
-        child: SwitchListTile(
-          title: Text(
-            title,
-            style: textScheme.label.copyWith(color: colorScheme.onSurface),
-          ),
-          subtitle: subtitle != null
-              ? Text(
-                  subtitle!,
-                  style: textScheme.label.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                    fontSize: 12,
+        color: colorScheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(16),
+        clipBehavior: Clip.antiAlias,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+          child: MergeSemantics(
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        title,
+                        style: textScheme.label.copyWith(
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                      if (subtitle != null) ...[
+                        const SizedBox(height: 3),
+                        Text(
+                          subtitle!,
+                          style: textScheme.caption.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                            height: 1.3,
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
-                )
-              : null,
-          value: value,
-          onChanged: onChanged,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+                ),
+                const SizedBox(width: 12),
+                AppSwitch(value: value, onChanged: onChanged),
+              ],
+            ),
           ),
         ),
       ),

@@ -2248,6 +2248,226 @@ class S {
       args: [size],
     );
   }
+
+  /// `Код доступа`
+  String get passcodeSectionTitle {
+    return Intl.message(
+      'Код доступа',
+      name: 'passcodeSectionTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Блокировка приложения`
+  String get passcodeAppLock {
+    return Intl.message(
+      'Блокировка приложения',
+      name: 'passcodeAppLock',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Блокировать через`
+  String get passcodeLockAfter {
+    return Intl.message(
+      'Блокировать через',
+      name: 'passcodeLockAfter',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Сменить PIN`
+  String get passcodeChange {
+    return Intl.message(
+      'Сменить PIN',
+      name: 'passcodeChange',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Введите PIN`
+  String get passcodeEnterPin {
+    return Intl.message(
+      'Введите PIN',
+      name: 'passcodeEnterPin',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Повторите PIN`
+  String get passcodeConfirmPin {
+    return Intl.message(
+      'Повторите PIN',
+      name: 'passcodeConfirmPin',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Неверный PIN`
+  String get passcodeWrongPin {
+    return Intl.message(
+      'Неверный PIN',
+      name: 'passcodeWrongPin',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Выйти из аккаунта`
+  String get passcodeLogOut {
+    return Intl.message(
+      'Выйти из аккаунта',
+      name: 'passcodeLogOut',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Введите PIN, чтобы продолжить`
+  String get passcodeUnlockTitle {
+    return Intl.message(
+      'Введите PIN, чтобы продолжить',
+      name: 'passcodeUnlockTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Разблокировать`
+  String get passcodeUnlockButton {
+    return Intl.message(
+      'Разблокировать',
+      name: 'passcodeUnlockButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Немедленно`
+  String get passcodeImmediate {
+    return Intl.message(
+      'Немедленно',
+      name: 'passcodeImmediate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `1 минута`
+  String get passcode1Minute {
+    return Intl.message(
+      '1 минута',
+      name: 'passcode1Minute',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `5 минут`
+  String get passcode5Minutes {
+    return Intl.message(
+      '5 минут',
+      name: 'passcode5Minutes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `15 минут`
+  String get passcode15Minutes {
+    return Intl.message(
+      '15 минут',
+      name: 'passcode15Minutes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `30 минут`
+  String get passcode30Minutes {
+    return Intl.message(
+      '30 минут',
+      name: 'passcode30Minutes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `1 час`
+  String get passcode1Hour {
+    return Intl.message('1 час', name: 'passcode1Hour', desc: '', args: []);
+  }
+
+  /// `Никогда`
+  String get passcodeNever {
+    return Intl.message('Никогда', name: 'passcodeNever', desc: '', args: []);
+  }
+
+  /// `Отключить блокировку`
+  String get passcodeDisableTitle {
+    return Intl.message(
+      'Отключить блокировку',
+      name: 'passcodeDisableTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `PIN не совпадает. Попробуйте снова.`
+  String get passcodePinsMismatch {
+    return Intl.message(
+      'PIN не совпадает. Попробуйте снова.',
+      name: 'passcodePinsMismatch',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Установка PIN`
+  String get passcodeSetupTitle {
+    return Intl.message(
+      'Установка PIN',
+      name: 'passcodeSetupTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Смена PIN`
+  String get passcodeChangeTitle {
+    return Intl.message(
+      'Смена PIN',
+      name: 'passcodeChangeTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Текущий PIN`
+  String get passcodeCurrentPin {
+    return Intl.message(
+      'Текущий PIN',
+      name: 'passcodeCurrentPin',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{count} мин.`
+  String passcodeMinutesCount(Object count) {
+    return Intl.message(
+      '$count мин.',
+      name: 'passcodeMinutesCount',
+      desc: '',
+      args: [count],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

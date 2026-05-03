@@ -26,11 +26,13 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m2(count) => "${count} participants";
 
-  static String m3(min) => "At least ${min} characters";
+  static String m3(count) => "${count} minutes";
 
-  static String m4(size) => "${size} cached";
+  static String m4(min) => "At least ${min} characters";
 
-  static String m5(size) => "${size} total cached";
+  static String m5(size) => "${size} cached";
+
+  static String m6(size) => "${size} total cached";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -255,6 +257,39 @@ class MessageLookup extends MessageLookupByLibrary {
     "notSpecified": MessageLookupByLibrary.simpleMessage("Not specified"),
     "nothingFound": MessageLookupByLibrary.simpleMessage("Nothing found"),
     "ok": MessageLookupByLibrary.simpleMessage("OK"),
+    "passcode15Minutes": MessageLookupByLibrary.simpleMessage("15 minutes"),
+    "passcode1Hour": MessageLookupByLibrary.simpleMessage("1 hour"),
+    "passcode1Minute": MessageLookupByLibrary.simpleMessage("1 minute"),
+    "passcode30Minutes": MessageLookupByLibrary.simpleMessage("30 minutes"),
+    "passcode5Minutes": MessageLookupByLibrary.simpleMessage("5 minutes"),
+    "passcodeAppLock": MessageLookupByLibrary.simpleMessage("App lock"),
+    "passcodeChange": MessageLookupByLibrary.simpleMessage("Change passcode"),
+    "passcodeChangeTitle": MessageLookupByLibrary.simpleMessage(
+      "Change passcode",
+    ),
+    "passcodeConfirmPin": MessageLookupByLibrary.simpleMessage("Confirm PIN"),
+    "passcodeCurrentPin": MessageLookupByLibrary.simpleMessage("Current PIN"),
+    "passcodeDisableTitle": MessageLookupByLibrary.simpleMessage(
+      "Turn off app lock",
+    ),
+    "passcodeEnterPin": MessageLookupByLibrary.simpleMessage("Enter PIN"),
+    "passcodeImmediate": MessageLookupByLibrary.simpleMessage("Immediately"),
+    "passcodeLockAfter": MessageLookupByLibrary.simpleMessage(
+      "Lock after inactivity",
+    ),
+    "passcodeLogOut": MessageLookupByLibrary.simpleMessage("Log out"),
+    "passcodeMinutesCount": m3,
+    "passcodeNever": MessageLookupByLibrary.simpleMessage("Never"),
+    "passcodePinsMismatch": MessageLookupByLibrary.simpleMessage(
+      "PINs do not match. Try again.",
+    ),
+    "passcodeSectionTitle": MessageLookupByLibrary.simpleMessage("Passcode"),
+    "passcodeSetupTitle": MessageLookupByLibrary.simpleMessage("Set passcode"),
+    "passcodeUnlockButton": MessageLookupByLibrary.simpleMessage("Unlock"),
+    "passcodeUnlockTitle": MessageLookupByLibrary.simpleMessage(
+      "Enter your PIN to continue",
+    ),
+    "passcodeWrongPin": MessageLookupByLibrary.simpleMessage("Wrong PIN"),
     "password": MessageLookupByLibrary.simpleMessage("Password"),
     "passwordRequirementAllowedChars": MessageLookupByLibrary.simpleMessage(
       "Only letters, digits and special characters are allowed",
@@ -265,7 +300,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "passwordRequirementLowercase": MessageLookupByLibrary.simpleMessage(
       "At least one lowercase letter (a–z)",
     ),
-    "passwordRequirementMinLength": m3,
+    "passwordRequirementMinLength": m4,
     "passwordRequirementSpecial": MessageLookupByLibrary.simpleMessage(
       "At least one special character (!?@#\$%^&*()_-{})",
     ),
@@ -440,7 +475,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "settingsStorageCacheEmptyHint": MessageLookupByLibrary.simpleMessage(
       "No data is currently cached locally.",
     ),
-    "settingsStorageCached": m4,
+    "settingsStorageCached": m5,
     "settingsStorageClearAll": MessageLookupByLibrary.simpleMessage(
       "Clear all cache",
     ),
@@ -459,7 +494,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "settingsStoragePhotos": MessageLookupByLibrary.simpleMessage("Photos"),
     "settingsStorageSection": MessageLookupByLibrary.simpleMessage("Storage"),
-    "settingsStorageTotalCached": m5,
+    "settingsStorageTotalCached": m6,
     "settingsStorageVideos": MessageLookupByLibrary.simpleMessage("Videos"),
     "settingsTextScale": MessageLookupByLibrary.simpleMessage("Text size"),
     "settingsThemeModeLabel": MessageLookupByLibrary.simpleMessage("Mode"),

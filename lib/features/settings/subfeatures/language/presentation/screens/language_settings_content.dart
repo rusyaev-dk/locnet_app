@@ -24,16 +24,16 @@ class LanguageSettingsContent extends StatelessWidget {
           SettingsLoadedState() => SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               child: SettingsGroupCard(
-                title: context.l10n.language,
+                title: context.l10n.settingsLanguage,
+                description: context.l10n.selectInterfaceLanguage,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.fromLTRB(12, 6, 12, 14),
                     child: LanguageSelector(
                       selectedLocale: state.locale,
-                      onLocaleSelected: (locale) =>
-                          context.read<SettingsCubit>().changeLanguageCode(
-                                locale,
-                              ),
+                      onLocaleSelected: (locale) => context
+                          .read<SettingsCubit>()
+                          .changeLanguageCode(locale),
                     ),
                   ),
                 ],

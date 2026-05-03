@@ -182,31 +182,15 @@ class _UnifiedSearchModalCardState extends State<UnifiedSearchModalCard> {
                               );
                             },
                           ),
-                          GestureDetector(
-                            onTap: () => Navigator.of(context).pop(),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 5,
-                              ),
-                              decoration: BoxDecoration(
-                                color: colorScheme.surfaceContainer,
-                                border: Border.all(
-                                  color: colorScheme.outline,
-                                  width: 1,
-                                ),
-                                borderRadius: BorderRadius.circular(7),
-                              ),
-                              child: Text(
-                                'Esc',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                  color: colorScheme.onSurfaceVariant,
-                                  height: 1.2,
-                                ),
-                              ),
-                            ),
+                          SurfaceIconButton(
+                            variant: SurfaceIconVariant.ghost,
+                            icon: Icons.close,
+                            onPressed: () => Navigator.of(context).pop(),
+                            dimension: 28,
+                            iconSize: 18,
+                            margin: EdgeInsets.zero,
+                            tooltip: context.l10n.close,
+                            foregroundColor: colorScheme.onSurfaceVariant,
                           ),
                         ],
                       ),
@@ -307,21 +291,16 @@ class _UnifiedSearchModalCardState extends State<UnifiedSearchModalCard> {
                           top: BorderSide(color: colorScheme.outline, width: 1),
                         ),
                       ),
-                      child: Row(
+                      child: const Row(
                         children: [
                           ModalKeyboardHint(
                             keyLabel: '↵',
                             description: 'Select',
                           ),
-                          const SizedBox(width: 12),
+                          SizedBox(width: 12),
                           ModalKeyboardHint(
                             keyLabel: '↑↓',
                             description: 'Navigate',
-                          ),
-                          const SizedBox(width: 12),
-                          ModalKeyboardHint(
-                            keyLabel: 'Esc',
-                            description: 'Close',
                           ),
                         ],
                       ),

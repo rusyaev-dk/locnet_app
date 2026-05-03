@@ -5,23 +5,20 @@ import 'package:locnet_app/features/auth/domain/domain.dart';
 
 final class JWTInterceptor extends Interceptor {
   JWTInterceptor({
-    required Dio dio,
+    required IHttpClient httpClient,
     required ISessionCacheRepo sessionCacheRepo,
-    required IAuthRepo authRepo,
-    required IDeviceInfoRepo deviceInfoRepo,
+    required IAuthTokenRefreshRepo authTokenRefreshRepo,
     required UnauthorizedEventBus unauthorizedEventBus,
     required ILogger logger,
-  }) : _dio = dio,
+  }) : _httpClient = httpClient,
        _sessionCacheRepo = sessionCacheRepo,
-       _authRepo = authRepo,
-       _deviceInfoRepo = deviceInfoRepo,
+       _authTokenRefreshRepo = authTokenRefreshRepo,
        _unauthorizedEventBus = unauthorizedEventBus,
        _logger = logger;
 
-  final Dio _dio;
+  final IHttpClient _httpClient;
   final ISessionCacheRepo _sessionCacheRepo;
-  final IAuthRepo _authRepo;
-  final IDeviceInfoRepo _deviceInfoRepo;
+  final IAuthTokenRefreshRepo _authTokenRefreshRepo;
   final UnauthorizedEventBus _unauthorizedEventBus;
   final ILogger _logger;
   Future<Session>? _refreshInFlight;
@@ -88,7 +85,7 @@ final class JWTInterceptor extends Interceptor {
           _retryMarker: true,
         },
       );
-      final Response<dynamic> response = await _dio.fetch<dynamic>(
+      final Response<dynamic> response = await _httpClient.fetch(
         retriedRequest,
       );
       handler.resolve(response);
@@ -130,12 +127,7 @@ final class JWTInterceptor extends Interceptor {
   }
 
   Future<Session> _performRefresh(Session session) async {
-    final DeviceInfo deviceInfo = await _deviceInfoRepo.getDeviceInfo();
-    final Session refreshed = await _authRepo.refresh(
-      refreshToken: session.refreshToken,
-      sessionId: session.sessionId,
-      deviceInfo: deviceInfo,
-    );
+    final Session refreshed = await _authTokenRefreshRepo.refresh(session);
     await _sessionCacheRepo.saveSession(session: refreshed);
     _logger.info('Access token refreshed.');
     return refreshed;

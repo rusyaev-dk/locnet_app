@@ -26,11 +26,13 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m2(count) => "${count} ishtirokchi";
 
-  static String m3(min) => "Kamida ${min} ta belgi";
+  static String m3(count) => "${count} daq.";
 
-  static String m4(size) => "${size} keshda";
+  static String m4(min) => "Kamida ${min} ta belgi";
 
-  static String m5(size) => "${size} jami keshda";
+  static String m5(size) => "${size} keshda";
+
+  static String m6(size) => "${size} jami keshda";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -265,6 +267,47 @@ class MessageLookup extends MessageLookupByLibrary {
       "Hech narsa topilmadi",
     ),
     "ok": MessageLookupByLibrary.simpleMessage("OK"),
+    "passcode15Minutes": MessageLookupByLibrary.simpleMessage("15 daqiqa"),
+    "passcode1Hour": MessageLookupByLibrary.simpleMessage("1 soat"),
+    "passcode1Minute": MessageLookupByLibrary.simpleMessage("1 daqiqa"),
+    "passcode30Minutes": MessageLookupByLibrary.simpleMessage("30 daqiqa"),
+    "passcode5Minutes": MessageLookupByLibrary.simpleMessage("5 daqiqa"),
+    "passcodeAppLock": MessageLookupByLibrary.simpleMessage("Ilova bloklash"),
+    "passcodeChange": MessageLookupByLibrary.simpleMessage(
+      "PINni almashtirish",
+    ),
+    "passcodeChangeTitle": MessageLookupByLibrary.simpleMessage(
+      "PINni almashtirish",
+    ),
+    "passcodeConfirmPin": MessageLookupByLibrary.simpleMessage(
+      "PINni tasdiqlang",
+    ),
+    "passcodeCurrentPin": MessageLookupByLibrary.simpleMessage("Joriy PIN"),
+    "passcodeDisableTitle": MessageLookupByLibrary.simpleMessage(
+      "Bloklashni o\'chirish",
+    ),
+    "passcodeEnterPin": MessageLookupByLibrary.simpleMessage("PIN kiriting"),
+    "passcodeImmediate": MessageLookupByLibrary.simpleMessage("Darhol"),
+    "passcodeLockAfter": MessageLookupByLibrary.simpleMessage(
+      "Nofaollikdan keyin bloklash",
+    ),
+    "passcodeLogOut": MessageLookupByLibrary.simpleMessage("Hisobdan chiqish"),
+    "passcodeMinutesCount": m3,
+    "passcodeNever": MessageLookupByLibrary.simpleMessage("Hech qachon"),
+    "passcodePinsMismatch": MessageLookupByLibrary.simpleMessage(
+      "PIN mos kelmaydi. Qayta urinib ko\'ring.",
+    ),
+    "passcodeSectionTitle": MessageLookupByLibrary.simpleMessage("Kod"),
+    "passcodeSetupTitle": MessageLookupByLibrary.simpleMessage(
+      "PIN o\'rnatish",
+    ),
+    "passcodeUnlockButton": MessageLookupByLibrary.simpleMessage(
+      "Blokdan chiqish",
+    ),
+    "passcodeUnlockTitle": MessageLookupByLibrary.simpleMessage(
+      "Davom etish uchun PIN kiriting",
+    ),
+    "passcodeWrongPin": MessageLookupByLibrary.simpleMessage("Noto\'g\'ri PIN"),
     "password": MessageLookupByLibrary.simpleMessage("Parol"),
     "passwordRequirementAllowedChars": MessageLookupByLibrary.simpleMessage(
       "Faqat harflar, raqamlar va maxsus belgilar ruxsat etiladi",
@@ -275,7 +318,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "passwordRequirementLowercase": MessageLookupByLibrary.simpleMessage(
       "Kamida bitta kichik harf (a–z)",
     ),
-    "passwordRequirementMinLength": m3,
+    "passwordRequirementMinLength": m4,
     "passwordRequirementSpecial": MessageLookupByLibrary.simpleMessage(
       "Kamida bitta maxsus belgi (!?@#\$%^&*()_-{})",
     ),
@@ -470,7 +513,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "settingsStorageCacheEmptyHint": MessageLookupByLibrary.simpleMessage(
       "Mahalliy keşlangan ma\'lumot yo\'q.",
     ),
-    "settingsStorageCached": m4,
+    "settingsStorageCached": m5,
     "settingsStorageClearAll": MessageLookupByLibrary.simpleMessage(
       "Keshni tozalash",
     ),
@@ -491,7 +534,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "settingsStorageSection": MessageLookupByLibrary.simpleMessage(
       "Saqlash joyi",
     ),
-    "settingsStorageTotalCached": m5,
+    "settingsStorageTotalCached": m6,
     "settingsStorageVideos": MessageLookupByLibrary.simpleMessage("Videolar"),
     "settingsTextScale": MessageLookupByLibrary.simpleMessage("Matn o‘lchami"),
     "settingsThemeModeLabel": MessageLookupByLibrary.simpleMessage("Rejim"),

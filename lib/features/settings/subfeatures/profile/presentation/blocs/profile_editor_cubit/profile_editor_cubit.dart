@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/auth/domain/domain.dart';
+import 'package:locnet_app/features/auth/presentation/presentation.dart';
 import 'package:locnet_app/features/settings/subfeatures/profile/domain/profile_interactor.dart';
 
 part 'profile_editor_state.dart';
@@ -11,14 +12,17 @@ class ProfileEditorCubit extends Cubit<ProfileEditorState> {
   ProfileEditorCubit({
     required ProfileInteractor profileInteractor,
     required AuthInteractor authInteractor,
+    required AuthCubit authCubit,
     required ILogger logger,
   }) : _profileInteractor = profileInteractor,
        _authInteractor = authInteractor,
+       _authCubit = authCubit,
        _logger = logger,
        super(const ProfileEditorState());
 
   final ProfileInteractor _profileInteractor;
   final AuthInteractor _authInteractor;
+  final AuthCubit _authCubit;
   final ILogger _logger;
 
   Future<void> loadProfile() async {
@@ -217,14 +221,17 @@ class ProfileEditorCubit extends Cubit<ProfileEditorState> {
         username: username,
         description: description.isEmpty ? null : description,
       );
-      await _profileInteractor.udpateUserData(updatedUser: updatedUser);
+      final User savedUser = await _profileInteractor.udpateUserData(
+        updatedUser: updatedUser,
+      );
+      await _authCubit.syncAuthenticatedUser(savedUser);
       emit(
         state.copyWith(
-          user: updatedUser,
-          firstName: updatedUser.firstName,
-          lastName: updatedUser.lastName,
-          username: updatedUser.username,
-          description: updatedUser.description ?? '',
+          user: savedUser,
+          firstName: savedUser.firstName,
+          lastName: savedUser.lastName,
+          username: savedUser.username,
+          description: savedUser.description ?? '',
           isEditing: false,
           isSubmitting: false,
           firstNameException: null,

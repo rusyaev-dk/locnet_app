@@ -7,6 +7,7 @@ import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/di/di.dart';
 import 'package:locnet_app/features/auth/presentation/presentation.dart';
 import 'package:locnet_app/features/error/error_screen.dart';
+import 'package:locnet_app/features/passcode/presentation/presentation.dart';
 import 'package:locnet_app/features/settings/domain/domain.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
 import 'package:locnet_app/features/splash/splash_screen.dart';
@@ -62,14 +63,21 @@ class _LocnetAppState extends State<LocnetApp> {
               appScope: appScope,
               child: Builder(
                 builder: (context) {
+                  final AuthFlowController authFlowController =
+                      AuthFlowController(
+                        authCubit: context.read<AuthCubit>(),
+                        unauthorizedEventBus: context
+                            .read<UnauthorizedEventBus>(),
+                      );
+                  final PasscodeFlowController passcodeFlowController =
+                      PasscodeFlowController(
+                        cubit: context.read<PasscodeLockCubit>(),
+                      );
                   final router = AppRouter.createRouter(
                     includePrefixMatches: true,
                     navigatorObservers: [appScope.routeObserver],
-                    authFlowController: AuthFlowController(
-                      authCubit: context.read<AuthCubit>(),
-                      unauthorizedEventBus: context
-                          .read<UnauthorizedEventBus>(),
-                    ),
+                    authFlowController: authFlowController,
+                    passcodeFlowController: passcodeFlowController,
                   );
                   return _App(router: router);
                 },
@@ -87,10 +95,41 @@ class _LocnetAppState extends State<LocnetApp> {
   }
 }
 
-class _App extends StatelessWidget {
+class _App extends StatefulWidget {
   const _App({required this.router});
 
   final GoRouter router;
+
+  @override
+  State<_App> createState() => _AppState();
+}
+
+class _AppState extends State<_App> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final PasscodeLockCubit cubit = context.read<PasscodeLockCubit>();
+    switch (state) {
+      case AppLifecycleState.paused:
+      case AppLifecycleState.inactive:
+        cubit.onAppPaused();
+      case AppLifecycleState.resumed:
+        cubit.onAppResumed();
+      default:
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,16 +143,10 @@ class _App extends StatelessWidget {
         final appTheme = AppThemeData(accentIndex: themeType.accentIndex);
         final density = ((elementScaleFactor - 1.0) * 8).clamp(-1.2, 1.2);
         final theme = appTheme.getLightTheme().copyWith(
-          visualDensity: VisualDensity(
-            horizontal: density,
-            vertical: density,
-          ),
+          visualDensity: VisualDensity(horizontal: density, vertical: density),
         );
         final darkTheme = appTheme.getDarkTheme().copyWith(
-          visualDensity: VisualDensity(
-            horizontal: density,
-            vertical: density,
-          ),
+          visualDensity: VisualDensity(horizontal: density, vertical: density),
         );
         final themeMode = themeType.isLight ? ThemeMode.light : ThemeMode.dark;
 
@@ -131,7 +164,7 @@ class _App extends StatelessWidget {
           darkTheme: darkTheme,
           themeMode: themeMode,
           debugShowCheckedModeBanner: false,
-          routerConfig: router,
+          routerConfig: widget.router,
           builder: (context, child) {
             final mediaQuery = MediaQuery.of(context);
             return MediaQuery(

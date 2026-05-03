@@ -162,6 +162,17 @@ class DioHttpClient implements IHttpClient {
     }
   }
 
+  @override
+  Future<Response> fetch(RequestOptions requestOptions) async {
+    try {
+      return await _dio.fetch(requestOptions);
+    } on DioException catch (e, st) {
+      throw _mapDioError(e, st);
+    } catch (e, st) {
+      throw ApiException(message: 'Unexpected error', error: e, stackTrace: st);
+    }
+  }
+
   void _validateResponse(Response response) {
     final statusCode = response.statusCode ?? 0;
     if (statusCode >= 400) {

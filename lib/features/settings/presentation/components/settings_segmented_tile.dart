@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
+import 'package:locnet_app/uikit/uikit.dart';
 
-/// A settings row with an inline segmented selector (compact 3-option picker).
+/// A settings row with an inline segmented selector (compact pill bar).
 class SettingsSegmentedTile extends StatelessWidget {
   const SettingsSegmentedTile({
     required this.title,
@@ -42,70 +43,17 @@ class SettingsSegmentedTile extends StatelessWidget {
             ),
           ],
           const SizedBox(height: 10),
-          _SegmentedSelector(
-            options: options,
-            selectedIndex: selectedIndex,
-            onSelected: onSelected,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SegmentedSelector extends StatelessWidget {
-  const _SegmentedSelector({
-    required this.options,
-    required this.selectedIndex,
-    required this.onSelected,
-  });
-
-  final List<String> options;
-  final int selectedIndex;
-  final ValueChanged<int> onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    final textScheme = context.textScheme;
-    final colorScheme = context.colorScheme;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      padding: const EdgeInsets.all(3),
-      child: Row(
-        children: [
-          for (int i = 0; i < options.length; i++)
-            Expanded(
-              child: GestureDetector(
-                onTap: () => onSelected(i),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 160),
-                  curve: Curves.easeInOut,
-                  padding: const EdgeInsets.symmetric(vertical: 7),
-                  decoration: BoxDecoration(
-                    color: i == selectedIndex
-                        ? colorScheme.surfaceContainerHighest
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Center(
-                    child: Text(
-                      options[i],
-                      style: textScheme.caption.copyWith(
-                        color: i == selectedIndex
-                            ? colorScheme.onSurface
-                            : colorScheme.onSurfaceVariant,
-                        fontWeight: i == selectedIndex
-                            ? FontWeight.w600
-                            : FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+          if (options.isEmpty)
+            const SizedBox.shrink()
+          else
+            SegmentedControl(
+              compact: true,
+              segments: [
+                for (final String option in options)
+                  SegmentedControlSegment(title: option),
+              ],
+              selectedIndex: selectedIndex.clamp(0, options.length - 1),
+              onSelected: onSelected,
             ),
         ],
       ),

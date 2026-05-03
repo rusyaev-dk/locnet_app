@@ -110,4 +110,19 @@ final class AuthCubit extends Cubit<AuthState> {
       emit(const AuthUnauthenticatedState());
     }
   }
+
+  /// Keeps session user in sync across the app (e.g. sidebar avatar after profile edit).
+  Future<void> syncAuthenticatedUser(User user) async {
+    if (state is! AuthAuthenticatedState) return;
+    try {
+      await _authInteractor.cacheUser(user);
+    } catch (e, st) {
+      _logger.exception(e, st);
+    }
+    if (isClosed) return;
+    final AuthState current = state;
+    if (current is AuthAuthenticatedState) {
+      emit(current.copyWith(user: user));
+    }
+  }
 }

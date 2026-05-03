@@ -156,7 +156,12 @@ class _GroupConversationScreenState extends State<GroupConversationScreen> {
 
                       final tile = await showGeneralDialog<ConversationTile>(
                         context: context,
-                        barrierColor: Colors.transparent,
+                        barrierDismissible: true,
+                        barrierLabel:
+                            MaterialLocalizations.of(context).modalBarrierDismissLabel,
+                        barrierColor: context.colorScheme.scrim.withValues(
+                          alpha: 0.45,
+                        ),
                         transitionBuilder: slideFadeDialogTransition,
                         pageBuilder: (context, _, __) {
                           return ForwardTargetPickerModalWrapper(
@@ -280,7 +285,13 @@ class _GroupConversationScreenState extends State<GroupConversationScreen> {
                           final tile =
                               await showGeneralDialog<ConversationTile>(
                             context: context,
-                            barrierColor: Colors.transparent,
+                            barrierDismissible: true,
+                            barrierLabel:
+                                MaterialLocalizations.of(context)
+                                    .modalBarrierDismissLabel,
+                            barrierColor: context.colorScheme.scrim.withValues(
+                              alpha: 0.45,
+                            ),
                             transitionBuilder: slideFadeDialogTransition,
                             pageBuilder: (context, _, __) {
                               return ForwardTargetPickerModalWrapper(

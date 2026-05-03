@@ -238,6 +238,11 @@ class AuthInteractor {
     await _db.clearAll();
   }
 
+  /// Persists the latest user snapshot (e.g. after profile update).
+  Future<void> cacheUser(User user) async {
+    await _tryCacheUser(user);
+  }
+
   Future<Session> getCachedSession() async {
     return await _sessionCacheRepo.loadSession();
   }

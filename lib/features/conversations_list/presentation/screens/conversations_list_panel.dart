@@ -1,5 +1,7 @@
 // conversations_list_panel.dart
 
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -63,18 +65,41 @@ class ConversationsPanel extends StatefulWidget {
 }
 
 class _ConversationsPanelState extends State<ConversationsPanel> {
+  static const double _panelCollapsedWidth = 64;
   static const double _panelMaxWidth = 420;
-  static const double _panelMinWidth = 64;
-  static const double _panelCompactBreakpoint = 300;
+  static const double _splitterHitWidth = 8;
 
-  double _panelWidth = _panelCompactBreakpoint;
+  /// Below this width the list shows Telegram-style avatar-only rows (still resizable).
+  static const double _compactLayoutBreakpoint = 140;
+
+  double _panelWidth = 320;
+
+  double _effectiveMaxWidth(double screenWidth) {
+    return math.min(_panelMaxWidth, screenWidth * 0.5);
+  }
+
+  void _applyResizeDelta(double dx) {
+    if (dx == 0) return;
+
+    final double screenWidth = MediaQuery.sizeOf(context).width;
+    final double maxW = _effectiveMaxWidth(screenWidth);
+    if (maxW <= _panelCollapsedWidth) return;
+
+    final double next = (_panelWidth + dx).clamp(_panelCollapsedWidth, maxW);
+
+    if ((next - _panelWidth).abs() < 0.5) return;
+
+    setState(() {
+      _panelWidth = next;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final spacing = context.designTokens.spacing;
 
-    final bool isCompact = _panelWidth <= _panelMinWidth;
+    final bool isCompact = _panelWidth < _compactLayoutBreakpoint;
 
     return Row(
       children: [
@@ -86,53 +111,19 @@ class _ConversationsPanelState extends State<ConversationsPanel> {
           ),
         ),
         SizedBox(
-          width: context.borders.thin + 1,
+          width: _splitterHitWidth,
           child: MouseRegion(
             cursor: SystemMouseCursors.resizeLeftRight,
             child: GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onHorizontalDragUpdate: (DragUpdateDetails details) {
-                setState(() {
-                  final double proposedWidth = _panelWidth + details.delta.dx;
-
-                  final bool isCurrentlyCompact = _panelWidth <= _panelMinWidth;
-
-                  if (!isCurrentlyCompact) {
-                    final bool isAtCompactBreakpoint =
-                        _panelWidth == _panelCompactBreakpoint;
-
-                    if (isAtCompactBreakpoint &&
-                        details.globalPosition.distance < 600) {
-                      return;
-                    }
-
-                    if (proposedWidth <= _panelCompactBreakpoint) {
-                      if (details.globalPosition.dx > 490) {
-                        return;
-                      }
-                      _panelWidth = _panelMinWidth;
-                    } else {
-                      _panelWidth = proposedWidth.clamp(
-                        _panelMinWidth,
-                        _panelMaxWidth,
-                      );
-                    }
-
-                    return;
-                  }
-
-                  // currently compact
-                  if (details.delta.dx > 0) {
-                    _panelWidth = _panelCompactBreakpoint;
-                  }
-                });
+              behavior: HitTestBehavior.opaque,
+              onPanUpdate: (DragUpdateDetails details) {
+                _applyResizeDelta(details.delta.dx);
               },
-
-              child: Align(
-                alignment: Alignment.centerRight,
+              child: Center(
                 child: VerticalDivider(
-                  width: 0.45,
-                  color: colorScheme.surfaceContainer.withAlpha(100),
+                  width: 1,
+                  thickness: 1,
+                  color: colorScheme.outlineVariant.withValues(alpha: 0.55),
                 ),
               ),
             ),
@@ -447,22 +438,33 @@ class _ConversationsListHeader extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
-                GestureDetector(
-                  onTap: () {
-                    showGeneralDialog(
-                      context: context,
-                      transitionBuilder: slideFadeDialogTransition,
-                      pageBuilder: (_, _, _) {
-                        return const ConversationCreatorModalWrapper(
-                          child: ConversationCreatorModalCard(),
-                        );
-                      },
-                    );
-                  },
-                  child: Icon(
-                    Icons.edit_outlined,
-                    size: 18,
-                    color: colorScheme.onSurfaceVariant,
+                Material(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    onTap: () {
+                      showGeneralDialog(
+                        context: context,
+                        transitionBuilder: slideFadeDialogTransition,
+                        pageBuilder: (_, _, _) {
+                          return const ConversationCreatorModalWrapper(
+                            child: ConversationCreatorModalCard(),
+                          );
+                        },
+                      );
+                    },
+                    borderRadius: BorderRadius.circular(8),
+                    hoverColor: colorScheme.hoverOverlay,
+                    splashFactory: NoSplash.splashFactory,
+                    child: Padding(
+                      padding: const EdgeInsets.all(6),
+                      child: Icon(
+                        Icons.edit_outlined,
+                        size: 18,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -477,7 +479,7 @@ class _ConversationsListHeader extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 decoration: BoxDecoration(
                   color: colorScheme.surfaceContainer,
-                  border: Border.all(color: colorScheme.outline, width: 1),
+                  border: Border.all(color: colorScheme.outline),
                   borderRadius: BorderRadius.circular(9),
                 ),
                 child: Row(

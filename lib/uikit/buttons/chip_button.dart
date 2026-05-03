@@ -69,8 +69,10 @@ class ChipButton extends StatelessWidget {
           padding: WidgetStatePropertyAll(resolvedPadding),
           minimumSize: const WidgetStatePropertyAll(Size(0, 0)),
           backgroundColor: WidgetStateProperty.resolveWith((Set<WidgetState> s) {
-            if (s.contains(WidgetState.hovered) ||
-                s.contains(WidgetState.focused)) {
+            if (s.contains(WidgetState.hovered)) {
+              return Color.alphaBlend(colorScheme.hoverOverlay, resolvedBackground);
+            }
+            if (s.contains(WidgetState.focused)) {
               return Color.alphaBlend(
                 colorScheme.onSurface.withValues(alpha: 0.08),
                 resolvedBackground,

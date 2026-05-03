@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/features/auth/presentation/presentation.dart';
 import 'package:locnet_app/features/conversations_list/domain/domain.dart';
-import 'package:locnet_app/features/conversations_list/presentation/blocs/all_conversations_list_bloc/all_conversations_list_bloc.dart';
+import 'package:locnet_app/features/conversations_list/presentation/presentation.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
-/// Simple forward target picker based on existing conversations list.
+/// Forward target picker: chrome matches settings / unified search modals.
 class ForwardTargetPickerModalWrapper extends StatelessWidget {
   const ForwardTargetPickerModalWrapper({required this.child, super.key});
 
@@ -53,6 +55,7 @@ class _ForwardTargetPickerModalCardState
   void initState() {
     super.initState();
     _queryController = TextEditingController();
+    _queryController.addListener(() => setState(() {}));
   }
 
   @override
@@ -64,67 +67,143 @@ class _ForwardTargetPickerModalCardState
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final colorScheme = context.colorScheme;
+    final textScheme = context.textScheme;
 
-    return AppModalCard(
-      child: SafeArea(
+    final String currentUserId = context.select<AuthCubit, String>((
+      AuthCubit c,
+    ) {
+      final AuthState s = c.state;
+      return s is AuthAuthenticatedState ? s.user.userId : '';
+    });
+
+    return CallbackShortcuts(
+      bindings: {
+        const SingleActivator(LogicalKeyboardKey.escape): () =>
+            Navigator.of(context).maybePop(),
+      },
+      child: AppModalCard(
+        maxWidth: 440,
+        verticalInset: 56,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            Container(
+              padding: const EdgeInsets.fromLTRB(20, 16, 16, 16),
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: colorScheme.outline)),
+              ),
+              child: Row(
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          l10n.messageContextActionForward,
-                          style: context.textScheme.title.copyWith(
-                            color: context.colorScheme.onSurface,
-                          ),
-                        ),
+                  Expanded(
+                    child: Text(
+                      l10n.messageContextActionForward,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: colorScheme.onSurface,
+                        height: 1.2,
                       ),
-                      SurfaceIconButton(
-                        icon: Icons.close,
-                        margin: EdgeInsets.zero,
-                        tooltip: l10n.close,
-                        onPressed: () => Navigator.of(context).maybePop(),
-                      ),
-                    ],
+                    ),
                   ),
-                  const SizedBox(height: 10),
-                  CustomTextField(
-                    controller: _queryController,
-                    labelText: l10n.search,
-                    textInputAction: TextInputAction.search,
-                    maxSymbols: 200,
-                    onChanged: (_) => setState(() {}),
-                    onFocusChange: (_) => setState(() {}),
-                    onSubmitted: (_) => setState(() {}),
+                  SurfaceIconButton(
+                    icon: Icons.close,
+                    dimension: 32,
+                    iconSize: 14,
+                    margin: EdgeInsets.zero,
+                    foregroundColor: colorScheme.onSurfaceVariant,
+                    tooltip: l10n.close,
+                    onPressed: () => Navigator.of(context).maybePop(),
                   ),
                 ],
               ),
             ),
-            Divider(height: 1, thickness: 1, color: context.colorScheme.outlineVariant),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: colorScheme.outline)),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.search,
+                    size: 20,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: TextField(
+                      controller: _queryController,
+                      textInputAction: TextInputAction.search,
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: colorScheme.onSurface,
+                        height: 1.2,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: l10n.search,
+                        hintStyle: TextStyle(
+                          fontSize: 15,
+                          color: colorScheme.onSurfaceVariant,
+                          height: 1.2,
+                        ),
+                        border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                  ),
+                  if (_queryController.text.isNotEmpty) ...[
+                    const SizedBox(width: 4),
+                    SurfaceIconButton(
+                      variant: SurfaceIconVariant.ghost,
+                      icon: Icons.close,
+                      onPressed: _queryController.clear,
+                      dimension: 28,
+                      iconSize: 13,
+                      margin: EdgeInsets.zero,
+                      tooltip: l10n.clear,
+                      foregroundColor: colorScheme.onSurfaceVariant,
+                    ),
+                  ],
+                ],
+              ),
+            ),
             Expanded(
               child: BlocBuilder<AllConversationsListBloc,
                   AllConversationsListState>(
                 builder: (context, state) {
                   if (state is AllConversationsListLoadingState) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: SizedBox(
+                          width: 28,
+                          height: 28,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            color: colorScheme.primary,
+                          ),
+                        ),
+                      ),
                     );
                   }
 
                   if (state is AllConversationsListFailureState) {
-                    return InfoWidget(
-                      icon: Icons.error_outline,
-                      text: AppExceptionsTranslator.translate(
-                        context,
-                        state.failure,
+                    return SingleChildScrollView(
+                      padding: const EdgeInsets.all(20),
+                      child: InfoWidget(
+                        icon: Icons.error_outline,
+                        text: AppExceptionsTranslator.translate(
+                          context,
+                          state.failure,
+                        ),
+                        useErrorStyle: true,
                       ),
-                      useErrorStyle: true,
                     );
                   }
 
@@ -132,15 +211,17 @@ class _ForwardTargetPickerModalCardState
                     return const SizedBox.shrink();
                   }
 
-                  final String query = _queryController.text.trim().toLowerCase();
+                  final String query =
+                      _queryController.text.trim().toLowerCase();
 
-                  final items = state.conversationTiles.where((tile) {
+                  final List<ConversationTile> items =
+                      state.conversationTiles.where((tile) {
                     if (query.isEmpty) return true;
-                    final inTitle =
+                    final bool inTitle =
                         tile.title.toLowerCase().contains(query);
-                    final inDescription =
+                    final bool inDescription =
                         (tile.description ?? '').toLowerCase().contains(query);
-                    final inLastMessage =
+                    final bool inLastMessage =
                         (tile.lastMessageText ?? '').toLowerCase().contains(
                               query,
                             );
@@ -156,8 +237,8 @@ class _ForwardTargetPickerModalCardState
                         ),
                         child: Text(
                           l10n.nothingFound,
-                          style: context.textScheme.caption.copyWith(
-                            color: context.colorScheme.onSurfaceVariant,
+                          style: textScheme.caption.copyWith(
+                            color: colorScheme.onSurfaceVariant,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -166,19 +247,16 @@ class _ForwardTargetPickerModalCardState
                   }
 
                   return ListView.separated(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 8,
-                    ),
+                    padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
                     itemCount: items.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 4),
+                    separatorBuilder: (_, _) =>
+                        Divider(color: colorScheme.outlineVariant),
                     itemBuilder: (context, index) {
-                      final tile = items[index];
-                      return ListTile(
-                        title: Text(tile.title),
-                        subtitle: tile.description != null
-                            ? Text(tile.description!)
-                            : null,
+                      final ConversationTile tile = items[index];
+                      return ConversationListTile(
+                        conversationTile: tile,
+                        isCompact: false,
+                        currentUserId: currentUserId,
                         onTap: () => widget.onTargetSelected(tile),
                       );
                     },
@@ -192,4 +270,3 @@ class _ForwardTargetPickerModalCardState
     );
   }
 }
-
