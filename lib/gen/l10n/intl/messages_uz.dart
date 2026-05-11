@@ -24,15 +24,21 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m1(count) => "${count} obunachi";
 
-  static String m2(count) => "${count} ishtirokchi";
+  static String m2(count) => "${count} kun oldin";
 
-  static String m3(count) => "${count} daq.";
+  static String m3(current, total) => "${current} / ${total}";
 
-  static String m4(min) => "Kamida ${min} ta belgi";
+  static String m4(name) => "${name} bilan";
 
-  static String m5(size) => "${size} keshda";
+  static String m5(count) => "${count} ishtirokchi";
 
-  static String m6(size) => "${size} jami keshda";
+  static String m6(count) => "${count} daq.";
+
+  static String m7(min) => "Kamida ${min} ta belgi";
+
+  static String m8(size) => "${size} keshda";
+
+  static String m9(size) => "${size} jami keshda";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -123,6 +129,53 @@ class MessageLookup extends MessageLookupByLibrary {
     "conversationNoMessagesYet": MessageLookupByLibrary.simpleMessage(
       "Hali xabar yo‘q",
     ),
+    "conversationSearchDateDaysAgo": m2,
+    "conversationSearchDateToday": MessageLookupByLibrary.simpleMessage(
+      "Bugun",
+    ),
+    "conversationSearchDateYesterday": MessageLookupByLibrary.simpleMessage(
+      "Kecha",
+    ),
+    "conversationSearchEmptySubtitle": MessageLookupByLibrary.simpleMessage(
+      "Ushbu suhbatdagi xabarlarni topish uchun so‘rov kiriting.",
+    ),
+    "conversationSearchEmptyTitle": MessageLookupByLibrary.simpleMessage(
+      "Chatda xabarlarni qidirish",
+    ),
+    "conversationSearchMessagesHint": MessageLookupByLibrary.simpleMessage(
+      "Ushbu suhbatda xabarlarni qidirish…",
+    ),
+    "conversationSearchNoMatches": MessageLookupByLibrary.simpleMessage(
+      "Hech narsa topilmadi",
+    ),
+    "conversationSearchResultsCount": m3,
+    "conversationSharedMediaAttachment": MessageLookupByLibrary.simpleMessage(
+      "Birikma",
+    ),
+    "conversationSharedMediaEmptyFiles": MessageLookupByLibrary.simpleMessage(
+      "Umumiy fayllar yo‘q",
+    ),
+    "conversationSharedMediaEmptyLinks": MessageLookupByLibrary.simpleMessage(
+      "Umumiy havolalar yo‘q",
+    ),
+    "conversationSharedMediaEmptyMedia": MessageLookupByLibrary.simpleMessage(
+      "Umumiy media yo‘q",
+    ),
+    "conversationSharedMediaMarkedAsShared":
+        MessageLookupByLibrary.simpleMessage("Umumiy"),
+    "conversationSharedMediaTabFiles": MessageLookupByLibrary.simpleMessage(
+      "Fayllar",
+    ),
+    "conversationSharedMediaTabLinks": MessageLookupByLibrary.simpleMessage(
+      "Havolalar",
+    ),
+    "conversationSharedMediaTabPhotos": MessageLookupByLibrary.simpleMessage(
+      "Foto va media",
+    ),
+    "conversationSharedMediaTitle": MessageLookupByLibrary.simpleMessage(
+      "Umumiy media",
+    ),
+    "conversationSharedMediaWithName": m4,
     "conversationTitle": MessageLookupByLibrary.simpleMessage("Sarlavha"),
     "conversationType": MessageLookupByLibrary.simpleMessage("Turi"),
     "conversationTypeChannel": MessageLookupByLibrary.simpleMessage("Kanal"),
@@ -191,7 +244,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "groupMenuLeave": MessageLookupByLibrary.simpleMessage("Guruhdan chiqish"),
     "groupMenuViewInfo": MessageLookupByLibrary.simpleMessage("Guruh haqida"),
-    "groupParticipantsCount": m2,
+    "groupParticipantsCount": m5,
     "homePage": MessageLookupByLibrary.simpleMessage("Bosh sahifa"),
     "invalidCharactersException": MessageLookupByLibrary.simpleMessage(
       "Notoʻgʻri belgilar kiritildi",
@@ -257,6 +310,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "messageInputToolbarActionFormatUnderline":
         MessageLookupByLibrary.simpleMessage("Tagi chizilgan"),
     "meta": MessageLookupByLibrary.simpleMessage("Meta"),
+    "modalKeyboardHintNavigate": MessageLookupByLibrary.simpleMessage(
+      "Navigatsiya",
+    ),
+    "modalKeyboardHintSelect": MessageLookupByLibrary.simpleMessage("Tanlash"),
     "next": MessageLookupByLibrary.simpleMessage("Keyingi"),
     "noLabel": MessageLookupByLibrary.simpleMessage("Yoʻq"),
     "notRegisteredYetQuestion": MessageLookupByLibrary.simpleMessage(
@@ -292,7 +349,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Nofaollikdan keyin bloklash",
     ),
     "passcodeLogOut": MessageLookupByLibrary.simpleMessage("Hisobdan chiqish"),
-    "passcodeMinutesCount": m3,
+    "passcodeMinutesCount": m6,
     "passcodeNever": MessageLookupByLibrary.simpleMessage("Hech qachon"),
     "passcodePinsMismatch": MessageLookupByLibrary.simpleMessage(
       "PIN mos kelmaydi. Qayta urinib ko\'ring.",
@@ -318,7 +375,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "passwordRequirementLowercase": MessageLookupByLibrary.simpleMessage(
       "Kamida bitta kichik harf (a–z)",
     ),
-    "passwordRequirementMinLength": m4,
+    "passwordRequirementMinLength": m7,
     "passwordRequirementSpecial": MessageLookupByLibrary.simpleMessage(
       "Kamida bitta maxsus belgi (!?@#\$%^&*()_-{})",
     ),
@@ -337,9 +394,25 @@ class MessageLookup extends MessageLookupByLibrary {
     "personalInformation": MessageLookupByLibrary.simpleMessage(
       "Shaxsiy maʼlumotlar",
     ),
+    "privateDraftConversationEmptyTitle": MessageLookupByLibrary.simpleMessage(
+      "Bu suhbat hali bo‘sh",
+    ),
     "profile": MessageLookupByLibrary.simpleMessage("Profil"),
     "profileChangePhoto": MessageLookupByLibrary.simpleMessage(
       "Fotoni almashtirish",
+    ),
+    "profileCropPhoto": MessageLookupByLibrary.simpleMessage("Fotoni qirqish"),
+    "profileCropPhotoHint": MessageLookupByLibrary.simpleMessage(
+      "Siljiting yoki kichraytiring/kattalashtiring",
+    ),
+    "profileDeletePhoto": MessageLookupByLibrary.simpleMessage(
+      "Fotoni oʻchirish",
+    ),
+    "profileDeletePhotoBody": MessageLookupByLibrary.simpleMessage(
+      "Profil fotosi olib tashlanadi. Istalgan vaqtda yangi fotoni yuklashingiz mumkin.",
+    ),
+    "profileDeletePhotoTitle": MessageLookupByLibrary.simpleMessage(
+      "Profil fotosi olib tashlansinmi?",
     ),
     "profileEditing": MessageLookupByLibrary.simpleMessage(
       "Profilni tahrirlash",
@@ -513,7 +586,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "settingsStorageCacheEmptyHint": MessageLookupByLibrary.simpleMessage(
       "Mahalliy keşlangan ma\'lumot yo\'q.",
     ),
-    "settingsStorageCached": m5,
+    "settingsStorageCached": m8,
     "settingsStorageClearAll": MessageLookupByLibrary.simpleMessage(
       "Keshni tozalash",
     ),
@@ -534,7 +607,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "settingsStorageSection": MessageLookupByLibrary.simpleMessage(
       "Saqlash joyi",
     ),
-    "settingsStorageTotalCached": m6,
+    "settingsStorageTotalCached": m9,
     "settingsStorageVideos": MessageLookupByLibrary.simpleMessage("Videolar"),
     "settingsTextScale": MessageLookupByLibrary.simpleMessage("Matn o‘lchami"),
     "settingsThemeModeLabel": MessageLookupByLibrary.simpleMessage("Rejim"),
@@ -559,6 +632,23 @@ class MessageLookup extends MessageLookupByLibrary {
     "tryAnotherQuery": MessageLookupByLibrary.simpleMessage(
       "Boshqa soʻrovni sinab koʻring",
     ),
+    "unifiedSearchHint": MessageLookupByLibrary.simpleMessage(
+      "Odamlar va xabarlarni qidirish…",
+    ),
+    "unifiedSearchInitialSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Suhbatlar bo\'yicha qidirish uchun yozishni boshlang",
+    ),
+    "unifiedSearchInitialTitle": MessageLookupByLibrary.simpleMessage(
+      "Odamlar va xabarlarni qidirish",
+    ),
+    "unifiedSearchMessages": MessageLookupByLibrary.simpleMessage("XABARLAR"),
+    "unifiedSearchNothingFoundSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Boshqa qidiruv so\'zini sinab ko\'ring",
+    ),
+    "unifiedSearchNothingFoundTitle": MessageLookupByLibrary.simpleMessage(
+      "Hech narsa topilmadi",
+    ),
+    "unifiedSearchPeople": MessageLookupByLibrary.simpleMessage("ODAMLAR"),
     "unknownValue": MessageLookupByLibrary.simpleMessage("Nomaʼlum"),
     "username": MessageLookupByLibrary.simpleMessage("Foydalanuvchi nomi"),
     "users": MessageLookupByLibrary.simpleMessage("Foydalanuvchilar"),

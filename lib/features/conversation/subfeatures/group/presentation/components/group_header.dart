@@ -43,7 +43,7 @@ class _GroupHeaderState extends State<GroupHeader> {
 
     return ConversationProfileHeaderBase(
       title: widget.conversation.title,
-      avatarText: widget.conversation.title,
+      avatarOverride: Avatar.group(group: widget.conversation, size: 38),
       subtitle: subtitle,
       onTap: () {
         showGeneralDialog(

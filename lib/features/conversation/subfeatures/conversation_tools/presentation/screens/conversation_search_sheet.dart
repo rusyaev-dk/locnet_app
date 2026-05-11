@@ -132,7 +132,7 @@ class _ConversationSearchSheetState extends State<ConversationSearchSheet> {
                       height: 1.2,
                     ),
                     decoration: InputDecoration(
-                      hintText: 'Search messages in this conversation…',
+                      hintText: l10n.conversationSearchMessagesHint,
                       hintStyle: TextStyle(
                         fontSize: 15,
                         color: colorScheme.onSurfaceVariant,
@@ -154,7 +154,7 @@ class _ConversationSearchSheetState extends State<ConversationSearchSheet> {
                       return const SizedBox.shrink();
                     }
                     return SurfaceIconButton(
-                      icon: Icons.close,
+                      icon: Icons.backspace_outlined,
                       onPressed: _clear,
                       dimension: 28,
                       iconSize: 13,
@@ -195,6 +195,10 @@ class _ConversationSearchSheetState extends State<ConversationSearchSheet> {
             _SearchNavBar(
               current: totalResults == 0 ? 0 : activeResultIndex + 1,
               total: totalResults,
+              resultsSummary: l10n.conversationSearchResultsCount(
+                totalResults == 0 ? 0 : activeResultIndex + 1,
+                totalResults,
+              ),
               onPrev: () {
                 _prevResult(totalResults);
                 if (totalResults > 0) {
@@ -218,11 +222,17 @@ class _ConversationSearchSheetState extends State<ConversationSearchSheet> {
                 top: BorderSide(color: colorScheme.outline),
               ),
             ),
-            child: const Row(
+            child: Row(
               children: [
-                ModalKeyboardHint(keyLabel: '↵', description: 'Select'),
-                SizedBox(width: 12),
-                ModalKeyboardHint(keyLabel: '↑↓', description: 'Navigate'),
+                ModalKeyboardHint(
+                  keyLabel: '↵',
+                  description: l10n.modalKeyboardHintSelect,
+                ),
+                const SizedBox(width: 12),
+                ModalKeyboardHint(
+                  keyLabel: '↑↓',
+                  description: l10n.modalKeyboardHintNavigate,
+                ),
               ],
             ),
           ),
@@ -258,31 +268,32 @@ class _ConversationSearchSheetState extends State<ConversationSearchSheet> {
       }
       final String sender = message.senderId == state.companionId
           ? companionName
-          : 'You';
+          : context.l10n.you;
       results.add(
         _SearchResultItem(
           messageId: message.id,
-          sender: sender.isEmpty ? 'Unknown' : sender,
+          sender: sender.isEmpty ? context.l10n.unknownValue : sender,
           snippet: message.text,
-          dateLabel: _buildDateLabel(message.createdAt),
+          dateLabel: _buildDateLabel(context, message.createdAt),
         ),
       );
     }
     return results;
   }
 
-  String _buildDateLabel(DateTime dateTime) {
+  String _buildDateLabel(BuildContext context, DateTime dateTime) {
+    final l10n = context.l10n;
     final DateTime now = DateTime.now();
     final DateTime today = DateTime(now.year, now.month, now.day);
     final DateTime date = DateTime(dateTime.year, dateTime.month, dateTime.day);
     final int daysAgo = today.difference(date).inDays;
     if (daysAgo <= 0) {
-      return 'Today';
+      return l10n.conversationSearchDateToday;
     }
     if (daysAgo == 1) {
-      return 'Yesterday';
+      return l10n.conversationSearchDateYesterday;
     }
-    return '$daysAgo days ago';
+    return l10n.conversationSearchDateDaysAgo(daysAgo);
   }
 }
 
@@ -295,6 +306,7 @@ class _ConversationSearchEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -308,7 +320,7 @@ class _ConversationSearchEmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Search messages in this chat',
+              l10n.conversationSearchEmptyTitle,
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
@@ -318,7 +330,7 @@ class _ConversationSearchEmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              'Type a query to find messages in this conversation.',
+              l10n.conversationSearchEmptySubtitle,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 13,
@@ -357,7 +369,7 @@ class _ResultsBody extends StatelessWidget {
     if (results.isEmpty) {
       return Center(
         child: Text(
-          'No matches found',
+          context.l10n.conversationSearchNoMatches,
           style: textScheme.caption.copyWith(
             color: colorScheme.onSurfaceVariant,
           ),
@@ -551,6 +563,7 @@ class _SearchNavBar extends StatelessWidget {
   const _SearchNavBar({
     required this.current,
     required this.total,
+    required this.resultsSummary,
     required this.onPrev,
     required this.onNext,
     required this.colorScheme,
@@ -559,6 +572,7 @@ class _SearchNavBar extends StatelessWidget {
 
   final int current;
   final int total;
+  final String resultsSummary;
   final VoidCallback onPrev;
   final VoidCallback onNext;
   final AppColorScheme colorScheme;
@@ -580,7 +594,7 @@ class _SearchNavBar extends StatelessWidget {
           child: Row(
             children: [
               Text(
-                '$current of $total',
+                resultsSummary,
                 style: textScheme.caption.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),

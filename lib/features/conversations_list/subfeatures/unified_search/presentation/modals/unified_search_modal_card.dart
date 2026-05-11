@@ -5,11 +5,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/conversation/presentation/presentation.dart';
+import 'package:locnet_app/features/conversation/subfeatures/channel/domain/models/channel.dart';
+import 'package:locnet_app/features/conversation/subfeatures/group/domain/models/group.dart';
 import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/domain/domain.dart';
 import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/presentation/presentation.dart';
-import 'package:locnet_app/features/conversations_list/domain/domain.dart';
-import 'package:locnet_app/features/conversations_list/presentation/presentation.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
 class UnifiedSearchModalCardWrapper extends StatelessWidget {
@@ -84,6 +83,7 @@ class _UnifiedSearchModalCardState extends State<UnifiedSearchModalCard> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
+    final l10n = context.l10n;
 
     return CallbackShortcuts(
       bindings: {
@@ -138,7 +138,7 @@ class _UnifiedSearchModalCardState extends State<UnifiedSearchModalCard> {
                                 height: 1.2,
                               ),
                               decoration: InputDecoration(
-                                hintText: 'Search people and messages…',
+                                hintText: l10n.unifiedSearchHint,
                                 hintStyle: TextStyle(
                                   fontSize: 15,
                                   color: colorScheme.onSurfaceVariant,
@@ -255,18 +255,9 @@ class _UnifiedSearchModalCardState extends State<UnifiedSearchModalCard> {
                             query: loaded.query,
                             colorScheme: colorScheme,
                             onPersonTap: (user) {
-                              final String? conversationId =
-                                  _resolvePrivateConversationIdForUser(
-                                    context,
-                                    companionId: user.userId,
-                                  );
                               final router = GoRouter.of(context);
                               Navigator.of(context).pop();
-                              router.go(
-                                conversationId == null
-                                    ? AppRoutes.conversationDraft(user.userId)
-                                    : AppRoutes.conversation(conversationId),
-                              );
+                              router.go(AppRoutes.conversationDraft(user.userId));
                             },
                             onConversationTap: (conversation) {
                               final router = GoRouter.of(context);
@@ -291,16 +282,16 @@ class _UnifiedSearchModalCardState extends State<UnifiedSearchModalCard> {
                           top: BorderSide(color: colorScheme.outline, width: 1),
                         ),
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
                           ModalKeyboardHint(
                             keyLabel: '↵',
-                            description: 'Select',
+                            description: context.l10n.modalKeyboardHintSelect,
                           ),
-                          SizedBox(width: 12),
+                          const SizedBox(width: 12),
                           ModalKeyboardHint(
                             keyLabel: '↑↓',
-                            description: 'Navigate',
+                            description: context.l10n.modalKeyboardHintNavigate,
                           ),
                         ],
                       ),
@@ -313,29 +304,6 @@ class _UnifiedSearchModalCardState extends State<UnifiedSearchModalCard> {
         ),
       ),
     );
-  }
-
-  String? _resolvePrivateConversationIdForUser(
-    BuildContext context, {
-    required String companionId,
-  }) {
-    final AllConversationsListBloc? conversationsBloc = context
-        .read<AllConversationsListBloc?>();
-    if (conversationsBloc == null) return null;
-
-    final AllConversationsListState conversationsState =
-        conversationsBloc.state;
-    if (conversationsState is! AllConversationsListLoadedState) return null;
-
-    final ConversationTile? privateTile = conversationsState.conversationTiles
-        .where(
-          (tile) =>
-              tile.type == ConversationTileType.private &&
-              tile.companion?.userId == companionId,
-        )
-        .firstOrNull;
-
-    return privateTile?.id;
   }
 }
 
@@ -364,7 +332,10 @@ class _SearchResults extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 8),
       children: [
         if (people.isNotEmpty) ...[
-          _SectionHeader(label: 'PEOPLE', colorScheme: colorScheme),
+          _SectionHeader(
+            label: context.l10n.unifiedSearchPeople,
+            colorScheme: colorScheme,
+          ),
           ...people.map(
             (user) => _PersonTile(
               user: user,
@@ -375,7 +346,10 @@ class _SearchResults extends StatelessWidget {
           ),
         ],
         if (conversations.isNotEmpty) ...[
-          _SectionHeader(label: 'MESSAGES', colorScheme: colorScheme),
+          _SectionHeader(
+            label: context.l10n.unifiedSearchMessages,
+            colorScheme: colorScheme,
+          ),
           ...conversations.map(
             (conversation) => _ConversationMessageTile(
               conversation: conversation,
@@ -436,7 +410,6 @@ class _PersonTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String fullName = ProfileDataExtractor.extractUserFullName(user);
-    final String initials = ProfileDataExtractor.extractUserInitials(user);
     final String role =
         (user.description != null && user.description!.isNotEmpty)
         ? user.description!
@@ -454,9 +427,7 @@ class _PersonTile extends StatelessWidget {
           child: Row(
             children: [
               Stack(
-                children: [
-                  ConversationAvatar(text: initials, size: 42, isOnline: true),
-                ],
+                children: [Avatar.user(user: user, size: 42, isOnline: true)],
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -527,9 +498,6 @@ class _ConversationMessageTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String title = conversation.title;
-    final String initials = title.length >= 2
-        ? title.substring(0, 2).toUpperCase()
-        : title.toUpperCase();
 
     final String? companionName = conversation.companion != null
         ? ProfileDataExtractor.extractUserFullName(conversation.companion!)
@@ -550,7 +518,13 @@ class _ConversationMessageTile extends StatelessWidget {
             children: [
               Stack(
                 children: [
-                  ConversationAvatar(text: initials, size: 40, isOnline: true),
+                  conversation.companion != null
+                      ? Avatar.user(
+                          user: conversation.companion!,
+                          size: 40,
+                          isOnline: true,
+                        )
+                      : _buildConversationAvatar(size: 40),
                 ],
               ),
               const SizedBox(width: 12),
@@ -604,6 +578,85 @@ class _ConversationMessageTile extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildConversationAvatar({required double size}) {
+    switch (conversation.type) {
+      case UnifiedSearchConversationType.private:
+        return Avatar.user(
+          user: _placeholderUser(
+            id: conversation.id,
+            title: conversation.title,
+          ),
+          size: size,
+          isOnline: true,
+        );
+      case UnifiedSearchConversationType.group:
+        return Avatar.group(
+          group: _placeholderGroup(
+            id: conversation.id,
+            title: conversation.title,
+          ),
+          size: size,
+          isOnline: true,
+        );
+      case UnifiedSearchConversationType.channel:
+        return Avatar.channel(
+          channel: _placeholderChannel(
+            id: conversation.id,
+            title: conversation.title,
+          ),
+          size: size,
+          isOnline: true,
+        );
+    }
+  }
+
+  User _placeholderUser({required String id, required String title}) {
+    final DateTime now = DateTime.now();
+    return User(
+      userId: id,
+      username: title,
+      firstName: title,
+      lastName: '',
+      languageCode: 'en',
+      isDeleted: false,
+      isBanned: false,
+      createdAt: now,
+      updatedAt: now,
+    );
+  }
+
+  Group _placeholderGroup({required String id, required String title}) {
+    final DateTime now = DateTime.now();
+    return Group(
+      groupId: id,
+      createdById: '',
+      title: title,
+      description: null,
+      createdAt: now,
+      updatedAt: now,
+      avatarFileId: null,
+      isDeleted: false,
+      deletedAt: null,
+      isPublic: true,
+    );
+  }
+
+  Channel _placeholderChannel({required String id, required String title}) {
+    final DateTime now = DateTime.now();
+    return Channel(
+      channelId: id,
+      ownerId: '',
+      title: title,
+      description: null,
+      createdAt: now,
+      updatedAt: now,
+      avatarFileId: null,
+      isDeleted: false,
+      deletedAt: null,
+      isPublic: true,
     );
   }
 }
@@ -683,6 +736,7 @@ class _SearchPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -696,7 +750,9 @@ class _SearchPlaceholder extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              isEmpty ? 'Nothing found' : 'Search people and messages',
+              isEmpty
+                  ? l10n.unifiedSearchNothingFoundTitle
+                  : l10n.unifiedSearchInitialTitle,
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
@@ -707,8 +763,8 @@ class _SearchPlaceholder extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               isEmpty
-                  ? 'Try a different search term'
-                  : 'Start typing to search across conversations',
+                  ? l10n.unifiedSearchNothingFoundSubtitle
+                  : l10n.unifiedSearchInitialSubtitle,
               style: TextStyle(
                 fontSize: 12,
                 color: colorScheme.onSurfaceVariant,

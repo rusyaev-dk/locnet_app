@@ -32,6 +32,7 @@ class PrivateConversationBloc
     on<PrivateConversationSendMessageEvent>(_onSendMessage);
     on<PrivateConversationMessageUpdateReceivedEvent>(_onMessageUpdateReceived);
     on<PrivateConversationMessageDeletedLocallyEvent>(_onMessageDeletedLocally);
+    on<PrivateConversationMarkMessageReadEvent>(_onMarkMessageRead);
 
     _messagesUpdatesSubscription = _privateConversationInteractor
         .messagesUpdates
@@ -367,6 +368,20 @@ class PrivateConversationBloc
     }
   }
 
+  Future<void> _onMarkMessageRead(
+    PrivateConversationMarkMessageReadEvent event,
+    Emitter<PrivateConversationState> emit,
+  ) async {
+    try {
+      await _privateMessageInteractor.markMessageAsRead(
+        conversationId: event.conversationId,
+        messageId: event.messageId,
+      );
+    } catch (e, st) {
+      _logger.exception(e, st);
+    }
+  }
+
   void _onMessageDeletedLocally(
     PrivateConversationMessageDeletedLocallyEvent event,
     Emitter<PrivateConversationState> emit,
@@ -396,21 +411,78 @@ class PrivateConversationBloc
     );
 
     if (serverIdIndex != -1) {
-      messages[serverIdIndex] = incomingMessage;
+      final PrivateMessage existing = messages[serverIdIndex];
+      if (_shouldMergeReadReceiptPatch(
+        existing: existing,
+        incoming: incomingMessage,
+      )) {
+        messages[serverIdIndex] = existing.copyWith(
+          deliveryStatus: MessageDeliveryStatus.read,
+          readAt: incomingMessage.readAt,
+          updatedAt: incomingMessage.updatedAt,
+        );
+        return;
+      }
+      messages[serverIdIndex] = incomingMessage.copyWith(
+        attachments: _mergeAttachments(
+          existing: existing,
+          incoming: incomingMessage,
+        ),
+      );
       return;
     }
 
     final int clientIdIndex = messages.indexWhere(
       (PrivateMessage message) =>
+          message.clientMessageId != null &&
           message.clientMessageId == incomingMessage.clientMessageId,
     );
 
     if (clientIdIndex != -1) {
-      messages[clientIdIndex] = incomingMessage;
+      final PrivateMessage existing = messages[clientIdIndex];
+      messages[clientIdIndex] = incomingMessage.copyWith(
+        attachments: _mergeAttachments(
+          existing: existing,
+          incoming: incomingMessage,
+        ),
+      );
       return;
     }
 
     messages.add(incomingMessage);
+  }
+
+  bool _shouldMergeReadReceiptPatch({
+    required PrivateMessage existing,
+    required PrivateMessage incoming,
+  }) {
+    return incoming.id == existing.id &&
+        incoming.conversationId == existing.conversationId &&
+        incoming.deliveryStatus == MessageDeliveryStatus.read &&
+        incoming.readAt != null &&
+        incoming.text.isEmpty &&
+        incoming.attachments.isEmpty;
+  }
+
+  /// Returns the authoritative attachment list for a message being upserted.
+  ///
+  /// If [incoming] already carries attachments (e.g. a fresh WS event with
+  /// fully-parsed payloads), those are used as-is — the server is the source
+  /// of truth and we must not append [existing] attachments on top, which
+  /// would create duplicates.
+  ///
+  /// If [incoming] carries no attachments (e.g. `private_message_edited`
+  /// which never ships an `attachments` field, or a WS event whose attachment
+  /// array failed to parse), we fall back to [existing] attachments so they
+  /// are not silently lost from the UI.
+  List<PrivateMessageAttachment> _mergeAttachments({
+    required PrivateMessage existing,
+    required PrivateMessage incoming,
+  }) {
+    if (incoming.attachments.isNotEmpty) {
+      return incoming.attachments;
+    }
+    return existing.attachments;
   }
 
   void _removeIncomingMessage({

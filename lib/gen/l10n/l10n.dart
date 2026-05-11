@@ -1869,6 +1869,56 @@ class S {
     );
   }
 
+  /// `Удалить фото`
+  String get profileDeletePhoto {
+    return Intl.message(
+      'Удалить фото',
+      name: 'profileDeletePhoto',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Обрезать фото`
+  String get profileCropPhoto {
+    return Intl.message(
+      'Обрезать фото',
+      name: 'profileCropPhoto',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Сдвиньте или масштабируйте изображение`
+  String get profileCropPhotoHint {
+    return Intl.message(
+      'Сдвиньте или масштабируйте изображение',
+      name: 'profileCropPhotoHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Удалить фото профиля?`
+  String get profileDeletePhotoTitle {
+    return Intl.message(
+      'Удалить фото профиля?',
+      name: 'profileDeletePhotoTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Фото будет удалено из профиля. Вы сможете загрузить другое в любой момент.`
+  String get profileDeletePhotoBody {
+    return Intl.message(
+      'Фото будет удалено из профиля. Вы сможете загрузить другое в любой момент.',
+      name: 'profileDeletePhotoBody',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Язык`
   String get companionFieldLanguage {
     return Intl.message(
@@ -1924,6 +1974,16 @@ class S {
     return Intl.message(
       'Отправьте сообщение, чтобы начать чат',
       name: 'draftChatHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Переписка пока пустая`
+  String get privateDraftConversationEmptyTitle {
+    return Intl.message(
+      'Переписка пока пустая',
+      name: 'privateDraftConversationEmptyTitle',
       desc: '',
       args: [],
     );
@@ -2466,6 +2526,276 @@ class S {
       name: 'passcodeMinutesCount',
       desc: '',
       args: [count],
+    );
+  }
+
+  /// `Поиск сообщений в этой переписке…`
+  String get conversationSearchMessagesHint {
+    return Intl.message(
+      'Поиск сообщений в этой переписке…',
+      name: 'conversationSearchMessagesHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Поиск сообщений в чате`
+  String get conversationSearchEmptyTitle {
+    return Intl.message(
+      'Поиск сообщений в чате',
+      name: 'conversationSearchEmptyTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Введите запрос, чтобы найти сообщения в этой переписке.`
+  String get conversationSearchEmptySubtitle {
+    return Intl.message(
+      'Введите запрос, чтобы найти сообщения в этой переписке.',
+      name: 'conversationSearchEmptySubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ничего не найдено`
+  String get conversationSearchNoMatches {
+    return Intl.message(
+      'Ничего не найдено',
+      name: 'conversationSearchNoMatches',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{current} из {total}`
+  String conversationSearchResultsCount(Object current, Object total) {
+    return Intl.message(
+      '$current из $total',
+      name: 'conversationSearchResultsCount',
+      desc: '',
+      args: [current, total],
+    );
+  }
+
+  /// `Сегодня`
+  String get conversationSearchDateToday {
+    return Intl.message(
+      'Сегодня',
+      name: 'conversationSearchDateToday',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Вчера`
+  String get conversationSearchDateYesterday {
+    return Intl.message(
+      'Вчера',
+      name: 'conversationSearchDateYesterday',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{count} дн. назад`
+  String conversationSearchDateDaysAgo(Object count) {
+    return Intl.message(
+      '$count дн. назад',
+      name: 'conversationSearchDateDaysAgo',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Выбрать`
+  String get modalKeyboardHintSelect {
+    return Intl.message(
+      'Выбрать',
+      name: 'modalKeyboardHintSelect',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Навигация`
+  String get modalKeyboardHintNavigate {
+    return Intl.message(
+      'Навигация',
+      name: 'modalKeyboardHintNavigate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Общие медиа`
+  String get conversationSharedMediaTitle {
+    return Intl.message(
+      'Общие медиа',
+      name: 'conversationSharedMediaTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `с {name}`
+  String conversationSharedMediaWithName(Object name) {
+    return Intl.message(
+      'с $name',
+      name: 'conversationSharedMediaWithName',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `Фото и медиа`
+  String get conversationSharedMediaTabPhotos {
+    return Intl.message(
+      'Фото и медиа',
+      name: 'conversationSharedMediaTabPhotos',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Файлы`
+  String get conversationSharedMediaTabFiles {
+    return Intl.message(
+      'Файлы',
+      name: 'conversationSharedMediaTabFiles',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ссылки`
+  String get conversationSharedMediaTabLinks {
+    return Intl.message(
+      'Ссылки',
+      name: 'conversationSharedMediaTabLinks',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Нет общих медиа`
+  String get conversationSharedMediaEmptyMedia {
+    return Intl.message(
+      'Нет общих медиа',
+      name: 'conversationSharedMediaEmptyMedia',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Нет общих файлов`
+  String get conversationSharedMediaEmptyFiles {
+    return Intl.message(
+      'Нет общих файлов',
+      name: 'conversationSharedMediaEmptyFiles',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Нет общих ссылок`
+  String get conversationSharedMediaEmptyLinks {
+    return Intl.message(
+      'Нет общих ссылок',
+      name: 'conversationSharedMediaEmptyLinks',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Вложение`
+  String get conversationSharedMediaAttachment {
+    return Intl.message(
+      'Вложение',
+      name: 'conversationSharedMediaAttachment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Общие`
+  String get conversationSharedMediaMarkedAsShared {
+    return Intl.message(
+      'Общие',
+      name: 'conversationSharedMediaMarkedAsShared',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Поиск людей и сообщений…`
+  String get unifiedSearchHint {
+    return Intl.message(
+      'Поиск людей и сообщений…',
+      name: 'unifiedSearchHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `ЛЮДИ`
+  String get unifiedSearchPeople {
+    return Intl.message(
+      'ЛЮДИ',
+      name: 'unifiedSearchPeople',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `СООБЩЕНИЯ`
+  String get unifiedSearchMessages {
+    return Intl.message(
+      'СООБЩЕНИЯ',
+      name: 'unifiedSearchMessages',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Поиск людей и сообщений`
+  String get unifiedSearchInitialTitle {
+    return Intl.message(
+      'Поиск людей и сообщений',
+      name: 'unifiedSearchInitialTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Начните ввод, чтобы искать по перепискам`
+  String get unifiedSearchInitialSubtitle {
+    return Intl.message(
+      'Начните ввод, чтобы искать по перепискам',
+      name: 'unifiedSearchInitialSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ничего не найдено`
+  String get unifiedSearchNothingFoundTitle {
+    return Intl.message(
+      'Ничего не найдено',
+      name: 'unifiedSearchNothingFoundTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Попробуйте изменить поисковый запрос`
+  String get unifiedSearchNothingFoundSubtitle {
+    return Intl.message(
+      'Попробуйте изменить поисковый запрос',
+      name: 'unifiedSearchNothingFoundSubtitle',
+      desc: '',
+      args: [],
     );
   }
 }

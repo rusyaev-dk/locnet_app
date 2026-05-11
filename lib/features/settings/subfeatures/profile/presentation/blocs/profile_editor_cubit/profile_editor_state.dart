@@ -6,6 +6,8 @@ final class ProfileEditorState extends Equatable {
     this.isLoading = true,
     this.isEditing = false,
     this.isSubmitting = false,
+    this.isUploadingAvatar = false,
+    this.hasPendingAvatar = false,
     this.firstName,
     this.firstNameException,
     this.lastName,
@@ -19,9 +21,17 @@ final class ProfileEditorState extends Equatable {
   static const Object _noChange = Object();
 
   final User? user;
+
   final bool isLoading;
   final bool isEditing;
   final bool isSubmitting;
+
+  /// True while the upload HTTP call is in-flight.
+  final bool isUploadingAvatar;
+
+  /// True when the user has picked an image and the crop modal should appear.
+  final bool hasPendingAvatar;
+
   final String? firstName;
   final Object? firstNameException;
   final String? lastName;
@@ -36,6 +46,8 @@ final class ProfileEditorState extends Equatable {
     Object? isLoading = _noChange,
     Object? isEditing = _noChange,
     Object? isSubmitting = _noChange,
+    Object? isUploadingAvatar = _noChange,
+    Object? hasPendingAvatar = _noChange,
     Object? firstName = _noChange,
     Object? firstNameException = _noChange,
     Object? lastName = _noChange,
@@ -56,6 +68,12 @@ final class ProfileEditorState extends Equatable {
       isSubmitting: identical(isSubmitting, _noChange)
           ? this.isSubmitting
           : isSubmitting as bool,
+      isUploadingAvatar: identical(isUploadingAvatar, _noChange)
+          ? this.isUploadingAvatar
+          : isUploadingAvatar as bool,
+      hasPendingAvatar: identical(hasPendingAvatar, _noChange)
+          ? this.hasPendingAvatar
+          : hasPendingAvatar as bool,
       firstName: identical(firstName, _noChange)
           ? this.firstName
           : firstName as String?,
@@ -87,6 +105,8 @@ final class ProfileEditorState extends Equatable {
     isLoading,
     isEditing,
     isSubmitting,
+    isUploadingAvatar,
+    hasPendingAvatar,
     firstName,
     firstNameException,
     lastName,

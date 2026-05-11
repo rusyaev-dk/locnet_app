@@ -316,6 +316,7 @@ final class MockInMemoryBackend {
       clientMessageId: newMessage.clientMessageId,
       isPinned: newMessage.isPinned,
       editedAt: newMessage.editedAt,
+      readAt: newMessage.readAt,
     );
 
     _privateMessages[newMessage.conversationId]!.add(messageDto);
@@ -372,10 +373,27 @@ final class MockInMemoryBackend {
       clientMessageId: updatedMessage.clientMessageId,
       isPinned: updatedMessage.isPinned,
       editedAt: updatedMessage.editedAt,
+      readAt: updatedMessage.readAt,
     );
 
     list[index] = updatedDto;
     return updatedDto;
+  }
+
+  PrivateMessageDto? findPrivateMessage({
+    required String conversationId,
+    required String messageId,
+  }) {
+    final List<PrivateMessageDto>? list = _privateMessages[conversationId];
+    if (list == null) {
+      return null;
+    }
+    for (final PrivateMessageDto dto in list) {
+      if (dto.id == messageId) {
+        return dto;
+      }
+    }
+    return null;
   }
 
   bool deletePrivateMessage({required PrivateMessage message}) {

@@ -42,4 +42,10 @@ abstract class ApiEndpoints {
     String conversationId,
     String messageId,
   ) => "/private-chats/conversations/$conversationId/messages/$messageId";
+
+  /// PATCH — mark message as read by the current user.
+  static String privateConversationMessageRead(
+    String conversationId,
+    String messageId,
+  ) => "/private-chats/conversations/$conversationId/messages/$messageId/read";
 }

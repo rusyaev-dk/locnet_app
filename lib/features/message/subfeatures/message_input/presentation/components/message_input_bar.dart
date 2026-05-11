@@ -307,34 +307,30 @@ class _MessageInputBarState extends State<MessageInputBar> {
                   top: false,
                   child: Container(
                     color: colorScheme.surface,
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                    padding: const EdgeInsets.fromLTRB(16, 6, 16, 4),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
                           decoration: BoxDecoration(
                             color: colorScheme.secondary,
-                            border: Border.all(
-                              color: colorScheme.outline,
-                              width: 1,
-                            ),
+                            border: Border.all(color: colorScheme.outline),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 4,
-                            vertical: 4,
+                            horizontal: 2,
+                            vertical: 2,
                           ),
                           child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
                               _InputBarButton(
                                 icon: Icons.attach_file,
-                                size: 36,
-                                iconSize: 20,
+                                size: 40,
+                                iconSize: 22,
                                 color: colorScheme.onSurfaceVariant,
                                 onPressed: () => _handleAttachPressed(),
                               ),
-                              const SizedBox(width: 4),
+                              const SizedBox(width: 2),
                               Expanded(
                                 child: ConstrainedBox(
                                   constraints: const BoxConstraints(
@@ -348,16 +344,16 @@ class _MessageInputBarState extends State<MessageInputBar> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 4),
+                              const SizedBox(width: 2),
                               _InputBarButton(
                                 key: _emojiButtonKey,
                                 icon: Icons.sentiment_satisfied_alt_outlined,
-                                size: 36,
-                                iconSize: 20,
+                                size: 40,
+                                iconSize: 22,
                                 color: colorScheme.onSurfaceVariant,
                                 onPressed: _toggleEmojiPicker,
                               ),
-                              const SizedBox(width: 6),
+                              const SizedBox(width: 4),
                               _SendButton(
                                 enabled: hasText || state.files.isNotEmpty,
                                 colorScheme: colorScheme,
@@ -424,7 +420,7 @@ class _SendButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       padding: EdgeInsets.zero,
-      constraints: BoxConstraints.tight(const Size(36, 36)),
+      constraints: BoxConstraints.tight(const Size(40, 40)),
       style: IconButton.styleFrom(
         backgroundColor: enabled
             ? colorScheme.primary
@@ -434,9 +430,9 @@ class _SendButton extends StatelessWidget {
         disabledForegroundColor: colorScheme.onSurfaceVariant,
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         visualDensity: VisualDensity.compact,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
-      icon: const Icon(Icons.send, size: 18),
+      icon: const Icon(Icons.send, size: 20),
       onPressed: enabled ? onPressed : null,
     );
   }

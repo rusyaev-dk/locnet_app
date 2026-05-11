@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/conversation/presentation/components/components.dart';
+import 'package:locnet_app/features/conversation/subfeatures/channel/domain/models/channel.dart';
+import 'package:locnet_app/features/conversation/subfeatures/group/domain/models/group.dart';
 import 'package:locnet_app/features/conversations_list/domain/domain.dart';
 import 'package:locnet_app/features/message/presentation/presentation.dart';
 
@@ -46,11 +47,7 @@ class _ConversationListTileState extends State<ConversationListTile> {
     final colorScheme = context.colorScheme;
     final l10n = context.l10n;
 
-    final String avatarText = widget.conversationTile.companion != null
-        ? ProfileDataExtractor.extractUserInitials(
-            widget.conversationTile.companion!,
-          )
-        : widget.conversationTile.title;
+    final User? companion = widget.conversationTile.companion;
 
     final Border border = Border.all(
       color: widget.isSelected ? colorScheme.outline : Colors.transparent,
@@ -74,7 +71,9 @@ class _ConversationListTileState extends State<ConversationListTile> {
                 border: border,
               ),
               padding: const EdgeInsets.all(5),
-              child: ConversationAvatar(text: avatarText, size: 38),
+              child: companion != null
+                  ? Avatar.user(user: companion, size: 38)
+                  : _buildConversationAvatar(size: 38),
             ),
           ),
         ),
@@ -126,7 +125,9 @@ class _ConversationListTileState extends State<ConversationListTile> {
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           child: Row(
             children: [
-              ConversationAvatar(text: avatarText, size: 38),
+              companion != null
+                  ? Avatar.user(user: companion, size: 38)
+                  : _buildConversationAvatar(size: 38),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
@@ -194,6 +195,75 @@ class _ConversationListTileState extends State<ConversationListTile> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildConversationAvatar({required double size}) {
+    final ConversationTile tile = widget.conversationTile;
+
+    switch (tile.type) {
+      case ConversationTileType.private:
+        return Avatar.user(
+          user: _placeholderUser(id: tile.id, title: tile.title),
+          size: size,
+        );
+      case ConversationTileType.group:
+        return Avatar.group(
+          group: _placeholderGroup(id: tile.id, title: tile.title),
+          size: size,
+        );
+      case ConversationTileType.channel:
+        return Avatar.channel(
+          channel: _placeholderChannel(id: tile.id, title: tile.title),
+          size: size,
+        );
+    }
+  }
+
+  User _placeholderUser({required String id, required String title}) {
+    final DateTime now = DateTime.now();
+    return User(
+      userId: id,
+      username: title,
+      firstName: title,
+      lastName: '',
+      languageCode: 'en',
+      isDeleted: false,
+      isBanned: false,
+      createdAt: now,
+      updatedAt: now,
+    );
+  }
+
+  Group _placeholderGroup({required String id, required String title}) {
+    final DateTime now = DateTime.now();
+    return Group(
+      groupId: id,
+      createdById: '',
+      title: title,
+      description: null,
+      createdAt: now,
+      updatedAt: now,
+      avatarFileId: null,
+      isDeleted: false,
+      deletedAt: null,
+      isPublic: true,
+    );
+  }
+
+  Channel _placeholderChannel({required String id, required String title}) {
+    final DateTime now = DateTime.now();
+    return Channel(
+      channelId: id,
+      ownerId: '',
+      title: title,
+      description: null,
+      createdAt: now,
+      updatedAt: now,
+      avatarFileId: null,
+      isDeleted: false,
+      deletedAt: null,
+      isPublic: true,
     );
   }
 }

@@ -18,5 +18,12 @@ abstract interface class IPrivateMessageRepo {
     required String conversationId,
     required String messageId,
   });
+
+  /// Marks the message as read by the current user.
+  /// Returns an updated message with [MessageDeliveryStatus.read] and [readAt].
+  Future<PrivateMessage> markMessageAsRead({
+    required String conversationId,
+    required String messageId,
+  });
 }
 

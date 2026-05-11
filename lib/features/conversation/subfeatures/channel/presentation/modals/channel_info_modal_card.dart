@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/conversation/subfeatures/channel/channel.dart';
 import 'package:locnet_app/features/conversation/presentation/presentation.dart';
+import 'package:locnet_app/features/conversation/subfeatures/channel/channel.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
 class ChannelInfoModalCard extends StatelessWidget {
-  const ChannelInfoModalCard({required this.conversation, super.key});
+  const ChannelInfoModalCard({required this.channel, super.key});
 
-  final Channel conversation;
+  final Channel channel;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
 
-    final String? description =
-        (conversation.description ?? '').trim().isEmpty
-            ? null
-            : conversation.description!.trim();
+    final String? description = (channel.description ?? '').trim().isEmpty
+        ? null
+        : channel.description!.trim();
 
     return AppModalCard(
       child: Column(
@@ -26,22 +25,20 @@ class ChannelInfoModalCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(15, 10, 15, 12),
             child: ConversationInfoHeroHeader(
-              title: conversation.title,
+              title: channel.title,
+              avatar: Avatar.channel(channel: channel, size: 80),
               subtitle: description,
             ),
           ),
           Divider(height: 1, thickness: 1, color: colorScheme.outlineVariant),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: _ChannelActionRow(conversation: conversation),
+            child: _ChannelActionRow(conversation: channel),
           ),
           Divider(height: 1, thickness: 1, color: colorScheme.outlineVariant),
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 16,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

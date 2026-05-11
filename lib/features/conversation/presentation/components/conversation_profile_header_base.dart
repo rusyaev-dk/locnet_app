@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
-import 'package:locnet_app/features/conversation/presentation/presentation.dart';
 
 /// Base layout for conversation headers (private, group, channel).
 ///
 /// Provides:
 /// - Left: avatar (38px), name + status (no online dot on avatar).
 /// - Right: custom trailing actions + overflow menu.
+///
 class ConversationProfileHeaderBase extends StatelessWidget {
   const ConversationProfileHeaderBase({
     required this.title,
-    required this.avatarText,
+    required this.avatarOverride,
     required this.onTap,
     this.subtitle,
     this.isOnline,
@@ -20,7 +20,7 @@ class ConversationProfileHeaderBase extends StatelessWidget {
   });
 
   final String title;
-  final String avatarText;
+  final Widget avatarOverride;
   final String? subtitle;
   final bool? isOnline;
   final VoidCallback onTap;
@@ -46,7 +46,7 @@ class ConversationProfileHeaderBase extends StatelessWidget {
         decoration: BoxDecoration(
           color: colorScheme.secondary,
           border: Border(
-            bottom: BorderSide(color: colorScheme.outline, width: 1),
+            bottom: BorderSide(color: colorScheme.outline),
           ),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -58,11 +58,7 @@ class ConversationProfileHeaderBase extends StatelessWidget {
                 onTap: onTap,
                 child: Row(
                   children: [
-                    ConversationAvatar(
-                      text: avatarText,
-                      size: 38,
-                      isOnline: null,
-                    ),
+                    avatarOverride,
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(

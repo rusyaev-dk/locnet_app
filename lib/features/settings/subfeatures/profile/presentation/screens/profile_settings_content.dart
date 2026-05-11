@@ -1,10 +1,14 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/auth/presentation/presentation.dart';
 import 'package:locnet_app/features/settings/subfeatures/profile/presentation/blocs/blocs.dart';
+import 'package:locnet_app/features/settings/subfeatures/profile/presentation/components/components.dart';
 import 'package:locnet_app/features/settings/subfeatures/profile/presentation/screens/screens.dart';
+import 'package:locnet_app/uikit/uikit.dart';
 
 /// Profile section in Settings: compact profile view + inline editor.
 class ProfileSettingsContent extends StatefulWidget {
@@ -36,6 +40,35 @@ class _ProfileSettingsContentState extends State<ProfileSettingsContent> {
     _descriptionController.text = state.description ?? '';
   }
 
+  /// Show the crop modal and, on confirmation, upload the cropped bytes.
+  Future<void> _showCropModal(BuildContext context) async {
+    final cubit = context.read<ProfileEditorCubit>();
+    final Uint8List? bytes = cubit.pendingAvatarBytes;
+    if (bytes == null) return;
+
+    final Uint8List? cropped = await showGeneralDialog<Uint8List>(
+      context: context,
+      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+      barrierColor: context.colorScheme.scrim.withValues(alpha: 0.45),
+      transitionBuilder: slideFadeDialogTransition,
+      pageBuilder: (BuildContext dialogContext, _, _) {
+        return AppModalCard(
+          maxWidth: 440,
+          verticalInset: 80,
+          child: AvatarCropModal(imageBytes: bytes),
+        );
+      },
+    );
+
+    if (!context.mounted) return;
+
+    if (cropped != null) {
+      await cubit.uploadAvatarBytes(croppedBytes: cropped);
+    } else {
+      cubit.cancelAvatarPick();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -60,11 +93,20 @@ class _ProfileSettingsContentState extends State<ProfileSettingsContent> {
 
     return BlocConsumer<ProfileEditorCubit, ProfileEditorState>(
       listenWhen: (previous, current) {
-        return (previous.isEditing != current.isEditing) ||
-            (!current.isEditing && previous.user != current.user);
+        final bool editingChanged = previous.isEditing != current.isEditing;
+        final bool userChanged =
+            !current.isEditing && previous.user != current.user;
+        final bool pendingAvatarAppeared =
+            !previous.hasPendingAvatar && current.hasPendingAvatar;
+        return editingChanged || userChanged || pendingAvatarAppeared;
       },
       listener: (context, state) {
-        _syncControllersFromState(state);
+        if (!state.isEditing) {
+          _syncControllersFromState(state);
+        }
+        if (state.hasPendingAvatar) {
+          _showCropModal(context);
+        }
       },
       builder: (context, state) {
         if (state.isLoading && state.user == null) {
@@ -96,6 +138,7 @@ class _ProfileSettingsContentState extends State<ProfileSettingsContent> {
           user: loadedUser,
           isEditing: state.isEditing,
           isSubmitting: state.isSubmitting,
+          isUploadingAvatar: state.isUploadingAvatar,
           firstNameController: _firstNameController,
           lastNameController: _lastNameController,
           usernameController: _usernameController,
@@ -129,6 +172,30 @@ class _ProfileSettingsContentState extends State<ProfileSettingsContent> {
           },
           onSave: () {
             context.read<ProfileEditorCubit>().submitChanges();
+          },
+          onChangePhoto: () {
+            context.read<ProfileEditorCubit>().pickImageForAvatar();
+          },
+          onDeletePhoto: () async {
+            final l10n = context.l10n;
+            final bool? confirm = await showAppAlertDialog<bool>(
+              context: context,
+              title: Text(l10n.profileDeletePhotoTitle),
+              content: Text(l10n.profileDeletePhotoBody),
+              buildActions: (BuildContext dialogContext) => <AppAlertDialogAction>[
+                AppAlertDialogAction(
+                  child: Text(l10n.cancel),
+                  onPressed: () => Navigator.of(dialogContext).pop(false),
+                ),
+                AppAlertDialogAction(
+                  isDestructiveAction: true,
+                  child: Text(l10n.delete),
+                  onPressed: () => Navigator.of(dialogContext).pop(true),
+                ),
+              ],
+            );
+            if (!context.mounted || confirm != true) return;
+            await context.read<ProfileEditorCubit>().deleteAvatar();
           },
           onFirstNameChanged: (value) {
             context.read<ProfileEditorCubit>().updateFirstName(value: value);

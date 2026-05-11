@@ -1844,6 +1844,9 @@ class $PrivateMessageAttachmentsTableTable
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES private_messages (id) ON DELETE CASCADE',
+    ),
   );
   static const VerificationMeta _fileIdMeta = const VerificationMeta('fileId');
   @override
@@ -2903,6 +2906,18 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     privateMessageAttachmentsTable,
     mediaDownloadCacheTable,
   ];
+  @override
+  StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'private_messages',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('private_message_attachments', kind: UpdateKind.delete),
+      ],
+    ),
+  ]);
 }
 
 typedef $$ConversationTilesTableTableCreateCompanionBuilder =
@@ -3356,6 +3371,48 @@ typedef $$PrivateMessagesTableTableUpdateCompanionBuilder =
       Value<int> rowid,
     });
 
+final class $$PrivateMessagesTableTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $PrivateMessagesTableTable,
+          PrivateMessagesTableData
+        > {
+  $$PrivateMessagesTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static MultiTypedResultKey<
+    $PrivateMessageAttachmentsTableTable,
+    List<PrivateMessageAttachmentsTableData>
+  >
+  _privateMessageAttachmentsTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.privateMessageAttachmentsTable,
+        aliasName: $_aliasNameGenerator(
+          db.privateMessagesTable.id,
+          db.privateMessageAttachmentsTable.messageId,
+        ),
+      );
+
+  $$PrivateMessageAttachmentsTableTableProcessedTableManager
+  get privateMessageAttachmentsTableRefs {
+    final manager = $$PrivateMessageAttachmentsTableTableTableManager(
+      $_db,
+      $_db.privateMessageAttachmentsTable,
+    ).filter((f) => f.messageId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _privateMessageAttachmentsTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
 class $$PrivateMessagesTableTableFilterComposer
     extends Composer<_$AppDatabase, $PrivateMessagesTableTable> {
   $$PrivateMessagesTableTableFilterComposer({
@@ -3439,6 +3496,35 @@ class $$PrivateMessagesTableTableFilterComposer
     column: $table.cachedAtMs,
     builder: (column) => ColumnFilters(column),
   );
+
+  Expression<bool> privateMessageAttachmentsTableRefs(
+    Expression<bool> Function(
+      $$PrivateMessageAttachmentsTableTableFilterComposer f,
+    )
+    f,
+  ) {
+    final $$PrivateMessageAttachmentsTableTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.privateMessageAttachmentsTable,
+          getReferencedColumn: (t) => t.messageId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$PrivateMessageAttachmentsTableTableFilterComposer(
+                $db: $db,
+                $table: $db.privateMessageAttachmentsTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$PrivateMessagesTableTableOrderingComposer
@@ -3599,6 +3685,35 @@ class $$PrivateMessagesTableTableAnnotationComposer
     column: $table.cachedAtMs,
     builder: (column) => column,
   );
+
+  Expression<T> privateMessageAttachmentsTableRefs<T extends Object>(
+    Expression<T> Function(
+      $$PrivateMessageAttachmentsTableTableAnnotationComposer a,
+    )
+    f,
+  ) {
+    final $$PrivateMessageAttachmentsTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.privateMessageAttachmentsTable,
+          getReferencedColumn: (t) => t.messageId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$PrivateMessageAttachmentsTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.privateMessageAttachmentsTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$PrivateMessagesTableTableTableManager
@@ -3612,16 +3727,9 @@ class $$PrivateMessagesTableTableTableManager
           $$PrivateMessagesTableTableAnnotationComposer,
           $$PrivateMessagesTableTableCreateCompanionBuilder,
           $$PrivateMessagesTableTableUpdateCompanionBuilder,
-          (
-            PrivateMessagesTableData,
-            BaseReferences<
-              _$AppDatabase,
-              $PrivateMessagesTableTable,
-              PrivateMessagesTableData
-            >,
-          ),
+          (PrivateMessagesTableData, $$PrivateMessagesTableTableReferences),
           PrivateMessagesTableData,
-          PrefetchHooks Function()
+          PrefetchHooks Function({bool privateMessageAttachmentsTableRefs})
         > {
   $$PrivateMessagesTableTableTableManager(
     _$AppDatabase db,
@@ -3715,9 +3823,49 @@ class $$PrivateMessagesTableTableTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$PrivateMessagesTableTableReferences(db, table, e),
+                ),
+              )
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback:
+              ({privateMessageAttachmentsTableRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (privateMessageAttachmentsTableRefs)
+                      db.privateMessageAttachmentsTable,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (privateMessageAttachmentsTableRefs)
+                        await $_getPrefetchedData<
+                          PrivateMessagesTableData,
+                          $PrivateMessagesTableTable,
+                          PrivateMessageAttachmentsTableData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$PrivateMessagesTableTableReferences
+                              ._privateMessageAttachmentsTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$PrivateMessagesTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).privateMessageAttachmentsTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.messageId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
         ),
       );
 }
@@ -3732,16 +3880,9 @@ typedef $$PrivateMessagesTableTableProcessedTableManager =
       $$PrivateMessagesTableTableAnnotationComposer,
       $$PrivateMessagesTableTableCreateCompanionBuilder,
       $$PrivateMessagesTableTableUpdateCompanionBuilder,
-      (
-        PrivateMessagesTableData,
-        BaseReferences<
-          _$AppDatabase,
-          $PrivateMessagesTableTable,
-          PrivateMessagesTableData
-        >,
-      ),
+      (PrivateMessagesTableData, $$PrivateMessagesTableTableReferences),
       PrivateMessagesTableData,
-      PrefetchHooks Function()
+      PrefetchHooks Function({bool privateMessageAttachmentsTableRefs})
     >;
 typedef $$PrivateMessageAttachmentsTableTableCreateCompanionBuilder =
     PrivateMessageAttachmentsTableCompanion Function({
@@ -3764,6 +3905,42 @@ typedef $$PrivateMessageAttachmentsTableTableUpdateCompanionBuilder =
       Value<int> rowid,
     });
 
+final class $$PrivateMessageAttachmentsTableTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $PrivateMessageAttachmentsTableTable,
+          PrivateMessageAttachmentsTableData
+        > {
+  $$PrivateMessageAttachmentsTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $PrivateMessagesTableTable _messageIdTable(_$AppDatabase db) =>
+      db.privateMessagesTable.createAlias(
+        $_aliasNameGenerator(
+          db.privateMessageAttachmentsTable.messageId,
+          db.privateMessagesTable.id,
+        ),
+      );
+
+  $$PrivateMessagesTableTableProcessedTableManager get messageId {
+    final $_column = $_itemColumn<String>('message_id')!;
+
+    final manager = $$PrivateMessagesTableTableTableManager(
+      $_db,
+      $_db.privateMessagesTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_messageIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
 class $$PrivateMessageAttachmentsTableTableFilterComposer
     extends Composer<_$AppDatabase, $PrivateMessageAttachmentsTableTable> {
   $$PrivateMessageAttachmentsTableTableFilterComposer({
@@ -3775,11 +3952,6 @@ class $$PrivateMessageAttachmentsTableTableFilterComposer
   });
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get messageId => $composableBuilder(
-    column: $table.messageId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3802,6 +3974,29 @@ class $$PrivateMessageAttachmentsTableTableFilterComposer
     column: $table.createdAtMs,
     builder: (column) => ColumnFilters(column),
   );
+
+  $$PrivateMessagesTableTableFilterComposer get messageId {
+    final $$PrivateMessagesTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.messageId,
+      referencedTable: $db.privateMessagesTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PrivateMessagesTableTableFilterComposer(
+            $db: $db,
+            $table: $db.privateMessagesTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$PrivateMessageAttachmentsTableTableOrderingComposer
@@ -3815,11 +4010,6 @@ class $$PrivateMessageAttachmentsTableTableOrderingComposer
   });
   ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get messageId => $composableBuilder(
-    column: $table.messageId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -3842,6 +4032,30 @@ class $$PrivateMessageAttachmentsTableTableOrderingComposer
     column: $table.createdAtMs,
     builder: (column) => ColumnOrderings(column),
   );
+
+  $$PrivateMessagesTableTableOrderingComposer get messageId {
+    final $$PrivateMessagesTableTableOrderingComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.messageId,
+          referencedTable: $db.privateMessagesTable,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$PrivateMessagesTableTableOrderingComposer(
+                $db: $db,
+                $table: $db.privateMessagesTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
 }
 
 class $$PrivateMessageAttachmentsTableTableAnnotationComposer
@@ -3856,9 +4070,6 @@ class $$PrivateMessageAttachmentsTableTableAnnotationComposer
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumn<String> get messageId =>
-      $composableBuilder(column: $table.messageId, builder: (column) => column);
-
   GeneratedColumn<String> get fileId =>
       $composableBuilder(column: $table.fileId, builder: (column) => column);
 
@@ -3872,6 +4083,30 @@ class $$PrivateMessageAttachmentsTableTableAnnotationComposer
     column: $table.createdAtMs,
     builder: (column) => column,
   );
+
+  $$PrivateMessagesTableTableAnnotationComposer get messageId {
+    final $$PrivateMessagesTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.messageId,
+          referencedTable: $db.privateMessagesTable,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$PrivateMessagesTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.privateMessagesTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
 }
 
 class $$PrivateMessageAttachmentsTableTableTableManager
@@ -3887,14 +4122,10 @@ class $$PrivateMessageAttachmentsTableTableTableManager
           $$PrivateMessageAttachmentsTableTableUpdateCompanionBuilder,
           (
             PrivateMessageAttachmentsTableData,
-            BaseReferences<
-              _$AppDatabase,
-              $PrivateMessageAttachmentsTableTable,
-              PrivateMessageAttachmentsTableData
-            >,
+            $$PrivateMessageAttachmentsTableTableReferences,
           ),
           PrivateMessageAttachmentsTableData,
-          PrefetchHooks Function()
+          PrefetchHooks Function({bool messageId})
         > {
   $$PrivateMessageAttachmentsTableTableTableManager(
     _$AppDatabase db,
@@ -3955,9 +4186,56 @@ class $$PrivateMessageAttachmentsTableTableTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$PrivateMessageAttachmentsTableTableReferences(db, table, e),
+                ),
+              )
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({messageId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (messageId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.messageId,
+                                referencedTable:
+                                    $$PrivateMessageAttachmentsTableTableReferences
+                                        ._messageIdTable(db),
+                                referencedColumn:
+                                    $$PrivateMessageAttachmentsTableTableReferences
+                                        ._messageIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
         ),
       );
 }
@@ -3974,14 +4252,10 @@ typedef $$PrivateMessageAttachmentsTableTableProcessedTableManager =
       $$PrivateMessageAttachmentsTableTableUpdateCompanionBuilder,
       (
         PrivateMessageAttachmentsTableData,
-        BaseReferences<
-          _$AppDatabase,
-          $PrivateMessageAttachmentsTableTable,
-          PrivateMessageAttachmentsTableData
-        >,
+        $$PrivateMessageAttachmentsTableTableReferences,
       ),
       PrivateMessageAttachmentsTableData,
-      PrefetchHooks Function()
+      PrefetchHooks Function({bool messageId})
     >;
 typedef $$MediaDownloadCacheTableTableCreateCompanionBuilder =
     MediaDownloadCacheTableCompanion Function({

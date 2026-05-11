@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:locnet_app/features/conversation/subfeatures/private/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/domain/domain.dart';
 import 'package:locnet_app/features/message/domain/domain.dart';
 import 'package:locnet_app/features/message/subfeatures/private_message/data/repositories/private_message_repo/i_private_message_repo.dart';
@@ -89,6 +90,39 @@ final class MockPrivateMessageRepo implements IPrivateMessageRepo {
     await Future<void>.delayed(const Duration(milliseconds: 200));
     // No backing store for reads yet – return empty list.
     return <LastReadPrivateMessage>[];
+  }
+
+  @override
+  Future<PrivateMessage> markMessageAsRead({
+    required String conversationId,
+    required String messageId,
+  }) async {
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+    final PrivateMessageDto? existingDto = _backendStorage.findPrivateMessage(
+      conversationId: conversationId,
+      messageId: messageId,
+    );
+    if (existingDto == null) {
+      throw StateError(
+        'markMessageAsRead: message $messageId not found in $conversationId',
+      );
+    }
+
+    final DateTime readAt = DateTime.now().toUtc();
+    final PrivateMessage updated = PrivateMessage.fromDto(existingDto).copyWith(
+      deliveryStatus: MessageDeliveryStatus.read,
+      readAt: readAt,
+      updatedAt: readAt,
+    );
+    final PrivateMessageDto storedDto = _backendStorage.updatePrivateMessage(
+      updatedMessage: updated,
+    );
+    final PrivateMessage stored = PrivateMessage.fromDto(storedDto);
+    _messagesUpdatesController.add((
+      updateType: PrivateConversationMessageUpdateType.updated,
+      message: stored,
+    ));
+    return stored;
   }
 }
 

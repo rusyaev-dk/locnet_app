@@ -3,7 +3,8 @@
 enum MessageDeliveryStatus {
   sending('sending'),
   sent('sent'),
-  failed('failed');
+  failed('failed'),
+  read('read');
 
   const MessageDeliveryStatus(this.value);
 

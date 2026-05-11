@@ -54,7 +54,7 @@ class _PrivateHeaderState extends State<PrivateHeader> {
 
     return ConversationProfileHeaderBase(
       title: title,
-      avatarText: ProfileDataExtractor.extractUserInitials(widget.companion),
+      avatarOverride: Avatar.user(user: widget.companion, size: 38),
       subtitle: l10n.companionStatusOnline,
       isOnline: true,
       onTap: () => _openCompanionInfo(context),

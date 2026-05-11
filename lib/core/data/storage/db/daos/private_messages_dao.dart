@@ -18,16 +18,19 @@ class PrivateMessagesDao extends DatabaseAccessor<AppDatabase>
   }) {
     final int offset = (page - 1) * _pageSize;
     return (select(privateMessagesTable)
-          ..where((t) =>
-              t.conversationId.equals(conversationId) &
-              t.isDeleted.equals(false))
+          ..where(
+            (t) =>
+                t.conversationId.equals(conversationId) &
+                t.isDeleted.equals(false),
+          )
           ..orderBy([(t) => OrderingTerm.desc(t.createdAtMs)])
           ..limit(_pageSize, offset: offset))
         .get();
   }
 
   Future<List<PrivateMessageAttachmentsTableData>> getAttachments(
-          String messageId) =>
+    String messageId,
+  ) =>
       (select(privateMessageAttachmentsTable)
             ..where((t) => t.messageId.equals(messageId))
             ..orderBy([(t) => OrderingTerm.asc(t.order)]))
@@ -40,15 +43,40 @@ class PrivateMessagesDao extends DatabaseAccessor<AppDatabase>
       batch((b) => b.insertAllOnConflictUpdate(privateMessagesTable, entries));
 
   Future<void> upsertAttachments(
-          List<PrivateMessageAttachmentsTableCompanion> entries) =>
-      batch((b) =>
-          b.insertAllOnConflictUpdate(privateMessageAttachmentsTable, entries));
+    List<PrivateMessageAttachmentsTableCompanion> entries,
+  ) => batch(
+    (b) => b.insertAllOnConflictUpdate(privateMessageAttachmentsTable, entries),
+  );
+
+  /// Deletes all attachment rows for [messageId], then inserts [entries].
+  /// One transaction — avoids orphaned rows when attachment ids change.
+  Future<void> replaceAttachments(
+    String messageId,
+    List<PrivateMessageAttachmentsTableCompanion> entries,
+  ) =>
+      transaction(() async {
+        await (delete(privateMessageAttachmentsTable)
+              ..where((t) => t.messageId.equals(messageId)))
+            .go();
+        if (entries.isNotEmpty) {
+          await batch((b) {
+            b.insertAll(privateMessageAttachmentsTable, entries);
+          });
+        }
+      });
+
+  /// Removes message rows (and cascaded attachments) matching [clientMessageId].
+  /// Call before upserting the server-confirmed row (pending → server).
+  Future<void> deleteByClientMessageId(String clientMessageId) =>
+      transaction(() async {
+        await (delete(privateMessagesTable)
+              ..where((t) => t.clientMessageId.equals(clientMessageId)))
+            .go();
+      });
 
   Future<void> markDeleted(String messageId) =>
       (update(privateMessagesTable)..where((t) => t.id.equals(messageId)))
-          .write(const PrivateMessagesTableCompanion(
-        isDeleted: Value(true),
-      ));
+          .write(const PrivateMessagesTableCompanion(isDeleted: Value(true)));
 
   Future<void> keepRecentPerConversation({
     required String conversationId,
@@ -57,15 +85,15 @@ class PrivateMessagesDao extends DatabaseAccessor<AppDatabase>
     final rows = await getPage(conversationId: conversationId);
     if (rows.length < limit) return;
     final cutoffMs = rows[limit - 1].createdAtMs;
-    await (delete(privateMessagesTable)
-          ..where((t) =>
+    await (delete(privateMessagesTable)..where(
+          (t) =>
               t.conversationId.equals(conversationId) &
-              t.createdAtMs.isSmallerThanValue(cutoffMs)))
+              t.createdAtMs.isSmallerThanValue(cutoffMs),
+        ))
         .go();
   }
 
-  Future<void> deleteByConversation(String conversationId) =>
-      (delete(privateMessagesTable)
-            ..where((t) => t.conversationId.equals(conversationId)))
-          .go();
+  Future<void> deleteByConversation(String conversationId) => (delete(
+    privateMessagesTable,
+  )..where((t) => t.conversationId.equals(conversationId))).go();
 }

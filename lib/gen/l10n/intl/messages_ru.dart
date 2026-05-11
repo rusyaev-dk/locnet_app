@@ -24,15 +24,21 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m1(count) => "${count} подписчиков";
 
-  static String m2(count) => "${count} участников";
+  static String m2(count) => "${count} дн. назад";
 
-  static String m3(count) => "${count} мин.";
+  static String m3(current, total) => "${current} из ${total}";
 
-  static String m4(min) => "Не менее ${min} символов";
+  static String m4(name) => "с ${name}";
 
-  static String m5(size) => "${size} в кеше";
+  static String m5(count) => "${count} участников";
 
-  static String m6(size) => "${size} всего в кеше";
+  static String m6(count) => "${count} мин.";
+
+  static String m7(min) => "Не менее ${min} символов";
+
+  static String m8(size) => "${size} в кеше";
+
+  static String m9(size) => "${size} всего в кеше";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -123,6 +129,53 @@ class MessageLookup extends MessageLookupByLibrary {
     "conversationNoMessagesYet": MessageLookupByLibrary.simpleMessage(
       "Пока нет сообщений",
     ),
+    "conversationSearchDateDaysAgo": m2,
+    "conversationSearchDateToday": MessageLookupByLibrary.simpleMessage(
+      "Сегодня",
+    ),
+    "conversationSearchDateYesterday": MessageLookupByLibrary.simpleMessage(
+      "Вчера",
+    ),
+    "conversationSearchEmptySubtitle": MessageLookupByLibrary.simpleMessage(
+      "Введите запрос, чтобы найти сообщения в этой переписке.",
+    ),
+    "conversationSearchEmptyTitle": MessageLookupByLibrary.simpleMessage(
+      "Поиск сообщений в чате",
+    ),
+    "conversationSearchMessagesHint": MessageLookupByLibrary.simpleMessage(
+      "Поиск сообщений в этой переписке…",
+    ),
+    "conversationSearchNoMatches": MessageLookupByLibrary.simpleMessage(
+      "Ничего не найдено",
+    ),
+    "conversationSearchResultsCount": m3,
+    "conversationSharedMediaAttachment": MessageLookupByLibrary.simpleMessage(
+      "Вложение",
+    ),
+    "conversationSharedMediaEmptyFiles": MessageLookupByLibrary.simpleMessage(
+      "Нет общих файлов",
+    ),
+    "conversationSharedMediaEmptyLinks": MessageLookupByLibrary.simpleMessage(
+      "Нет общих ссылок",
+    ),
+    "conversationSharedMediaEmptyMedia": MessageLookupByLibrary.simpleMessage(
+      "Нет общих медиа",
+    ),
+    "conversationSharedMediaMarkedAsShared":
+        MessageLookupByLibrary.simpleMessage("Общие"),
+    "conversationSharedMediaTabFiles": MessageLookupByLibrary.simpleMessage(
+      "Файлы",
+    ),
+    "conversationSharedMediaTabLinks": MessageLookupByLibrary.simpleMessage(
+      "Ссылки",
+    ),
+    "conversationSharedMediaTabPhotos": MessageLookupByLibrary.simpleMessage(
+      "Фото и медиа",
+    ),
+    "conversationSharedMediaTitle": MessageLookupByLibrary.simpleMessage(
+      "Общие медиа",
+    ),
+    "conversationSharedMediaWithName": m4,
     "conversationTitle": MessageLookupByLibrary.simpleMessage("Название"),
     "conversationType": MessageLookupByLibrary.simpleMessage("Тип"),
     "conversationTypeChannel": MessageLookupByLibrary.simpleMessage("Канал"),
@@ -185,7 +238,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "groupMenuViewInfo": MessageLookupByLibrary.simpleMessage(
       "Информация о группе",
     ),
-    "groupParticipantsCount": m2,
+    "groupParticipantsCount": m5,
     "homePage": MessageLookupByLibrary.simpleMessage("Домашняя страница"),
     "invalidCharactersException": MessageLookupByLibrary.simpleMessage(
       "Введены некорректные символы",
@@ -253,6 +306,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "messageInputToolbarActionFormatUnderline":
         MessageLookupByLibrary.simpleMessage("Подчёркнутый"),
     "meta": MessageLookupByLibrary.simpleMessage("Мета"),
+    "modalKeyboardHintNavigate": MessageLookupByLibrary.simpleMessage(
+      "Навигация",
+    ),
+    "modalKeyboardHintSelect": MessageLookupByLibrary.simpleMessage("Выбрать"),
     "next": MessageLookupByLibrary.simpleMessage("Далее"),
     "noLabel": MessageLookupByLibrary.simpleMessage("Нет"),
     "notRegisteredYetQuestion": MessageLookupByLibrary.simpleMessage(
@@ -282,7 +339,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Блокировать через",
     ),
     "passcodeLogOut": MessageLookupByLibrary.simpleMessage("Выйти из аккаунта"),
-    "passcodeMinutesCount": m3,
+    "passcodeMinutesCount": m6,
     "passcodeNever": MessageLookupByLibrary.simpleMessage("Никогда"),
     "passcodePinsMismatch": MessageLookupByLibrary.simpleMessage(
       "PIN не совпадает. Попробуйте снова.",
@@ -306,7 +363,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "passwordRequirementLowercase": MessageLookupByLibrary.simpleMessage(
       "Хотя бы одна строчная буква (a–z)",
     ),
-    "passwordRequirementMinLength": m4,
+    "passwordRequirementMinLength": m7,
     "passwordRequirementSpecial": MessageLookupByLibrary.simpleMessage(
       "Хотя бы один специальный символ (!?@#\$%^&*()_-{})",
     ),
@@ -325,8 +382,22 @@ class MessageLookup extends MessageLookupByLibrary {
     "personalInformation": MessageLookupByLibrary.simpleMessage(
       "Личная информация",
     ),
+    "privateDraftConversationEmptyTitle": MessageLookupByLibrary.simpleMessage(
+      "Переписка пока пустая",
+    ),
     "profile": MessageLookupByLibrary.simpleMessage("Профиль"),
     "profileChangePhoto": MessageLookupByLibrary.simpleMessage("Сменить фото"),
+    "profileCropPhoto": MessageLookupByLibrary.simpleMessage("Обрезать фото"),
+    "profileCropPhotoHint": MessageLookupByLibrary.simpleMessage(
+      "Сдвиньте или масштабируйте изображение",
+    ),
+    "profileDeletePhoto": MessageLookupByLibrary.simpleMessage("Удалить фото"),
+    "profileDeletePhotoBody": MessageLookupByLibrary.simpleMessage(
+      "Фото будет удалено из профиля. Вы сможете загрузить другое в любой момент.",
+    ),
+    "profileDeletePhotoTitle": MessageLookupByLibrary.simpleMessage(
+      "Удалить фото профиля?",
+    ),
     "profileEditing": MessageLookupByLibrary.simpleMessage(
       "Редактирование профиля",
     ),
@@ -485,7 +556,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "settingsStorageCacheEmptyHint": MessageLookupByLibrary.simpleMessage(
       "Данные не кешированы локально.",
     ),
-    "settingsStorageCached": m5,
+    "settingsStorageCached": m8,
     "settingsStorageClearAll": MessageLookupByLibrary.simpleMessage(
       "Очистить кеш",
     ),
@@ -506,7 +577,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "settingsStoragePhotos": MessageLookupByLibrary.simpleMessage("Фотографии"),
     "settingsStorageSection": MessageLookupByLibrary.simpleMessage("Хранилище"),
-    "settingsStorageTotalCached": m6,
+    "settingsStorageTotalCached": m9,
     "settingsStorageVideos": MessageLookupByLibrary.simpleMessage("Видео"),
     "settingsTextScale": MessageLookupByLibrary.simpleMessage("Размер текста"),
     "settingsThemeModeLabel": MessageLookupByLibrary.simpleMessage("Режим"),
@@ -533,6 +604,23 @@ class MessageLookup extends MessageLookupByLibrary {
     "tryAnotherQuery": MessageLookupByLibrary.simpleMessage(
       "Попробуйте изменить запрос",
     ),
+    "unifiedSearchHint": MessageLookupByLibrary.simpleMessage(
+      "Поиск людей и сообщений…",
+    ),
+    "unifiedSearchInitialSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Начните ввод, чтобы искать по перепискам",
+    ),
+    "unifiedSearchInitialTitle": MessageLookupByLibrary.simpleMessage(
+      "Поиск людей и сообщений",
+    ),
+    "unifiedSearchMessages": MessageLookupByLibrary.simpleMessage("СООБЩЕНИЯ"),
+    "unifiedSearchNothingFoundSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Попробуйте изменить поисковый запрос",
+    ),
+    "unifiedSearchNothingFoundTitle": MessageLookupByLibrary.simpleMessage(
+      "Ничего не найдено",
+    ),
+    "unifiedSearchPeople": MessageLookupByLibrary.simpleMessage("ЛЮДИ"),
     "unknownValue": MessageLookupByLibrary.simpleMessage("Неизвестно"),
     "username": MessageLookupByLibrary.simpleMessage("Юзернейм"),
     "users": MessageLookupByLibrary.simpleMessage("Пользователи"),

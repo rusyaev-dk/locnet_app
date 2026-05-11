@@ -29,15 +29,11 @@ class PanelSidebar extends StatelessWidget {
       return null;
     });
 
-    final String userInitials = currentUser != null
-        ? ProfileDataExtractor.extractUserInitials(currentUser)
-        : '?';
-
     return Container(
       width: 58,
       decoration: BoxDecoration(
         color: colorScheme.secondary,
-        border: Border(right: BorderSide(color: colorScheme.outline, width: 1)),
+        border: Border(right: BorderSide(color: colorScheme.outline)),
       ),
       child: Column(
         children: [
@@ -92,11 +88,32 @@ class PanelSidebar extends StatelessWidget {
                   pageBuilder: (context, _, _) => const SettingsModalCard(),
                 );
               },
-              child: CompanionAvatar(
-                text: userInitials,
-                size: 34,
-                isOnline: true,
-              ),
+              child: currentUser == null
+                  ? SizedBox(
+                      width: 34,
+                      height: 34,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: colorScheme.surfaceContainerHighest,
+                        ),
+                        child: Center(
+                          child: Text(
+                            '?',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  : Avatar.user(
+                      user: currentUser,
+                      size: 34,
+                      isOnline: true,
+                    ),
             ),
           ),
           const SizedBox(height: 14),
@@ -126,9 +143,7 @@ class _SidebarIconButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Material(
-        color: isSelected
-            ? colorScheme.primaryContainer
-            : Colors.transparent,
+        color: isSelected ? colorScheme.primaryContainer : Colors.transparent,
         borderRadius: radius,
         clipBehavior: Clip.antiAlias,
         child: InkWell(

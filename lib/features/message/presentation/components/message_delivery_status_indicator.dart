@@ -33,6 +33,17 @@ class MessageDeliveryStatusIndicator extends StatelessWidget {
           );
         }
         return Icon(Icons.check, size: size, color: color);
+      case MessageDeliveryStatus.read:
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.check, size: size, color: color),
+            Transform.translate(
+              offset: Offset(-size * 0.35, 0),
+              child: Icon(Icons.check, size: size, color: color),
+            ),
+          ],
+        );
       case MessageDeliveryStatus.failed:
         return Icon(Icons.error_outline, size: size, color: color);
     }

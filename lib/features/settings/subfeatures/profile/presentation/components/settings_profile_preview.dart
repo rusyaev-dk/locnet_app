@@ -17,7 +17,6 @@ class SettingsProfilePreview extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
-    final initials = ProfileDataExtractor.extractUserInitials(user);
     final fullName = ProfileDataExtractor.extractUserFullName(user);
     final displayName = fullName.isNotEmpty ? fullName : user.username;
     final username = user.username.isNotEmpty ? '@${user.username}' : '';
@@ -25,7 +24,7 @@ class SettingsProfilePreview extends StatelessWidget {
     if (compact) {
       return Padding(
         padding: const EdgeInsets.fromLTRB(8, 8, 8, 12),
-        child: Center(child: CompanionAvatar(text: initials, size: 40)),
+        child: Center(child: Avatar.user(user: user, size: 40)),
       );
     }
 
@@ -33,7 +32,7 @@ class SettingsProfilePreview extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 16),
       child: Row(
         children: [
-          CompanionAvatar(text: initials, size: 40),
+          Avatar.user(user: user, size: 40),
           const SizedBox(width: 10),
           Expanded(
             child: Column(

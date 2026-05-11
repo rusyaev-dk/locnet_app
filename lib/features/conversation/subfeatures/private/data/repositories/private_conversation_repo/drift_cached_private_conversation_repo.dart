@@ -11,8 +11,8 @@ final class DriftCachedPrivateConversationRepo
   DriftCachedPrivateConversationRepo({
     required IPrivateConversationRepo network,
     required PrivateMessagesDao messagesDao,
-  })  : _network = network,
-        _messagesDao = messagesDao;
+  }) : _network = network,
+       _messagesDao = messagesDao;
 
   final IPrivateConversationRepo _network;
   final PrivateMessagesDao _messagesDao;
@@ -55,12 +55,11 @@ final class DriftCachedPrivateConversationRepo
     required String companionId,
     required String blockedByUserId,
     required String reason,
-  }) =>
-      _network.blockCompanion(
-        companionId: companionId,
-        blockedByUserId: blockedByUserId,
-        reason: reason,
-      );
+  }) => _network.blockCompanion(
+    companionId: companionId,
+    blockedByUserId: blockedByUserId,
+    reason: reason,
+  );
 
   @override
   Future<bool> deleteConversation({
@@ -80,8 +79,7 @@ final class DriftCachedPrivateConversationRepo
   @override
   Future<PrivateConversation> getOrCreateByCompanion({
     required String companionId,
-  }) =>
-      _network.getOrCreateByCompanion(companionId: companionId);
+  }) => _network.getOrCreateByCompanion(companionId: companionId);
 
   @override
   Future<List<PrivateConversation>> listConversations({int page = 1}) =>
@@ -95,11 +93,10 @@ final class DriftCachedPrivateConversationRepo
   Future<bool> toggleNotifications({
     required String conversationId,
     required bool newNotificationsStatus,
-  }) =>
-      _network.toggleNotifications(
-        conversationId: conversationId,
-        newNotificationsStatus: newNotificationsStatus,
-      );
+  }) => _network.toggleNotifications(
+    conversationId: conversationId,
+    newNotificationsStatus: newNotificationsStatus,
+  );
 
   Future<void> _refreshMessagesFromNetwork({
     required String conversationId,
@@ -115,13 +112,20 @@ final class DriftCachedPrivateConversationRepo
   }
 
   Future<void> _saveMessages(List<PrivateMessage> messages) async {
-    final msgCompanions =
-        messages.map(PrivateMessageMapper.toCompanion).toList();
-    final attachCompanions =
-        messages.expand(PrivateMessageMapper.attachmentsToCompanions).toList();
+    final msgCompanions = messages
+        .map(PrivateMessageMapper.toCompanion)
+        .toList();
     await _messagesDao.upsertAll(msgCompanions);
-    if (attachCompanions.isNotEmpty) {
-      await _messagesDao.upsertAttachments(attachCompanions);
+
+    for (final PrivateMessage msg in messages) {
+      final String effectiveId =
+          msg.id.isEmpty ? msg.clientMessageId ?? '' : msg.id;
+      if (effectiveId.isEmpty) {
+        continue;
+      }
+      final List<PrivateMessageAttachmentsTableCompanion> attachCompanions =
+          PrivateMessageMapper.attachmentsToCompanions(msg);
+      await _messagesDao.replaceAttachments(effectiveId, attachCompanions);
     }
   }
 
@@ -137,16 +141,45 @@ final class DriftCachedPrivateConversationRepo
   }
 
   Future<void> _applyUpdateToCache(
-      PrivateConversationMessageUpdateRec update) async {
+    PrivateConversationMessageUpdateRec update,
+  ) async {
     switch (update.updateType) {
       case PrivateConversationMessageUpdateType.created:
+        {
+          final PrivateMessage msg = update.message;
+          if (msg.clientMessageId != null && msg.id.isNotEmpty) {
+            await _messagesDao.deleteByClientMessageId(msg.clientMessageId!);
+          }
+          await _messagesDao.upsertMessage(
+            PrivateMessageMapper.toCompanion(msg),
+          );
+          if (msg.attachments.isNotEmpty) {
+            final String effectiveId =
+                msg.id.isEmpty ? msg.clientMessageId ?? '' : msg.id;
+            if (effectiveId.isNotEmpty) {
+              await _messagesDao.replaceAttachments(
+                effectiveId,
+                PrivateMessageMapper.attachmentsToCompanions(msg),
+              );
+            }
+          }
+        }
       case PrivateConversationMessageUpdateType.updated:
-        final companion = PrivateMessageMapper.toCompanion(update.message);
-        await _messagesDao.upsertMessage(companion);
-        final attachCompanions =
-            PrivateMessageMapper.attachmentsToCompanions(update.message);
-        if (attachCompanions.isNotEmpty) {
-          await _messagesDao.upsertAttachments(attachCompanions);
+        {
+          final PrivateMessage msg = update.message;
+          await _messagesDao.upsertMessage(
+            PrivateMessageMapper.toCompanion(msg),
+          );
+          if (msg.attachments.isNotEmpty) {
+            final String effectiveId =
+                msg.id.isEmpty ? msg.clientMessageId ?? '' : msg.id;
+            if (effectiveId.isNotEmpty) {
+              await _messagesDao.replaceAttachments(
+                effectiveId,
+                PrivateMessageMapper.attachmentsToCompanions(msg),
+              );
+            }
+          }
         }
       case PrivateConversationMessageUpdateType.deleted:
         await _messagesDao.markDeleted(update.message.id);

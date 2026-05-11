@@ -13,11 +13,12 @@ import 'package:locnet_app/uikit/uikit.dart';
 
 enum _MediaTab { media, files, links }
 
-extension _MediaTabExt on _MediaTab {
-  String get label => switch (this) {
-    _MediaTab.media => 'Photos & Media',
-    _MediaTab.files => 'Files',
-    _MediaTab.links => 'Links',
+String _conversationMediaTabLabel(_MediaTab tab, BuildContext context) {
+  final l10n = context.l10n;
+  return switch (tab) {
+    _MediaTab.media => l10n.conversationSharedMediaTabPhotos,
+    _MediaTab.files => l10n.conversationSharedMediaTabFiles,
+    _MediaTab.links => l10n.conversationSharedMediaTabLinks,
   };
 }
 
@@ -52,6 +53,7 @@ class _ConversationSharedMediaSheetState
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
+    final l10n = context.l10n;
     final String? companion = widget.companionName;
 
     final Map<_MediaTab, int> tabCounts = _resolveTabCounts();
@@ -75,7 +77,7 @@ class _ConversationSharedMediaSheetState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Shared Media',
+                      l10n.conversationSharedMediaTitle,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
@@ -86,7 +88,7 @@ class _ConversationSharedMediaSheetState
                     if (companion != null && companion.isNotEmpty) ...[
                       const SizedBox(height: 3),
                       Text(
-                        'with $companion',
+                        l10n.conversationSharedMediaWithName(companion),
                         style: TextStyle(
                           fontSize: 13,
                           color: colorScheme.onSurfaceVariant,
@@ -118,7 +120,7 @@ class _ConversationSharedMediaSheetState
           child: Row(
             children: _MediaTab.values.map((tab) {
               return _UnderlineTab(
-                label: tab.label,
+                label: _conversationMediaTabLabel(tab, context),
                 count: tabCounts[tab] ?? 0,
                 isSelected: _activeTab == tab,
                 colorScheme: colorScheme,
@@ -347,7 +349,7 @@ class _MediaGrid extends StatelessWidget {
     if (items.isEmpty) {
       return _EmptyTabState(
         icon: Icons.photo_library_outlined,
-        label: 'No shared media',
+        label: context.l10n.conversationSharedMediaEmptyMedia,
         colorScheme: colorScheme,
         textScheme: context.textScheme,
       );
@@ -528,16 +530,6 @@ class _MediaIconPlaceholder extends StatelessWidget {
 
 // ── Files list ────────────────────────────────────────────────────────────────
 
-enum _FileKind { pdf, zip, doc, fig, xls }
-
-class _FileItem {
-  const _FileItem(this.name, this.size, this.date, this.kind);
-  final String name;
-  final String size;
-  final String date;
-  final _FileKind kind;
-}
-
 class _FilesList extends StatelessWidget {
   const _FilesList({
     required this.colorScheme,
@@ -550,42 +542,17 @@ class _FilesList extends StatelessWidget {
   final AppTextScheme textScheme;
   final List<_SharedMediaItem> sharedItems;
 
-  static const _files = [
-    _FileItem('Project_Brief.pdf', '2.4 MB', 'Mar 22', _FileKind.pdf),
-    _FileItem('Design_Assets.zip', '18.1 MB', 'Mar 19', _FileKind.zip),
-    _FileItem('Meeting_Notes.docx', '340 KB', 'Mar 15', _FileKind.doc),
-    _FileItem('Prototype_v3.fig', '6.7 MB', 'Mar 10', _FileKind.fig),
-    _FileItem('Budget_Q1.xlsx', '512 KB', 'Feb 28', _FileKind.xls),
-  ];
-
   @override
   Widget build(BuildContext context) {
     final radii = context.radii;
+    final l10n = context.l10n;
 
-    if (sharedItems.isNotEmpty) {
-      return ListView(
-        padding: const EdgeInsets.all(14),
-        children: [
-          AppTileButtonGroupCard(
-            backgroundColor: colorScheme.surfaceContainerLow,
-            borderRadius: BorderRadius.circular(radii.large),
-            dividerIndent: 54,
-            children: sharedItems
-                .map(
-                  (item) => _FileTile(
-                    item: _FileItem(
-                      item.mediaId,
-                      'Attachment',
-                      'Shared',
-                      _FileKind.doc,
-                    ),
-                    colorScheme: colorScheme,
-                    textScheme: textScheme,
-                  ),
-                )
-                .toList(growable: false),
-          ),
-        ],
+    if (sharedItems.isEmpty) {
+      return _EmptyTabState(
+        icon: Icons.folder_open_outlined,
+        label: l10n.conversationSharedMediaEmptyFiles,
+        colorScheme: colorScheme,
+        textScheme: textScheme,
       );
     }
 
@@ -596,15 +563,17 @@ class _FilesList extends StatelessWidget {
           backgroundColor: colorScheme.surfaceContainerLow,
           borderRadius: BorderRadius.circular(radii.large),
           dividerIndent: 54,
-          children: _files
+          children: sharedItems
               .map(
-                (f) => _FileTile(
-                  item: f,
+                (item) => _FileTile(
+                  item: item,
                   colorScheme: colorScheme,
                   textScheme: textScheme,
+                  attachmentLabel: l10n.conversationSharedMediaAttachment,
+                  sharedLabel: l10n.conversationSharedMediaMarkedAsShared,
                 ),
               )
-              .toList(),
+              .toList(growable: false),
         ),
       ],
     );
@@ -626,36 +595,62 @@ final class _SharedMediaItem {
   bool get isVideo => kind.startsWith('video');
 }
 
+({IconData icon, Color color}) _fileIconForKind(String kind) {
+  final String k = kind.toLowerCase();
+  if (k.contains('pdf')) {
+    return (
+      icon: Icons.picture_as_pdf_outlined,
+      color: const Color(0xFFE53935),
+    );
+  }
+  if (k.contains('zip') || k.contains('rar') || k.contains('7z')) {
+    return (
+      icon: Icons.folder_zip_outlined,
+      color: const Color(0xFFFB8C00),
+    );
+  }
+  if (k.contains('sheet') ||
+      k.contains('excel') ||
+      k.contains('spreadsheet') ||
+      k.endsWith('csv')) {
+    return (
+      icon: Icons.table_chart_outlined,
+      color: const Color(0xFF43A047),
+    );
+  }
+  if (k.contains('fig') || k.contains('sketch')) {
+    return (
+      icon: Icons.auto_awesome_outlined,
+      color: const Color(0xFF8B5CF6),
+    );
+  }
+  return (
+    icon: Icons.description_outlined,
+    color: const Color(0xFF1E88E5),
+  );
+}
+
 class _FileTile extends StatelessWidget {
   const _FileTile({
     required this.item,
     required this.colorScheme,
     required this.textScheme,
+    required this.attachmentLabel,
+    required this.sharedLabel,
   });
 
-  final _FileItem item;
+  final _SharedMediaItem item;
   final AppColorScheme colorScheme;
   final AppTextScheme textScheme;
-
-  Color _iconColor() => switch (item.kind) {
-    _FileKind.pdf => const Color(0xFFE53935),
-    _FileKind.zip => const Color(0xFFFB8C00),
-    _FileKind.doc => const Color(0xFF1E88E5),
-    _FileKind.fig => const Color(0xFF8B5CF6),
-    _FileKind.xls => const Color(0xFF43A047),
-  };
-
-  IconData _icon() => switch (item.kind) {
-    _FileKind.pdf => Icons.picture_as_pdf_outlined,
-    _FileKind.zip => Icons.folder_zip_outlined,
-    _FileKind.doc => Icons.description_outlined,
-    _FileKind.fig => Icons.auto_awesome_outlined,
-    _FileKind.xls => Icons.table_chart_outlined,
-  };
+  final String attachmentLabel;
+  final String sharedLabel;
 
   @override
   Widget build(BuildContext context) {
     final radii = context.radii;
+    final ({IconData icon, Color color}) visuals = _fileIconForKind(item.kind);
+    final String title = item.mediaId.isNotEmpty ? item.mediaId : attachmentLabel;
+    final String subtitle = item.kind.isNotEmpty ? item.kind : sharedLabel;
 
     return Material(
       color: Colors.transparent,
@@ -666,15 +661,14 @@ class _FileTile extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           child: Row(
             children: [
-              // Colored file icon — uses app radius tokens
               Container(
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: _iconColor().withAlpha(28),
+                  color: visuals.color.withAlpha(28),
                   borderRadius: radii.defaultRadiusValue,
                 ),
-                child: Icon(_icon(), color: _iconColor(), size: 20),
+                child: Icon(visuals.icon, color: visuals.color, size: 20),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -683,7 +677,7 @@ class _FileTile extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      item.name,
+                      title,
                       style: textScheme.subtitle.copyWith(
                         color: colorScheme.onSurface,
                         fontWeight: FontWeight.w600,
@@ -693,10 +687,12 @@ class _FileTile extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      '${item.size} · ${item.date}',
+                      subtitle,
                       style: textScheme.caption.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
@@ -711,14 +707,6 @@ class _FileTile extends StatelessWidget {
 
 // ── Links list ────────────────────────────────────────────────────────────────
 
-class _LinkItem {
-  const _LinkItem(this.domain, this.title, this.url, this.date);
-  final String domain;
-  final String title;
-  final String url;
-  final String date;
-}
-
 class _LinksList extends StatelessWidget {
   const _LinksList({
     required this.colorScheme,
@@ -729,150 +717,13 @@ class _LinksList extends StatelessWidget {
   final AppColorScheme colorScheme;
   final AppTextScheme textScheme;
 
-  static const _links = [
-    _LinkItem(
-      'figma.com',
-      'LocNet App – Design System',
-      'https://figma.com/file/...',
-      'Mar 24',
-    ),
-    _LinkItem(
-      'github.com',
-      'locnet-app / mobile · Pull Request #47',
-      'https://github.com/locnet-app/...',
-      'Mar 21',
-    ),
-    _LinkItem(
-      'notion.so',
-      'Q1 Roadmap & OKRs',
-      'https://notion.so/locnet/...',
-      'Mar 18',
-    ),
-    _LinkItem(
-      'youtube.com',
-      'Flutter State Management – Full Course',
-      'https://youtube.com/watch?...',
-      'Mar 12',
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
-    final radii = context.radii;
-
-    return ListView(
-      padding: const EdgeInsets.all(14),
-      children: [
-        AppTileButtonGroupCard(
-          backgroundColor: colorScheme.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(radii.large),
-          dividerIndent: 54,
-          children: _links
-              .map(
-                (l) => _LinkTile(
-                  item: l,
-                  colorScheme: colorScheme,
-                  textScheme: textScheme,
-                ),
-              )
-              .toList(),
-        ),
-      ],
-    );
-  }
-}
-
-class _LinkTile extends StatelessWidget {
-  const _LinkTile({
-    required this.item,
-    required this.colorScheme,
-    required this.textScheme,
-  });
-
-  final _LinkItem item;
-  final AppColorScheme colorScheme;
-  final AppTextScheme textScheme;
-
-  @override
-  Widget build(BuildContext context) {
-    final radii = context.radii;
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () {}, // TODO: launch URL
-        borderRadius: radii.defaultRadiusValue,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Domain initial badge — matches AppTileButton icon slot width
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: colorScheme.primaryContainer,
-                  borderRadius: radii.defaultRadiusValue,
-                ),
-                child: Center(
-                  child: Text(
-                    item.domain[0].toUpperCase(),
-                    style: textScheme.subtitle.copyWith(
-                      color: colorScheme.onPrimaryContainer,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          item.domain,
-                          style: textScheme.caption.copyWith(
-                            color: colorScheme.primary,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const Spacer(),
-                        Text(
-                          item.date,
-                          style: textScheme.caption.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      item.title,
-                      style: textScheme.subtitle.copyWith(
-                        color: colorScheme.onSurface,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Text(
-                      item.url,
-                      style: textScheme.caption.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+    return _EmptyTabState(
+      icon: Icons.link_off_outlined,
+      label: context.l10n.conversationSharedMediaEmptyLinks,
+      colorScheme: colorScheme,
+      textScheme: textScheme,
     );
   }
 }

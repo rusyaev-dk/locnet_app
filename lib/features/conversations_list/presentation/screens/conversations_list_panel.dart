@@ -67,9 +67,8 @@ class ConversationsPanel extends StatefulWidget {
 class _ConversationsPanelState extends State<ConversationsPanel> {
   static const double _panelCollapsedWidth = 64;
   static const double _panelMaxWidth = 420;
-  static const double _splitterHitWidth = 8;
+  static const double _splitterHitWidth = 2.5;
 
-  /// Below this width the list shows Telegram-style avatar-only rows (still resizable).
   static const double _compactLayoutBreakpoint = 140;
 
   double _panelWidth = 320;

@@ -139,15 +139,26 @@ class GroupConversationBloc
       (GroupMessage message) => message.id == incomingMessage.id,
     );
     if (serverIdIndex != -1) {
-      messages[serverIdIndex] = incomingMessage;
+      final GroupMessage existing = messages[serverIdIndex];
+      messages[serverIdIndex] = incomingMessage.copyWith(
+        attachments: incomingMessage.attachments.isNotEmpty
+            ? incomingMessage.attachments
+            : existing.attachments,
+      );
       return;
     }
     final int clientIdIndex = messages.indexWhere(
       (GroupMessage message) =>
+          message.clientMessageId != null &&
           message.clientMessageId == incomingMessage.clientMessageId,
     );
     if (clientIdIndex != -1) {
-      messages[clientIdIndex] = incomingMessage;
+      final GroupMessage existing = messages[clientIdIndex];
+      messages[clientIdIndex] = incomingMessage.copyWith(
+        attachments: incomingMessage.attachments.isNotEmpty
+            ? incomingMessage.attachments
+            : existing.attachments,
+      );
       return;
     }
     messages.add(incomingMessage);

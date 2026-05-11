@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/conversation/subfeatures/channel/channel.dart';
 import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversation/presentation/presentation.dart';
+import 'package:locnet_app/features/conversation/subfeatures/channel/channel.dart';
 import 'package:locnet_app/features/conversation/subfeatures/conversation_tools/conversation_tools.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
@@ -41,14 +41,14 @@ class _ChannelHeaderState extends State<ChannelHeader> {
 
     return ConversationProfileHeaderBase(
       title: widget.conversation.title,
-      avatarText: widget.conversation.title,
+      avatarOverride: Avatar.channel(channel: widget.conversation, size: 38),
       subtitle: subtitle,
       onTap: () {
         showGeneralDialog(
           context: context,
           transitionBuilder: slideFadeDialogTransition,
           pageBuilder: (context, _, _) {
-            return ChannelInfoModalCard(conversation: widget.conversation);
+            return ChannelInfoModalCard(channel: widget.conversation);
           },
         );
       },

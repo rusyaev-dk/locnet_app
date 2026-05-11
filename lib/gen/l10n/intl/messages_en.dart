@@ -24,15 +24,21 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m1(count) => "${count} subscribers";
 
-  static String m2(count) => "${count} participants";
+  static String m2(count) => "${count} days ago";
 
-  static String m3(count) => "${count} minutes";
+  static String m3(current, total) => "${current} of ${total}";
 
-  static String m4(min) => "At least ${min} characters";
+  static String m4(name) => "with ${name}";
 
-  static String m5(size) => "${size} cached";
+  static String m5(count) => "${count} participants";
 
-  static String m6(size) => "${size} total cached";
+  static String m6(count) => "${count} minutes";
+
+  static String m7(min) => "At least ${min} characters";
+
+  static String m8(size) => "${size} cached";
+
+  static String m9(size) => "${size} total cached";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -123,6 +129,53 @@ class MessageLookup extends MessageLookupByLibrary {
     "conversationNoMessagesYet": MessageLookupByLibrary.simpleMessage(
       "No messages yet",
     ),
+    "conversationSearchDateDaysAgo": m2,
+    "conversationSearchDateToday": MessageLookupByLibrary.simpleMessage(
+      "Today",
+    ),
+    "conversationSearchDateYesterday": MessageLookupByLibrary.simpleMessage(
+      "Yesterday",
+    ),
+    "conversationSearchEmptySubtitle": MessageLookupByLibrary.simpleMessage(
+      "Type a query to find messages in this conversation.",
+    ),
+    "conversationSearchEmptyTitle": MessageLookupByLibrary.simpleMessage(
+      "Search messages in this chat",
+    ),
+    "conversationSearchMessagesHint": MessageLookupByLibrary.simpleMessage(
+      "Search messages in this conversation…",
+    ),
+    "conversationSearchNoMatches": MessageLookupByLibrary.simpleMessage(
+      "No matches found",
+    ),
+    "conversationSearchResultsCount": m3,
+    "conversationSharedMediaAttachment": MessageLookupByLibrary.simpleMessage(
+      "Attachment",
+    ),
+    "conversationSharedMediaEmptyFiles": MessageLookupByLibrary.simpleMessage(
+      "No shared files",
+    ),
+    "conversationSharedMediaEmptyLinks": MessageLookupByLibrary.simpleMessage(
+      "No shared links",
+    ),
+    "conversationSharedMediaEmptyMedia": MessageLookupByLibrary.simpleMessage(
+      "No shared media",
+    ),
+    "conversationSharedMediaMarkedAsShared":
+        MessageLookupByLibrary.simpleMessage("Shared"),
+    "conversationSharedMediaTabFiles": MessageLookupByLibrary.simpleMessage(
+      "Files",
+    ),
+    "conversationSharedMediaTabLinks": MessageLookupByLibrary.simpleMessage(
+      "Links",
+    ),
+    "conversationSharedMediaTabPhotos": MessageLookupByLibrary.simpleMessage(
+      "Photos & media",
+    ),
+    "conversationSharedMediaTitle": MessageLookupByLibrary.simpleMessage(
+      "Shared media",
+    ),
+    "conversationSharedMediaWithName": m4,
     "conversationTitle": MessageLookupByLibrary.simpleMessage("Title"),
     "conversationType": MessageLookupByLibrary.simpleMessage("Type"),
     "conversationTypeChannel": MessageLookupByLibrary.simpleMessage("Channel"),
@@ -187,7 +240,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "groupMenuViewInfo": MessageLookupByLibrary.simpleMessage(
       "View group info",
     ),
-    "groupParticipantsCount": m2,
+    "groupParticipantsCount": m5,
     "homePage": MessageLookupByLibrary.simpleMessage("Home page"),
     "invalidCharactersException": MessageLookupByLibrary.simpleMessage(
       "Invalid characters entered",
@@ -249,6 +302,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "messageInputToolbarActionFormatUnderline":
         MessageLookupByLibrary.simpleMessage("Underline"),
     "meta": MessageLookupByLibrary.simpleMessage("Meta"),
+    "modalKeyboardHintNavigate": MessageLookupByLibrary.simpleMessage(
+      "Navigate",
+    ),
+    "modalKeyboardHintSelect": MessageLookupByLibrary.simpleMessage("Select"),
     "next": MessageLookupByLibrary.simpleMessage("Next"),
     "noLabel": MessageLookupByLibrary.simpleMessage("No"),
     "notRegisteredYetQuestion": MessageLookupByLibrary.simpleMessage(
@@ -278,7 +335,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Lock after inactivity",
     ),
     "passcodeLogOut": MessageLookupByLibrary.simpleMessage("Log out"),
-    "passcodeMinutesCount": m3,
+    "passcodeMinutesCount": m6,
     "passcodeNever": MessageLookupByLibrary.simpleMessage("Never"),
     "passcodePinsMismatch": MessageLookupByLibrary.simpleMessage(
       "PINs do not match. Try again.",
@@ -300,7 +357,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "passwordRequirementLowercase": MessageLookupByLibrary.simpleMessage(
       "At least one lowercase letter (a–z)",
     ),
-    "passwordRequirementMinLength": m4,
+    "passwordRequirementMinLength": m7,
     "passwordRequirementSpecial": MessageLookupByLibrary.simpleMessage(
       "At least one special character (!?@#\$%^&*()_-{})",
     ),
@@ -319,8 +376,22 @@ class MessageLookup extends MessageLookupByLibrary {
     "personalInformation": MessageLookupByLibrary.simpleMessage(
       "Personal information",
     ),
+    "privateDraftConversationEmptyTitle": MessageLookupByLibrary.simpleMessage(
+      "This conversation is empty",
+    ),
     "profile": MessageLookupByLibrary.simpleMessage("Profile"),
     "profileChangePhoto": MessageLookupByLibrary.simpleMessage("Change photo"),
+    "profileCropPhoto": MessageLookupByLibrary.simpleMessage("Crop photo"),
+    "profileCropPhotoHint": MessageLookupByLibrary.simpleMessage(
+      "Pinch or drag to adjust",
+    ),
+    "profileDeletePhoto": MessageLookupByLibrary.simpleMessage("Delete photo"),
+    "profileDeletePhotoBody": MessageLookupByLibrary.simpleMessage(
+      "Your profile photo will be removed. You can upload a new one at any time.",
+    ),
+    "profileDeletePhotoTitle": MessageLookupByLibrary.simpleMessage(
+      "Remove profile photo?",
+    ),
     "profileEditing": MessageLookupByLibrary.simpleMessage("Edit profile"),
     "registration": MessageLookupByLibrary.simpleMessage("Registration"),
     "repeatPassword": MessageLookupByLibrary.simpleMessage("Repeat password"),
@@ -475,7 +546,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "settingsStorageCacheEmptyHint": MessageLookupByLibrary.simpleMessage(
       "No data is currently cached locally.",
     ),
-    "settingsStorageCached": m5,
+    "settingsStorageCached": m8,
     "settingsStorageClearAll": MessageLookupByLibrary.simpleMessage(
       "Clear all cache",
     ),
@@ -494,7 +565,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "settingsStoragePhotos": MessageLookupByLibrary.simpleMessage("Photos"),
     "settingsStorageSection": MessageLookupByLibrary.simpleMessage("Storage"),
-    "settingsStorageTotalCached": m6,
+    "settingsStorageTotalCached": m9,
     "settingsStorageVideos": MessageLookupByLibrary.simpleMessage("Videos"),
     "settingsTextScale": MessageLookupByLibrary.simpleMessage("Text size"),
     "settingsThemeModeLabel": MessageLookupByLibrary.simpleMessage("Mode"),
@@ -519,6 +590,23 @@ class MessageLookup extends MessageLookupByLibrary {
     "tryAnotherQuery": MessageLookupByLibrary.simpleMessage(
       "Try a different query",
     ),
+    "unifiedSearchHint": MessageLookupByLibrary.simpleMessage(
+      "Search people and messages…",
+    ),
+    "unifiedSearchInitialSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Start typing to search across conversations",
+    ),
+    "unifiedSearchInitialTitle": MessageLookupByLibrary.simpleMessage(
+      "Search people and messages",
+    ),
+    "unifiedSearchMessages": MessageLookupByLibrary.simpleMessage("MESSAGES"),
+    "unifiedSearchNothingFoundSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Try a different search term",
+    ),
+    "unifiedSearchNothingFoundTitle": MessageLookupByLibrary.simpleMessage(
+      "Nothing found",
+    ),
+    "unifiedSearchPeople": MessageLookupByLibrary.simpleMessage("PEOPLE"),
     "unknownValue": MessageLookupByLibrary.simpleMessage("Unknown"),
     "username": MessageLookupByLibrary.simpleMessage("Username"),
     "users": MessageLookupByLibrary.simpleMessage("Users"),

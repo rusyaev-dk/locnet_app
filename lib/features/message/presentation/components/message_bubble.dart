@@ -280,11 +280,10 @@ class _MessageBubbleState extends State<MessageBubble> {
             fontSize: 14.5,
           );
 
-    final TextStyle metaTextStyle = messageTextStyle.copyWith(
+    final TextStyle metaTextStyleOutside = textScheme.caption.copyWith(
       fontSize: 10,
-      color: isMine
-          ? Colors.white.withAlpha(170)
-          : colorScheme.onSurfaceVariant,
+      height: 1.2,
+      color: colorScheme.onSurfaceVariant,
     );
 
     final BorderRadius borderRadius = BorderRadius.only(
@@ -323,90 +322,99 @@ class _MessageBubbleState extends State<MessageBubble> {
             child: ConstrainedBox(
               constraints: BoxConstraints(maxWidth: maxBubbleWidth),
               child: IntrinsicWidth(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: bubbleColor,
-                    borderRadius: borderRadius,
-                    border: isMine
-                        ? null
-                        : Border.all(
-                            color: colorScheme.outline,
-                            width: context.borders.thin,
-                          ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: crossAxisAlignment,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      if (widget.sender != null)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 4),
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              widget.sender!,
-                              style: textScheme.label.copyWith(
-                                color: isMine
-                                    ? Colors.white.withAlpha(200)
-                                    : colorScheme.primary,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
+                child: Column(
+                  crossAxisAlignment: crossAxisAlignment,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Container(
+                      clipBehavior: Clip.antiAlias,
+                      decoration: BoxDecoration(
+                        color: bubbleColor,
+                        borderRadius: borderRadius,
+                        border: isMine
+                            ? null
+                            : Border.all(
+                                color: colorScheme.outline,
+                                width: context.borders.thin,
+                              ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          if (widget.sender != null)
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  widget.sender!,
+                                  style: textScheme.label.copyWith(
+                                    color: isMine
+                                        ? Colors.white.withAlpha(200)
+                                        : colorScheme.primary,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                      if (hasReplyPreview)
-                        _buildReplyPreview(
-                          context,
-                          isMine: isMine,
-                          replyPreviewText: replyPreviewText,
-                          replyPreviewAuthor: replyPreviewAuthor,
-                        ),
-                      _buildMessageContent(
-                        messageMarkdown: messageMarkdown,
-                        selectionColor: selectionColor,
-                        messageTextStyle: messageTextStyle,
-                        linkColor: linkColor,
-                        maxBubbleWidth: maxBubbleWidth,
-                        laneWidth: laneWidth,
-                        isMine: isMine,
-                      ),
-                      const SizedBox(height: 4),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            if (_isEdited())
-                              Padding(
-                                padding: const EdgeInsets.only(right: 4),
-                                child: Text(
-                                  context.l10n.edited,
-                                  style: metaTextStyle,
-                                ),
+                          if (hasReplyPreview)
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(
+                                12,
+                                context.designTokens.spacing.xs,
+                                12,
+                                0,
                               ),
-                            Text(timeText, style: metaTextStyle),
-                            if (widget.showDeliveryStatus && isMine) ...[
-                              const SizedBox(width: 6),
-                              if (_getDeliveryStatus() != null)
-                                MessageDeliveryStatusIndicator(
-                                  deliveryStatus: _getDeliveryStatus()!,
-                                  isRead: _isReadByCompanion(),
-                                  color:
-                                      metaTextStyle.color ??
-                                      colorScheme.onSurface,
-                                  size: 14,
-                                ),
-                            ],
-                          ],
-                        ),
+                              child: _buildReplyPreview(
+                                context,
+                                isMine: isMine,
+                                replyPreviewText: replyPreviewText,
+                                replyPreviewAuthor: replyPreviewAuthor,
+                              ),
+                            ),
+                          _buildMessageContent(
+                            messageMarkdown: messageMarkdown,
+                            selectionColor: selectionColor,
+                            messageTextStyle: messageTextStyle,
+                            linkColor: linkColor,
+                            maxBubbleWidth: maxBubbleWidth,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 4),
+                    Align(
+                      alignment: isMine
+                          ? Alignment.centerRight
+                          : Alignment.centerLeft,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          if (_isEdited())
+                            Padding(
+                              padding: const EdgeInsets.only(right: 4),
+                              child: Text(
+                                context.l10n.edited,
+                                style: metaTextStyleOutside,
+                              ),
+                            ),
+                          Text(timeText, style: metaTextStyleOutside),
+                          if (widget.showDeliveryStatus && isMine) ...[
+                            const SizedBox(width: 6),
+                            if (_getDeliveryStatus() != null)
+                              MessageDeliveryStatusIndicator(
+                                deliveryStatus: _getDeliveryStatus()!,
+                                isRead: _isReadByCompanion(),
+                                color: colorScheme.onSurfaceVariant,
+                                size: 14,
+                              ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -459,7 +467,7 @@ class _MessageBubbleState extends State<MessageBubble> {
   bool _isReadByCompanion() {
     final Object m = widget.message;
     if (m is PrivateMessage) {
-      return m.readAt != null;
+      return m.deliveryStatus == MessageDeliveryStatus.read;
     }
     return false;
   }
@@ -478,8 +486,6 @@ class _MessageBubbleState extends State<MessageBubble> {
     required TextStyle messageTextStyle,
     required Color linkColor,
     required double maxBubbleWidth,
-    required double laneWidth,
-    required bool isMine,
   }) {
     final bool hasAttachments = _hasAttachments();
     final bool hasText = messageMarkdown.isNotEmpty;
@@ -496,14 +502,18 @@ class _MessageBubbleState extends State<MessageBubble> {
         : null;
 
     if (!hasAttachments) {
-      return messageText ?? const SizedBox.shrink();
+      if (!hasText) {
+        return const SizedBox.shrink();
+      }
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: messageText,
+      );
     }
 
     final Widget attachments = _buildAttachments(
       messageTextStyle: messageTextStyle,
       maxBubbleWidth: maxBubbleWidth,
-      laneWidth: laneWidth,
-      isMine: isMine,
     );
 
     if (!hasText) {
@@ -513,15 +523,19 @@ class _MessageBubbleState extends State<MessageBubble> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
-      children: [attachments, const SizedBox(height: 6), messageText!],
+      children: [
+        attachments,
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 6, 12, 8),
+          child: messageText!,
+        ),
+      ],
     );
   }
 
   Widget _buildAttachments({
     required TextStyle messageTextStyle,
     required double maxBubbleWidth,
-    required double laneWidth,
-    required bool isMine,
   }) {
     final Object m = widget.message;
     if (m is! PrivateMessage || m.attachments.isEmpty) {
@@ -545,15 +559,18 @@ class _MessageBubbleState extends State<MessageBubble> {
             AsyncSnapshot<List<MediaDownloadInfo>> snapshot,
           ) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const AspectRatio(
-                aspectRatio: 16 / 9,
-                child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+              return ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: maxBubbleWidth),
+                child: const AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                ),
               );
             }
 
             if (snapshot.hasError || !snapshot.hasData) {
               return Padding(
-                padding: const EdgeInsets.only(top: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 child: Text(
                   'Failed to load attachment',
                   style: messageTextStyle.copyWith(fontSize: 12.5),
@@ -575,39 +592,31 @@ class _MessageBubbleState extends State<MessageBubble> {
               );
             }
 
-            final double maxAttachmentWidth = (laneWidth * 0.6).clamp(
-              160.0,
-              maxBubbleWidth,
-            );
-
-            return Align(
-              alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: maxAttachmentWidth),
-                child: _AttachmentsGrid(
-                  items: items,
-                  onTap: (int index) {
-                    final _AttachmentViewData item = items[index];
-                    if (item.isImage) {
-                      final List<String> imageUrls = items
-                          .where((_AttachmentViewData entry) => entry.isImage)
-                          .map((_AttachmentViewData entry) => entry.url)
-                          .toList(growable: false);
-                      final int initialImageIndex = imageUrls.indexOf(item.url);
-                      _openImageViewer(
-                        imageUrls: imageUrls,
-                        initialIndex: initialImageIndex >= 0
-                            ? initialImageIndex
-                            : 0,
-                      );
-                      return;
-                    }
-                    if (item.isVideo) {
-                      _openVideoPlayer(item.url);
-                      return;
-                    }
-                  },
-                ),
+            return ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: maxBubbleWidth),
+              child: _AttachmentsGrid(
+                items: items,
+                onTap: (int index) {
+                  final _AttachmentViewData item = items[index];
+                  if (item.isImage) {
+                    final List<String> imageUrls = items
+                        .where((_AttachmentViewData entry) => entry.isImage)
+                        .map((_AttachmentViewData entry) => entry.url)
+                        .toList(growable: false);
+                    final int initialImageIndex = imageUrls.indexOf(item.url);
+                    _openImageViewer(
+                      imageUrls: imageUrls,
+                      initialIndex: initialImageIndex >= 0
+                          ? initialImageIndex
+                          : 0,
+                    );
+                    return;
+                  }
+                  if (item.isVideo) {
+                    _openVideoPlayer(item.url);
+                    return;
+                  }
+                },
               ),
             );
           },
@@ -686,10 +695,12 @@ class _AttachmentsGrid extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
+    const BorderRadius tileRadius = BorderRadius.zero;
+
     if (items.length == 1) {
       return _AttachmentTile(
         item: items.first,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: tileRadius,
         onTap: () => onTap(0),
       );
     }
@@ -700,10 +711,7 @@ class _AttachmentsGrid extends StatelessWidget {
           Expanded(
             child: _AttachmentTile(
               item: items[0],
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(10),
-                bottomLeft: Radius.circular(10),
-              ),
+              borderRadius: tileRadius,
               onTap: () => onTap(0),
             ),
           ),
@@ -711,10 +719,7 @@ class _AttachmentsGrid extends StatelessWidget {
           Expanded(
             child: _AttachmentTile(
               item: items[1],
-              borderRadius: const BorderRadius.only(
-                topRight: Radius.circular(10),
-                bottomRight: Radius.circular(10),
-              ),
+              borderRadius: tileRadius,
               onTap: () => onTap(1),
             ),
           ),
@@ -727,10 +732,7 @@ class _AttachmentsGrid extends StatelessWidget {
         children: [
           _AttachmentTile(
             item: items[0],
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(10),
-              topRight: Radius.circular(10),
-            ),
+            borderRadius: tileRadius,
             onTap: () => onTap(0),
           ),
           const SizedBox(height: 2),
@@ -739,9 +741,7 @@ class _AttachmentsGrid extends StatelessWidget {
               Expanded(
                 child: _AttachmentTile(
                   item: items[1],
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(10),
-                  ),
+                  borderRadius: tileRadius,
                   onTap: () => onTap(1),
                 ),
               ),
@@ -749,9 +749,7 @@ class _AttachmentsGrid extends StatelessWidget {
               Expanded(
                 child: _AttachmentTile(
                   item: items[2],
-                  borderRadius: const BorderRadius.only(
-                    bottomRight: Radius.circular(10),
-                  ),
+                  borderRadius: tileRadius,
                   onTap: () => onTap(2),
                 ),
               ),
@@ -768,9 +766,7 @@ class _AttachmentsGrid extends StatelessWidget {
             Expanded(
               child: _AttachmentTile(
                 item: items[0],
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(10),
-                ),
+                borderRadius: tileRadius,
                 onTap: () => onTap(0),
               ),
             ),
@@ -778,9 +774,7 @@ class _AttachmentsGrid extends StatelessWidget {
             Expanded(
               child: _AttachmentTile(
                 item: items[1],
-                borderRadius: const BorderRadius.only(
-                  topRight: Radius.circular(10),
-                ),
+                borderRadius: tileRadius,
                 onTap: () => onTap(1),
               ),
             ),
@@ -792,9 +786,7 @@ class _AttachmentsGrid extends StatelessWidget {
             Expanded(
               child: _AttachmentTile(
                 item: items[2],
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(10),
-                ),
+                borderRadius: tileRadius,
                 onTap: () => onTap(2),
               ),
             ),
@@ -802,9 +794,7 @@ class _AttachmentsGrid extends StatelessWidget {
             Expanded(
               child: _AttachmentTile(
                 item: items[3],
-                borderRadius: const BorderRadius.only(
-                  bottomRight: Radius.circular(10),
-                ),
+                borderRadius: tileRadius,
                 onTap: () => onTap(3),
                 overlayText: items.length > 4 ? '+${items.length - 4}' : null,
               ),

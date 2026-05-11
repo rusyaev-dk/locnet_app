@@ -140,7 +140,16 @@ class HttpMediaRepo implements IMediaRepo {
     String? scopeId,
   }) async {
     try {
-      final String cacheKey = '$mediaId::$scope::$scopeId';
+      // Gateway: user_profile files use presigned GET without scope query
+      // ("public or owner path"); scope/scopeId are for contextual media only.
+      final bool omitScopeQuery =
+          scope != null && scope.toLowerCase() == 'user_profile';
+      final String? requestScope = omitScopeQuery ? null : scope;
+      final String? requestScopeId = omitScopeQuery ? null : scopeId;
+
+      final String cacheKey = omitScopeQuery
+          ? '$mediaId::user_profile_public'
+          : '$mediaId::${requestScope ?? ''}::${requestScopeId ?? ''}';
       final MediaDownloadInfoDto? cached = _downloadInfoCache[cacheKey];
       if (cached != null) {
         return cached;
@@ -149,8 +158,9 @@ class HttpMediaRepo implements IMediaRepo {
       final Response<dynamic> response = await _httpClient.get(
         path: ApiEndpoints.mediaDownload(mediaId),
         uriParameters: <String, dynamic>{
-          if (scope != null && scope.isNotEmpty) 'scope': scope,
-          if (scopeId != null && scopeId.isNotEmpty) 'scopeId': scopeId,
+          if (requestScope != null && requestScope.isNotEmpty) 'scope': requestScope,
+          if (requestScopeId != null && requestScopeId.isNotEmpty)
+            'scopeId': requestScopeId,
         },
       );
       final dynamic data = response.data;

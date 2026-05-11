@@ -27,6 +27,7 @@ class GroupInfoModalCard extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(15, 10, 15, 12),
             child: ConversationInfoHeroHeader(
               title: conversation.title,
+              avatar: Avatar.group(group: conversation, size: 80),
               subtitle: description,
             ),
           ),

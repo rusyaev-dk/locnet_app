@@ -10,10 +10,11 @@ import 'package:locnet_app/features/auth/presentation/presentation.dart';
 import 'package:locnet_app/features/conversations_list/data/data.dart';
 import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/data/data.dart';
 import 'package:locnet_app/features/conversations_list/subfeatures/unified_search/domain/domain.dart';
+import 'package:locnet_app/features/message/data/data.dart';
+import 'package:locnet_app/features/message/subfeatures/media/domain/interactors/media_interactor.dart';
 import 'package:locnet_app/features/passcode/data/data.dart';
 import 'package:locnet_app/features/passcode/domain/domain.dart';
 import 'package:locnet_app/features/passcode/presentation/presentation.dart';
-import 'package:locnet_app/features/message/data/data.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
 import 'package:locnet_app/features/settings/domain/domain.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
@@ -117,9 +118,8 @@ class AppProvidersWrapper extends StatelessWidget {
             },
           ),
           RepositoryProvider<PasscodeInteractor>(
-            create: (context) => PasscodeInteractor(
-              passcodeRepo: context.read<IPasscodeRepo>(),
-            ),
+            create: (context) =>
+                PasscodeInteractor(passcodeRepo: context.read<IPasscodeRepo>()),
           ),
           RepositoryProvider<ISessionCacheRepo>(
             create: (context) {
@@ -161,6 +161,12 @@ class AppProvidersWrapper extends StatelessWidget {
               userRepo: context.read<IUserRepo>(),
               userCacheRepo: context.read<IUserCacheRepo>(),
               logger: context.read<ILogger>(),
+            ),
+          ),
+          RepositoryProvider<MediaInteractor>(
+            create: (context) => MediaInteractor(
+              mediaRepo: envPreset.createMediaRepo(),
+              downloadCache: envPreset.createMediaDownloadCacheRepo(),
             ),
           ),
           RepositoryProvider<UnifiedSearchInteractor>(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/private.dart';
@@ -18,7 +19,7 @@ Future<void> showConversationSearchSheet({
   return showGeneralDialog<void>(
     context: context,
     barrierDismissible: true,
-    barrierLabel: 'Search',
+    barrierLabel: context.l10n.search,
     barrierColor: Colors.black54,
     transitionDuration: const Duration(milliseconds: 200),
     transitionBuilder: slideFadeDialogTransition,
@@ -64,7 +65,7 @@ Future<void> showConversationSharedMediaSheet({
   return showGeneralDialog<void>(
     context: context,
     barrierDismissible: true,
-    barrierLabel: 'Shared media',
+    barrierLabel: context.l10n.conversationSharedMediaTitle,
     barrierColor: Colors.black54,
     transitionDuration: const Duration(milliseconds: 200),
     transitionBuilder: slideFadeDialogTransition,

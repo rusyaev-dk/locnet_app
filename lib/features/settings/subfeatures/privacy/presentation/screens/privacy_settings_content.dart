@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
@@ -36,8 +37,10 @@ class PrivacySettingsContent extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const PasscodeSettingsSection(),
-              const SizedBox(height: 20),
+              if (!kIsWeb) ...[
+                const PasscodeSettingsSection(),
+                const SizedBox(height: 20),
+              ],
               SessionInfo(session: session),
               const SizedBox(height: 16),
               SettingsGroupCard(

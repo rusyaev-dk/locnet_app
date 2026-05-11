@@ -93,15 +93,14 @@ class ConversationTile extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        id,
-        type,
-        title,
-        description,
-        companion,
-        lastMessageText,
-        lastMessageSenderId,
-        lastMessageAt,
-        updatedAt,
-      ];
+    id,
+    type,
+    title,
+    description,
+    companion,
+    lastMessageText,
+    lastMessageSenderId,
+    lastMessageAt,
+    updatedAt,
+  ];
 }
-

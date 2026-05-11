@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/conversation/presentation/presentation.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
 class CompanionInfoModalCard extends StatelessWidget {
@@ -17,7 +16,6 @@ class CompanionInfoModalCard extends StatelessWidget {
 
     final String fullName = "${companion.firstName} ${companion.lastName}"
         .trim();
-    final String initials = ProfileDataExtractor.extractUserInitials(companion);
 
     return AppModalCard(
       maxWidth: 360,
@@ -75,7 +73,7 @@ class CompanionInfoModalCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ConversationAvatar(text: initials, size: 80),
+                  Avatar.user(user: companion, size: 80),
                   const SizedBox(height: 10),
                   Text(
                     fullName,

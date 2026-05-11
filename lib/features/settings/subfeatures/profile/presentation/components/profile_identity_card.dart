@@ -11,7 +11,6 @@ class ProfileIdentityCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final textScheme = context.textScheme;
     final colorScheme = context.colorScheme;
-    final String initials = ProfileDataExtractor.extractUserInitials(user);
     final String fullName = ProfileDataExtractor.extractUserFullName(user);
     final String displayName = fullName.isNotEmpty ? fullName : user.username;
     final String description = (user.description ?? '').trim();
@@ -22,7 +21,7 @@ class ProfileIdentityCard extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CompanionAvatar(text: initials, size: 72),
+          Avatar.user(user: user, size: 72),
           const SizedBox(height: 12),
           Text(
             displayName,

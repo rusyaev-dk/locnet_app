@@ -41,7 +41,7 @@ class _LocnetAppState extends State<LocnetApp> {
           case ConnectionState.none:
           case ConnectionState.waiting:
           case ConnectionState.active:
-            return const SplashScreen();
+            return const _InitSplashShell(child: SplashScreen());
           case ConnectionState.done:
             if (snapshot.hasError) {
               return ErrorScreen(
@@ -176,6 +176,31 @@ class _AppState extends State<_App> with WidgetsBindingObserver {
           },
         );
       },
+    );
+  }
+}
+
+class _InitSplashShell extends StatelessWidget {
+  const _InitSplashShell({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = AppThemeData().getLightTheme();
+    return MaterialApp(
+      scrollBehavior: const NoGlowClampingBehavior(),
+      debugShowCheckedModeBanner: false,
+      localizationsDelegates: const [
+        S.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      locale: const Locale(AppLanguages.ru),
+      supportedLocales: AppLanguages.toLocalesList(),
+      theme: theme,
+      home: child,
     );
   }
 }

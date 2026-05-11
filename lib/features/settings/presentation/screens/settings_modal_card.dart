@@ -7,6 +7,7 @@ import 'package:locnet_app/features/auth/domain/domain.dart';
 import 'package:locnet_app/features/auth/presentation/presentation.dart';
 import 'package:locnet_app/features/settings/domain/domain.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
+import 'package:locnet_app/features/message/subfeatures/media/domain/interactors/media_interactor.dart';
 import 'package:locnet_app/features/settings/subfeatures/profile/domain/profile_interactor.dart';
 import 'package:locnet_app/features/settings/subfeatures/storage/presentation/blocs/storage_cubit.dart';
 import 'package:locnet_app/features/settings/subfeatures/storage/presentation/screens/storage_settings_content.dart';
@@ -190,6 +191,7 @@ class _SettingsSectionContent extends StatelessWidget {
             ),
             authInteractor: context.read<AuthInteractor>(),
             authCubit: context.read<AuthCubit>(),
+            mediaInteractor: context.read<MediaInteractor>(),
             logger: context.read<ILogger>(),
           )..loadProfile(),
           child: const ProfileSettingsContent(),

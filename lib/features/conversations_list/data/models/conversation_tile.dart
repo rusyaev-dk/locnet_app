@@ -57,16 +57,16 @@ class ConversationTileDto extends Equatable {
   }
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        'id': id,
-        'type': type,
-        'title': title,
-        'description': description,
-        'lastMessageText': lastMessageText,
-        'lastMessageSenderId': lastMessageSenderId,
-        'lastMessageAt': lastMessageAt?.toIso8601String(),
-        'updatedAt': updatedAt.toIso8601String(),
-        'companion': companion?.toJson(),
-      };
+    'id': id,
+    'type': type,
+    'title': title,
+    'description': description,
+    'lastMessageText': lastMessageText,
+    'lastMessageSenderId': lastMessageSenderId,
+    'lastMessageAt': lastMessageAt?.toIso8601String(),
+    'updatedAt': updatedAt.toIso8601String(),
+    'companion': companion?.toJson(),
+  };
 
   ConversationTileDto copyWith({
     String? id,
@@ -94,15 +94,14 @@ class ConversationTileDto extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        id,
-        type,
-        title,
-        description,
-        companion,
-        lastMessageText,
-        lastMessageSenderId,
-        lastMessageAt,
-        updatedAt,
-      ];
+    id,
+    type,
+    title,
+    description,
+    companion,
+    lastMessageText,
+    lastMessageSenderId,
+    lastMessageAt,
+    updatedAt,
+  ];
 }
-

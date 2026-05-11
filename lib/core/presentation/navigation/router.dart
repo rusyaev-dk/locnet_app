@@ -144,10 +144,7 @@ class AppRouter {
                   path: '/conversations',
                   name: 'conversations',
                   pageBuilder: buildNoTransitionPage((context, state) {
-                    return ConversationsPanel(
-                      selectedConversationId: null,
-                      draftCompanionId: null,
-                    );
+                    return const ConversationsPanel();
                   }),
                 ),
                 GoRoute(

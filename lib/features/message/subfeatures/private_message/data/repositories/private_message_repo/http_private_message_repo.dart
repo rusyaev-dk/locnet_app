@@ -273,6 +273,62 @@ class HttpPrivateMessageRepo implements IPrivateMessageRepo {
     return <LastReadPrivateMessage>[];
   }
 
+  @override
+  Future<PrivateMessage> markMessageAsRead({
+    required String conversationId,
+    required String messageId,
+  }) async {
+    try {
+      final httpResponse = await _httpClient.patch(
+        path: ApiEndpoints.privateConversationMessageRead(
+          conversationId,
+          messageId,
+        ),
+        data: <String, dynamic>{},
+      );
+
+      final Map<String, dynamic> payload =
+          _extractMessagePayload(httpResponse.data);
+
+      final MessageReadReceiptDto receipt =
+          MessageReadReceiptDto.fromJson(payload);
+
+      final PrivateMessage result = PrivateMessage(
+        id: receipt.messageId,
+        conversationId: receipt.conversationId,
+        senderId: receipt.senderId,
+        text: '',
+        attachments: const <PrivateMessageAttachment>[],
+        createdAt: receipt.readAt,
+        updatedAt: receipt.readAt,
+        isDeleted: false,
+        deletedById: null,
+        replyToMessageId: null,
+        deliveryStatus:
+            MessageDeliveryStatus.fromString(receipt.deliveryStatus),
+        clientMessageId: null,
+        isPinned: false,
+        editedAt: null,
+        readAt: receipt.readAt,
+      );
+
+      _messagesUpdatesController.add((
+        updateType: PrivateConversationMessageUpdateType.updated,
+        message: result,
+      ));
+
+      return result;
+    } on AppException {
+      rethrow;
+    } catch (e, st) {
+      throw AppUnknownException(
+        message: 'Failed to mark private message as read',
+        error: e,
+        stackTrace: st,
+      );
+    }
+  }
+
   String? _normalizeDateValue(Object? raw) {
     if (raw == null) {
       return null;

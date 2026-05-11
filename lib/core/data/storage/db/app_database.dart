@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:locnet_app/core/data/storage/db/daos/conversation_tiles_dao.dart';
 import 'package:locnet_app/core/data/storage/db/daos/media_download_cache_dao.dart';
 import 'package:locnet_app/core/data/storage/db/daos/private_messages_dao.dart';
@@ -17,20 +18,37 @@ part 'app_database.g.dart';
     PrivateMessageAttachmentsTable,
     MediaDownloadCacheTable,
   ],
-  daos: [
-    ConversationTilesDao,
-    PrivateMessagesDao,
-    MediaDownloadCacheDao,
-  ],
+  daos: [ConversationTilesDao, PrivateMessagesDao, MediaDownloadCacheDao],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (Migrator m) async {
+      await m.createAll();
+    },
+    onUpgrade: (Migrator m, int from, int to) async {
+      if (from < 2) {
+        await m.drop(privateMessageAttachmentsTable);
+        await m.createTable(privateMessageAttachmentsTable);
+      }
+    },
+  );
 
   static QueryExecutor _openConnection() {
-    return driftDatabase(name: 'locnet_cache');
+    return driftDatabase(
+      name: 'locnet_cache',
+      web: kIsWeb
+          ? DriftWebOptions(
+              sqlite3Wasm: Uri.parse('sqlite3.wasm'),
+              driftWorker: Uri.parse('drift_worker.js'),
+            )
+          : null,
+    );
   }
 
   Future<void> evictStale() async {

@@ -1,7 +1,20 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class NoGlowClampingBehavior extends ScrollBehavior {
   const NoGlowClampingBehavior();
+
+  @override
+  Set<PointerDeviceKind> get dragDevices {
+    if (!kIsWeb) {
+      return super.dragDevices;
+    }
+
+    return super.dragDevices
+        .where((PointerDeviceKind kind) => kind != PointerDeviceKind.trackpad)
+        .toSet();
+  }
 
   @override
   ScrollPhysics getScrollPhysics(BuildContext context) {

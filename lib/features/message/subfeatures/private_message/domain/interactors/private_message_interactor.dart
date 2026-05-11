@@ -37,4 +37,14 @@ final class PrivateMessageInteractor {
       messageId: messageId,
     );
   }
+
+  Future<PrivateMessage> markMessageAsRead({
+    required String conversationId,
+    required String messageId,
+  }) async {
+    return _messageRepo.markMessageAsRead(
+      conversationId: conversationId,
+      messageId: messageId,
+    );
+  }
 }

@@ -8,6 +8,7 @@ class ProfileSettingsView extends StatelessWidget {
     required this.user,
     required this.isEditing,
     required this.isSubmitting,
+    required this.isUploadingAvatar,
     required this.firstNameController,
     required this.lastNameController,
     required this.usernameController,
@@ -19,6 +20,8 @@ class ProfileSettingsView extends StatelessWidget {
     required this.onStartEdit,
     required this.onCancelEdit,
     required this.onSave,
+    required this.onChangePhoto,
+    required this.onDeletePhoto,
     required this.onFirstNameChanged,
     required this.onLastNameChanged,
     required this.onUsernameChanged,
@@ -29,6 +32,7 @@ class ProfileSettingsView extends StatelessWidget {
   final User user;
   final bool isEditing;
   final bool isSubmitting;
+  final bool isUploadingAvatar;
   final TextEditingController firstNameController;
   final TextEditingController lastNameController;
   final TextEditingController usernameController;
@@ -40,6 +44,8 @@ class ProfileSettingsView extends StatelessWidget {
   final VoidCallback onStartEdit;
   final VoidCallback onCancelEdit;
   final VoidCallback onSave;
+  final VoidCallback onChangePhoto;
+  final VoidCallback onDeletePhoto;
   final ValueChanged<String?> onFirstNameChanged;
   final ValueChanged<String?> onLastNameChanged;
   final ValueChanged<String?> onUsernameChanged;
@@ -48,10 +54,11 @@ class ProfileSettingsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
-    final String initials = ProfileDataExtractor.extractUserInitials(user);
     final String fullName = ProfileDataExtractor.extractUserFullName(user);
     final String displayName = fullName.isNotEmpty ? fullName : user.username;
     final String description = (user.description ?? '').trim();
+    final bool hasAvatar =
+        user.avatarId != null && user.avatarId!.trim().isNotEmpty;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
@@ -62,8 +69,29 @@ class ProfileSettingsView extends StatelessWidget {
           Row(
             children: [
               Stack(
+                alignment: Alignment.center,
                 children: [
-                  CompanionAvatar(text: initials, size: 72, isOnline: true),
+                  Avatar.user(
+                    user: user,
+                    size: 72,
+                    isOnline: true,
+                  ),
+                  if (isUploadingAvatar)
+                    Container(
+                      width: 72,
+                      height: 72,
+                      decoration: BoxDecoration(
+                        color: colorScheme.surface.withValues(alpha: 0.6),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Center(
+                        child: SizedBox(
+                          width: 28,
+                          height: 28,
+                          child: CircularProgressIndicator(strokeWidth: 2.5),
+                        ),
+                      ),
+                    ),
                 ],
               ),
               const SizedBox(width: 16),
@@ -94,31 +122,21 @@ class ProfileSettingsView extends StatelessWidget {
                       ),
                     ],
                     const SizedBox(height: 10),
-                    GestureDetector(
-                      onTap: () {},
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
+                    Row(
+                      children: [
+                        _PhotoButton(
+                          label: context.l10n.profileChangePhoto,
+                          onTap: isUploadingAvatar ? null : onChangePhoto,
                         ),
-                        decoration: BoxDecoration(
-                          color: colorScheme.secondary,
-                          border: Border.all(
-                            color: colorScheme.outline,
-                            width: 1,
+                        if (hasAvatar) ...[
+                          const SizedBox(width: 8),
+                          _PhotoButton(
+                            label: context.l10n.profileDeletePhoto,
+                            onTap: isUploadingAvatar ? null : onDeletePhoto,
+                            isDestructive: true,
                           ),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          context.l10n.profileChangePhoto,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: colorScheme.onSurface,
-                            height: 1.2,
-                          ),
-                        ),
-                      ),
+                        ],
+                      ],
                     ),
                   ],
                 ),
@@ -147,6 +165,76 @@ class ProfileSettingsView extends StatelessWidget {
             onDescriptionChanged: onDescriptionChanged,
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Small labelled button with hover highlight used in the avatar row.
+class _PhotoButton extends StatefulWidget {
+  const _PhotoButton({
+    required this.label,
+    required this.onTap,
+    this.isDestructive = false,
+  });
+
+  final String label;
+  final VoidCallback? onTap;
+  final bool isDestructive;
+
+  @override
+  State<_PhotoButton> createState() => _PhotoButtonState();
+}
+
+class _PhotoButtonState extends State<_PhotoButton> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final bool disabled = widget.onTap == null;
+    final Color normalBg = colorScheme.secondary;
+    final Color hoverBg = disabled
+        ? normalBg
+        : widget.isDestructive
+        ? colorScheme.error.withValues(alpha: 0.12)
+        : colorScheme.primary.withValues(alpha: 0.12);
+
+    final Color textColor = disabled
+        ? colorScheme.onSurfaceVariant
+        : widget.isDestructive
+        ? colorScheme.error
+        : colorScheme.onSurface;
+
+    return MouseRegion(
+      onEnter: disabled ? null : (_) => setState(() => _hovered = true),
+      onExit: disabled ? null : (_) => setState(() => _hovered = false),
+      cursor: disabled ? SystemMouseCursors.basic : SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 120),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: _hovered ? hoverBg : normalBg,
+            border: Border.all(
+              color: widget.isDestructive && _hovered
+                  ? colorScheme.error.withValues(alpha: 0.4)
+                  : colorScheme.outline,
+              width: 1,
+            ),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(
+            widget.label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: textColor,
+              height: 1.2,
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -617,7 +617,7 @@ class _MessageInputFieldState extends State<MessageInputField> {
           child: ConstrainedBox(
             constraints: BoxConstraints(maxHeight: maxHeight),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               child: TextField(
                 key: _textFieldKey,
                 controller: _controller,

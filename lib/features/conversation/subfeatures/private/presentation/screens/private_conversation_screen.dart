@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -147,36 +149,60 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
     final colorScheme = context.colorScheme;
     final l10n = context.l10n;
 
-    return BlocListener<PrivateConversationBloc, PrivateConversationState>(
-      listenWhen: (previous, current) {
-        if (previous is! PrivateConversationLoadedState &&
-            current is PrivateConversationLoadedState) {
-          return current.pendingNavigationConversationId != null;
-        }
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<PrivateConversationBloc, PrivateConversationState>(
+          listenWhen: (previous, current) {
+            if (previous is! PrivateConversationLoadedState &&
+                current is PrivateConversationLoadedState) {
+              return current.pendingNavigationConversationId != null;
+            }
 
-        if (previous is PrivateConversationLoadedState &&
-            current is PrivateConversationLoadedState) {
-          return previous.pendingNavigationConversationId !=
-                  current.pendingNavigationConversationId &&
-              current.pendingNavigationConversationId != null;
-        }
+            if (previous is PrivateConversationLoadedState &&
+                current is PrivateConversationLoadedState) {
+              return previous.pendingNavigationConversationId !=
+                      current.pendingNavigationConversationId &&
+                  current.pendingNavigationConversationId != null;
+            }
 
-        return false;
-      },
-      listener: (context, state) {
-        if (state is! PrivateConversationLoadedState) {
-          return;
-        }
-        final String? targetConversationId =
-            state.pendingNavigationConversationId;
-        if (targetConversationId == null) {
-          return;
-        }
-        GoRouter.of(context).go(AppRoutes.conversation(targetConversationId));
-        context.read<AllConversationsListBloc>().add(
-          const AllConversationsListLoadEvent(),
-        );
-      },
+            return false;
+          },
+          listener: (context, state) {
+            if (state is! PrivateConversationLoadedState) {
+              return;
+            }
+            final String? targetConversationId =
+                state.pendingNavigationConversationId;
+            if (targetConversationId == null) {
+              return;
+            }
+            GoRouter.of(context).go(AppRoutes.conversation(targetConversationId));
+            context.read<AllConversationsListBloc>().add(
+              const AllConversationsListLoadEvent(),
+            );
+          },
+        ),
+        BlocListener<PrivateConversationBloc, PrivateConversationState>(
+          listenWhen: (PrivateConversationState previous, PrivateConversationState current) {
+            if (widget.conversationId == null) {
+              return false;
+            }
+            if (current is! PrivateConversationLoadedState) {
+              return false;
+            }
+            if (previous is! PrivateConversationLoadedState) {
+              return true;
+            }
+            return previous.conversation.conversationId !=
+                current.conversation.conversationId;
+          },
+          listener: (BuildContext context, PrivateConversationState state) {
+            if (state is PrivateConversationLoadedState) {
+              unawaited(_markIncomingMessagesAsRead(context, state));
+            }
+          },
+        ),
+      ],
       child: Column(
         children: [
           BlocBuilder<MessageSelectionCubit, MessageSelectionState>(
@@ -384,7 +410,9 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
                                     ),
                                     const SizedBox(height: 12),
                                     Text(
-                                      context.l10n.selectConversation,
+                                      context
+                                          .l10n
+                                          .privateDraftConversationEmptyTitle,
                                       style: context.textScheme.title.copyWith(
                                         color: context.colorScheme.onSurface,
                                       ),
@@ -392,7 +420,7 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
                                     ),
                                     const SizedBox(height: 6),
                                     Text(
-                                      'Send first message to start chatting',
+                                      context.l10n.draftChatHint,
                                       style: context.textScheme.caption
                                           .copyWith(
                                             color: context
@@ -570,5 +598,33 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _markIncomingMessagesAsRead(
+    BuildContext context,
+    PrivateConversationLoadedState state,
+  ) async {
+    final User user = await context.read<UserInteractor>().getCachedUser();
+    if (!context.mounted) {
+      return;
+    }
+    final PrivateConversationBloc bloc = context.read<PrivateConversationBloc>();
+    for (final PrivateMessage message in state.messages) {
+      if (message.senderId == user.userId) {
+        continue;
+      }
+      if (message.deliveryStatus == MessageDeliveryStatus.read) {
+        continue;
+      }
+      if (message.id.isEmpty) {
+        continue;
+      }
+      bloc.add(
+        PrivateConversationMarkMessageReadEvent(
+          conversationId: state.conversation.conversationId,
+          messageId: message.id,
+        ),
+      );
+    }
   }
 }

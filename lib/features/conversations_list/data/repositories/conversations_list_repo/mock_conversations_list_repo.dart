@@ -3,9 +3,9 @@
 import 'dart:async';
 
 import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/conversation/subfeatures/private/private.dart';
-import 'package:locnet_app/features/conversation/subfeatures/group/group.dart';
 import 'package:locnet_app/features/conversation/subfeatures/channel/channel.dart';
+import 'package:locnet_app/features/conversation/subfeatures/group/group.dart';
+import 'package:locnet_app/features/conversation/subfeatures/private/private.dart';
 import 'package:locnet_app/features/conversations_list/data/data.dart';
 import 'package:locnet_app/features/conversations_list/domain/domain.dart';
 import 'package:locnet_app/mock/mock.dart';
@@ -42,7 +42,7 @@ final class MockConversationsListRepo implements IConversationsListRepo {
       String? lastText;
       String? lastSenderId;
       DateTime? lastAt;
-      if (lastMessageDto != null && lastMessageDto.isDeleted != true) {
+      if (lastMessageDto != null && !lastMessageDto.isDeleted) {
         lastText = lastMessageDto.text;
         lastSenderId = lastMessageDto.senderId;
         lastAt = lastMessageDto.createdAt;
@@ -68,7 +68,6 @@ final class MockConversationsListRepo implements IConversationsListRepo {
           id: dto.conversationId,
           type: ConversationTileType.private,
           title: 'Private chat',
-          description: null,
           companion: companion,
           lastMessageText: lastText,
           lastMessageSenderId: lastSenderId,
@@ -89,7 +88,7 @@ final class MockConversationsListRepo implements IConversationsListRepo {
       String? lastText;
       String? lastSenderId;
       DateTime? lastAt;
-      if (lastMessageDto != null && lastMessageDto.isDeleted != true) {
+      if (lastMessageDto != null && !lastMessageDto.isDeleted) {
         lastText = lastMessageDto.text;
         lastSenderId = lastMessageDto.senderId;
         lastAt = lastMessageDto.createdAt;
@@ -101,7 +100,6 @@ final class MockConversationsListRepo implements IConversationsListRepo {
           type: ConversationTileType.group,
           title: dto.title,
           description: dto.description,
-          companion: null,
           lastMessageText: lastText,
           lastMessageSenderId: lastSenderId,
           lastMessageAt: lastAt,
@@ -121,7 +119,7 @@ final class MockConversationsListRepo implements IConversationsListRepo {
       String? lastText;
       String? lastSenderId;
       DateTime? lastAt;
-      if (lastPublicationDto != null && lastPublicationDto.isDeleted != true) {
+      if (lastPublicationDto != null && !lastPublicationDto.isDeleted) {
         lastText = lastPublicationDto.text;
         lastSenderId = lastPublicationDto.publishedById;
         lastAt = lastPublicationDto.createdAt;
@@ -133,7 +131,6 @@ final class MockConversationsListRepo implements IConversationsListRepo {
           type: ConversationTileType.channel,
           title: dto.title,
           description: dto.description,
-          companion: null,
           lastMessageText: lastText,
           lastMessageSenderId: lastSenderId,
           lastMessageAt: lastAt,

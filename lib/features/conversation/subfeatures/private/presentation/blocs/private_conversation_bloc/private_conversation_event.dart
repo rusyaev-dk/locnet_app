@@ -67,3 +67,17 @@ final class PrivateConversationMessageDeletedLocallyEvent
   @override
   List<Object> get props => [messageId];
 }
+
+final class PrivateConversationMarkMessageReadEvent
+    extends PrivateConversationEvent {
+  const PrivateConversationMarkMessageReadEvent({
+    required this.conversationId,
+    required this.messageId,
+  });
+
+  final String conversationId;
+  final String messageId;
+
+  @override
+  List<Object?> get props => [conversationId, messageId];
+}

@@ -7,7 +7,9 @@ import 'package:locnet_app/features/conversation/subfeatures/private/data/data.d
 import 'package:locnet_app/features/conversation/subfeatures/private/domain/models/private_conversation.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/domain/models/private_conversation_message_update.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/domain/models/private_message.dart';
+import 'package:locnet_app/features/message/subfeatures/private_message/data/repositories/private_message_repo/http_private_message_repo.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
+import 'package:stream_transform/stream_transform.dart';
 
 class HttpPrivateConversationRepo implements IPrivateConversationRepo {
   HttpPrivateConversationRepo({
@@ -291,7 +293,9 @@ class HttpPrivateConversationRepo implements IPrivateConversationRepo {
   @override
   Stream<PrivateConversationMessageUpdateRec> get messagesUpdates {
     _tryConnectSocket();
-    return _messagesUpdatesController.stream;
+    return _messagesUpdatesController.stream.merge(
+      HttpPrivateMessageRepo.messagesUpdates,
+    );
   }
 
   @override
@@ -543,14 +547,16 @@ class HttpPrivateConversationRepo implements IPrivateConversationRepo {
       }
 
       final Map<String, dynamic> itemMap = Map<String, dynamic>.from(item);
-      final String id =
-          (itemMap['id'] ?? itemMap['attachmentId'] ?? itemMap['mediaId'] ?? '')
-              .toString();
       final String fileId = (itemMap['fileId'] ?? itemMap['mediaId'] ?? '')
           .toString();
-      if (id.isEmpty || fileId.isEmpty) {
+      if (fileId.isEmpty) {
         continue;
       }
+      final String id = (itemMap['id'] ??
+              itemMap['attachmentId'] ??
+              itemMap['mediaId'] ??
+              'att-$messageId-$index')
+          .toString();
 
       normalized.add(<String, dynamic>{
         'id': id,
