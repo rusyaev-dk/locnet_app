@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/conversation/subfeatures/channel/domain/models/channel.dart';
@@ -251,17 +250,15 @@ class _UnifiedSearchModalCardState extends State<UnifiedSearchModalCard> {
                             query: loaded.query,
                             colorScheme: colorScheme,
                             onPersonTap: (user) {
-                              final router = GoRouter.of(context);
-                              Navigator.of(context).pop();
-                              router.go(
-                                AppRoutes.conversationDraft(user.userId),
+                              Navigator.of(context).pop(
+                                UnifiedSearchDraftSelection(companion: user),
                               );
                             },
                             onConversationTap: (conversation) {
-                              final router = GoRouter.of(context);
-                              Navigator.of(context).pop();
-                              router.go(
-                                AppRoutes.conversation(conversation.id),
+                              Navigator.of(context).pop(
+                                UnifiedSearchConversationSelection(
+                                  conversationId: conversation.id,
+                                ),
                               );
                             },
                           );

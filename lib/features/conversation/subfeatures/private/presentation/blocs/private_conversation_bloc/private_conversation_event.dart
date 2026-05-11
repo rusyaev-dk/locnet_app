@@ -22,12 +22,16 @@ final class PrivateConversationStartedEvent extends PrivateConversationEvent {
 
 final class PrivateConversationDraftStartedEvent
     extends PrivateConversationEvent {
-  const PrivateConversationDraftStartedEvent({required this.companionId});
+  const PrivateConversationDraftStartedEvent({
+    required this.companionId,
+    this.initialCompanion,
+  });
 
   final String companionId;
+  final User? initialCompanion;
 
   @override
-  List<Object> get props => [companionId];
+  List<Object?> get props => [companionId, initialCompanion];
 }
 
 final class PrivateConversationSendMessageEvent

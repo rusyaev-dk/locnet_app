@@ -20,7 +20,6 @@ final class PrivateConversationLoadedState extends PrivateConversationState {
     required this.conversation,
     required this.companionId,
     this.page = 1,
-    this.pendingNavigationConversationId,
     super.failure,
   });
 
@@ -29,7 +28,6 @@ final class PrivateConversationLoadedState extends PrivateConversationState {
   final User companion;
   final String companionId;
   final int page;
-  final String? pendingNavigationConversationId;
 
   PrivateConversationLoadedState copyWith({
     List<PrivateMessage>? messages,
@@ -37,7 +35,6 @@ final class PrivateConversationLoadedState extends PrivateConversationState {
     String? companionId,
     User? companion,
     int? page,
-    String? pendingNavigationConversationId,
     Object? failure,
   }) {
     return PrivateConversationLoadedState(
@@ -46,9 +43,6 @@ final class PrivateConversationLoadedState extends PrivateConversationState {
       conversation: conversation ?? this.conversation,
       companionId: companionId ?? this.companionId,
       page: page ?? this.page,
-      pendingNavigationConversationId:
-          pendingNavigationConversationId ??
-          this.pendingNavigationConversationId,
       failure: failure,
     );
   }
@@ -60,7 +54,6 @@ final class PrivateConversationLoadedState extends PrivateConversationState {
     companionId,
     page,
     companion,
-    pendingNavigationConversationId,
     failure,
   ];
 }

@@ -54,11 +54,9 @@ class ConversationsPanel extends StatefulWidget {
   const ConversationsPanel({
     super.key,
     this.selectedConversationId,
-    this.draftCompanionId,
   });
 
   final String? selectedConversationId;
-  final String? draftCompanionId;
 
   @override
   State<ConversationsPanel> createState() => _ConversationsPanelState();
@@ -77,13 +75,85 @@ class _ConversationsPanelState extends State<ConversationsPanel> {
   /// conversation that was removed from the list (e.g. after delete).
   bool _staleSelectionClearScheduled = false;
 
+  /// Local draft opened from unified search (not a route).
+  User? _draftCompanion;
+
+  /// After the first outbound message, the real conversation id (URL synced).
+  String? _draftCreatedConversationId;
+
   @override
   void didUpdateWidget(ConversationsPanel oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.selectedConversationId != oldWidget.selectedConversationId ||
-        widget.draftCompanionId != oldWidget.draftCompanionId) {
+    if (widget.selectedConversationId != oldWidget.selectedConversationId) {
       _staleSelectionClearScheduled = false;
+      _syncDraftWithRouteSelection();
     }
+  }
+
+  void _syncDraftWithRouteSelection() {
+    if (_draftCompanion == null) {
+      return;
+    }
+    final String? sel = widget.selectedConversationId;
+
+    if (_draftCreatedConversationId != null) {
+      if (sel == _draftCreatedConversationId) {
+        return;
+      }
+      setState(() {
+        _draftCompanion = null;
+        _draftCreatedConversationId = null;
+      });
+      return;
+    }
+
+    if (sel != null) {
+      setState(() {
+        _draftCompanion = null;
+      });
+    }
+  }
+
+  Future<void> _openUnifiedSearch() async {
+    final UnifiedSearchSelection? selection =
+        await showGeneralDialog<UnifiedSearchSelection>(
+      context: context,
+      transitionBuilder: slideFadeDialogTransition,
+      pageBuilder: (_, _, _) {
+        return const UnifiedSearchModalCardWrapper(
+          child: UnifiedSearchModalCard(),
+        );
+      },
+    );
+
+    if (!mounted || selection == null) {
+      return;
+    }
+
+    switch (selection) {
+      case UnifiedSearchDraftSelection(:final User companion):
+        setState(() {
+          _draftCompanion = companion;
+          _draftCreatedConversationId = null;
+        });
+        GoRouter.of(context).go(AppRoutes.conversations);
+      case UnifiedSearchConversationSelection(:final String conversationId):
+        setState(() {
+          _draftCompanion = null;
+          _draftCreatedConversationId = null;
+        });
+        GoRouter.of(context).go(AppRoutes.conversation(conversationId));
+    }
+  }
+
+  void _onDraftConversationCreated(String conversationId) {
+    setState(() {
+      _draftCreatedConversationId = conversationId;
+    });
+    context.read<AllConversationsListBloc>().add(
+          const AllConversationsListLoadEvent(),
+        );
+    GoRouter.of(context).replace(AppRoutes.conversation(conversationId));
   }
 
   double _effectiveMaxWidth(double screenWidth) {
@@ -120,6 +190,7 @@ class _ConversationsPanelState extends State<ConversationsPanel> {
           child: _ConversationsListPanel(
             isCompact: isCompact,
             selectedConversationId: widget.selectedConversationId,
+            onUnifiedSearchPressed: _openUnifiedSearch,
           ),
         ),
         SizedBox(
@@ -144,12 +215,17 @@ class _ConversationsPanelState extends State<ConversationsPanel> {
         Expanded(
           child: Container(
             color: colorScheme.surface,
-            child: widget.draftCompanionId != null
+            child: _draftCompanion != null
                 ? PrivateConversationScreenWrapper(
-                    key: ValueKey<String>('draft-${widget.draftCompanionId!}'),
-                    draftCompanionId: widget.draftCompanionId!,
+                    key: ValueKey<String>(
+                      'draft-${_draftCompanion!.userId}',
+                    ),
+                    draftCompanionId: _draftCompanion!.userId,
+                    initialCompanion: _draftCompanion,
                     child: PrivateConversationScreen(
-                      draftCompanionId: widget.draftCompanionId!,
+                      draftCompanionId: _draftCompanion!.userId,
+                      initialCompanion: _draftCompanion,
+                      onConversationCreated: _onDraftConversationCreated,
                     ),
                   )
                 : widget.selectedConversationId == null
@@ -267,10 +343,12 @@ class _ConversationsPanelState extends State<ConversationsPanel> {
 class _ConversationsListPanel extends StatelessWidget {
   const _ConversationsListPanel({
     required this.isCompact,
+    required this.onUnifiedSearchPressed,
     this.selectedConversationId,
   });
 
   final bool isCompact;
+  final Future<void> Function() onUnifiedSearchPressed;
   final String? selectedConversationId;
 
   @override
@@ -311,7 +389,10 @@ class _ConversationsListPanel extends StatelessWidget {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _ConversationsListHeader(isCompact: isCompact),
+                  _ConversationsListHeader(
+                    isCompact: isCompact,
+                    onUnifiedSearchPressed: onUnifiedSearchPressed,
+                  ),
                   Expanded(
                     child: tiles.isEmpty
                         ? Center(
@@ -417,9 +498,13 @@ class _ConversationsListPanel extends StatelessWidget {
 }
 
 class _ConversationsListHeader extends StatelessWidget {
-  const _ConversationsListHeader({required this.isCompact});
+  const _ConversationsListHeader({
+    required this.isCompact,
+    required this.onUnifiedSearchPressed,
+  });
 
   final bool isCompact;
+  final Future<void> Function() onUnifiedSearchPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -434,7 +519,7 @@ class _ConversationsListHeader extends StatelessWidget {
           margin: EdgeInsets.zero,
           iconSize: 20,
           tooltip: l10n.search,
-          onPressed: () => _openUnifiedSearch(context),
+          onPressed: () => onUnifiedSearchPressed(),
         ),
       );
     }
@@ -501,7 +586,7 @@ class _ConversationsListHeader extends StatelessWidget {
               clipBehavior: Clip.antiAlias,
               child: InkWell(
                 borderRadius: BorderRadius.circular(9),
-                onTap: () => _openUnifiedSearch(context),
+                onTap: () => onUnifiedSearchPressed(),
                 mouseCursor: SystemMouseCursors.click,
                 hoverColor: colorScheme.hoverOverlay,
                 child: ConstrainedBox(
@@ -533,18 +618,6 @@ class _ConversationsListHeader extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-
-  void _openUnifiedSearch(BuildContext context) {
-    showGeneralDialog(
-      context: context,
-      transitionBuilder: slideFadeDialogTransition,
-      pageBuilder: (_, _, _) {
-        return const UnifiedSearchModalCardWrapper(
-          child: UnifiedSearchModalCard(),
-        );
-      },
     );
   }
 }

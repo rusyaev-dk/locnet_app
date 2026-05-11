@@ -1,6 +1,7 @@
 // ignore_for_file: sort_constructors_first
 
 import 'package:equatable/equatable.dart';
+import 'package:locnet_app/core/presentation/utils/utils.dart';
 
 class UserDto extends Equatable {
   const UserDto({
@@ -38,13 +39,13 @@ class UserDto extends Equatable {
     };
 
     DateTime parseDate(dynamic value) => value is DateTime
-        ? value
+        ? value.toUtc()
         : value is int
-        ? DateTime.fromMillisecondsSinceEpoch(value)
-        : DateTime.parse(value as String);
+        ? DateTimeFormatter.parse(value)
+        : DateTimeFormatter.parse(value as String);
 
     return UserDto(
-      userId: source['id'] as String,
+      userId: (source['id'] ?? source['userId']) as String,
       username: source['username'] as String,
       firstName: source['firstName'] as String,
       lastName: source['lastName'] as String,

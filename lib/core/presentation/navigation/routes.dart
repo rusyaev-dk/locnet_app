@@ -10,7 +10,4 @@ abstract class AppRoutes {
 
   static String conversation(String conversationId) =>
       "/conversations/$conversationId";
-
-  static String conversationDraft(String companionId) =>
-      "/conversations/draft/$companionId";
 }

@@ -83,18 +83,22 @@ class _ConversationListTileState extends State<ConversationListTile> {
     final String? lastMessageText = widget.conversationTile.lastMessageText;
     final String? lastSenderId = widget.conversationTile.lastMessageSenderId;
     final DateTime? lastAt = widget.conversationTile.lastMessageAt;
+    final DateTime tileUpdatedAt = widget.conversationTile.updatedAt;
 
     String? timeText;
     String? subtitleText;
     String? subtitlePrefix;
     IconData? typeIcon;
 
-    if (lastMessageText != null && lastAt != null) {
+    // Show preview whenever we have text; use lastMessageAt when present, else
+    // updatedAt so a parse miss on lastMessageAt does not hide the snippet.
+    if (lastMessageText != null && lastMessageText.trim().isNotEmpty) {
+      final DateTime timeForPreview = lastAt ?? tileUpdatedAt;
       final bool isOwn = lastSenderId == widget.currentUserId;
       subtitlePrefix = isOwn ? '${l10n.you}: ' : null;
       subtitleText = lastMessageText;
       timeText = DateTimeFormatter.formatConversationTime(
-        dateTime: lastAt,
+        dateTime: timeForPreview,
         now: DateTime.now(),
         locale: Localizations.localeOf(context),
         materialLocalizations: MaterialLocalizations.of(context),

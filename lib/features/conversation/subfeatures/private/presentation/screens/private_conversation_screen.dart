@@ -86,19 +86,11 @@ class PrivateConversationScreenWrapper extends StatelessWidget {
                         )
                       : PrivateConversationDraftStartedEvent(
                           companionId: draftCompanionId!,
+                          initialCompanion: initialCompanion,
                         ),
                 ),
           ),
           BlocProvider(create: (context) => MessageAttachmentsCubit()),
-          if (conversationId != null)
-            BlocProvider(
-              create: (context) => PrivateConversationOptionsCubit(
-                conversationId: conversationId!,
-                privateConversationInteractor: context
-                    .read<PrivateConversationInteractor>(),
-                logger: context.read<ILogger>(),
-              ),
-            ),
           BlocProvider(
             create: (context) => PrivateMessageActionsCubit(
               privateMessageInteractor: context
@@ -115,7 +107,69 @@ class PrivateConversationScreenWrapper extends StatelessWidget {
             ),
           ),
         ],
-        child: child,
+        child: BlocBuilder<PrivateConversationBloc, PrivateConversationState>(
+          buildWhen: (PrivateConversationState previous, PrivateConversationState next) {
+            final String? prevId = conversationId ??
+                (previous is PrivateConversationLoadedState
+                    ? previous.conversation.conversationId
+                    : null);
+            final String? nextId = conversationId ??
+                (next is PrivateConversationLoadedState
+                    ? next.conversation.conversationId
+                    : null);
+            return prevId != nextId;
+          },
+          builder: (BuildContext context, PrivateConversationState convState) {
+            final String? effectiveConversationId = conversationId ??
+                (convState is PrivateConversationLoadedState
+                    ? convState.conversation.conversationId
+                    : null);
+
+            if (effectiveConversationId == null) {
+              return child;
+            }
+
+            return BlocProvider<PrivateConversationOptionsCubit>(
+              key: ValueKey<String>(
+                'private-conv-options-$effectiveConversationId',
+              ),
+              create: (BuildContext context) => PrivateConversationOptionsCubit(
+                conversationId: effectiveConversationId,
+                privateConversationInteractor: context
+                    .read<PrivateConversationInteractor>(),
+                logger: context.read<ILogger>(),
+              ),
+              child: BlocListener<
+                PrivateConversationOptionsCubit,
+                PrivateConversationOptionsState
+              >(
+                listenWhen:
+                    (
+                      PrivateConversationOptionsState previous,
+                      PrivateConversationOptionsState current,
+                    ) {
+                      return current is PrivateConversationOptionsDeletedState;
+                    },
+                listener:
+                    (
+                      BuildContext context,
+                      PrivateConversationOptionsState state,
+                    ) {
+                      context.read<AllConversationsListBloc>().add(
+                            AllConversationsListConversationDeletedEvent(
+                              conversationId: effectiveConversationId,
+                            ),
+                          );
+                      if (!context.mounted) {
+                        return;
+                      }
+                      GoRouter.of(context).go(AppRoutes.conversations);
+                    },
+                child: child,
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -126,6 +180,7 @@ class PrivateConversationScreen extends StatefulWidget {
     this.conversationId,
     this.draftCompanionId,
     this.initialCompanion,
+    this.onConversationCreated,
     super.key,
   }) : assert(
          conversationId != null || draftCompanionId != null,
@@ -135,6 +190,7 @@ class PrivateConversationScreen extends StatefulWidget {
   final String? conversationId;
   final String? draftCompanionId;
   final User? initialCompanion;
+  final void Function(String conversationId)? onConversationCreated;
 
   @override
   State<PrivateConversationScreen> createState() =>
@@ -144,6 +200,7 @@ class PrivateConversationScreen extends StatefulWidget {
 class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
   PrivateMessage? _replyTo;
   String? _highlightedMessageId;
+  String? _notifiedCreatedConversationId;
 
   @override
   Widget build(BuildContext context) {
@@ -152,63 +209,25 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
 
     return MultiBlocListener(
       listeners: [
-        if (widget.conversationId != null)
-          BlocListener<
-            PrivateConversationOptionsCubit,
-            PrivateConversationOptionsState
-          >(
-            listenWhen:
-                (
-                  PrivateConversationOptionsState previous,
-                  PrivateConversationOptionsState current,
-                ) {
-                  return current is PrivateConversationOptionsDeletedState;
-                },
-            listener:
-                (BuildContext context, PrivateConversationOptionsState state) {
-                  final String id = widget.conversationId!;
-                  final AllConversationsListBloc listBloc = context
-                      .read<AllConversationsListBloc>();
-                  listBloc.add(
-                    AllConversationsListConversationDeletedEvent(
-                      conversationId: id,
-                    ),
-                  );
-                  if (!context.mounted) return;
-                  GoRouter.of(context).go(AppRoutes.conversations);
-                },
-          ),
         BlocListener<PrivateConversationBloc, PrivateConversationState>(
           listenWhen: (previous, current) {
-            if (previous is! PrivateConversationLoadedState &&
-                current is PrivateConversationLoadedState) {
-              return current.pendingNavigationConversationId != null;
+            if (widget.onConversationCreated == null ||
+                widget.draftCompanionId == null) {
+              return false;
             }
-
-            if (previous is PrivateConversationLoadedState &&
-                current is PrivateConversationLoadedState) {
-              return previous.pendingNavigationConversationId !=
-                      current.pendingNavigationConversationId &&
-                  current.pendingNavigationConversationId != null;
-            }
-
-            return false;
+            return previous is PrivateConversationDraftState &&
+                current is PrivateConversationLoadedState;
           },
-          listener: (context, state) {
-            if (state is! PrivateConversationLoadedState) {
+          listener: (BuildContext context, PrivateConversationState current) {
+            if (current is! PrivateConversationLoadedState) {
               return;
             }
-            final String? targetConversationId =
-                state.pendingNavigationConversationId;
-            if (targetConversationId == null) {
+            final String id = current.conversation.conversationId;
+            if (_notifiedCreatedConversationId == id) {
               return;
             }
-            GoRouter.of(
-              context,
-            ).go(AppRoutes.conversation(targetConversationId));
-            context.read<AllConversationsListBloc>().add(
-              const AllConversationsListLoadEvent(),
-            );
+            _notifiedCreatedConversationId = id;
+            widget.onConversationCreated?.call(id);
           },
         ),
         BlocListener<PrivateConversationBloc, PrivateConversationState>(
@@ -217,9 +236,6 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
                 PrivateConversationState previous,
                 PrivateConversationState current,
               ) {
-                if (widget.conversationId == null) {
-                  return false;
-                }
                 if (current is! PrivateConversationLoadedState) {
                   return false;
                 }
@@ -424,6 +440,7 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
                                   bloc.add(
                                     PrivateConversationDraftStartedEvent(
                                       companionId: widget.draftCompanionId!,
+                                      initialCompanion: widget.initialCompanion,
                                     ),
                                   );
                                 }
@@ -618,19 +635,39 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
                 ],
               ),
             ),
-          MessageInputBar(
-            conversationId: widget.conversationId,
-            draftContextId: widget.draftCompanionId,
-            conversationType: ConversationType.private,
-            replyToMessageId: _replyTo?.id,
-            onMessageSent: () {
-              if (_replyTo == null) {
-                return;
-              }
-              setState(() {
-                _replyTo = null;
-              });
-            },
+          BlocSelector<
+            PrivateConversationBloc,
+            PrivateConversationState,
+            ({String? conversationId, String? draftContextId})
+          >(
+            selector: (PrivateConversationState s) => (
+              conversationId: s is PrivateConversationLoadedState
+                  ? s.conversation.conversationId
+                  : null,
+              draftContextId: s is PrivateConversationDraftState
+                  ? s.companion.userId
+                  : null,
+            ),
+            builder:
+                (
+                  BuildContext context,
+                  ({String? conversationId, String? draftContextId}) ids,
+                ) {
+                  return MessageInputBar(
+                    conversationId: ids.conversationId,
+                    draftContextId: ids.draftContextId,
+                    conversationType: ConversationType.private,
+                    replyToMessageId: _replyTo?.id,
+                    onMessageSent: () {
+                      if (_replyTo == null) {
+                        return;
+                      }
+                      setState(() {
+                        _replyTo = null;
+                      });
+                    },
+                  );
+                },
           ),
         ],
       ),

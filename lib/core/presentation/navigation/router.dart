@@ -63,6 +63,11 @@ class AppRouter {
             return AppRoutes.conversations;
           }
 
+          // Legacy draft URLs: draft is no longer a route; land on conversations list.
+          if (location.startsWith('${AppRoutes.conversations}/draft/')) {
+            return AppRoutes.conversations;
+          }
+
           if (location == '/' ||
               location == AppRoutes.login ||
               location == AppRoutes.registration) {
@@ -145,18 +150,6 @@ class AppRouter {
                   name: 'conversations',
                   pageBuilder: buildNoTransitionPage((context, state) {
                     return const ConversationsPanel();
-                  }),
-                ),
-                GoRoute(
-                  path: '/conversations/draft/:companionId',
-                  name: 'conversationDraft',
-                  pageBuilder: buildNoTransitionPage((context, state) {
-                    final String? draftCompanionId =
-                        state.pathParameters['companionId'];
-
-                    return ConversationsPanel(
-                      draftCompanionId: draftCompanionId,
-                    );
                   }),
                 ),
                 GoRoute(

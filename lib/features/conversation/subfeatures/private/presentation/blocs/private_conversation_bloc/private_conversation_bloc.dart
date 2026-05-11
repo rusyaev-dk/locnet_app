@@ -109,9 +109,13 @@ class PrivateConversationBloc
   ) async {
     try {
       emit(const PrivateConversationLoadingState());
-      final User companion = await _userInteractor.getUserById(
-        userId: event.companionId,
-      );
+      final User companion;
+      if (event.initialCompanion != null &&
+          event.initialCompanion!.userId == event.companionId) {
+        companion = event.initialCompanion!;
+      } else {
+        companion = await _userInteractor.getUserById(userId: event.companionId);
+      }
 
       emit(PrivateConversationDraftState(companion: companion));
     } catch (e, st) {
@@ -185,7 +189,6 @@ class PrivateConversationBloc
             conversation: conversation,
             companion: currentState.companion,
             companionId: currentState.companion.userId,
-            pendingNavigationConversationId: conversation.conversationId,
           ),
         );
 
