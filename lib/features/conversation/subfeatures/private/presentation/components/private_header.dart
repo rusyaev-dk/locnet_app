@@ -115,7 +115,25 @@ class _PrivateHeaderState extends State<PrivateHeader> {
                     break;
 
                   case _PrivateHeaderMenuAction.deleteConversation:
-                    await cubit.deleteConversation();
+                    final bool? confirmed = await showAppAlertDialog<bool>(
+                      context: context,
+                      title: Text(l10n.deleteConversation),
+                      content: Text(l10n.deletePrivateConversationBody),
+                      buildActions: (BuildContext d) => [
+                        AppAlertDialogAction(
+                          child: Text(l10n.cancel),
+                          onPressed: () => Navigator.of(d).pop(false),
+                        ),
+                        AppAlertDialogAction(
+                          isDefaultAction: true,
+                          child: Text(l10n.delete),
+                          onPressed: () => Navigator.of(d).pop(true),
+                        ),
+                      ],
+                    );
+                    if (confirmed == true && context.mounted) {
+                      await cubit.deleteConversation();
+                    }
                     break;
                 }
               },

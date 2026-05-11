@@ -112,10 +112,7 @@ class _UnifiedSearchModalCardState extends State<UnifiedSearchModalCard> {
                       ),
                       decoration: BoxDecoration(
                         border: Border(
-                          bottom: BorderSide(
-                            color: colorScheme.outline,
-                            width: 1,
-                          ),
+                          bottom: BorderSide(color: colorScheme.outline),
                         ),
                       ),
                       child: Row(
@@ -169,7 +166,6 @@ class _UnifiedSearchModalCardState extends State<UnifiedSearchModalCard> {
                                     color: colorScheme.surfaceContainer,
                                     border: Border.all(
                                       color: colorScheme.outline,
-                                      width: 1,
                                     ),
                                     borderRadius: BorderRadius.circular(7),
                                   ),
@@ -257,7 +253,9 @@ class _UnifiedSearchModalCardState extends State<UnifiedSearchModalCard> {
                             onPersonTap: (user) {
                               final router = GoRouter.of(context);
                               Navigator.of(context).pop();
-                              router.go(AppRoutes.conversationDraft(user.userId));
+                              router.go(
+                                AppRoutes.conversationDraft(user.userId),
+                              );
                             },
                             onConversationTap: (conversation) {
                               final router = GoRouter.of(context);
@@ -279,7 +277,7 @@ class _UnifiedSearchModalCardState extends State<UnifiedSearchModalCard> {
                       ),
                       decoration: BoxDecoration(
                         border: Border(
-                          top: BorderSide(color: colorScheme.outline, width: 1),
+                          top: BorderSide(color: colorScheme.outline),
                         ),
                       ),
                       child: Row(

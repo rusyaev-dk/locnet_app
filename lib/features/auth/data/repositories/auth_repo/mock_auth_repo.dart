@@ -12,11 +12,13 @@ final class MockAuthRepo implements IAuthRepo {
     userId: MockUsers.adminUser.userId,
     refreshToken: "mock_refresh_token",
     accessToken: "mock_access_token",
-    accessExpiresAt: DateTime.now().add(const Duration(minutes: 15)),
-    refreshExpiresAt: DateTime.now().add(const Duration(hours: 30)),
+    accessExpiresAt:
+        DateTime.now().toUtc().add(const Duration(minutes: 15)),
+    refreshExpiresAt:
+        DateTime.now().toUtc().add(const Duration(hours: 30)),
     isExpired: false,
-    createdAt: DateTime.now(),
-    updatedAt: DateTime.now(),
+    createdAt: DateTime.now().toUtc(),
+    updatedAt: DateTime.now().toUtc(),
   );
 
   final _delay = const Duration(milliseconds: 300);

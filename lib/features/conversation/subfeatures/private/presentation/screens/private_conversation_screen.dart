@@ -10,16 +10,16 @@ import 'package:locnet_app/features/conversation/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/data/data.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/domain/domain.dart';
 import 'package:locnet_app/features/conversation/subfeatures/private/presentation/presentation.dart';
+import 'package:locnet_app/features/conversations_list/domain/domain.dart';
 import 'package:locnet_app/features/conversations_list/presentation/presentation.dart';
 import 'package:locnet_app/features/message/data/data.dart';
 import 'package:locnet_app/features/message/domain/domain.dart';
 import 'package:locnet_app/features/message/subfeatures/message_input/presentation/presentation.dart';
-import 'package:locnet_app/features/message/subfeatures/private_message/domain/domain.dart';
-import 'package:locnet_app/features/message/subfeatures/private_message/presentation/presentation.dart';
 import 'package:locnet_app/features/message/subfeatures/message_selection/presentation/blocs/message_selection_cubit.dart';
 import 'package:locnet_app/features/message/subfeatures/message_selection/presentation/components/messages_selection_app_bar.dart';
 import 'package:locnet_app/features/message/subfeatures/message_selection/presentation/modals/forward_target_picker_modal_card.dart';
-import 'package:locnet_app/features/conversations_list/domain/domain.dart';
+import 'package:locnet_app/features/message/subfeatures/private_message/domain/domain.dart';
+import 'package:locnet_app/features/message/subfeatures/private_message/presentation/presentation.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
 class PrivateConversationScreenWrapper extends StatelessWidget {
@@ -60,8 +60,9 @@ class PrivateConversationScreenWrapper extends StatelessWidget {
         RepositoryProvider<MediaInteractor>(
           create: (BuildContext context) => MediaInteractor(
             mediaRepo: context.read<IAppEnvPreset>().createMediaRepo(),
-            downloadCache:
-                context.read<IAppEnvPreset>().createMediaDownloadCacheRepo(),
+            downloadCache: context
+                .read<IAppEnvPreset>()
+                .createMediaDownloadCacheRepo(),
           ),
         ),
       ],
@@ -151,6 +152,32 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
 
     return MultiBlocListener(
       listeners: [
+        if (widget.conversationId != null)
+          BlocListener<
+            PrivateConversationOptionsCubit,
+            PrivateConversationOptionsState
+          >(
+            listenWhen:
+                (
+                  PrivateConversationOptionsState previous,
+                  PrivateConversationOptionsState current,
+                ) {
+                  return current is PrivateConversationOptionsDeletedState;
+                },
+            listener:
+                (BuildContext context, PrivateConversationOptionsState state) {
+                  final String id = widget.conversationId!;
+                  final AllConversationsListBloc listBloc = context
+                      .read<AllConversationsListBloc>();
+                  listBloc.add(
+                    AllConversationsListConversationDeletedEvent(
+                      conversationId: id,
+                    ),
+                  );
+                  if (!context.mounted) return;
+                  GoRouter.of(context).go(AppRoutes.conversations);
+                },
+          ),
         BlocListener<PrivateConversationBloc, PrivateConversationState>(
           listenWhen: (previous, current) {
             if (previous is! PrivateConversationLoadedState &&
@@ -176,26 +203,32 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
             if (targetConversationId == null) {
               return;
             }
-            GoRouter.of(context).go(AppRoutes.conversation(targetConversationId));
+            GoRouter.of(
+              context,
+            ).go(AppRoutes.conversation(targetConversationId));
             context.read<AllConversationsListBloc>().add(
               const AllConversationsListLoadEvent(),
             );
           },
         ),
         BlocListener<PrivateConversationBloc, PrivateConversationState>(
-          listenWhen: (PrivateConversationState previous, PrivateConversationState current) {
-            if (widget.conversationId == null) {
-              return false;
-            }
-            if (current is! PrivateConversationLoadedState) {
-              return false;
-            }
-            if (previous is! PrivateConversationLoadedState) {
-              return true;
-            }
-            return previous.conversation.conversationId !=
-                current.conversation.conversationId;
-          },
+          listenWhen:
+              (
+                PrivateConversationState previous,
+                PrivateConversationState current,
+              ) {
+                if (widget.conversationId == null) {
+                  return false;
+                }
+                if (current is! PrivateConversationLoadedState) {
+                  return false;
+                }
+                if (previous is! PrivateConversationLoadedState) {
+                  return true;
+                }
+                return previous.conversation.conversationId !=
+                    current.conversation.conversationId;
+              },
           listener: (BuildContext context, PrivateConversationState state) {
             if (state is PrivateConversationLoadedState) {
               unawaited(_markIncomingMessagesAsRead(context, state));
@@ -228,7 +261,11 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
                         final bool? confirm = await showAppAlertDialog<bool>(
                           context: context,
                           title: Text(l10n.messageContextActionDelete),
-                          content: Text(l10n.logOutConfirmation),
+                          content: Text(
+                            l10n.deleteSelectedMessagesConfirmation(
+                              selectionState.selectedCount,
+                            ),
+                          ),
                           buildActions: (d) => [
                             AppAlertDialogAction(
                               child: Text(l10n.cancel),
@@ -271,8 +308,9 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
                         final tiles = await showGeneralDialog<ConversationTile>(
                           context: context,
                           barrierDismissible: true,
-                          barrierLabel:
-                              MaterialLocalizations.of(context).modalBarrierDismissLabel,
+                          barrierLabel: MaterialLocalizations.of(
+                            context,
+                          ).modalBarrierDismissLabel,
                           barrierColor: context.colorScheme.scrim.withValues(
                             alpha: 0.45,
                           ),
@@ -443,7 +481,9 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
                                 .toList(growable: false);
 
                             if (messages.isEmpty) {
-                              return Text(context.l10n.conversationNoMessagesYet);
+                              return Text(
+                                context.l10n.conversationNoMessagesYet,
+                              );
                             }
 
                             return PrivateMessagesList(
@@ -468,13 +508,11 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
                                     await showGeneralDialog<ConversationTile>(
                                       context: context,
                                       barrierDismissible: true,
-                                      barrierLabel:
-                                          MaterialLocalizations.of(context)
-                                              .modalBarrierDismissLabel,
-                                      barrierColor:
-                                          context.colorScheme.scrim.withValues(
-                                            alpha: 0.45,
-                                          ),
+                                      barrierLabel: MaterialLocalizations.of(
+                                        context,
+                                      ).modalBarrierDismissLabel,
+                                      barrierColor: context.colorScheme.scrim
+                                          .withValues(alpha: 0.45),
                                       transitionBuilder:
                                           slideFadeDialogTransition,
                                       pageBuilder: (context, _, __) {
@@ -502,12 +540,11 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
                               onDelete: (message) async {
                                 final l10n = context.l10n;
 
-                                final bool? confirm = await showAppAlertDialog<bool>(
+                                final bool?
+                                confirm = await showAppAlertDialog<bool>(
                                   context: context,
-                                  title: Text(
-                                    l10n.messageContextActionDelete,
-                                  ),
-                                  content: Text(l10n.logOutConfirmation),
+                                  title: Text(l10n.messageContextActionDelete),
+                                  content: Text(l10n.deleteMessageConfirmation),
                                   buildActions: (d) => [
                                     AppAlertDialogAction(
                                       child: Text(l10n.cancel),
@@ -608,7 +645,8 @@ class _PrivateConversationScreenState extends State<PrivateConversationScreen> {
     if (!context.mounted) {
       return;
     }
-    final PrivateConversationBloc bloc = context.read<PrivateConversationBloc>();
+    final PrivateConversationBloc bloc = context
+        .read<PrivateConversationBloc>();
     for (final PrivateMessage message in state.messages) {
       if (message.senderId == user.userId) {
         continue;

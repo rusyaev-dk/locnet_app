@@ -118,7 +118,9 @@ class _GroupConversationScreenState extends State<GroupConversationScreen> {
                         context: context,
                         title: Text(l10n.messageContextActionDelete),
                         content: Text(
-                          l10n.logOutConfirmation,
+                          l10n.deleteSelectedMessagesConfirmation(
+                            selectionState.selectedCount,
+                          ),
                         ),
                         buildActions: (d) => [
                           AppAlertDialogAction(
@@ -327,7 +329,7 @@ class _GroupConversationScreenState extends State<GroupConversationScreen> {
                             context: context,
                             title: Text(l10n.messageContextActionDelete),
                             content: Text(
-                              l10n.logOutConfirmation,
+                              l10n.deleteMessageConfirmation,
                             ),
                             buildActions: (d) => [
                               AppAlertDialogAction(

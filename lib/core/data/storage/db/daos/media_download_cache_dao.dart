@@ -18,7 +18,7 @@ class MediaDownloadCacheDao extends DatabaseAccessor<AppDatabase>
       into(mediaDownloadCacheTable).insertOnConflictUpdate(entry);
 
   Future<int> deleteExpired() {
-    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    final nowMs = DateTime.now().toUtc().millisecondsSinceEpoch;
     return (delete(mediaDownloadCacheTable)
           ..where((t) => t.expiresAtMs.isSmallerThanValue(nowMs)))
         .go();

@@ -66,3 +66,11 @@ final class PrivateConversationOptionsFailureState
   @override
   List<Object?> get props => [failure];
 }
+
+final class PrivateConversationOptionsDeletedState
+    extends PrivateConversationOptionsState {
+  const PrivateConversationOptionsDeletedState() : super(failure: null);
+
+  @override
+  List<Object?> get props => <Object?>[];
+}

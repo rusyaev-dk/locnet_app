@@ -30,15 +30,18 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m4(name) => "with ${name}";
 
-  static String m5(count) => "${count} participants";
+  static String m5(count) =>
+      "Are you sure you want to delete ${count} selected messages?";
 
-  static String m6(count) => "${count} minutes";
+  static String m6(count) => "${count} participants";
 
-  static String m7(min) => "At least ${min} characters";
+  static String m7(count) => "${count} minutes";
 
-  static String m8(size) => "${size} cached";
+  static String m8(min) => "At least ${min} characters";
 
-  static String m9(size) => "${size} total cached";
+  static String m9(size) => "${size} cached";
+
+  static String m10(size) => "${size} total cached";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -201,6 +204,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "deleteConversation": MessageLookupByLibrary.simpleMessage(
       "Delete conversation",
     ),
+    "deleteMessageConfirmation": MessageLookupByLibrary.simpleMessage(
+      "Are you sure you want to delete this message?",
+    ),
+    "deletePrivateConversationBody": MessageLookupByLibrary.simpleMessage(
+      "This chat will be removed from your list. Delete anyway?",
+    ),
+    "deleteSelectedMessagesConfirmation": m5,
     "description": MessageLookupByLibrary.simpleMessage("Description"),
     "deviceThemeMode": MessageLookupByLibrary.simpleMessage(
       "Use device settings",
@@ -240,7 +250,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "groupMenuViewInfo": MessageLookupByLibrary.simpleMessage(
       "View group info",
     ),
-    "groupParticipantsCount": m5,
+    "groupParticipantsCount": m6,
     "homePage": MessageLookupByLibrary.simpleMessage("Home page"),
     "invalidCharactersException": MessageLookupByLibrary.simpleMessage(
       "Invalid characters entered",
@@ -335,7 +345,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Lock after inactivity",
     ),
     "passcodeLogOut": MessageLookupByLibrary.simpleMessage("Log out"),
-    "passcodeMinutesCount": m6,
+    "passcodeMinutesCount": m7,
     "passcodeNever": MessageLookupByLibrary.simpleMessage("Never"),
     "passcodePinsMismatch": MessageLookupByLibrary.simpleMessage(
       "PINs do not match. Try again.",
@@ -357,7 +367,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "passwordRequirementLowercase": MessageLookupByLibrary.simpleMessage(
       "At least one lowercase letter (a–z)",
     ),
-    "passwordRequirementMinLength": m7,
+    "passwordRequirementMinLength": m8,
     "passwordRequirementSpecial": MessageLookupByLibrary.simpleMessage(
       "At least one special character (!?@#\$%^&*()_-{})",
     ),
@@ -546,7 +556,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "settingsStorageCacheEmptyHint": MessageLookupByLibrary.simpleMessage(
       "No data is currently cached locally.",
     ),
-    "settingsStorageCached": m8,
+    "settingsStorageCached": m9,
     "settingsStorageClearAll": MessageLookupByLibrary.simpleMessage(
       "Clear all cache",
     ),
@@ -565,7 +575,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "settingsStoragePhotos": MessageLookupByLibrary.simpleMessage("Photos"),
     "settingsStorageSection": MessageLookupByLibrary.simpleMessage("Storage"),
-    "settingsStorageTotalCached": m9,
+    "settingsStorageTotalCached": m10,
     "settingsStorageVideos": MessageLookupByLibrary.simpleMessage("Videos"),
     "settingsTextScale": MessageLookupByLibrary.simpleMessage("Text size"),
     "settingsThemeModeLabel": MessageLookupByLibrary.simpleMessage("Mode"),

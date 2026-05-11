@@ -14,6 +14,7 @@ class PrivateConversationOptionsCubit
     required String conversationId,
   }) : _privateConversationInteractor = privateConversationInteractor,
        _logger = logger,
+       _conversationId = conversationId,
        super(
          PrivateConversationOptionsInitialState(conversationId: conversationId),
        ) {
@@ -22,6 +23,7 @@ class PrivateConversationOptionsCubit
 
   final PrivateConversationInteractor _privateConversationInteractor;
   final ILogger _logger;
+  final String _conversationId;
 
   Future<void> _loadConversationData() async {
     try {
@@ -73,7 +75,13 @@ class PrivateConversationOptionsCubit
   }
 
   Future<void> deleteConversation() async {
-    try {} catch (e, st) {
+    try {
+      await _privateConversationInteractor.deleteConversation(
+        conversationId: _conversationId,
+        deleteAtRecipient: false,
+      );
+      emit(const PrivateConversationOptionsDeletedState());
+    } catch (e, st) {
       _logger.exception(e, st);
 
       final AppException appException = e is AppException

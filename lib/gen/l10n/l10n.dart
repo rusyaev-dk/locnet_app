@@ -949,6 +949,16 @@ class S {
     );
   }
 
+  /// `Чат будет удалён из списка. Продолжить?`
+  String get deletePrivateConversationBody {
+    return Intl.message(
+      'Чат будет удалён из списка. Продолжить?',
+      name: 'deletePrivateConversationBody',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Включить уведомления`
   String get toggleNotificationsOn {
     return Intl.message(
@@ -1051,6 +1061,26 @@ class S {
       name: 'messageContextActionReply',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `Удалить это сообщение?`
+  String get deleteMessageConfirmation {
+    return Intl.message(
+      'Удалить это сообщение?',
+      name: 'deleteMessageConfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Удалить выбранные сообщения ({count})?`
+  String deleteSelectedMessagesConfirmation(Object count) {
+    return Intl.message(
+      'Удалить выбранные сообщения ($count)?',
+      name: 'deleteSelectedMessagesConfirmation',
+      desc: '',
+      args: [count],
     );
   }
 

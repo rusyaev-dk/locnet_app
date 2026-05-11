@@ -49,12 +49,40 @@ class HttpPrivateConversationRepo implements IPrivateConversationRepo {
     required bool deleteAtRecipient,
   }) async {
     try {
-      // The backend exposes a hard DELETE and a PUT for soft delete.
-      // We use DELETE here regardless of [deleteAtRecipient] until the
-      // soft-delete UX is wired up.
-      await _httpClient.delete(
+      final httpResponse = await _httpClient.delete(
         path: ApiEndpoints.privateConversation(conversationId),
       );
+      final dynamic data = httpResponse.data;
+      if (data is! Map<String, dynamic>) {
+        throw AppUnknownException(
+          message: 'Invalid delete conversation response',
+          error: data,
+          stackTrace: StackTrace.current,
+        );
+      }
+      if (data['success'] != true) {
+        throw AppUnknownException(
+          message: 'Delete conversation was not successful',
+          error: data,
+          stackTrace: StackTrace.current,
+        );
+      }
+      final dynamic conv = data['conversation'];
+      if (conv is! Map<String, dynamic>) {
+        throw AppUnknownException(
+          message: 'Missing conversation in delete response',
+          error: data,
+          stackTrace: StackTrace.current,
+        );
+      }
+      final PrivateConversationDto dto = PrivateConversationDto.fromJson(conv);
+      if (!dto.isDeleted) {
+        throw AppUnknownException(
+          message: 'Conversation is not marked deleted after delete',
+          error: conv,
+          stackTrace: StackTrace.current,
+        );
+      }
       return true;
     } on AppException {
       rethrow;

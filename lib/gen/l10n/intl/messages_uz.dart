@@ -30,15 +30,18 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m4(name) => "${name} bilan";
 
-  static String m5(count) => "${count} ishtirokchi";
+  static String m5(count) =>
+      "Tanlangan ${count} ta xabarni oʻchirishni xohlaysizmi?";
 
-  static String m6(count) => "${count} daq.";
+  static String m6(count) => "${count} ishtirokchi";
 
-  static String m7(min) => "Kamida ${min} ta belgi";
+  static String m7(count) => "${count} daq.";
 
-  static String m8(size) => "${size} keshda";
+  static String m8(min) => "Kamida ${min} ta belgi";
 
-  static String m9(size) => "${size} jami keshda";
+  static String m9(size) => "${size} keshda";
+
+  static String m10(size) => "${size} jami keshda";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -201,6 +204,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "deleteConversation": MessageLookupByLibrary.simpleMessage(
       "Suhbatni oʻchirish",
     ),
+    "deleteMessageConfirmation": MessageLookupByLibrary.simpleMessage(
+      "Bu xabarni oʻchirishni xohlaysizmi?",
+    ),
+    "deletePrivateConversationBody": MessageLookupByLibrary.simpleMessage(
+      "Chat roʻyxatdan olib tashlanadi. Davom etasizmi?",
+    ),
+    "deleteSelectedMessagesConfirmation": m5,
     "description": MessageLookupByLibrary.simpleMessage("Tavsif"),
     "deviceThemeMode": MessageLookupByLibrary.simpleMessage(
       "Qurilma sozlamalariga koʻra",
@@ -244,7 +254,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "groupMenuLeave": MessageLookupByLibrary.simpleMessage("Guruhdan chiqish"),
     "groupMenuViewInfo": MessageLookupByLibrary.simpleMessage("Guruh haqida"),
-    "groupParticipantsCount": m5,
+    "groupParticipantsCount": m6,
     "homePage": MessageLookupByLibrary.simpleMessage("Bosh sahifa"),
     "invalidCharactersException": MessageLookupByLibrary.simpleMessage(
       "Notoʻgʻri belgilar kiritildi",
@@ -349,7 +359,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Nofaollikdan keyin bloklash",
     ),
     "passcodeLogOut": MessageLookupByLibrary.simpleMessage("Hisobdan chiqish"),
-    "passcodeMinutesCount": m6,
+    "passcodeMinutesCount": m7,
     "passcodeNever": MessageLookupByLibrary.simpleMessage("Hech qachon"),
     "passcodePinsMismatch": MessageLookupByLibrary.simpleMessage(
       "PIN mos kelmaydi. Qayta urinib ko\'ring.",
@@ -375,7 +385,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "passwordRequirementLowercase": MessageLookupByLibrary.simpleMessage(
       "Kamida bitta kichik harf (a–z)",
     ),
-    "passwordRequirementMinLength": m7,
+    "passwordRequirementMinLength": m8,
     "passwordRequirementSpecial": MessageLookupByLibrary.simpleMessage(
       "Kamida bitta maxsus belgi (!?@#\$%^&*()_-{})",
     ),
@@ -586,7 +596,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "settingsStorageCacheEmptyHint": MessageLookupByLibrary.simpleMessage(
       "Mahalliy keşlangan ma\'lumot yo\'q.",
     ),
-    "settingsStorageCached": m8,
+    "settingsStorageCached": m9,
     "settingsStorageClearAll": MessageLookupByLibrary.simpleMessage(
       "Keshni tozalash",
     ),
@@ -607,7 +617,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "settingsStorageSection": MessageLookupByLibrary.simpleMessage(
       "Saqlash joyi",
     ),
-    "settingsStorageTotalCached": m9,
+    "settingsStorageTotalCached": m10,
     "settingsStorageVideos": MessageLookupByLibrary.simpleMessage("Videolar"),
     "settingsTextScale": MessageLookupByLibrary.simpleMessage("Matn o‘lchami"),
     "settingsThemeModeLabel": MessageLookupByLibrary.simpleMessage("Rejim"),

@@ -108,9 +108,7 @@ class _ConversationSearchSheetState extends State<ConversationSearchSheet> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(color: colorScheme.outline),
-              ),
+              border: Border(bottom: BorderSide(color: colorScheme.outline)),
             ),
             child: Row(
               children: [
@@ -184,7 +182,8 @@ class _ConversationSearchSheetState extends State<ConversationSearchSheet> {
                     query: _query,
                     activeResultIndex: activeResultIndex,
                     results: results,
-                    onResultTap: (item) => _selectResult(item, closeSheet: true),
+                    onResultTap: (item) =>
+                        _selectResult(item, closeSheet: true),
                     colorScheme: colorScheme,
                     textScheme: textScheme,
                   )
@@ -218,9 +217,7 @@ class _ConversationSearchSheetState extends State<ConversationSearchSheet> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(color: colorScheme.outline),
-              ),
+              border: Border(top: BorderSide(color: colorScheme.outline)),
             ),
             child: Row(
               children: [
@@ -283,9 +280,10 @@ class _ConversationSearchSheetState extends State<ConversationSearchSheet> {
 
   String _buildDateLabel(BuildContext context, DateTime dateTime) {
     final l10n = context.l10n;
+    final DateTime local = dateTime.toLocal();
     final DateTime now = DateTime.now();
     final DateTime today = DateTime(now.year, now.month, now.day);
-    final DateTime date = DateTime(dateTime.year, dateTime.month, dateTime.day);
+    final DateTime date = DateTime(local.year, local.month, local.day);
     final int daysAgo = today.difference(date).inDays;
     if (daysAgo <= 0) {
       return l10n.conversationSearchDateToday;
@@ -583,9 +581,7 @@ class _SearchNavBar extends StatelessWidget {
     final bool hasResults = total > 0;
     return Container(
       decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(color: colorScheme.outline),
-        ),
+        border: Border(top: BorderSide(color: colorScheme.outline)),
       ),
       child: SizedBox(
         height: 42,
@@ -603,7 +599,6 @@ class _SearchNavBar extends StatelessWidget {
               SurfaceIconButton(
                 variant: SurfaceIconVariant.ghost,
                 icon: Icons.keyboard_arrow_up_rounded,
-                dimension: 34,
                 iconSize: 22,
                 margin: EdgeInsets.zero,
                 foregroundColor: current > 1
@@ -615,7 +610,6 @@ class _SearchNavBar extends StatelessWidget {
               SurfaceIconButton(
                 variant: SurfaceIconVariant.ghost,
                 icon: Icons.keyboard_arrow_down_rounded,
-                dimension: 34,
                 iconSize: 22,
                 margin: EdgeInsets.zero,
                 foregroundColor: current < total

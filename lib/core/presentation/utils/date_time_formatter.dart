@@ -3,9 +3,9 @@ import 'package:intl/intl.dart';
 
 final class DateTimeFormatter {
   static DateTime parse(Object? raw) {
-    if (raw is DateTime) return raw;
+    if (raw is DateTime) return raw.toUtc();
     if (raw is String && raw.isNotEmpty) {
-      return DateTime.parse(raw);
+      return DateTime.parse(raw).toUtc();
     }
     if (raw is int) {
       final bool isMillis = raw >= 1000000000000;
@@ -19,7 +19,7 @@ final class DateTimeFormatter {
 
   static String formatLocalized(DateTime dateTime, {String? locale}) {
     final DateFormat formatter = DateFormat('dd MMM yyyy, HH:mm', locale);
-    return formatter.format(dateTime);
+    return formatter.format(dateTime.toLocal());
   }
 
   static String formatConversationTime({
@@ -28,14 +28,15 @@ final class DateTimeFormatter {
     required Locale locale,
     required MaterialLocalizations materialLocalizations,
   }) {
-    final Duration difference = now.difference(dateTime);
+    final DateTime localDateTime = dateTime.toLocal();
+    final Duration difference = now.difference(localDateTime);
 
     if (difference.inHours >= 24) {
       final DateFormat weekdayFormatter = DateFormat.E(locale.toLanguageTag());
-      return weekdayFormatter.format(dateTime);
+      return weekdayFormatter.format(localDateTime);
     }
 
-    final TimeOfDay timeOfDay = TimeOfDay.fromDateTime(dateTime);
+    final TimeOfDay timeOfDay = TimeOfDay.fromDateTime(localDateTime);
     return materialLocalizations.formatTimeOfDay(timeOfDay);
   }
 }

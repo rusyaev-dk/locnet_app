@@ -71,28 +71,34 @@ class SessionInfo extends StatelessWidget {
           children: [
             SettingsValueTile(
               label: l10n.sessionCreatedAt,
-              value: _dateTimeFormatter.format(session.createdAt),
+              value: _dateTimeFormatter.format(session.createdAt.toLocal()),
               leadingIcon: Icons.schedule_outlined,
             ),
             SettingsValueTile(
               label: l10n.sessionUpdatedAt,
-              value: _dateTimeFormatter.format(session.updatedAt),
+              value: _dateTimeFormatter.format(session.updatedAt.toLocal()),
               leadingIcon: Icons.update_outlined,
             ),
             SettingsValueTile(
               label: l10n.sessionAccessExpiresAt,
-              value: _dateTimeFormatter.format(session.accessExpiresAt),
+              value: _dateTimeFormatter.format(
+                session.accessExpiresAt.toLocal(),
+              ),
               leadingIcon: Icons.timer_outlined,
             ),
             SettingsValueTile(
               label: l10n.sessionRefreshExpiresAt,
-              value: _dateTimeFormatter.format(session.refreshExpiresAt),
+              value: _dateTimeFormatter.format(
+                session.refreshExpiresAt.toLocal(),
+              ),
               leadingIcon: Icons.refresh_outlined,
             ),
             if (session.terminatedAt != null)
               SettingsValueTile(
                 label: l10n.sessionTerminatedAt,
-                value: _dateTimeFormatter.format(session.terminatedAt!),
+                value: _dateTimeFormatter.format(
+                  session.terminatedAt!.toLocal(),
+                ),
                 leadingIcon: Icons.block_outlined,
               ),
           ],

@@ -294,7 +294,8 @@ class _MessageBubbleState extends State<MessageBubble> {
     );
 
     final String messageMarkdown = _getText().trim();
-    final String timeText = _timeFormatter.format(_getCreatedAt());
+    final String timeText =
+        _timeFormatter.format(_getCreatedAt().toLocal());
     final String replyPreviewText = (widget.replyPreviewText ?? '').trim();
     final String? replyPreviewAuthor = widget.replyPreviewAuthor;
     final bool hasReplyPreview = replyPreviewText.isNotEmpty;
@@ -542,6 +543,9 @@ class _MessageBubbleState extends State<MessageBubble> {
       return const SizedBox.shrink();
     }
 
+    /// Image tiles use full bubble width by default; scale down for readability.
+    final double attachmentMaxWidth = maxBubbleWidth * 0.75;
+
     return FutureBuilder<List<MediaDownloadInfo>>(
       future: Future.wait(
         m.attachments
@@ -560,7 +564,7 @@ class _MessageBubbleState extends State<MessageBubble> {
           ) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: maxBubbleWidth),
+                constraints: BoxConstraints(maxWidth: attachmentMaxWidth),
                 child: const AspectRatio(
                   aspectRatio: 16 / 9,
                   child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
@@ -593,7 +597,7 @@ class _MessageBubbleState extends State<MessageBubble> {
             }
 
             return ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: maxBubbleWidth),
+              constraints: BoxConstraints(maxWidth: attachmentMaxWidth),
               child: _AttachmentsGrid(
                 items: items,
                 onTap: (int index) {

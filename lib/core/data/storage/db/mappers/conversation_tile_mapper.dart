@@ -20,7 +20,7 @@ final class ConversationTileMapper {
       lastMessageSenderId: Value(tile.lastMessageSenderId),
       lastMessageAtMs: Value(tile.lastMessageAt?.millisecondsSinceEpoch),
       updatedAtMs: Value(tile.updatedAt.millisecondsSinceEpoch),
-      cachedAtMs: Value(DateTime.now().millisecondsSinceEpoch),
+      cachedAtMs: Value(DateTime.now().toUtc().millisecondsSinceEpoch),
     );
   }
 
@@ -36,8 +36,8 @@ final class ConversationTileMapper {
         languageCode: 'ru',
         isDeleted: false,
         isBanned: false,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
+        createdAt: DateTime.now().toUtc(),
+        updatedAt: DateTime.now().toUtc(),
       );
     }
 
@@ -53,9 +53,15 @@ final class ConversationTileMapper {
       lastMessageText: row.lastMessageText,
       lastMessageSenderId: row.lastMessageSenderId,
       lastMessageAt: row.lastMessageAtMs != null
-          ? DateTime.fromMillisecondsSinceEpoch(row.lastMessageAtMs!)
+          ? DateTime.fromMillisecondsSinceEpoch(
+              row.lastMessageAtMs!,
+              isUtc: true,
+            )
           : null,
-      updatedAt: DateTime.fromMillisecondsSinceEpoch(row.updatedAtMs),
+      updatedAt: DateTime.fromMillisecondsSinceEpoch(
+        row.updatedAtMs,
+        isUtc: true,
+      ),
     );
   }
 }

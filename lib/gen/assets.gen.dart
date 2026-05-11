@@ -12,7 +12,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart' as _svg;
-import 'package:lottie/lottie.dart' as _lottie;
 import 'package:vector_graphics/vector_graphics.dart' as _vg;
 
 class $EnvGen {
@@ -26,34 +25,6 @@ class $EnvGen {
 
   /// List of all assets
   List<String> get values => [dev, stage];
-}
-
-class $AssetsFontsGen {
-  const $AssetsFontsGen();
-
-  /// File path: assets/fonts/Montserrat-Bold.ttf
-  String get montserratBold => 'assets/fonts/Montserrat-Bold.ttf';
-
-  /// File path: assets/fonts/Montserrat-ExtraBold.ttf
-  String get montserratExtraBold => 'assets/fonts/Montserrat-ExtraBold.ttf';
-
-  /// File path: assets/fonts/Montserrat-Medium.ttf
-  String get montserratMedium => 'assets/fonts/Montserrat-Medium.ttf';
-
-  /// File path: assets/fonts/Montserrat-Regular.ttf
-  String get montserratRegular => 'assets/fonts/Montserrat-Regular.ttf';
-
-  /// File path: assets/fonts/Montserrat-SemiBold.ttf
-  String get montserratSemiBold => 'assets/fonts/Montserrat-SemiBold.ttf';
-
-  /// List of all assets
-  List<String> get values => [
-    montserratBold,
-    montserratExtraBold,
-    montserratMedium,
-    montserratRegular,
-    montserratSemiBold,
-  ];
 }
 
 class $AssetsIconsGen {
@@ -72,23 +43,10 @@ class $AssetsIconsGen {
   List<SvgGenImage> get values => [gb, ru, uz];
 }
 
-class $AssetsLottieGen {
-  const $AssetsLottieGen();
-
-  /// File path: assets/lottie/splash.json
-  LottieGenImage get splash =>
-      const LottieGenImage('assets/lottie/splash.json');
-
-  /// List of all assets
-  List<LottieGenImage> get values => [splash];
-}
-
 class Assets {
   const Assets._();
 
-  static const $AssetsFontsGen fonts = $AssetsFontsGen();
   static const $AssetsIconsGen icons = $AssetsIconsGen();
-  static const $AssetsLottieGen lottie = $AssetsLottieGen();
   static const $EnvGen env = $EnvGen();
 }
 
@@ -158,73 +116,6 @@ class SvgGenImage {
           (color == null ? null : ColorFilter.mode(color, colorBlendMode)),
       clipBehavior: clipBehavior,
       cacheColorFilter: cacheColorFilter,
-    );
-  }
-
-  String get path => _assetName;
-
-  String get keyName => _assetName;
-}
-
-class LottieGenImage {
-  const LottieGenImage(this._assetName, {this.flavors = const {}});
-
-  final String _assetName;
-  final Set<String> flavors;
-
-  _lottie.LottieBuilder lottie({
-    Animation<double>? controller,
-    bool? animate,
-    _lottie.FrameRate? frameRate,
-    bool? repeat,
-    bool? reverse,
-    _lottie.LottieDelegates? delegates,
-    _lottie.LottieOptions? options,
-    void Function(_lottie.LottieComposition)? onLoaded,
-    _lottie.LottieImageProviderFactory? imageProviderFactory,
-    Key? key,
-    AssetBundle? bundle,
-    Widget Function(BuildContext, Widget, _lottie.LottieComposition?)?
-    frameBuilder,
-    ImageErrorWidgetBuilder? errorBuilder,
-    double? width,
-    double? height,
-    BoxFit? fit,
-    AlignmentGeometry? alignment,
-    String? package,
-    bool? addRepaintBoundary,
-    FilterQuality? filterQuality,
-    void Function(String)? onWarning,
-    _lottie.LottieDecoder? decoder,
-    _lottie.RenderCache? renderCache,
-    bool? backgroundLoading,
-  }) {
-    return _lottie.Lottie.asset(
-      _assetName,
-      controller: controller,
-      animate: animate,
-      frameRate: frameRate,
-      repeat: repeat,
-      reverse: reverse,
-      delegates: delegates,
-      options: options,
-      onLoaded: onLoaded,
-      imageProviderFactory: imageProviderFactory,
-      key: key,
-      bundle: bundle,
-      frameBuilder: frameBuilder,
-      errorBuilder: errorBuilder,
-      width: width,
-      height: height,
-      fit: fit,
-      alignment: alignment,
-      package: package,
-      addRepaintBoundary: addRepaintBoundary,
-      filterQuality: filterQuality,
-      onWarning: onWarning,
-      decoder: decoder,
-      renderCache: renderCache,
-      backgroundLoading: backgroundLoading,
     );
   }
 

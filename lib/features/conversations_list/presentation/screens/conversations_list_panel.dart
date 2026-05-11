@@ -73,6 +73,19 @@ class _ConversationsPanelState extends State<ConversationsPanel> {
 
   double _panelWidth = 320;
 
+  /// Avoids dispatching repeated loads when the route still points at a
+  /// conversation that was removed from the list (e.g. after delete).
+  bool _staleSelectionClearScheduled = false;
+
+  @override
+  void didUpdateWidget(ConversationsPanel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.selectedConversationId != oldWidget.selectedConversationId ||
+        widget.draftCompanionId != oldWidget.draftCompanionId) {
+      _staleSelectionClearScheduled = false;
+    }
+  }
+
   double _effectiveMaxWidth(double screenWidth) {
     return math.min(_panelMaxWidth, screenWidth * 0.5);
   }
@@ -189,9 +202,17 @@ class _ConversationsPanelState extends State<ConversationsPanel> {
                           .firstOrNull;
 
                       if (selectedTile == null) {
-                        context.read<AllConversationsListBloc>().add(
-                          const AllConversationsListLoadEvent(),
-                        );
+                        final String? selectedId =
+                            widget.selectedConversationId;
+                        if (selectedId != null &&
+                            !_staleSelectionClearScheduled) {
+                          _staleSelectionClearScheduled = true;
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (!mounted) return;
+                            _staleSelectionClearScheduled = false;
+                            GoRouter.of(context).go(AppRoutes.conversations);
+                          });
+                        }
                         return const Center(child: CircularProgressIndicator());
                       }
 
@@ -471,33 +492,41 @@ class _ConversationsListHeader extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-            child: GestureDetector(
-              onTap: () => _openUnifiedSearch(context),
-              child: Container(
-                height: 34,
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainer,
-                  border: Border.all(color: colorScheme.outline),
-                  borderRadius: BorderRadius.circular(9),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.search,
-                      size: 16,
-                      color: colorScheme.onSurfaceVariant,
+            child: Material(
+              color: colorScheme.surfaceContainer,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(9),
+                side: BorderSide(color: colorScheme.outline),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(9),
+                onTap: () => _openUnifiedSearch(context),
+                mouseCursor: SystemMouseCursors.click,
+                hoverColor: colorScheme.hoverOverlay,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(minHeight: 34),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.search,
+                          size: 16,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          '${l10n.search}…',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: colorScheme.onSurfaceVariant,
+                            height: 1.2,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 6),
-                    Text(
-                      '${l10n.search}…',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: colorScheme.onSurfaceVariant,
-                        height: 1.2,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),

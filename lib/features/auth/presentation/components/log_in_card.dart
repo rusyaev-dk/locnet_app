@@ -103,11 +103,10 @@ class LogInCard extends StatelessWidget {
                       : null,
                 ),
                 const SizedBox(height: 16),
-                CustomTextField(
+                ObscuringPasswordField(
                   isActive: !isLoading,
                   controller: passwordController,
                   labelText: l10n.password,
-                  obscureText: true,
                   textInputAction: TextInputAction.done,
                   onSubmitted: (v) =>
                       logInCubit.updatePassword(updatedPassword: v),

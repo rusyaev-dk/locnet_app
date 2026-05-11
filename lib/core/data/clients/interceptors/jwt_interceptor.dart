@@ -97,16 +97,17 @@ final class JWTInterceptor extends Interceptor {
   }
 
   Future<Session> _ensureValidSession(Session session) async {
-    final DateTime refreshThreshold = DateTime.now().add(_refreshLeeway);
-    if (session.accessExpiresAt.isAfter(refreshThreshold)) {
+    final DateTime refreshThreshold =
+        DateTime.now().toUtc().add(_refreshLeeway);
+    if (session.accessExpiresAt.toUtc().isAfter(refreshThreshold)) {
       return session;
     }
     return _refreshSession(session);
   }
 
   Future<Session> _refreshSession(Session session) async {
-    final DateTime now = DateTime.now();
-    if (!session.refreshExpiresAt.isAfter(now)) {
+    final DateTime now = DateTime.now().toUtc();
+    if (!session.refreshExpiresAt.toUtc().isAfter(now)) {
       throw ApiUnauthorizedException(message: 'Refresh token expired');
     }
 

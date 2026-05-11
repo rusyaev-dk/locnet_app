@@ -178,11 +178,10 @@ class RegistrationCard extends StatelessWidget {
                           : null,
                     ),
                     const SizedBox(height: 16),
-                    CustomTextField(
+                    ObscuringPasswordField(
                       isActive: !isLoading,
                       controller: passwordController,
                       labelText: l10n.password,
-                      obscureText: true,
                       textInputAction: TextInputAction.next,
                       onChanged: (v) => reg.updatePassword(newPassword: v),
                       onFocusChange: (v) => reg.updatePassword(newPassword: v),
@@ -199,11 +198,10 @@ class RegistrationCard extends StatelessWidget {
                       isActive: !isLoading,
                     ),
                     const SizedBox(height: 16),
-                    CustomTextField(
+                    ObscuringPasswordField(
                       isActive: !isLoading,
                       controller: repeatPasswordController,
                       labelText: l10n.repeatPassword,
-                      obscureText: true,
                       textInputAction: TextInputAction.done,
                       onChanged: (v) =>
                           reg.updateRepeatPassword(newRepeatPassword: v),

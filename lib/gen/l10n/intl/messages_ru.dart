@@ -30,15 +30,17 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m4(name) => "с ${name}";
 
-  static String m5(count) => "${count} участников";
+  static String m5(count) => "Удалить выбранные сообщения (${count})?";
 
-  static String m6(count) => "${count} мин.";
+  static String m6(count) => "${count} участников";
 
-  static String m7(min) => "Не менее ${min} символов";
+  static String m7(count) => "${count} мин.";
 
-  static String m8(size) => "${size} в кеше";
+  static String m8(min) => "Не менее ${min} символов";
 
-  static String m9(size) => "${size} всего в кеше";
+  static String m9(size) => "${size} в кеше";
+
+  static String m10(size) => "${size} всего в кеше";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -201,6 +203,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "deleteConversation": MessageLookupByLibrary.simpleMessage(
       "Удалить переписку",
     ),
+    "deleteMessageConfirmation": MessageLookupByLibrary.simpleMessage(
+      "Удалить это сообщение?",
+    ),
+    "deletePrivateConversationBody": MessageLookupByLibrary.simpleMessage(
+      "Чат будет удалён из списка. Продолжить?",
+    ),
+    "deleteSelectedMessagesConfirmation": m5,
     "description": MessageLookupByLibrary.simpleMessage("Описание"),
     "deviceThemeMode": MessageLookupByLibrary.simpleMessage(
       "Как на устройстве",
@@ -238,7 +247,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "groupMenuViewInfo": MessageLookupByLibrary.simpleMessage(
       "Информация о группе",
     ),
-    "groupParticipantsCount": m5,
+    "groupParticipantsCount": m6,
     "homePage": MessageLookupByLibrary.simpleMessage("Домашняя страница"),
     "invalidCharactersException": MessageLookupByLibrary.simpleMessage(
       "Введены некорректные символы",
@@ -339,7 +348,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Блокировать через",
     ),
     "passcodeLogOut": MessageLookupByLibrary.simpleMessage("Выйти из аккаунта"),
-    "passcodeMinutesCount": m6,
+    "passcodeMinutesCount": m7,
     "passcodeNever": MessageLookupByLibrary.simpleMessage("Никогда"),
     "passcodePinsMismatch": MessageLookupByLibrary.simpleMessage(
       "PIN не совпадает. Попробуйте снова.",
@@ -363,7 +372,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "passwordRequirementLowercase": MessageLookupByLibrary.simpleMessage(
       "Хотя бы одна строчная буква (a–z)",
     ),
-    "passwordRequirementMinLength": m7,
+    "passwordRequirementMinLength": m8,
     "passwordRequirementSpecial": MessageLookupByLibrary.simpleMessage(
       "Хотя бы один специальный символ (!?@#\$%^&*()_-{})",
     ),
@@ -556,7 +565,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "settingsStorageCacheEmptyHint": MessageLookupByLibrary.simpleMessage(
       "Данные не кешированы локально.",
     ),
-    "settingsStorageCached": m8,
+    "settingsStorageCached": m9,
     "settingsStorageClearAll": MessageLookupByLibrary.simpleMessage(
       "Очистить кеш",
     ),
@@ -577,7 +586,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "settingsStoragePhotos": MessageLookupByLibrary.simpleMessage("Фотографии"),
     "settingsStorageSection": MessageLookupByLibrary.simpleMessage("Хранилище"),
-    "settingsStorageTotalCached": m9,
+    "settingsStorageTotalCached": m10,
     "settingsStorageVideos": MessageLookupByLibrary.simpleMessage("Видео"),
     "settingsTextScale": MessageLookupByLibrary.simpleMessage("Размер текста"),
     "settingsThemeModeLabel": MessageLookupByLibrary.simpleMessage("Режим"),

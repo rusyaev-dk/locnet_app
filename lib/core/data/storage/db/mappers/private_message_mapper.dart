@@ -22,7 +22,7 @@ final class PrivateMessageMapper {
       updatedAtMs: Value(msg.updatedAt.millisecondsSinceEpoch),
       editedAtMs: Value(msg.editedAt?.millisecondsSinceEpoch),
       readAtMs: Value(msg.readAt?.millisecondsSinceEpoch),
-      cachedAtMs: Value(DateTime.now().millisecondsSinceEpoch),
+      cachedAtMs: Value(DateTime.now().toUtc().millisecondsSinceEpoch),
     );
   }
 
@@ -58,13 +58,25 @@ final class PrivateMessageMapper {
       deletedById: row.deletedById,
       isPinned: row.isPinned,
       editedAt: row.editedAtMs != null
-          ? DateTime.fromMillisecondsSinceEpoch(row.editedAtMs!)
+          ? DateTime.fromMillisecondsSinceEpoch(
+              row.editedAtMs!,
+              isUtc: true,
+            )
           : null,
       readAt: row.readAtMs != null
-          ? DateTime.fromMillisecondsSinceEpoch(row.readAtMs!)
+          ? DateTime.fromMillisecondsSinceEpoch(
+              row.readAtMs!,
+              isUtc: true,
+            )
           : null,
-      createdAt: DateTime.fromMillisecondsSinceEpoch(row.createdAtMs),
-      updatedAt: DateTime.fromMillisecondsSinceEpoch(row.updatedAtMs),
+      createdAt: DateTime.fromMillisecondsSinceEpoch(
+        row.createdAtMs,
+        isUtc: true,
+      ),
+      updatedAt: DateTime.fromMillisecondsSinceEpoch(
+        row.updatedAtMs,
+        isUtc: true,
+      ),
       attachments: attachmentRows
           .map((a) => PrivateMessageAttachment(
                 id: a.id,
@@ -72,7 +84,10 @@ final class PrivateMessageMapper {
                 fileId: a.fileId,
                 fileType: a.fileType,
                 order: a.order,
-                createdAt: DateTime.fromMillisecondsSinceEpoch(a.createdAtMs),
+                createdAt: DateTime.fromMillisecondsSinceEpoch(
+                  a.createdAtMs,
+                  isUtc: true,
+                ),
               ))
           .toList(),
     );

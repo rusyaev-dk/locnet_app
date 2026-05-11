@@ -70,7 +70,7 @@ class PrivateConversationBloc
           await _privateConversationInteractor.getCompanion(
             conversationId: event.conversationId,
           );
-      final DateTime now = DateTime.now();
+      final DateTime now = DateTime.now().toUtc();
       final PrivateConversation conversation = PrivateConversation(
         conversationId: event.conversationId,
         user1Id: cachedUser.userId,
@@ -151,7 +151,7 @@ class PrivateConversationBloc
 
         final User currentUser = await _userInteractor.getCachedUser();
         final String clientMessageId = const Uuid().v4();
-        final DateTime now = DateTime.now();
+        final DateTime now = DateTime.now().toUtc();
         final PrivateConversation conversation =
             await _privateConversationInteractor.getOrCreateByCompanion(
               companionId: currentState.companion.userId,
@@ -214,7 +214,7 @@ class PrivateConversationBloc
 
       final User currentUser = await _userInteractor.getCachedUser();
       final String clientMessageId = const Uuid().v4();
-      final DateTime now = DateTime.now();
+      final DateTime now = DateTime.now().toUtc();
       final List<PrivateMessageAttachment> readyAttachments =
           await _uploadReadyAttachments(
             conversationId: currentState.conversation.conversationId,
@@ -278,7 +278,7 @@ class PrivateConversationBloc
               if (message.deliveryStatus == MessageDeliveryStatus.sending) {
                 return message.copyWith(
                   deliveryStatus: MessageDeliveryStatus.failed,
-                  updatedAt: DateTime.now(),
+                  updatedAt: DateTime.now().toUtc(),
                 );
               }
               return message;
@@ -521,7 +521,7 @@ class PrivateConversationBloc
     required String conversationId,
     required List<UploadableFile> attachedFiles,
   }) async {
-    final DateTime now = DateTime.now();
+    final DateTime now = DateTime.now().toUtc();
     final List<PrivateMessageAttachment> attachments =
         <PrivateMessageAttachment>[];
 
