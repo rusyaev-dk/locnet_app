@@ -543,8 +543,12 @@ class _MessageBubbleState extends State<MessageBubble> {
       return const SizedBox.shrink();
     }
 
-    /// Image tiles use full bubble width by default; scale down for readability.
-    final double attachmentMaxWidth = maxBubbleWidth * 0.75;
+    /// Single image/video uses full bubble width; multiple tiles stay slightly
+    /// narrower so the grid stays readable.
+    final bool singleAttachment = m.attachments.length == 1;
+    final double attachmentMaxWidth = singleAttachment
+        ? maxBubbleWidth
+        : maxBubbleWidth * 0.75;
 
     return FutureBuilder<List<MediaDownloadInfo>>(
       future: Future.wait(
@@ -566,7 +570,7 @@ class _MessageBubbleState extends State<MessageBubble> {
               return ConstrainedBox(
                 constraints: BoxConstraints(maxWidth: attachmentMaxWidth),
                 child: const AspectRatio(
-                  aspectRatio: 16 / 9,
+                  aspectRatio: 4 / 3,
                   child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
                 ),
               );

@@ -83,8 +83,6 @@ flutter:
     - assets/icons/
 
 
-  
-
 flutter_gen:
   output: lib/gen/
   

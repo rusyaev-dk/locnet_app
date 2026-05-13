@@ -60,7 +60,7 @@ class PrivateMessagesDao extends DatabaseAccessor<AppDatabase>
             .go();
         if (entries.isNotEmpty) {
           await batch((b) {
-            b.insertAll(privateMessageAttachmentsTable, entries);
+            b.insertAllOnConflictUpdate(privateMessageAttachmentsTable, entries);
           });
         }
       });
@@ -82,13 +82,22 @@ class PrivateMessagesDao extends DatabaseAccessor<AppDatabase>
     required String conversationId,
     int limit = 60,
   }) async {
-    final rows = await getPage(conversationId: conversationId);
-    if (rows.length < limit) return;
-    final cutoffMs = rows[limit - 1].createdAtMs;
+    final cutoffRow = await (select(privateMessagesTable)
+          ..where(
+            (t) =>
+                t.conversationId.equals(conversationId) &
+                t.isDeleted.equals(false),
+          )
+          ..orderBy([(t) => OrderingTerm.desc(t.createdAtMs)])
+          ..limit(1, offset: limit - 1))
+        .getSingleOrNull();
+
+    if (cutoffRow == null) return;
+
     await (delete(privateMessagesTable)..where(
           (t) =>
               t.conversationId.equals(conversationId) &
-              t.createdAtMs.isSmallerThanValue(cutoffMs),
+              t.createdAtMs.isSmallerThanValue(cutoffRow.createdAtMs),
         ))
         .go();
   }

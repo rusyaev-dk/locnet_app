@@ -17,6 +17,8 @@ final class DriftCachedPrivateConversationRepo
   final IPrivateConversationRepo _network;
   final PrivateMessagesDao _messagesDao;
 
+  Future<void>? _lastCacheOp;
+
   @override
   Future<List<PrivateMessage>> loadMessagesPage({
     required String conversationId,
@@ -46,7 +48,10 @@ final class DriftCachedPrivateConversationRepo
   @override
   Stream<PrivateConversationMessageUpdateRec> get messagesUpdates =>
       _network.messagesUpdates.asyncMap((update) async {
-        await _applyUpdateToCache(update);
+        _lastCacheOp = (_lastCacheOp ?? Future<void>.value())
+            .then((_) => _applyUpdateToCache(update))
+            .catchError((_) {});
+        await _lastCacheOp;
         return update;
       });
 
@@ -105,7 +110,10 @@ final class DriftCachedPrivateConversationRepo
       final fresh = await _network.loadMessagesPage(
         conversationId: conversationId,
       );
-      await _saveMessages(fresh);
+      _lastCacheOp = (_lastCacheOp ?? Future<void>.value())
+          .then((_) => _saveMessages(fresh))
+          .catchError((_) {});
+      await _lastCacheOp;
     } catch (_) {
       // фоновый refresh не должен ронять UI
     }
@@ -153,15 +161,13 @@ final class DriftCachedPrivateConversationRepo
           await _messagesDao.upsertMessage(
             PrivateMessageMapper.toCompanion(msg),
           );
-          if (msg.attachments.isNotEmpty) {
-            final String effectiveId =
-                msg.id.isEmpty ? msg.clientMessageId ?? '' : msg.id;
-            if (effectiveId.isNotEmpty) {
-              await _messagesDao.replaceAttachments(
-                effectiveId,
-                PrivateMessageMapper.attachmentsToCompanions(msg),
-              );
-            }
+          final String effectiveIdCreated =
+              msg.id.isEmpty ? msg.clientMessageId ?? '' : msg.id;
+          if (effectiveIdCreated.isNotEmpty) {
+            await _messagesDao.replaceAttachments(
+              effectiveIdCreated,
+              PrivateMessageMapper.attachmentsToCompanions(msg),
+            );
           }
         }
       case PrivateConversationMessageUpdateType.updated:
@@ -170,15 +176,13 @@ final class DriftCachedPrivateConversationRepo
           await _messagesDao.upsertMessage(
             PrivateMessageMapper.toCompanion(msg),
           );
-          if (msg.attachments.isNotEmpty) {
-            final String effectiveId =
-                msg.id.isEmpty ? msg.clientMessageId ?? '' : msg.id;
-            if (effectiveId.isNotEmpty) {
-              await _messagesDao.replaceAttachments(
-                effectiveId,
-                PrivateMessageMapper.attachmentsToCompanions(msg),
-              );
-            }
+          final String effectiveIdUpdated =
+              msg.id.isEmpty ? msg.clientMessageId ?? '' : msg.id;
+          if (effectiveIdUpdated.isNotEmpty) {
+            await _messagesDao.replaceAttachments(
+              effectiveIdUpdated,
+              PrivateMessageMapper.attachmentsToCompanions(msg),
+            );
           }
         }
       case PrivateConversationMessageUpdateType.deleted:
