@@ -31,18 +31,22 @@ class PrivateConversationOptionsCubit
         return;
       }
       final prevState = state as PrivateConversationOptionsInitialState;
-      emit(const PrivateConversationOptionsLoadingState());
+      if (!isClosed) {
+        emit(const PrivateConversationOptionsLoadingState());
+      }
 
       final User companion = await _privateConversationInteractor.getCompanion(
         conversationId: prevState.conversationId,
       );
 
-      emit(
-        PrivateConversationOptionsLoadedState(
-          companionId: companion.userId,
-          conversationId: prevState.conversationId,
-        ),
-      );
+      if (!isClosed) {
+        emit(
+          PrivateConversationOptionsLoadedState(
+            companionId: companion.userId,
+            conversationId: prevState.conversationId,
+          ),
+        );
+      }
     } catch (e, st) {
       _logger.exception(e, st);
 
@@ -54,7 +58,9 @@ class PrivateConversationOptionsCubit
               stackTrace: st,
             );
 
-      emit(PrivateConversationOptionsFailureState(failure: appException));
+      if (!isClosed) {
+        emit(PrivateConversationOptionsFailureState(failure: appException));
+      }
     }
   }
 
@@ -70,7 +76,9 @@ class PrivateConversationOptionsCubit
               stackTrace: st,
             );
 
-      emit(PrivateConversationOptionsFailureState(failure: appException));
+      if (!isClosed) {
+        emit(PrivateConversationOptionsFailureState(failure: appException));
+      }
     }
   }
 
@@ -80,7 +88,9 @@ class PrivateConversationOptionsCubit
         conversationId: _conversationId,
         deleteAtRecipient: false,
       );
-      emit(const PrivateConversationOptionsDeletedState());
+      if (!isClosed) {
+        emit(const PrivateConversationOptionsDeletedState());
+      }
     } catch (e, st) {
       _logger.exception(e, st);
 
@@ -92,7 +102,9 @@ class PrivateConversationOptionsCubit
               stackTrace: st,
             );
 
-      emit(PrivateConversationOptionsFailureState(failure: appException));
+      if (!isClosed) {
+        emit(PrivateConversationOptionsFailureState(failure: appException));
+      }
     }
   }
 
@@ -108,7 +120,9 @@ class PrivateConversationOptionsCubit
               stackTrace: st,
             );
 
-      emit(PrivateConversationOptionsFailureState(failure: appException));
+      if (!isClosed) {
+        emit(PrivateConversationOptionsFailureState(failure: appException));
+      }
     }
   }
 
@@ -124,7 +138,9 @@ class PrivateConversationOptionsCubit
               stackTrace: st,
             );
 
-      emit(PrivateConversationOptionsFailureState(failure: appException));
+      if (!isClosed) {
+        emit(PrivateConversationOptionsFailureState(failure: appException));
+      }
     }
   }
 }

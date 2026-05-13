@@ -29,6 +29,7 @@ class HttpConversationsListRepo implements IConversationsListRepo {
 
   @override
   Stream<ConversationsListUpdateRec> get conversationsUpdates {
+    _socketLog('conversationsUpdates stream requested');
     _tryConnectSocket();
     return _updatesController.stream;
   }
@@ -88,22 +89,30 @@ class HttpConversationsListRepo implements IConversationsListRepo {
   }
 
   void _tryConnectSocket() {
+    _socketLog(
+      '_tryConnectSocket called. connected=${_socket?.connected == true}, connecting=$_isSocketConnecting',
+    );
     if (_socket?.connected ?? false) {
+      _socketLog('skip connect: socket already connected');
       return;
     }
 
     if (_isSocketConnecting) {
+      _socketLog('skip connect: socket is already connecting');
       return;
     }
 
     final String baseUrl = _apiConfig.baseSocketUrl.trim();
     if (baseUrl.isEmpty) {
+      _socketLog('skip connect: BASE_SOCKET_URL is empty');
       return;
     }
 
+    _socketLog('starting socket initialization. baseUrl=$baseUrl');
     _isSocketConnecting = true;
     _createAndConnectSocket(baseUrl: baseUrl).whenComplete(() {
       _isSocketConnecting = false;
+      _socketLog('socket initialization attempt completed');
     });
   }
 
@@ -112,30 +121,74 @@ class HttpConversationsListRepo implements IConversationsListRepo {
       final session = await _sessionCacheRepo.loadSession();
       final String token = session.accessToken;
       if (token.isEmpty) {
+        _socketLog('skip connect: session token is empty');
         return;
       }
+      _socketLog(
+        'session token loaded. tokenLength=${token.length}, baseUrl=$baseUrl',
+      );
 
       _socket?.dispose();
       _socket = null;
+      _socketLog('disposed previous socket instance');
 
+      // Use websocket-only transport to avoid HTTP long-polling issues on
+      // macOS where Dart's HttpClient can silently stall polling requests
+      // when running without the Dart VM service (i.e. outside the IDE).
       final io.OptionBuilder options = io.OptionBuilder()
-        ..setTransports(<String>['websocket'])
-        ..disableAutoConnect()
-        ..setAuth(<String, dynamic>{'token': token})
-        ..enableReconnection()
-        ..setReconnectionAttempts(999999)
-        ..setReconnectionDelay(1000);
+          .setTransports(<String>['websocket'])
+          .disableAutoConnect()
+          .enableForceNew()
+          .disableMultiplex()
+          .setPath('/socket.io/')
+          .setTimeout(10000)
+          .setAuth(<String, dynamic>{'token': token})
+          .setExtraHeaders(<String, dynamic>{'Authorization': 'Bearer $token'})
+          .enableReconnection()
+          .setReconnectionAttempts(999999)
+          .setReconnectionDelay(1000);
 
-      final io.Socket socket = io.io(baseUrl, options.build())
+      final io.Socket socket = io.io(baseUrl, options.build());
+      _socketLog('socket instance created, registering listeners');
+
+      socket
+        ..on('connecting', (dynamic _) {
+          _socketLog('event: connecting');
+        })
         ..on('private_conversation_upsert', (dynamic payload) {
+          _socketLog(
+            'event: private_conversation_upsert payloadType=${payload.runtimeType}',
+          );
           unawaited(_emitConversationUpsert(payload));
         })
         ..on('new_private_message', (dynamic payload) {
+          _socketLog(
+            'event: new_private_message payloadType=${payload.runtimeType}',
+          );
           unawaited(_emitNewPrivateMessage(payload));
         })
+        ..onConnect((_) {
+          _socketLog('event: connect');
+        })
+        ..onDisconnect((dynamic reason) {
+          _socketLog('event: disconnect reason=$reason');
+        })
+        ..onReconnect((dynamic attempt) {
+          _socketLog('event: reconnect attempt=$attempt');
+        })
+        ..onReconnectAttempt((dynamic attempt) {
+          _socketLog('event: reconnect_attempt attempt=$attempt');
+        })
+        ..onReconnectError((dynamic error) {
+          _socketLog('event: reconnect_error error=$error');
+        })
+        ..onReconnectFailed((dynamic error) {
+          _socketLog('event: reconnect_failed error=$error');
+        })
         ..onConnectError((dynamic error) {
-          _logger.warning('Conversations socket connect error: $error');
+          _socketLog('event: connect_error error=$error');
           if (error.toString().toLowerCase().contains('jwt expired')) {
+            _socketLog('connect_error contains jwt expired, trying reconnect');
             _tryReconnectWithFreshSessionToken();
           }
           _updatesController.addError(
@@ -145,14 +198,26 @@ class HttpConversationsListRepo implements IConversationsListRepo {
           );
         })
         ..onError((dynamic error) {
-          _logger.warning('Conversations socket error: $error');
+          _socketLog('event: error error=$error');
           _updatesController.addError(
             AppUnknownException(message: 'Conversations socket error: $error'),
           );
         })
+        ..onPing((_) {
+          _socketLog('event: ping');
+        })
+        ..onPong((_) {
+          _socketLog('event: pong');
+        })
         ..connect();
+
+      _socketLog('connect() invoked');
       _socket = socket;
+    } on StorageException catch (e, st) {
+      _socketLogException(e, st);
+      return;
     } catch (e, st) {
+      _socketLogException(e, st);
       _logger.exception(e, st);
       _updatesController.addError(
         e is AppException
@@ -271,11 +336,45 @@ class HttpConversationsListRepo implements IConversationsListRepo {
     try {
       final String baseUrl = _apiConfig.baseSocketUrl.trim();
       if (baseUrl.isEmpty) {
+        _socketLog('skip token-refresh reconnect: BASE_SOCKET_URL is empty');
         return;
       }
+      _socketLog('trying reconnect with refreshed session token');
       await _createAndConnectSocket(baseUrl: baseUrl);
     } catch (e, st) {
+      _socketLog('reconnect with refreshed token failed: $e');
       _logger.exception(e, st);
+    }
+  }
+
+  void _socketLog(String message) {
+    final String formatted = '[ConversationsSocket] $message';
+    _logger.log(formatted);
+    // Keep explicit stdout output for macOS desktop diagnostics.
+    print(formatted);
+  }
+
+  void _socketLogException(Object error, [StackTrace? stackTrace]) {
+    final StringBuffer buffer = StringBuffer(
+      'exception type=${error.runtimeType}; value=$error',
+    );
+    if (error is AppException) {
+      buffer.write('; message=${error.message}');
+      if (error.error != null) {
+        buffer.write('; cause=${error.error}');
+      }
+      if (error.statusCode != null) {
+        buffer.write('; statusCode=${error.statusCode}');
+      }
+      if (error.details != null) {
+        buffer.write('; details=${error.details}');
+      }
+    }
+    _socketLog(buffer.toString());
+    final StackTrace? traceToLog =
+        stackTrace ?? (error is AppException ? error.stackTrace : null);
+    if (traceToLog != null) {
+      _socketLog('stackTrace:\n$traceToLog');
     }
   }
 

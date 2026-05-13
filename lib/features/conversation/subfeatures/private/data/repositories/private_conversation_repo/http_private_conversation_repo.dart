@@ -320,6 +320,7 @@ class HttpPrivateConversationRepo implements IPrivateConversationRepo {
 
   @override
   Stream<PrivateConversationMessageUpdateRec> get messagesUpdates {
+    _socketLog('messagesUpdates stream requested');
     _tryConnectSocket();
     return _messagesUpdatesController.stream.merge(
       HttpPrivateMessageRepo.messagesUpdates,
@@ -336,22 +337,32 @@ class HttpPrivateConversationRepo implements IPrivateConversationRepo {
   }
 
   void _tryConnectSocket() {
+    _socketLog(
+      '_tryConnectSocket called. connected=${_socket?.connected == true}, connecting=$_isSocketConnecting',
+    );
     if (_socket?.connected ?? false) {
+      _socketLog('skip connect: socket already connected');
       return;
     }
 
     if (_isSocketConnecting) {
+      _socketLog('skip connect: socket is already connecting');
       return;
     }
 
     final String baseUrl = _apiConfig.baseSocketUrl.trim();
     if (baseUrl.isEmpty || _sessionCacheRepo == null) {
+      _socketLog(
+        'skip connect: baseUrlEmpty=${baseUrl.isEmpty}, hasSessionCacheRepo=${_sessionCacheRepo != null}',
+      );
       return;
     }
 
+    _socketLog('starting socket initialization. baseUrl=$baseUrl');
     _isSocketConnecting = true;
     _createAndConnectSocket(baseUrl: baseUrl).whenComplete(() {
       _isSocketConnecting = false;
+      _socketLog('socket initialization attempt completed');
     });
   }
 
@@ -360,66 +371,116 @@ class HttpPrivateConversationRepo implements IPrivateConversationRepo {
       final session = await _sessionCacheRepo!.loadSession();
       final String token = session.accessToken;
       if (token.isEmpty) {
+        _socketLog('skip connect: session token is empty');
         return;
       }
+      _socketLog(
+        'session token loaded. tokenLength=${token.length}, baseUrl=$baseUrl',
+      );
 
       _socket?.dispose();
       _socket = null;
+      _socketLog('disposed previous socket instance');
 
+      // Use websocket-only transport to avoid HTTP long-polling issues on
+      // macOS where Dart's HttpClient can silently stall polling requests
+      // when running without the Dart VM service (i.e. outside the IDE).
       final io.OptionBuilder options = io.OptionBuilder()
           .setTransports(<String>['websocket'])
           .disableAutoConnect()
+          .enableForceNew()
+          .disableMultiplex()
+          .setPath('/socket.io/')
+          .setTimeout(10000)
           .setAuth(<String, dynamic>{'token': token})
+          .setExtraHeaders(<String, dynamic>{'Authorization': 'Bearer $token'})
           .enableReconnection()
           .setReconnectionAttempts(999999)
           .setReconnectionDelay(1000);
 
       final io.Socket socket = io.io(baseUrl, options.build());
+      _socketLog('socket instance created, registering listeners');
 
-      socket.on('new_private_message', (dynamic payload) {
-        _emitIncomingUpdate(
-          updateType: PrivateConversationMessageUpdateType.created,
-          payload: payload,
-        );
-      });
-
-      socket.on('private_message_edited', (dynamic payload) {
-        _emitIncomingUpdate(
-          updateType: PrivateConversationMessageUpdateType.updated,
-          payload: payload,
-        );
-      });
-
-      socket.on('private_message_deleted', (dynamic payload) {
-        _emitIncomingUpdate(
-          updateType: PrivateConversationMessageUpdateType.deleted,
-          payload: payload,
-        );
-      });
-
-      socket.onConnectError((dynamic error) {
-        _logger?.warning('Socket connect error: $error');
-        if (error.toString().toLowerCase().contains('jwt expired')) {
-          _tryReconnectWithFreshSessionToken();
-        }
-        _messagesUpdatesController.addError(
-          AppUnknownException(message: 'Socket connect error: $error'),
-        );
-      });
-
-      socket.onError((dynamic error) {
-        _logger?.warning('Socket error: $error');
-        _messagesUpdatesController.addError(
-          AppUnknownException(message: 'Socket error: $error'),
-        );
-      });
-
-      socket.connect();
+      socket
+        ..on('connecting', (dynamic _) {
+          _socketLog('event: connecting');
+        })
+        ..on('new_private_message', (dynamic payload) {
+          _socketLog(
+            'event: new_private_message payloadType=${payload.runtimeType}',
+          );
+          _emitIncomingUpdate(
+            updateType: PrivateConversationMessageUpdateType.created,
+            payload: payload,
+          );
+        })
+        ..on('private_message_edited', (dynamic payload) {
+          _socketLog(
+            'event: private_message_edited payloadType=${payload.runtimeType}',
+          );
+          _emitIncomingUpdate(
+            updateType: PrivateConversationMessageUpdateType.updated,
+            payload: payload,
+          );
+        })
+        ..on('private_message_deleted', (dynamic payload) {
+          _socketLog(
+            'event: private_message_deleted payloadType=${payload.runtimeType}',
+          );
+          _emitIncomingUpdate(
+            updateType: PrivateConversationMessageUpdateType.deleted,
+            payload: payload,
+          );
+        })
+        ..onConnect((_) {
+          _socketLog('event: connect');
+        })
+        ..onDisconnect((dynamic reason) {
+          _socketLog('event: disconnect reason=$reason');
+        })
+        ..onReconnect((dynamic attempt) {
+          _socketLog('event: reconnect attempt=$attempt');
+        })
+        ..onReconnectAttempt((dynamic attempt) {
+          _socketLog('event: reconnect_attempt attempt=$attempt');
+        })
+        ..onReconnectError((dynamic error) {
+          _socketLog('event: reconnect_error error=$error');
+        })
+        ..onReconnectFailed((dynamic error) {
+          _socketLog('event: reconnect_failed error=$error');
+        })
+        ..onConnectError((dynamic error) {
+          _socketLog('event: connect_error error=$error');
+          if (error.toString().toLowerCase().contains('jwt expired')) {
+            _socketLog('connect_error contains jwt expired, trying reconnect');
+            _tryReconnectWithFreshSessionToken();
+          }
+          _messagesUpdatesController.addError(
+            AppUnknownException(message: 'Socket connect error: $error'),
+          );
+        })
+        ..onError((dynamic error) {
+          _socketLog('event: error error=$error');
+          _messagesUpdatesController.addError(
+            AppUnknownException(message: 'Socket error: $error'),
+          );
+        })
+        ..onPing((_) {
+          _socketLog('event: ping');
+        })
+        ..onPong((_) {
+          _socketLog('event: pong');
+        })
+        ..connect();
+      _socketLog('connect() invoked');
       _socket = socket;
-    } on StorageException {
+    } on StorageException catch (e, st) {
       // Expected before login/session restore: skip socket startup.
+      _socketLogException(e, st);
       return;
     } catch (e, st) {
+      _socketLogException(e, st);
       _logger?.exception(e, st);
       _messagesUpdatesController.addError(
         e is AppException
@@ -508,11 +569,47 @@ class HttpPrivateConversationRepo implements IPrivateConversationRepo {
     try {
       final String baseUrl = _apiConfig.baseSocketUrl.trim();
       if (_sessionCacheRepo == null || baseUrl.isEmpty) {
+        _socketLog(
+          'skip token-refresh reconnect: hasSessionCacheRepo=${_sessionCacheRepo != null}, baseUrlEmpty=${baseUrl.isEmpty}',
+        );
         return;
       }
+      _socketLog('trying reconnect with refreshed session token');
       await _createAndConnectSocket(baseUrl: baseUrl);
     } catch (e, st) {
+      _socketLog('reconnect with refreshed token failed: $e');
       _logger?.exception(e, st);
+    }
+  }
+
+  void _socketLog(String message) {
+    final String formatted = '[PrivateConversationSocket] $message';
+    _logger?.log(formatted);
+    // Keep explicit stdout output for macOS desktop diagnostics.
+    print(formatted);
+  }
+
+  void _socketLogException(Object error, [StackTrace? stackTrace]) {
+    final StringBuffer buffer = StringBuffer(
+      'exception type=${error.runtimeType}; value=$error',
+    );
+    if (error is AppException) {
+      buffer.write('; message=${error.message}');
+      if (error.error != null) {
+        buffer.write('; cause=${error.error}');
+      }
+      if (error.statusCode != null) {
+        buffer.write('; statusCode=${error.statusCode}');
+      }
+      if (error.details != null) {
+        buffer.write('; details=${error.details}');
+      }
+    }
+    _socketLog(buffer.toString());
+    final StackTrace? traceToLog =
+        stackTrace ?? (error is AppException ? error.stackTrace : null);
+    if (traceToLog != null) {
+      _socketLog('stackTrace:\n$traceToLog');
     }
   }
 
@@ -580,11 +677,12 @@ class HttpPrivateConversationRepo implements IPrivateConversationRepo {
       if (fileId.isEmpty) {
         continue;
       }
-      final String id = (itemMap['id'] ??
-              itemMap['attachmentId'] ??
-              itemMap['mediaId'] ??
-              'att-$messageId-$index')
-          .toString();
+      final String id =
+          (itemMap['id'] ??
+                  itemMap['attachmentId'] ??
+                  itemMap['mediaId'] ??
+                  'att-$messageId-$index')
+              .toString();
 
       normalized.add(<String, dynamic>{
         'id': id,

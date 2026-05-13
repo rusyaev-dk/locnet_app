@@ -215,13 +215,12 @@ class _PasscodeLockScreenState extends State<PasscodeLockScreen> {
                                           isActive: !verifying,
                                           keyboardType: TextInputType.number,
                                           textInputAction: TextInputAction.done,
+                                          maxSymbols:
+                                              PasscodeConstants.pinLength,
                                           extraInputFormatters:
                                               <TextInputFormatter>[
                                             FilteringTextInputFormatter
                                                 .digitsOnly,
-                                            LengthLimitingTextInputFormatter(
-                                              PasscodeConstants.pinLength,
-                                            ),
                                           ],
                                           errorText: _pinFieldError
                                               ? l10n.passcodeWrongPin

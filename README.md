@@ -1,148 +1,69 @@
-<div align="center">
+# Locnet App
 
-# 🚀 Flutter App Template
+Flutter application built from a modular template following Clean Architecture.
 
-![Flutter](https://img.shields.io/badge/Flutter-3.32.0+-02569B?style=for-the-badge\&logo=flutter\&logoColor=white)
-![Dart](https://img.shields.io/badge/Dart-3.8.0+-0175C2?style=for-the-badge\&logo=dart\&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
+**Requirements:** Flutter 3.38.x, Dart 3.9.2+  
+**License:** MIT — see [LICENSE](./LICENSE)
 
-**A scalable Flutter app starter template based on Clean Architecture with modular feature organization.**
-</div>
+## Purpose
 
-## 📘 About
+This repository provides a baseline for production applications: layered structure, environment configuration, routing, localization, dependency injection, and logging.
 
-This template provides a solid foundation for production-ready Flutter apps with:
+## Architecture
 
-* 🧱 Modular architecture
-* 🧪 Built-in environment support
-* 🌐 Declarative routing (`go_router`)
-* 🔐 Secure and shared storage
-* 🔄 `flutter_bloc` state management
-* 📦 Ready-to-use DI and logging
-* 🌍 Localization support
+- **Presentation:** widgets, screens, BLoC/Cubit  
+- **Domain:** entities, business rules, interactors (use cases)  
+- **Data:** repositories, APIs, persistence, DTOs  
 
-## 🧱 Architecture Overview
+Interactors reside under `domain/`; BLoC/Cubit state logic resides under `presentation/`.
 
-The template follows Clean Architecture principles with a specific adjustment:
+## Technology stack
 
-> 🟡 **Interactors (use cases)** live in the `domain/` layer
-> 🟡 **BLoC/Cubit logic** lives in the `presentation/` layer
+| Area | Technology |
+|------|------------|
+| Routing | go_router |
+| State management | flutter_bloc |
+| HTTP | dio |
+| Storage | flutter_secure_storage, shared_preferences |
+| Logging | talker |
+| Localization | flutter_localizations, intl |
+| Environment | flutter_dotenv |
+| Assets | flutter_gen |
+| Dependency injection | provider-based custom setup |
 
-```
-🔐 PRESENTATION
-Widgets, Screens, BLoC, Cubit
-
-🔐 DOMAIN
-Business Logic, Entities, Interactors
-
-🔐 DATA
-Repositories, APIs, Storage, DTOs
-```
-
-## 🌟 Goals
-
-* 🏁 Kickstart new apps in minutes
-* 🧱 Encourage consistency and scalability
-* 🧪 Enable testability and clean separation
-* 👥 Fit team-based and long-term projects
-
-## 💠 Tech Stack
-
-| Area             | Package                         |
-| ---------------- | ------------------------------- |
-| Routing          | `go_router`                     |
-| State Management | `flutter_bloc`                  |
-| HTTP             | `dio`                           |
-| Secure Storage   | `flutter_secure_storage`        |
-| Shared Storage   | `shared_preferences`            |
-| Logging          | `talker`                        |
-| Localization     | `flutter_localizations`, `intl` |
-| Env Variables    | `flutter_dotenv`                |
-| Asset Generation | `flutter_gen`                   |
-| DI               | `provider`-based custom DI      |
-
-## 🚀 Quick Start
-
-### 1. Clone and install dependencies
+## Getting started
 
 ```bash
-git clone https://github.com/your-org/locnet_app.git
+git clone <repository-url>
 cd locnet_app
 flutter pub get
-```
-
-### 2. Generate code
-
-```bash
 dart run build_runner build --delete-conflicting-outputs
+flutter run
 ```
 
-### 3. Run the app
+The app entry point is `lib/main.dart`. Environment is selected with `APP_ENV` (`dev`, `stage`, or `prod`). Default if omitted is `stage`.
 
 ```bash
-flutter run --target lib/targets/dev.dart
+flutter run --dart-define=APP_ENV=dev
+flutter run --dart-define=APP_ENV=prod
 ```
 
-Other environments:
+Release build for macOS (defaults to `stage` if `APP_ENV` is omitted):
 
 ```bash
-flutter run --target lib/targets/stage.dart
-flutter run --target lib/targets/prod.dart
+flutter build macos --release
+flutter build macos --release --dart-define=APP_ENV=prod
 ```
 
-## ⚙️ Configuration
+## Configuration
 
-### 📁 Environments
+Environment files `.env.*` in the `env/` directory (dev, stage, prod) are loaded via `flutter_dotenv`, according to `APP_ENV` at compile time.
 
-`.env` files stored in `/env`:
+Localization: `flutter gen-l10n`  
+Asset code generation: `flutter pub run flutter_gen`
 
-* `.env.dev` — development
-* `.env.stage` — staging
-* `.env.prod` — production
+## Debugging
 
-Loaded via `flutter_dotenv`.
+The application includes a debug screen (environment, locale, theme, token utilities, Talker panel, UI kit preview).
 
-### 🌍 Localization
-
-```bash
-flutter gen-l10n
-```
-
-### 🎨 Assets
-
-```bash
-flutter pub run flutter_gen
-```
-
-## 🧪 Debugging
-
-### 🔛 Debug screen
-
-Includes:
-
-* Environment info
-* Locale switcher
-* Theme toggles
-* Token tools
-* Talker logging panel
-* UI kit preview
-
-Accessible via in-app debug button.
-
-### 📊 Logging with Talker
-
-Tracks:
-
-* Bloc events and transitions
-* HTTP requests/responses
-* Exceptions and errors
-* App lifecycle logs
-
-## 📄 License
-
-This project is licensed under the MIT License.
-See the [LICENSE](./LICENSE) file for details.
-
----
-
-Built with ❤️ for scalable Flutter development.
+Talker logging covers BLoC events, HTTP traffic, exceptions, and application lifecycle events.

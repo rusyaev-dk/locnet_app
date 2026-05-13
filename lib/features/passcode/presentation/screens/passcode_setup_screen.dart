@@ -174,11 +174,9 @@ class _PasscodeSetupScreenState extends State<PasscodeSetupScreen> {
                                   isActive: !_busy,
                                   keyboardType: TextInputType.number,
                                   textInputAction: TextInputAction.done,
+                                  maxSymbols: PasscodeConstants.pinLength,
                                   extraInputFormatters: <TextInputFormatter>[
                                     FilteringTextInputFormatter.digitsOnly,
-                                    LengthLimitingTextInputFormatter(
-                                      PasscodeConstants.pinLength,
-                                    ),
                                   ],
                                   errorText: _errorText,
                                   onChanged: (String? value) {

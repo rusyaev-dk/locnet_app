@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/data/data.dart';
 import 'package:locnet_app/core/data/storage/db/db.dart';
@@ -30,6 +31,11 @@ final class DevEnvPreset implements IAppEnvPreset {
   static const bool _useHttpPrivateMessaging = false;
 
   AppDatabase get _db => _appScope.db;
+  bool get _useMacOsFallbackStorage =>
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.macOS;
+  IKeyValueStorage get _sessionStorage => _useMacOsFallbackStorage
+      ? _appScope.storageAggregator.localKeyValueStorage
+      : _appScope.storageAggregator.secureStorage;
 
   @override
   IAuthRepo createAuthRepo() {
@@ -124,9 +130,7 @@ final class DevEnvPreset implements IAppEnvPreset {
               apiConfig: _appScope.apiConfig,
             ),
             apiConfig: _appScope.apiConfig,
-            sessionCacheRepo: LocalSessionCacheRepo(
-              storage: _appScope.storageAggregator.secureStorage,
-            ),
+            sessionCacheRepo: LocalSessionCacheRepo(storage: _sessionStorage),
             logger: _appScope.logger,
           )
         : MockPrivateConversationRepo(backendStorage: _mockInMemoryBackend);
@@ -148,16 +152,12 @@ final class DevEnvPreset implements IAppEnvPreset {
 
   @override
   ISessionCacheRepo createSessionCacheRepo() {
-    return LocalSessionCacheRepo(
-      storage: _appScope.storageAggregator.secureStorage,
-    );
+    return LocalSessionCacheRepo(storage: _sessionStorage);
   }
 
   @override
   IUserCacheRepo createUserCacheRepo() {
-    return LocalUserCacheRepo(
-      storage: _appScope.storageAggregator.secureStorage,
-    );
+    return LocalUserCacheRepo(storage: _sessionStorage);
   }
 
   @override
