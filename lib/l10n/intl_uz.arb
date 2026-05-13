@@ -217,6 +217,8 @@
   "profileCropPhotoHint": "Siljiting yoki kichraytiring/kattalashtiring",
   "profileDeletePhotoTitle": "Profil fotosi olib tashlansinmi?",
   "profileDeletePhotoBody": "Profil fotosi olib tashlanadi. Istalgan vaqtda yangi fotoni yuklashingiz mumkin.",
+  "profileAccountLanguage": "Profil tili",
+  "profileRegistrationDate": "Ro'yxatdan o'tgan sana",
   "companionFieldLanguage": "Til",
   "companionFieldAbout": "Haqida",
   "companionActionCall": "Qo‘ng‘iroq",

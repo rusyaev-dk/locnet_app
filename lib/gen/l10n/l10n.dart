@@ -1949,6 +1949,26 @@ class S {
     );
   }
 
+  /// `Язык профиля`
+  String get profileAccountLanguage {
+    return Intl.message(
+      'Язык профиля',
+      name: 'profileAccountLanguage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Дата регистрации`
+  String get profileRegistrationDate {
+    return Intl.message(
+      'Дата регистрации',
+      name: 'profileRegistrationDate',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Язык`
   String get companionFieldLanguage {
     return Intl.message(

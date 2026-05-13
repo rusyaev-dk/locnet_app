@@ -408,6 +408,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Bu suhbat hali bo‘sh",
     ),
     "profile": MessageLookupByLibrary.simpleMessage("Profil"),
+    "profileAccountLanguage": MessageLookupByLibrary.simpleMessage(
+      "Profil tili",
+    ),
     "profileChangePhoto": MessageLookupByLibrary.simpleMessage(
       "Fotoni almashtirish",
     ),
@@ -426,6 +429,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "profileEditing": MessageLookupByLibrary.simpleMessage(
       "Profilni tahrirlash",
+    ),
+    "profileRegistrationDate": MessageLookupByLibrary.simpleMessage(
+      "Ro\'yxatdan o\'tgan sana",
     ),
     "registration": MessageLookupByLibrary.simpleMessage("Roʻyxatdan oʻtish"),
     "repeatPassword": MessageLookupByLibrary.simpleMessage(

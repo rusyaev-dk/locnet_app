@@ -390,6 +390,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "This conversation is empty",
     ),
     "profile": MessageLookupByLibrary.simpleMessage("Profile"),
+    "profileAccountLanguage": MessageLookupByLibrary.simpleMessage(
+      "Account language",
+    ),
     "profileChangePhoto": MessageLookupByLibrary.simpleMessage("Change photo"),
     "profileCropPhoto": MessageLookupByLibrary.simpleMessage("Crop photo"),
     "profileCropPhotoHint": MessageLookupByLibrary.simpleMessage(
@@ -403,6 +406,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Remove profile photo?",
     ),
     "profileEditing": MessageLookupByLibrary.simpleMessage("Edit profile"),
+    "profileRegistrationDate": MessageLookupByLibrary.simpleMessage(
+      "Registration date",
+    ),
     "registration": MessageLookupByLibrary.simpleMessage("Registration"),
     "repeatPassword": MessageLookupByLibrary.simpleMessage("Repeat password"),
     "requiredValueNotProvidedException": MessageLookupByLibrary.simpleMessage(

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
+const double _kProfileFormActionButtonWidth = 140;
+const double _kProfileFormActionButtonHeight = 40;
+
 class ProfileEditorForm extends StatelessWidget {
   const ProfileEditorForm({
     required this.firstNameController,
@@ -42,9 +45,10 @@ class ProfileEditorForm extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final colorScheme = context.colorScheme;
+    final radii = context.radii;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         CustomTextField(
           controller: firstNameController,
@@ -97,25 +101,44 @@ class ProfileEditorForm extends StatelessWidget {
             ),
           ),
         ],
-        const SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            OutlinedButton(
-              onPressed: isSubmitting ? null : onCancelEdit,
-              child: Text(l10n.cancel),
-            ),
-            const SizedBox(width: 10),
-            SizedBox(
-              width: 140,
-              child: AppPrimaryButton(
-                text: l10n.apply,
-                onPressed: onSave,
-                isLoading: isSubmitting,
-                isActive: !isSubmitting,
+        const SizedBox(height: 22),
+        Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: _kProfileFormActionButtonWidth,
+                height: _kProfileFormActionButtonHeight,
+                child: Opacity(
+                  opacity: isSubmitting ? 0.45 : 1,
+                  child: IgnorePointer(
+                    ignoring: isSubmitting,
+                    child: ChipButton(
+                      label: l10n.cancel,
+                      height: _kProfileFormActionButtonHeight,
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      borderRadius: radii.defaultRadiusValue,
+                      backgroundColor: colorScheme.surfaceContainerHighest,
+                      borderColor: colorScheme.outline,
+                      onPressed: onCancelEdit,
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ],
+              const SizedBox(width: 12),
+              SizedBox(
+                width: _kProfileFormActionButtonWidth,
+                height: _kProfileFormActionButtonHeight,
+                child: AppPrimaryButton(
+                  text: l10n.apply,
+                  onPressed: onSave,
+                  isLoading: isSubmitting,
+                  isActive: !isSubmitting,
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );

@@ -395,6 +395,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Переписка пока пустая",
     ),
     "profile": MessageLookupByLibrary.simpleMessage("Профиль"),
+    "profileAccountLanguage": MessageLookupByLibrary.simpleMessage(
+      "Язык профиля",
+    ),
     "profileChangePhoto": MessageLookupByLibrary.simpleMessage("Сменить фото"),
     "profileCropPhoto": MessageLookupByLibrary.simpleMessage("Обрезать фото"),
     "profileCropPhotoHint": MessageLookupByLibrary.simpleMessage(
@@ -409,6 +412,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "profileEditing": MessageLookupByLibrary.simpleMessage(
       "Редактирование профиля",
+    ),
+    "profileRegistrationDate": MessageLookupByLibrary.simpleMessage(
+      "Дата регистрации",
     ),
     "registration": MessageLookupByLibrary.simpleMessage("Регистрация"),
     "repeatPassword": MessageLookupByLibrary.simpleMessage("Повторите пароль"),

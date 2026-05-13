@@ -217,6 +217,8 @@
   "profileCropPhotoHint": "Сдвиньте или масштабируйте изображение",
   "profileDeletePhotoTitle": "Удалить фото профиля?",
   "profileDeletePhotoBody": "Фото будет удалено из профиля. Вы сможете загрузить другое в любой момент.",
+  "profileAccountLanguage": "Язык профиля",
+  "profileRegistrationDate": "Дата регистрации",
   "companionFieldLanguage": "Язык",
   "companionFieldAbout": "О себе",
   "companionActionCall": "Звонок",

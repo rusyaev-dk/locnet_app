@@ -217,6 +217,8 @@
   "profileCropPhotoHint": "Pinch or drag to adjust",
   "profileDeletePhotoTitle": "Remove profile photo?",
   "profileDeletePhotoBody": "Your profile photo will be removed. You can upload a new one at any time.",
+  "profileAccountLanguage": "Account language",
+  "profileRegistrationDate": "Registration date",
   "companionFieldLanguage": "Language",
   "companionFieldAbout": "About",
   "companionActionCall": "Call",

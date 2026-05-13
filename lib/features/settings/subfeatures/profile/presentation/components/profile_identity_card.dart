@@ -3,9 +3,16 @@ import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 
 class ProfileIdentityCard extends StatelessWidget {
-  const ProfileIdentityCard({required this.user, super.key});
+  const ProfileIdentityCard({
+    required this.user,
+    this.isOnline = true,
+    this.avatarSize = 88,
+    super.key,
+  });
 
   final User user;
+  final bool isOnline;
+  final double avatarSize;
 
   @override
   Widget build(BuildContext context) {
@@ -17,11 +24,13 @@ class ProfileIdentityCard extends StatelessWidget {
     final bool hasDescription = description.isNotEmpty;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Avatar.user(user: user, size: 72),
+          Center(
+            child: Avatar.user(user: user, size: avatarSize, isOnline: isOnline),
+          ),
           const SizedBox(height: 12),
           Text(
             displayName,
