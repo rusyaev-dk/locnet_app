@@ -50,7 +50,7 @@ class AppProvidersWrapper extends StatelessWidget {
           create: (context) =>
               DioHttpClient(dio: appScope.dio, apiConfig: appScope.apiConfig),
         ),
-        Provider<IWebSocketClient>(create: (context) => MockWebSocketClient()),
+
         Provider<IAppEnvPreset>(create: (context) => envPreset),
       ],
       child: MultiRepositoryProvider(

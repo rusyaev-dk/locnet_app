@@ -9,6 +9,10 @@ import 'package:locnet_app/core/data/storage/db/tables/media_download_cache_tabl
 import 'package:locnet_app/core/data/storage/db/tables/private_message_attachments_table.dart';
 import 'package:locnet_app/core/data/storage/db/tables/private_messages_table.dart';
 
+import 'package:locnet_app/core/data/storage/db/open_native_encrypted_executor_stub.dart'
+    if (dart.library.io) 'package:locnet_app/core/data/storage/db/open_native_encrypted_executor_io.dart'
+    as open_native_encrypted_executor;
+
 part 'app_database.g.dart';
 
 @DriftDatabase(
@@ -21,7 +25,7 @@ part 'app_database.g.dart';
   daos: [ConversationTilesDao, PrivateMessagesDao, MediaDownloadCacheDao],
 )
 class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(_openConnection());
+  AppDatabase(super.executor);
 
   @override
   int get schemaVersion => 1;
@@ -33,15 +37,20 @@ class AppDatabase extends _$AppDatabase {
     },
   );
 
-  static QueryExecutor _openConnection() {
+  static Future<QueryExecutor> openEncrypted(String encryptionKey) async {
+    assert(!kIsWeb, 'Encrypted NativeDatabase не поддерживается на web');
+    return open_native_encrypted_executor.openNativeEncryptedExecutor(
+      encryptionKey,
+    );
+  }
+
+  static QueryExecutor openWeb() {
     return driftDatabase(
       name: 'locnet_app_cache',
-      web: kIsWeb
-          ? DriftWebOptions(
-              sqlite3Wasm: Uri.parse('sqlite3.wasm'),
-              driftWorker: Uri.parse('drift_worker.js'),
-            )
-          : null,
+      web: DriftWebOptions(
+        sqlite3Wasm: Uri.parse('sqlite3.wasm'),
+        driftWorker: Uri.parse('drift_worker.js'),
+      ),
     );
   }
 

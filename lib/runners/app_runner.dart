@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
+import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +12,7 @@ import 'package:go_router/go_router.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/data/data.dart';
 import 'package:locnet_app/core/data/storage/db/db.dart';
+import 'package:locnet_app/core/data/storage/db/encryption/encryption.dart';
 import 'package:locnet_app/core/presentation/navigation/router.dart';
 import 'package:locnet_app/core/utils/utils.dart';
 import 'package:locnet_app/di/di.dart';
@@ -143,7 +145,21 @@ class AppRunner {
     final localKeyValueStorage = LocalKeyValueStorage(
       sharedPreferences: sharedPrefs,
     );
-    final db = AppDatabase();
+
+    IKeyValueStorage dbEncryptionKeyStorage = secureStorage;
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.macOS) {
+      dbEncryptionKeyStorage = localKeyValueStorage;
+    }
+    final keyProvider = DbEncryptionKeyProvider(
+      secureStorage: dbEncryptionKeyStorage,
+    );
+    final encryptionKey = await keyProvider.getOrCreateKey();
+
+    final QueryExecutor executor = kIsWeb
+        ? AppDatabase.openWeb()
+        : await AppDatabase.openEncrypted(encryptionKey);
+
+    final db = AppDatabase(executor);
     unawaited(db.evictStale());
     final storageAggregator = StorageAggregator(
       secureStorage: secureStorage,
