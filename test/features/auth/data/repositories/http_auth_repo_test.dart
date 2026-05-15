@@ -264,6 +264,7 @@ void main() {
                 'patronymic': null,
                 'description': 'desc',
                 'password': '123',
+                'languageCode': 'ru',
               },
             ),
           ).called(1);
@@ -411,6 +412,7 @@ void main() {
                 'patronymic': null,
                 'description': null,
                 'password': '123',
+                'languageCode': 'ru',
                 'deviceInfo': <String, dynamic>{
                   'IPAddress': '127.0.0.1',
                   'macAddress': '00:11:22:33:44:55',

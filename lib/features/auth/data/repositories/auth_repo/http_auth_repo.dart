@@ -57,6 +57,7 @@ final class HttpAuthRepo implements IAuthRepo {
           'patronymic': patronymic,
           'description': description,
           'password': password,
+          'languageCode': AppConfig.defaultLanguageCode,
           if (deviceInfo != null) 'deviceInfo': _mapDeviceInfo(deviceInfo),
         },
       );

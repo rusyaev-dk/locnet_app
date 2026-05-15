@@ -559,7 +559,7 @@ class HttpConversationsListRepo implements IConversationsListRepo {
       'firstName': _nonEmptyString(raw['firstName']) ?? '',
       'lastName': _nonEmptyString(raw['lastName']) ?? '',
       'patronymic': _nonEmptyString(raw['patronymic']),
-      'languageCode': _nonEmptyString(raw['languageCode']) ?? 'en',
+      'languageCode': _nonEmptyString(raw['languageCode']) ?? 'ru',
       'description': _nonEmptyString(raw['description']),
       'avatarId': _nonEmptyString(raw['avatarId']),
       'isDeleted': raw['isDeleted'] == true,

@@ -1,6 +1,7 @@
 // ignore_for_file: sort_constructors_first
 
 import 'package:equatable/equatable.dart';
+import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/presentation/utils/utils.dart';
 
 class UserDto extends Equatable {
@@ -50,7 +51,8 @@ class UserDto extends Equatable {
       firstName: source['firstName'] as String,
       lastName: source['lastName'] as String,
       patronymic: source['patronymic'] as String?,
-      languageCode: (source['languageCode'] as String?) ?? 'en',
+      languageCode: (source['languageCode'] as String?) ??
+          AppConfig.defaultLanguageCode,
       description: source['description'] as String?,
       avatarId: source['avatarId'] as String?,
       isDeleted: source['isDeleted'] as bool,
