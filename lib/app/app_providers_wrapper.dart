@@ -15,10 +15,10 @@ import 'package:locnet_app/features/message/subfeatures/media/domain/interactors
 import 'package:locnet_app/features/passcode/data/data.dart';
 import 'package:locnet_app/features/passcode/domain/domain.dart';
 import 'package:locnet_app/features/passcode/presentation/presentation.dart';
-import 'package:locnet_app/features/settings/data/data.dart';
-import 'package:locnet_app/features/settings/domain/domain.dart';
 import 'package:locnet_app/features/server_config/data/data.dart';
 import 'package:locnet_app/features/server_config/presentation/presentation.dart';
+import 'package:locnet_app/features/settings/data/data.dart';
+import 'package:locnet_app/features/settings/domain/domain.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
 import 'package:locnet_app/features/settings/subfeatures/storage/data/repositories/settings_cache_database_repo/drift_settings_cache_database_repo.dart';
 import 'package:locnet_app/features/theme_editor/data/data.dart';

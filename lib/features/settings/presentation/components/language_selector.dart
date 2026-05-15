@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/settings/presentation/blocs/settings_cubit/settings_cubit.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
@@ -18,6 +19,12 @@ class LanguageSelector extends StatelessWidget {
     Locale('ru'),
     Locale('uz'),
   ];
+
+  static String labelForLanguageCode(String? code) {
+    return labelForLocale(
+      Locale(normalizeLanguageCode(code)),
+    );
+  }
 
   static String labelForLocale(Locale locale) {
     switch (locale.languageCode) {

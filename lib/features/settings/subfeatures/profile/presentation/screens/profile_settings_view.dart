@@ -248,8 +248,8 @@ class _ProfileAccountMetaCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final localeTag = Localizations.localeOf(context).toLanguageTag();
-    final String languageLabel = LanguageSelector.labelForLocale(
-      Locale(user.languageCode),
+    final String languageLabel = LanguageSelector.labelForLanguageCode(
+      user.languageCode,
     );
     final String registered = DateFormat.yMMMd(
       localeTag,

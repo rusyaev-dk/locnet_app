@@ -3,6 +3,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/presentation/utils/utils.dart';
+import 'package:locnet_app/core/utils/language_code_normalizer.dart';
 
 class UserDto extends Equatable {
   const UserDto({
@@ -51,8 +52,10 @@ class UserDto extends Equatable {
       firstName: source['firstName'] as String,
       lastName: source['lastName'] as String,
       patronymic: source['patronymic'] as String?,
-      languageCode: (source['languageCode'] as String?) ??
-          AppConfig.defaultLanguageCode,
+      languageCode: normalizeLanguageCode(
+        source['languageCode'] as String?,
+        fallback: AppConfig.defaultLanguageCode,
+      ),
       description: source['description'] as String?,
       avatarId: source['avatarId'] as String?,
       isDeleted: source['isDeleted'] as bool,

@@ -78,7 +78,7 @@ class User extends Equatable {
       firstName: json['firstName'] as String,
       lastName: json['lastName'] as String,
       patronymic: json['patronymic'] as String?,
-      languageCode: (json['languageCode'] as String?) ?? 'ru',
+      languageCode: normalizeLanguageCode(json['languageCode'] as String?),
       description: json['description'] as String?,
       avatarId: json['avatarId'] as String?,
       isDeleted: json['isDeleted'] as bool,
