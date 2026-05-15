@@ -1,8 +1,16 @@
 final class ApiConfig {
   ApiConfig({required this.baseUrl, required this.baseSocketUrl});
 
-  final String baseUrl;
-  final String baseSocketUrl;
+  String baseUrl;
+  String baseSocketUrl;
+
+  void applyUrls({
+    required String baseUrl,
+    required String baseSocketUrl,
+  }) {
+    this.baseUrl = baseUrl;
+    this.baseSocketUrl = baseSocketUrl;
+  }
 }
 
 abstract class ApiEndpoints {
@@ -37,13 +45,11 @@ abstract class ApiEndpoints {
   static String mediaMetadata(String mediaId) => "/media/$mediaId/metadata";
   static String mediaDownload(String mediaId) => "/media/$mediaId/download";
 
-  /// Send a private message (POST). The conversationId is in the path.
   static String privateConversationMessage(
     String conversationId,
     String messageId,
   ) => "/private-chats/conversations/$conversationId/messages/$messageId";
 
-  /// PATCH — mark message as read by the current user.
   static String privateConversationMessageRead(
     String conversationId,
     String messageId,

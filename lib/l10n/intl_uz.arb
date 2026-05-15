@@ -307,5 +307,11 @@
   "unifiedSearchInitialTitle": "Odamlar va xabarlarni qidirish",
   "unifiedSearchInitialSubtitle": "Suhbatlar bo'yicha qidirish uchun yozishni boshlang",
   "unifiedSearchNothingFoundTitle": "Hech narsa topilmadi",
-  "unifiedSearchNothingFoundSubtitle": "Boshqa qidiruv so'zini sinab ko'ring"
+  "unifiedSearchNothingFoundSubtitle": "Boshqa qidiruv so'zini sinab ko'ring",
+  "serverSettings": "Server sozlamalari",
+  "serverBaseUrl": "Base URL",
+  "serverSocketUrl": "Socket URL",
+  "serverSettingsSave": "Saqlash",
+  "serverSettingsReset": "Tiklash",
+  "serverSettingsInvalidUrl": "URL http:// yoki https:// bilan boshlanishi kerak"
 }

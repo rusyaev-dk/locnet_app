@@ -457,6 +457,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectInterfaceLanguage": MessageLookupByLibrary.simpleMessage(
       "Interfeys tilini tanlang",
     ),
+    "serverBaseUrl": MessageLookupByLibrary.simpleMessage("Base URL"),
+    "serverSettings": MessageLookupByLibrary.simpleMessage(
+      "Server sozlamalari",
+    ),
+    "serverSettingsInvalidUrl": MessageLookupByLibrary.simpleMessage(
+      "URL http:// yoki https:// bilan boshlanishi kerak",
+    ),
+    "serverSettingsReset": MessageLookupByLibrary.simpleMessage("Tiklash"),
+    "serverSettingsSave": MessageLookupByLibrary.simpleMessage("Saqlash"),
+    "serverSocketUrl": MessageLookupByLibrary.simpleMessage("Socket URL"),
     "sessionAccessExpiresAt": MessageLookupByLibrary.simpleMessage(
       "Access token muddati",
     ),

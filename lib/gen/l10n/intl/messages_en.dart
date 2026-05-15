@@ -429,6 +429,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectInterfaceLanguage": MessageLookupByLibrary.simpleMessage(
       "Select interface language",
     ),
+    "serverBaseUrl": MessageLookupByLibrary.simpleMessage("Base URL"),
+    "serverSettings": MessageLookupByLibrary.simpleMessage("Server settings"),
+    "serverSettingsInvalidUrl": MessageLookupByLibrary.simpleMessage(
+      "URL must start with http:// or https://",
+    ),
+    "serverSettingsReset": MessageLookupByLibrary.simpleMessage("Reset"),
+    "serverSettingsSave": MessageLookupByLibrary.simpleMessage("Save"),
+    "serverSocketUrl": MessageLookupByLibrary.simpleMessage("Socket URL"),
     "sessionAccessExpiresAt": MessageLookupByLibrary.simpleMessage(
       "Access token expires",
     ),

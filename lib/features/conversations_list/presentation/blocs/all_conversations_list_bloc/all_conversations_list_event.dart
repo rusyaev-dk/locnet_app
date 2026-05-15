@@ -59,3 +59,13 @@ final class AllConversationsListConversationDeletedEvent
   @override
   List<Object?> get props => <Object?>[conversationId];
 }
+
+final class AllConversationsListSocketErrorEvent
+    extends AllConversationsListEvent {
+  const AllConversationsListSocketErrorEvent({required this.failure});
+
+  final AppException failure;
+
+  @override
+  List<Object?> get props => <Object?>[failure];
+}

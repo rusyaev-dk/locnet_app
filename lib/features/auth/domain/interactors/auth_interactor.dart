@@ -217,17 +217,19 @@ class AuthInteractor {
     } on StorageException catch (e, st) {
       _logger.exception(e, st);
       return null;
-    } on (ApiUnauthorizedException, ApiForbiddenException) catch (e, st) {
+    } on ApiUnauthorizedException catch (e, st) {
+      _logger.exception(e, st);
+      await logOut();
+      return null;
+    } on ApiForbiddenException catch (e, st) {
       _logger.exception(e, st);
       await logOut();
       return null;
     } on ApiException catch (e, st) {
       _logger.exception(e, st);
-      await logOut();
       return null;
     } catch (e, st) {
       _logger.exception(e, st);
-      await logOut();
       return null;
     }
   }

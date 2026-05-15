@@ -8,13 +8,10 @@ class ConditionalWrapper extends StatelessWidget {
     super.key,
   });
 
-  /// Condition that defines whether wrapper should be applied.
   final bool condition;
 
-  /// Function that takes child widget and returns wrapped widget.
   final Widget Function(Widget child) wrapper;
 
-  /// The child widget to be conditionally wrapped.
   final Widget child;
 
   @override

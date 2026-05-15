@@ -17,6 +17,8 @@ import 'package:locnet_app/core/presentation/navigation/router.dart';
 import 'package:locnet_app/core/utils/utils.dart';
 import 'package:locnet_app/di/di.dart';
 import 'package:locnet_app/features/error/error_screen.dart';
+import 'package:locnet_app/features/server_config/data/data.dart';
+import 'package:locnet_app/features/server_config/domain/domain.dart';
 import 'package:locnet_app/runners/runners.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:talker_bloc_logger/talker_bloc_logger.dart';
@@ -139,20 +141,15 @@ class AppRunner {
     final sharedPrefs = await SharedPreferences.getInstance();
     const flutterSecureStorage = FlutterSecureStorage();
 
-    final secureStorage = SecureStorage(
-      flutterSecureStorage: flutterSecureStorage,
-    );
+    final secureStorage =
+        !kIsWeb && defaultTargetPlatform == TargetPlatform.macOS
+        ? LocalKeyValueStorage(sharedPreferences: sharedPrefs)
+        : SecureStorage(flutterSecureStorage: flutterSecureStorage);
     final localKeyValueStorage = LocalKeyValueStorage(
       sharedPreferences: sharedPrefs,
     );
 
-    IKeyValueStorage dbEncryptionKeyStorage = secureStorage;
-    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.macOS) {
-      dbEncryptionKeyStorage = localKeyValueStorage;
-    }
-    final keyProvider = DbEncryptionKeyProvider(
-      secureStorage: dbEncryptionKeyStorage,
-    );
+    final keyProvider = DbEncryptionKeyProvider(secureStorage: secureStorage);
     final encryptionKey = await keyProvider.getOrCreateKey();
 
     final QueryExecutor executor = kIsWeb
@@ -160,16 +157,30 @@ class AppRunner {
         : await AppDatabase.openEncrypted(encryptionKey);
 
     final db = AppDatabase(executor);
-    unawaited(db.evictStale());
+    unawaited(
+      db.evictStale().catchError((Object e, StackTrace st) {
+        logger.warning('DB stale eviction failed: $e');
+      }),
+    );
     final storageAggregator = StorageAggregator(
       secureStorage: secureStorage,
       localKeyValueStorage: localKeyValueStorage,
       db: db,
     );
 
+    final defaultConfig = ServerConfig(
+      baseUrl: dotenv.env['BASE_URL']!,
+      socketBaseUrl: dotenv.env['BASE_SOCKET_URL']!,
+    );
+    final serverConfigRepo = LocalServerConfigRepo(
+      storage: localKeyValueStorage,
+      defaults: defaultConfig,
+    );
+    final serverConfig = await serverConfigRepo.getConfig();
+
     final apiConfig = ApiConfig(
-      baseUrl: dotenv.env["BASE_URL"]!,
-      baseSocketUrl: dotenv.env["BASE_SOCKET_URL"]!,
+      baseUrl: serverConfig.baseUrl,
+      baseSocketUrl: serverConfig.socketBaseUrl,
     );
     final appConfig = AppConfig();
 
@@ -177,6 +188,8 @@ class AppRunner {
       env: env,
       appConfig: appConfig,
       apiConfig: apiConfig,
+      serverConfigRepo: serverConfigRepo,
+      initialServerConfig: serverConfig,
       sharedPreferences: sharedPrefs,
       flutterSecureStorage: flutterSecureStorage,
       storageAggregator: storageAggregator,

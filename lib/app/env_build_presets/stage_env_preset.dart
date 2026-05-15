@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/data/data.dart';
 import 'package:locnet_app/core/data/storage/db/db.dart';
@@ -31,12 +30,10 @@ final class StageEnvPreset implements IAppEnvPreset {
   final AppScope _appScope;
   final IHttpClient _httpClient;
 
+  ISessionCacheRepo get _sessionCacheRepo =>
+      LocalSessionCacheRepo(storage: _appScope.storageAggregator.secureStorage);
+
   AppDatabase get _db => _appScope.db;
-  bool get _useMacOsFallbackStorage =>
-      !kIsWeb && defaultTargetPlatform == TargetPlatform.macOS;
-  IKeyValueStorage get _sessionStorage => _useMacOsFallbackStorage
-      ? _appScope.storageAggregator.localKeyValueStorage
-      : _appScope.storageAggregator.secureStorage;
 
   @override
   IAuthRepo createAuthRepo() {
@@ -70,7 +67,7 @@ final class StageEnvPreset implements IAppEnvPreset {
       network: HttpConversationsListRepo(
         httpClient: _httpClient,
         apiConfig: _appScope.apiConfig,
-        sessionCacheRepo: LocalSessionCacheRepo(storage: _sessionStorage),
+        sessionCacheRepo: _sessionCacheRepo,
         logger: _appScope.logger,
       ),
       tilesDao: _db.conversationTilesDao,
@@ -115,7 +112,7 @@ final class StageEnvPreset implements IAppEnvPreset {
       network: HttpPrivateConversationRepo(
         httpClient: _httpClient,
         apiConfig: _appScope.apiConfig,
-        sessionCacheRepo: LocalSessionCacheRepo(storage: _sessionStorage),
+        sessionCacheRepo: _sessionCacheRepo,
         logger: _appScope.logger,
       ),
       messagesDao: _db.privateMessagesDao,
@@ -133,12 +130,14 @@ final class StageEnvPreset implements IAppEnvPreset {
 
   @override
   ISessionCacheRepo createSessionCacheRepo() {
-    return LocalSessionCacheRepo(storage: _sessionStorage);
+    return _sessionCacheRepo;
   }
 
   @override
   IUserCacheRepo createUserCacheRepo() {
-    return LocalUserCacheRepo(storage: _sessionStorage);
+    return LocalUserCacheRepo(
+      storage: _appScope.storageAggregator.localKeyValueStorage,
+    );
   }
 
   @override

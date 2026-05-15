@@ -307,5 +307,11 @@
   "unifiedSearchInitialTitle": "Поиск людей и сообщений",
   "unifiedSearchInitialSubtitle": "Начните ввод, чтобы искать по перепискам",
   "unifiedSearchNothingFoundTitle": "Ничего не найдено",
-  "unifiedSearchNothingFoundSubtitle": "Попробуйте изменить поисковый запрос"
+  "unifiedSearchNothingFoundSubtitle": "Попробуйте изменить поисковый запрос",
+  "serverSettings": "Настройки сервера",
+  "serverBaseUrl": "Base URL",
+  "serverSocketUrl": "Socket URL",
+  "serverSettingsSave": "Сохранить",
+  "serverSettingsReset": "Сбросить",
+  "serverSettingsInvalidUrl": "URL должен начинаться с http:// или https://"
 }

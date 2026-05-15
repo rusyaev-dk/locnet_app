@@ -53,25 +53,22 @@ class PrivateMessagesDao extends DatabaseAccessor<AppDatabase>
   Future<void> replaceAttachments(
     String messageId,
     List<PrivateMessageAttachmentsTableCompanion> entries,
-  ) =>
-      transaction(() async {
-        await (delete(privateMessageAttachmentsTable)
-              ..where((t) => t.messageId.equals(messageId)))
-            .go();
-        if (entries.isNotEmpty) {
-          await batch((b) {
-            b.insertAllOnConflictUpdate(privateMessageAttachmentsTable, entries);
-          });
-        }
+  ) => transaction(() async {
+    await (delete(
+      privateMessageAttachmentsTable,
+    )..where((t) => t.messageId.equals(messageId))).go();
+    if (entries.isNotEmpty) {
+      await batch((b) {
+        b.insertAllOnConflictUpdate(privateMessageAttachmentsTable, entries);
       });
+    }
+  });
 
-  /// Removes message rows (and cascaded attachments) matching [clientMessageId].
-  /// Call before upserting the server-confirmed row (pending → server).
   Future<void> deleteByClientMessageId(String clientMessageId) =>
       transaction(() async {
-        await (delete(privateMessagesTable)
-              ..where((t) => t.clientMessageId.equals(clientMessageId)))
-            .go();
+        await (delete(
+          privateMessagesTable,
+        )..where((t) => t.clientMessageId.equals(clientMessageId))).go();
       });
 
   Future<void> markDeleted(String messageId) =>
@@ -82,15 +79,16 @@ class PrivateMessagesDao extends DatabaseAccessor<AppDatabase>
     required String conversationId,
     int limit = 60,
   }) async {
-    final cutoffRow = await (select(privateMessagesTable)
-          ..where(
-            (t) =>
-                t.conversationId.equals(conversationId) &
-                t.isDeleted.equals(false),
-          )
-          ..orderBy([(t) => OrderingTerm.desc(t.createdAtMs)])
-          ..limit(1, offset: limit - 1))
-        .getSingleOrNull();
+    final cutoffRow =
+        await (select(privateMessagesTable)
+              ..where(
+                (t) =>
+                    t.conversationId.equals(conversationId) &
+                    t.isDeleted.equals(false),
+              )
+              ..orderBy([(t) => OrderingTerm.desc(t.createdAtMs)])
+              ..limit(1, offset: limit - 1))
+            .getSingleOrNull();
 
     if (cutoffRow == null) return;
 

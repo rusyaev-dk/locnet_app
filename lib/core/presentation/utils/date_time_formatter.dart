@@ -5,12 +5,12 @@ final class DateTimeFormatter {
   static DateTime parse(Object? raw) {
     if (raw is DateTime) return raw.toUtc();
     if (raw is String && raw.isNotEmpty) {
-      // Go's default time.Time.String() uses "... +0000 UTC", which DateTime.parse
-      // rejects; strip the redundant " UTC" so the offset form parses.
       String normalized = raw.trim();
       const int utcSuffixLen = 4; // " UTC"
       if (normalized.length > utcSuffixLen &&
-          normalized.substring(normalized.length - utcSuffixLen).toUpperCase() ==
+          normalized
+                  .substring(normalized.length - utcSuffixLen)
+                  .toUpperCase() ==
               ' UTC') {
         normalized = normalized
             .substring(0, normalized.length - utcSuffixLen)

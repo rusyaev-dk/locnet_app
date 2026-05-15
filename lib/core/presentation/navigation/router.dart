@@ -63,11 +63,6 @@ class AppRouter {
             return AppRoutes.conversations;
           }
 
-          // Legacy draft URLs: draft is no longer a route; land on conversations list.
-          if (location.startsWith('${AppRoutes.conversations}/draft/')) {
-            return AppRoutes.conversations;
-          }
-
           if (location == '/' ||
               location == AppRoutes.login ||
               location == AppRoutes.registration) {
@@ -138,7 +133,6 @@ class AppRouter {
             return RootScreen(child: PanelScreen(child: child));
           }),
           routes: <RouteBase>[
-            // Conversations branch (now top-level under the shell)
             ShellRoute(
               builder:
                   (BuildContext context, GoRouterState state, Widget child) {

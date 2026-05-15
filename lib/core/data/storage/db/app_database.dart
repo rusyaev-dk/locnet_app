@@ -38,7 +38,7 @@ class AppDatabase extends _$AppDatabase {
   );
 
   static Future<QueryExecutor> openEncrypted(String encryptionKey) async {
-    assert(!kIsWeb, 'Encrypted NativeDatabase не поддерживается на web');
+    assert(!kIsWeb, 'Encrypted NativeDatabase is not supported on web');
     return open_native_encrypted_executor.openNativeEncryptedExecutor(
       encryptionKey,
     );

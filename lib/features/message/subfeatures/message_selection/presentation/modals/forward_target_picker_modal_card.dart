@@ -8,7 +8,6 @@ import 'package:locnet_app/features/conversations_list/domain/domain.dart';
 import 'package:locnet_app/features/conversations_list/presentation/presentation.dart';
 import 'package:locnet_app/uikit/uikit.dart';
 
-/// Forward target picker: chrome matches settings / unified search modals.
 class ForwardTargetPickerModalWrapper extends StatelessWidget {
   const ForwardTargetPickerModalWrapper({required this.child, super.key});
 
@@ -18,13 +17,14 @@ class ForwardTargetPickerModalWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     return RepositoryProvider<ConversationsListInteractor>(
       create: (context) => ConversationsListInteractor(
-        conversationsListRepo:
-            context.read<IAppEnvPreset>().createConversationsListRepo(),
+        conversationsListRepo: context
+            .read<IAppEnvPreset>()
+            .createConversationsListRepo(),
       ),
       child: BlocProvider<AllConversationsListBloc>(
         create: (context) => AllConversationsListBloc(
-          conversationsListInteractor:
-              context.read<ConversationsListInteractor>(),
+          conversationsListInteractor: context
+              .read<ConversationsListInteractor>(),
           userInteractor: context.read<UserInteractor>(),
           logger: context.read<ILogger>(),
         )..add(const AllConversationsListLoadEvent()),
@@ -174,95 +174,103 @@ class _ForwardTargetPickerModalCardState
               ),
             ),
             Expanded(
-              child: BlocBuilder<AllConversationsListBloc,
-                  AllConversationsListState>(
-                builder: (context, state) {
-                  if (state is AllConversationsListLoadingState) {
-                    return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: SizedBox(
-                          width: 28,
-                          height: 28,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            color: colorScheme.primary,
+              child:
+                  BlocBuilder<
+                    AllConversationsListBloc,
+                    AllConversationsListState
+                  >(
+                    builder: (context, state) {
+                      if (state is AllConversationsListLoadingState) {
+                        return Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: SizedBox(
+                              width: 28,
+                              height: 28,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                color: colorScheme.primary,
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    );
-                  }
+                        );
+                      }
 
-                  if (state is AllConversationsListFailureState) {
-                    return SingleChildScrollView(
-                      padding: const EdgeInsets.all(20),
-                      child: InfoWidget(
-                        icon: Icons.error_outline,
-                        text: AppExceptionsTranslator.translate(
-                          context,
-                          state.failure,
-                        ),
-                        useErrorStyle: true,
-                      ),
-                    );
-                  }
-
-                  if (state is! AllConversationsListLoadedState) {
-                    return const SizedBox.shrink();
-                  }
-
-                  final String query =
-                      _queryController.text.trim().toLowerCase();
-
-                  final List<ConversationTile> items =
-                      state.conversationTiles.where((tile) {
-                    if (query.isEmpty) return true;
-                    final bool inTitle =
-                        tile.title.toLowerCase().contains(query);
-                    final bool inDescription =
-                        (tile.description ?? '').toLowerCase().contains(query);
-                    final bool inLastMessage =
-                        (tile.lastMessageText ?? '').toLowerCase().contains(
-                              query,
-                            );
-                    return inTitle || inDescription || inLastMessage;
-                  }).toList();
-
-                  if (items.isEmpty) {
-                    return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 32,
-                          horizontal: 24,
-                        ),
-                        child: Text(
-                          l10n.nothingFound,
-                          style: textScheme.caption.copyWith(
-                            color: colorScheme.onSurfaceVariant,
+                      if (state is AllConversationsListFailureState) {
+                        return SingleChildScrollView(
+                          padding: const EdgeInsets.all(20),
+                          child: InfoWidget(
+                            icon: Icons.error_outline,
+                            text: AppExceptionsTranslator.translate(
+                              context,
+                              state.failure,
+                            ),
+                            useErrorStyle: true,
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    );
-                  }
+                        );
+                      }
 
-                  return ListView.separated(
-                    padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-                    itemCount: items.length,
-                    separatorBuilder: (_, _) =>
-                        Divider(color: colorScheme.outlineVariant),
-                    itemBuilder: (context, index) {
-                      final ConversationTile tile = items[index];
-                      return ConversationListTile(
-                        conversationTile: tile,
-                        isCompact: false,
-                        currentUserId: currentUserId,
-                        onTap: () => widget.onTargetSelected(tile),
+                      if (state is! AllConversationsListLoadedState) {
+                        return const SizedBox.shrink();
+                      }
+
+                      final String query = _queryController.text
+                          .trim()
+                          .toLowerCase();
+
+                      final List<ConversationTile> items = state
+                          .conversationTiles
+                          .where((tile) {
+                            if (query.isEmpty) return true;
+                            final bool inTitle = tile.title
+                                .toLowerCase()
+                                .contains(query);
+                            final bool inDescription = (tile.description ?? '')
+                                .toLowerCase()
+                                .contains(query);
+                            final bool inLastMessage =
+                                (tile.lastMessageText ?? '')
+                                    .toLowerCase()
+                                    .contains(query);
+                            return inTitle || inDescription || inLastMessage;
+                          })
+                          .toList();
+
+                      if (items.isEmpty) {
+                        return Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 32,
+                              horizontal: 24,
+                            ),
+                            child: Text(
+                              l10n.nothingFound,
+                              style: textScheme.caption.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        );
+                      }
+
+                      return ListView.separated(
+                        padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+                        itemCount: items.length,
+                        separatorBuilder: (_, _) =>
+                            Divider(color: colorScheme.outlineVariant),
+                        itemBuilder: (context, index) {
+                          final ConversationTile tile = items[index];
+                          return ConversationListTile(
+                            conversationTile: tile,
+                            isCompact: false,
+                            currentUserId: currentUserId,
+                            onTap: () => widget.onTargetSelected(tile),
+                          );
+                        },
                       );
                     },
-                  );
-                },
-              ),
+                  ),
             ),
           ],
         ),

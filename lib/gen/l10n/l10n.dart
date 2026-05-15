@@ -2848,6 +2848,61 @@ class S {
       args: [],
     );
   }
+
+  /// `Настройки сервера`
+  String get serverSettings {
+    return Intl.message(
+      'Настройки сервера',
+      name: 'serverSettings',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Base URL`
+  String get serverBaseUrl {
+    return Intl.message('Base URL', name: 'serverBaseUrl', desc: '', args: []);
+  }
+
+  /// `Socket URL`
+  String get serverSocketUrl {
+    return Intl.message(
+      'Socket URL',
+      name: 'serverSocketUrl',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Сохранить`
+  String get serverSettingsSave {
+    return Intl.message(
+      'Сохранить',
+      name: 'serverSettingsSave',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Сбросить`
+  String get serverSettingsReset {
+    return Intl.message(
+      'Сбросить',
+      name: 'serverSettingsReset',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `URL должен начинаться с http:// или https://`
+  String get serverSettingsInvalidUrl {
+    return Intl.message(
+      'URL должен начинаться с http:// или https://',
+      name: 'serverSettingsInvalidUrl',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

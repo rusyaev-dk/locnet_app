@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/auth/presentation/presentation.dart';
+import 'package:locnet_app/features/server_config/presentation/presentation.dart';
 
 class LogInScreenWrapper extends StatelessWidget {
   const LogInScreenWrapper({required this.child, super.key});
@@ -49,33 +50,48 @@ class _LogInScreenState extends State<LogInScreen> {
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
-      body: SafeArea(
-        child: MultiToastListener(
-          listeners: [
-            ToastListener<AuthCubit, AuthState, AuthFailureState>(
-              bloc: context.read<AuthCubit>(),
-              messageOf: (context, AuthFailureState state) =>
-                  AuthExceptionsTranslator.translate(context, state.failure),
-            ),
-            ToastListener<LogInCubit, LogInState, LogInState>(
-              bloc: context.read<LogInCubit>(),
-              messageOf: (context, LogInState state) =>
-                  AuthExceptionsTranslator.translate(context, state.failure),
-            ),
-          ],
-          child: BlocBuilder<AuthCubit, AuthState>(
-            builder: (BuildContext context, AuthState state) {
-              if (state is AuthAuthenticatedState) {
-                return const SizedBox.shrink();
-              }
+      body: Stack(
+        children: [
+          SafeArea(
+            child: MultiToastListener(
+              listeners: [
+                ToastListener<AuthCubit, AuthState, AuthFailureState>(
+                  bloc: context.read<AuthCubit>(),
+                  messageOf: (context, AuthFailureState state) =>
+                      AuthExceptionsTranslator.translate(
+                        context,
+                        state.failure,
+                      ),
+                ),
+                ToastListener<LogInCubit, LogInState, LogInState>(
+                  bloc: context.read<LogInCubit>(),
+                  messageOf: (context, LogInState state) =>
+                      AuthExceptionsTranslator.translate(
+                        context,
+                        state.failure,
+                      ),
+                ),
+              ],
+              child: BlocBuilder<AuthCubit, AuthState>(
+                builder: (BuildContext context, AuthState state) {
+                  if (state is AuthAuthenticatedState) {
+                    return const SizedBox.shrink();
+                  }
 
-              return _AuthScrollableForm(
-                loginController: _usernameController,
-                passwordController: _passwordController,
-              );
-            },
+                  return _AuthScrollableForm(
+                    loginController: _usernameController,
+                    passwordController: _passwordController,
+                  );
+                },
+              ),
+            ),
           ),
-        ),
+          const Positioned(
+            top: 0,
+            left: 0,
+            child: SafeArea(child: ServerConfigSettingsButton()),
+          ),
+        ],
       ),
     );
   }
@@ -105,11 +121,11 @@ class _AuthScrollableForm extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Align(
+                    const Align(
                       alignment: Alignment.centerRight,
                       child: Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: const LanguageSwitcherButton(),
+                        padding: EdgeInsets.only(bottom: 16),
+                        child: LanguageSwitcherButton(),
                       ),
                     ),
                     LogInCard(

@@ -920,8 +920,11 @@ void main() {
       );
 
       test(
-        'should return null and log out when refresh throws ApiException',
+        'should return null and not log out when refresh throws ApiException',
         () async {
+          reset(mockSessionCacheRepo);
+          reset(mockAuthRepo);
+
           when(
             () => mockSessionCacheRepo.loadSession(),
           ).thenAnswer((_) async => expiredSession);
@@ -936,27 +939,24 @@ void main() {
             ApiServerException(message: 'server error', statusCode: 500),
           );
 
-          when(
-            () => mockSessionCacheRepo.clearSession(),
-          ).thenAnswer((_) async => true);
-          when(
-            () => mockUserCacheRepo.clearUser(),
-          ).thenAnswer((_) async => true);
-
           final (Session, User)? result = await interactor.restoreSession();
 
           expect(result, isNull);
 
           verify(() => mockDeviceInfoRepo.getDeviceInfo()).called(1);
           verify(() => mockLogger.exception(any(), any())).called(1);
-          verify(() => mockSessionCacheRepo.clearSession()).called(1);
-          verify(() => mockUserCacheRepo.clearUser()).called(1);
+          verifyNever(() => mockSessionCacheRepo.clearSession());
+          verifyNever(() => mockUserCacheRepo.clearUser());
         },
       );
 
       test(
-        'should return null and log out when cached session is fresh but getUserById throws',
+        'should return null and not log out when cached session is fresh but getUserById throws',
         () async {
+          reset(mockSessionCacheRepo);
+          reset(mockAuthRepo);
+          reset(mockUserRepo);
+
           when(
             () => mockSessionCacheRepo.loadSession(),
           ).thenAnswer((_) async => freshSession);
@@ -965,20 +965,13 @@ void main() {
             () => mockUserRepo.getUserById(userId: any(named: 'userId')),
           ).thenThrow(Exception('boom'));
 
-          when(
-            () => mockSessionCacheRepo.clearSession(),
-          ).thenAnswer((_) async => true);
-          when(
-            () => mockUserCacheRepo.clearUser(),
-          ).thenAnswer((_) async => true);
-
           final (Session, User)? result = await interactor.restoreSession();
 
           expect(result, isNull);
 
           verify(() => mockLogger.exception(any(), any())).called(1);
-          verify(() => mockSessionCacheRepo.clearSession()).called(1);
-          verify(() => mockUserCacheRepo.clearUser()).called(1);
+          verifyNever(() => mockSessionCacheRepo.clearSession());
+          verifyNever(() => mockUserCacheRepo.clearUser());
 
           verifyNever(() => mockDeviceInfoRepo.getDeviceInfo());
           verifyNever(

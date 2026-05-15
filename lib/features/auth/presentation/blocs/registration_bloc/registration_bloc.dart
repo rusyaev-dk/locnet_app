@@ -261,16 +261,21 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
         return;
       }
 
-      final String? repeatPassword = state.repeatPassword;
-      final String firstPasswordInput = newPassword;
+      try {
+        PasswordValidator.validatePassword(newPassword);
+      } catch (e) {
+        emit(state.copyWith(password: newPassword, passwordException: e));
+        return;
+      }
 
+      final String? repeatPassword = state.repeatPassword;
       if (repeatPassword != null &&
           repeatPassword.isNotEmpty &&
-          repeatPassword.length >= firstPasswordInput.length &&
-          repeatPassword != firstPasswordInput) {
+          repeatPassword != newPassword) {
         emit(
           state.copyWith(
             password: newPassword,
+            passwordException: null,
             repeatPasswordException: PasswordsMismatchException(
               message: "Passwords don't match",
             ),
@@ -279,27 +284,18 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
         return;
       }
 
-      if (repeatPassword != null &&
-          repeatPassword.isNotEmpty &&
-          repeatPassword == firstPasswordInput) {
-        emit(
-          state.copyWith(
-            password: newPassword,
-            repeatPasswordException: null,
-            passwordException: null,
-          ),
-        );
-        return;
-      }
-
-      try {
-        PasswordValidator.validatePassword(newPassword);
-      } catch (e) {
-        emit(state.copyWith(password: newPassword, passwordException: e));
-        return;
-      }
-
-      emit(state.copyWith(password: newPassword, passwordException: null));
+      emit(
+        state.copyWith(
+          password: newPassword,
+          passwordException: null,
+          repeatPasswordException:
+              repeatPassword != null &&
+                  repeatPassword.isNotEmpty &&
+                  repeatPassword == newPassword
+              ? null
+              : state.repeatPasswordException,
+        ),
+      );
     } catch (e, st) {
       _logger.exception(e, st);
 
@@ -342,9 +338,7 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
           );
         }
 
-        if (firstPassword.isNotEmpty &&
-            (firstPassword.length != repeatPasswordInput.length ||
-                firstPassword != repeatPasswordInput)) {
+        if (firstPassword != repeatPasswordInput) {
           throw PasswordsMismatchException(
             message: "Passwords don't match",
             stackTrace: StackTrace.current,
@@ -382,7 +376,6 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
   bool canRegister() {
     final String? firstName = state.firstName;
     final String? lastName = state.lastName;
-    final String? description = state.description;
     final String? login = state.username;
     final String? password = state.password;
     final String? repeatPassword = state.repeatPassword;
@@ -392,8 +385,6 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
         firstName.isNotEmpty &&
         lastName != null &&
         lastName.isNotEmpty &&
-        description != null &&
-        description.isNotEmpty &&
         login != null &&
         login.isNotEmpty &&
         password != null &&

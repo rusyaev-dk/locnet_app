@@ -25,12 +25,24 @@ class AllConversationsListBloc
     on<AllConversationsListConversationCreatedEvent>(_onConversationCreated);
     on<AllConversationsListConversationUpdatedEvent>(_onConversationUpdated);
     on<AllConversationsListConversationDeletedEvent>(_onConversationDeleted);
+    on<AllConversationsListSocketErrorEvent>(_onSocketError);
 
     _conversationsUpdatesSub = _conversationsListInteractor.conversationsUpdates
         .listen(
           _onIncomingChange,
           onError: (Object e, StackTrace st) {
             _logger.exception(e, st);
+            add(
+              AllConversationsListSocketErrorEvent(
+                failure: e is AppException
+                    ? e
+                    : AppUnknownException(
+                        message: e.toString(),
+                        error: e,
+                        stackTrace: st,
+                      ),
+              ),
+            );
           },
         );
   }
@@ -232,6 +244,13 @@ class AllConversationsListBloc
     emit(currentState.copyWith(conversationTiles: sortedConversations));
   }
 
+  Future<void> _onSocketError(
+    AllConversationsListSocketErrorEvent event,
+    Emitter<AllConversationsListState> emit,
+  ) async {
+    emit(AllConversationsListFailureState(failure: event.failure));
+  }
+
   Future<void> _onConversationDeleted(
     AllConversationsListConversationDeletedEvent event,
     Emitter<AllConversationsListState> emit,
@@ -287,6 +306,7 @@ class AllConversationsListBloc
   @override
   Future<void> close() async {
     await _conversationsUpdatesSub?.cancel();
+    await _conversationsListInteractor.dispose();
     return super.close();
   }
 }

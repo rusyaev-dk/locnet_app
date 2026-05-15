@@ -436,6 +436,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectInterfaceLanguage": MessageLookupByLibrary.simpleMessage(
       "Выберите язык интерфейса",
     ),
+    "serverBaseUrl": MessageLookupByLibrary.simpleMessage("Base URL"),
+    "serverSettings": MessageLookupByLibrary.simpleMessage("Настройки сервера"),
+    "serverSettingsInvalidUrl": MessageLookupByLibrary.simpleMessage(
+      "URL должен начинаться с http:// или https://",
+    ),
+    "serverSettingsReset": MessageLookupByLibrary.simpleMessage("Сбросить"),
+    "serverSettingsSave": MessageLookupByLibrary.simpleMessage("Сохранить"),
+    "serverSocketUrl": MessageLookupByLibrary.simpleMessage("Socket URL"),
     "sessionAccessExpiresAt": MessageLookupByLibrary.simpleMessage(
       "Истекает access-токен",
     ),

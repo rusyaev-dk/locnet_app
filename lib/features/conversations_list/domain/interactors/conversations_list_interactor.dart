@@ -16,4 +16,6 @@ final class ConversationsListInteractor {
         .loadConversationsList(page: page);
     return conversations;
   }
+
+  Future<void> dispose() => _conversationsListRepo.dispose();
 }

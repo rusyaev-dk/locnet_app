@@ -2,7 +2,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:locnet_app/core/core.dart';
 import 'package:locnet_app/features/auth/domain/domain.dart';
-import 'package:locnet_app/features/auth/presentation/blocs/registration_cubit/registration_cubit.dart';
+import 'package:locnet_app/features/auth/presentation/blocs/registration_bloc/registration_bloc.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../domain/interactors/mock_auth_interactor.dart';
@@ -14,16 +14,20 @@ void main() {
   late MockLogger mockLogger;
   late MockAuthInteractor mockAuthInteractor;
 
-  RegistrationCubit buildCubit() => RegistrationCubit(
-    authInteractor: mockAuthInteractor,
-    logger: mockLogger,
-  );
+  RegistrationCubit buildCubit() =>
+      RegistrationCubit(authInteractor: mockAuthInteractor, logger: mockLogger);
+
+  const Duration usernameDebounceDelay = Duration(milliseconds: 400);
+
+  Future<void> flushUsernameDebounce() =>
+      Future<void>.delayed(usernameDebounceDelay);
 
   setUp(() {
     mockLogger = MockLogger();
     mockAuthInteractor = MockAuthInteractor();
     when(
-      () => mockAuthInteractor.validateRegisterLogin(login: any(named: 'login')),
+      () =>
+          mockAuthInteractor.validateRegisterLogin(login: any(named: 'login')),
     ).thenAnswer((_) async => true);
   });
 
@@ -318,6 +322,7 @@ void main() {
       blocTest<RegistrationCubit, RegistrationState>(
         'should emit RequiredValueNotProvidedException when newUsername is null',
         build: buildCubit,
+        wait: usernameDebounceDelay,
         act: (cubit) => cubit.updateUsername(),
         expect: () => <dynamic>[
           isA<RegistrationState>()
@@ -337,6 +342,7 @@ void main() {
       blocTest<RegistrationCubit, RegistrationState>(
         'should emit RequiredValueNotProvidedException when newUsername is empty',
         build: buildCubit,
+        wait: usernameDebounceDelay,
         act: (cubit) => cubit.updateUsername(newUsername: ''),
         expect: () => <dynamic>[
           isA<RegistrationState>()
@@ -356,6 +362,7 @@ void main() {
       blocTest<RegistrationCubit, RegistrationState>(
         'should emit validator exception when validateUsername throws',
         build: buildCubit,
+        wait: usernameDebounceDelay,
         act: (cubit) => cubit.updateUsername(newUsername: 'a!^&&&'),
         expect: () => <dynamic>[
           isA<RegistrationState>()
@@ -375,8 +382,10 @@ void main() {
       blocTest<RegistrationCubit, RegistrationState>(
         'should clear usernameException when newUsername becomes valid after invalid',
         build: buildCubit,
+        wait: usernameDebounceDelay,
         act: (cubit) async {
           await cubit.updateUsername(newUsername: '!exampleinvalid?');
+          await flushUsernameDebounce();
           await cubit.updateUsername(newUsername: 'john_doe');
         },
         expect: () => <dynamic>[
@@ -439,7 +448,7 @@ void main() {
       );
 
       blocTest<RegistrationCubit, RegistrationState>(
-        'should set repeatPasswordException when repeatPassword is already set, differs, and repeat length >= newPassword length',
+        'should emit passwordException when repeatPassword is set but newPassword is too weak',
         build: buildCubit,
         act: (cubit) async {
           await cubit.updateRepeatPassword(newRepeatPassword: '1234');
@@ -456,9 +465,9 @@ void main() {
           isA<RegistrationState>()
               .having((s) => s.password, 'password', '1111')
               .having(
-                (s) => s.repeatPasswordException,
-                'repeatPasswordException',
-                isA<PasswordsMismatchException>(),
+                (s) => s.passwordException,
+                'passwordException',
+                isA<PasswordTooWeakException>(),
               ),
         ],
         verify: (_) {
@@ -467,7 +476,7 @@ void main() {
       );
 
       blocTest<RegistrationCubit, RegistrationState>(
-        'should clear repeatPasswordException when repeatPassword equals newPassword and both non-empty',
+        'should emit passwordException when repeatPassword equals newPassword but password is too weak',
         build: buildCubit,
         act: (cubit) async {
           await cubit.updateRepeatPassword(newRepeatPassword: 'abcd');
@@ -484,11 +493,10 @@ void main() {
           isA<RegistrationState>()
               .having((s) => s.password, 'password', 'abcd')
               .having(
-                (s) => s.repeatPasswordException,
-                'repeatPasswordException',
-                isNull,
+                (s) => s.passwordException,
+                'passwordException',
+                isA<PasswordTooWeakException>(),
               )
-              .having((s) => s.passwordException, 'passwordException', isNull)
               .having((s) => s.failure, 'failure', isNull),
         ],
         verify: (_) {
@@ -542,7 +550,7 @@ void main() {
       );
 
       blocTest<RegistrationCubit, RegistrationState>(
-        'should not clear repeatPasswordException when repeatPassword is shorter than newPassword (length guard)',
+        'should set repeatPasswordException when repeatPassword is shorter than newPassword',
         build: buildCubit,
         act: (cubit) async {
           await cubit.updateRepeatPassword(newRepeatPassword: 'abc');
@@ -561,7 +569,7 @@ void main() {
               .having(
                 (s) => s.repeatPasswordException,
                 'repeatPasswordException',
-                isNotNull,
+                isA<PasswordsMismatchException>(),
               ),
         ],
         verify: (_) {
@@ -714,10 +722,12 @@ void main() {
       blocTest<RegistrationCubit, RegistrationState>(
         'should not reset other fields when updating a single field',
         build: buildCubit,
+        wait: usernameDebounceDelay,
         act: (cubit) async {
           await cubit.updateFirstName(newFirstName: 'John');
           await cubit.updateLastName(newLastName: 'Doe');
           await cubit.updateUsername(newUsername: 'john_doe');
+          await flushUsernameDebounce();
           await cubit.updateDescription(newUserDescription: 'Hello');
           await cubit.updatePassword(newPassword: 'abcd');
           await cubit.updateRepeatPassword(newRepeatPassword: 'abcd');
@@ -778,7 +788,7 @@ void main() {
       );
 
       test(
-        'should return false when description is missing (required by canRegister)',
+        'should return true when description is missing but other required fields are valid',
         () async {
           final cubit = buildCubit();
           addTearDown(cubit.close);
@@ -786,10 +796,11 @@ void main() {
           await cubit.updateFirstName(newFirstName: 'John');
           await cubit.updateLastName(newLastName: 'Doe');
           await cubit.updateUsername(newUsername: 'john_doe');
-          await cubit.updatePassword(newPassword: 'abcd');
-          await cubit.updateRepeatPassword(newRepeatPassword: 'abcd');
+          await flushUsernameDebounce();
+          await cubit.updatePassword(newPassword: 'A!fa98dsf9abcd');
+          await cubit.updateRepeatPassword(newRepeatPassword: 'A!fa98dsf9abcd');
 
-          expect(cubit.canRegister(), isFalse);
+          expect(cubit.canRegister(), isTrue);
         },
       );
 
@@ -800,6 +811,7 @@ void main() {
         await cubit.updateFirstName(newFirstName: 'John');
         await cubit.updateLastName(newLastName: 'Doe');
         await cubit.updateUsername(newUsername: 'john_doe');
+        await flushUsernameDebounce();
         await cubit.updateDescription(newUserDescription: 'Hello');
         await cubit.updatePassword(newPassword: 'abcd');
         await cubit.updateRepeatPassword(newRepeatPassword: 'abce');
@@ -816,6 +828,7 @@ void main() {
           await cubit.updateFirstName(newFirstName: 'John');
           await cubit.updateLastName(newLastName: 'Doe');
           await cubit.updateUsername(newUsername: 'john_doe');
+          await flushUsernameDebounce();
           await cubit.updateDescription(newUserDescription: 'Hello');
           await cubit.updatePassword(newPassword: 'A!fa98dsf9abcd');
           await cubit.updateRepeatPassword(newRepeatPassword: 'A!fa98dsf9abcd');
@@ -823,6 +836,7 @@ void main() {
           expect(cubit.canRegister(), isTrue);
 
           await cubit.updateUsername(newUsername: '');
+          await flushUsernameDebounce();
 
           expect(cubit.canRegister(), isFalse);
         },
@@ -837,6 +851,7 @@ void main() {
           await cubit.updateFirstName(newFirstName: 'John');
           await cubit.updateLastName(newLastName: 'Doe');
           await cubit.updateUsername(newUsername: 'john_doe');
+          await flushUsernameDebounce();
           await cubit.updateDescription(newUserDescription: 'Hello');
           await cubit.updatePassword(newPassword: 'A!fa98dsf9abcd');
           await cubit.updateRepeatPassword(newRepeatPassword: 'A!fa98dsf9abcd');
@@ -863,6 +878,7 @@ void main() {
           await cubit.updateFirstName(newFirstName: 'John');
           await cubit.updateLastName(newLastName: 'Doe');
           await cubit.updateUsername(newUsername: 'john_doe');
+          await flushUsernameDebounce();
           await cubit.updateDescription(newUserDescription: 'Hello');
           await cubit.updatePassword(newPassword: 'A!fa98dsf9abcd');
           await cubit.updateRepeatPassword(newRepeatPassword: 'A!fa98dsf9abcd');
@@ -872,7 +888,7 @@ void main() {
       );
 
       test(
-        'should return false when description becomes invalid (whitespace) after being valid',
+        'should stay true when description is cleared to whitespace after being valid',
         () async {
           final cubit = buildCubit();
           addTearDown(cubit.close);
@@ -880,6 +896,7 @@ void main() {
           await cubit.updateFirstName(newFirstName: 'John');
           await cubit.updateLastName(newLastName: 'Doe');
           await cubit.updateUsername(newUsername: 'john_doe');
+          await flushUsernameDebounce();
           await cubit.updateDescription(newUserDescription: 'Hello');
           await cubit.updatePassword(newPassword: 'A!fa98dsf9abcd');
           await cubit.updateRepeatPassword(newRepeatPassword: 'A!fa98dsf9abcd');
@@ -888,7 +905,7 @@ void main() {
 
           await cubit.updateDescription(newUserDescription: '   ');
 
-          expect(cubit.canRegister(), isFalse);
+          expect(cubit.canRegister(), isTrue);
         },
       );
     });
@@ -901,6 +918,7 @@ void main() {
         await cubit.updateFirstName(newFirstName: 'John');
         await cubit.updateLastName(newLastName: 'Doe');
         await cubit.updateUsername(newUsername: 'john_doe');
+        await flushUsernameDebounce();
         await cubit.updateDescription(newUserDescription: 'Hello');
         await cubit.updatePassword(newPassword: 'abcd');
         await cubit.updateRepeatPassword(newRepeatPassword: 'abcd');
@@ -917,6 +935,7 @@ void main() {
           await cubit.updateFirstName(newFirstName: '1');
           await cubit.updateLastName(newLastName: '1');
           await cubit.updateUsername(newUsername: '!!!');
+          await flushUsernameDebounce();
           await cubit.updatePassword(newPassword: '1');
           await cubit.updateDescription(newUserDescription: 'a' * 10000);
 

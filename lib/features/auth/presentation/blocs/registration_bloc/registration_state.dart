@@ -1,4 +1,4 @@
-part of 'registration_cubit.dart';
+part of 'registration_bloc.dart';
 
 final class RegistrationState extends Equatable {
   const RegistrationState({

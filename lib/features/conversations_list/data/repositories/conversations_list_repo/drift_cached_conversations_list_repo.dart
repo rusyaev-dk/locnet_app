@@ -59,4 +59,7 @@ final class DriftCachedConversationsListRepo implements IConversationsListRepo {
         await _tilesDao.deleteTile(update.conversationTile.id);
     }
   }
+
+  @override
+  Future<void> dispose() => _network.dispose();
 }

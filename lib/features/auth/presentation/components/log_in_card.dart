@@ -29,7 +29,7 @@ class LogInCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: colorScheme.secondary,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colorScheme.outline, width: 1),
+        border: Border.all(color: colorScheme.outline),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withAlpha(60),
@@ -72,8 +72,8 @@ class LogInCard extends StatelessWidget {
             ),
           ),
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24),
             child: _AuthTabSwitcher(isSignIn: true),
           ),
 
@@ -180,7 +180,7 @@ class _AuthTabSwitcher extends StatelessWidget {
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainer,
-        border: Border.all(color: colorScheme.outline, width: 1),
+        border: Border.all(color: colorScheme.outline),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(

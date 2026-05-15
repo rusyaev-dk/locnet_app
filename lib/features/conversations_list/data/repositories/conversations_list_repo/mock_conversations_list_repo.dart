@@ -235,6 +235,7 @@ final class MockConversationsListRepo implements IConversationsListRepo {
   //   ));
   // }
 
+  @override
   Future<void> dispose() async {
     await _updatesController.close();
   }

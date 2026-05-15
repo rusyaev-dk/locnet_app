@@ -269,7 +269,7 @@ class HttpConversationsListRepo implements IConversationsListRepo {
         conversationTile: tile,
       ));
     } catch (e, st) {
-      _logger.exception(e, st);
+      _emitHandlerError(e, st);
     }
   }
 
@@ -328,7 +328,7 @@ class HttpConversationsListRepo implements IConversationsListRepo {
         conversationTile: tile,
       ));
     } catch (e, st) {
-      _logger.exception(e, st);
+      _emitHandlerError(e, st);
     }
   }
 
@@ -347,11 +347,31 @@ class HttpConversationsListRepo implements IConversationsListRepo {
     }
   }
 
+  void _emitHandlerError(Object e, StackTrace st) {
+    _logger.exception(e, st);
+    if (!_updatesController.isClosed) {
+      _updatesController.addError(
+        e is AppException
+            ? e
+            : AppUnknownException(
+                message: e.toString(),
+                error: e,
+                stackTrace: st,
+              ),
+      );
+    }
+  }
+
+  @override
+  Future<void> dispose() async {
+    _isSocketConnecting = false;
+    _socket?.dispose();
+    _socket = null;
+  }
+
   void _socketLog(String message) {
     final String formatted = '[ConversationsSocket] $message';
     _logger.log(formatted);
-    // Keep explicit stdout output for macOS desktop diagnostics.
-    print(formatted);
   }
 
   void _socketLogException(Object error, [StackTrace? stackTrace]) {

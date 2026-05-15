@@ -1,7 +1,7 @@
 // ignore_for_file: sort_constructors_first
 
 import 'package:equatable/equatable.dart';
-import 'package:locnet_app/features/message/subfeatures/media/data/models/media_delete_response_dto.dart';
+import 'package:locnet_app/features/message/subfeatures/media/data/models/media_delete_response.dart';
 import 'package:locnet_app/features/message/subfeatures/media/domain/models/media_metadata.dart';
 
 class MediaDeleteResult extends Equatable {

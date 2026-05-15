@@ -17,6 +17,8 @@ import 'package:locnet_app/features/passcode/domain/domain.dart';
 import 'package:locnet_app/features/passcode/presentation/presentation.dart';
 import 'package:locnet_app/features/settings/data/data.dart';
 import 'package:locnet_app/features/settings/domain/domain.dart';
+import 'package:locnet_app/features/server_config/data/data.dart';
+import 'package:locnet_app/features/server_config/presentation/presentation.dart';
 import 'package:locnet_app/features/settings/presentation/presentation.dart';
 import 'package:locnet_app/features/settings/subfeatures/storage/data/repositories/settings_cache_database_repo/drift_settings_cache_database_repo.dart';
 import 'package:locnet_app/features/theme_editor/data/data.dart';
@@ -193,6 +195,9 @@ class AppProvidersWrapper extends StatelessWidget {
               db: appScope.db,
             ),
           ),
+          RepositoryProvider<IServerConfigRepo>(
+            create: (context) => appScope.serverConfigRepo,
+          ),
         ],
         child: _BlocProviders(child: child),
       ),
@@ -232,8 +237,29 @@ class _BlocProviders extends StatelessWidget {
             logger: appScope.logger,
           )..restoreSettings(),
         ),
+        BlocProvider(
+          create: (context) => ServerConfigCubit(
+            repo: context.read<IServerConfigRepo>(),
+            logger: appScope.logger,
+          )..load(),
+        ),
       ],
-      child: child,
+      child: BlocListener<ServerConfigCubit, ServerConfigState>(
+        listenWhen: (previous, current) =>
+            current is ServerConfigLoadedState &&
+            previous is ServerConfigSavingState,
+        listener: (context, state) {
+          if (state is! ServerConfigLoadedState) return;
+
+          final config = state.config;
+          appScope.apiConfig.applyUrls(
+            baseUrl: config.baseUrl,
+            baseSocketUrl: config.socketBaseUrl,
+          );
+          appScope.dio.options.baseUrl = config.baseUrl;
+        },
+        child: child,
+      ),
     );
   }
 }

@@ -1,7 +1,7 @@
 // ignore_for_file: sort_constructors_first
 
 import 'package:equatable/equatable.dart';
-import 'package:locnet_app/features/message/subfeatures/media/data/models/media_download_info_dto.dart';
+import 'package:locnet_app/features/message/subfeatures/media/data/models/media_download_info.dart';
 
 class MediaDownloadInfo extends Equatable {
   const MediaDownloadInfo({

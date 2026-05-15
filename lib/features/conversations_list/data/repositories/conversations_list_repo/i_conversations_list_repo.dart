@@ -11,4 +11,6 @@ abstract interface class IConversationsListRepo {
   Future<List<ConversationTile>> loadConversationsList({int page = 1});
 
   Stream<ConversationsListUpdateRec> get conversationsUpdates;
+
+  Future<void> dispose();
 }
