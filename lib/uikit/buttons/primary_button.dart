@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:locnet_app/uikit/uikit.dart';
+import 'package:locnet_app/app/app.dart';
 
-class PrimaryButton extends StatelessWidget {
-  const PrimaryButton({
+/// Primary action button; uses design tokens (small radius, spacing).
+class AppPrimaryButton extends StatelessWidget {
+  const AppPrimaryButton({
     required this.text,
     required this.onPressed,
     super.key,
@@ -11,6 +12,9 @@ class PrimaryButton extends StatelessWidget {
     this.buttonColor,
     this.textColor,
     this.borderRadius,
+    this.padding,
+    this.width,
+    this.height,
   });
 
   final String text;
@@ -20,34 +24,62 @@ class PrimaryButton extends StatelessWidget {
   final Color? buttonColor;
   final Color? textColor;
   final BorderRadius? borderRadius;
+  final EdgeInsets? padding;
+  final double? width;
+  final double? height;
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = AppColorScheme.of(context);
-    final textScheme = AppTextScheme.of(context);
+    final colorScheme = context.colorScheme;
+    final textScheme = context.textScheme;
+    final radii = context.radii;
+
+    final Color background = !isActive
+        ? colorScheme.outline
+        : (buttonColor ?? colorScheme.primary);
+
+    final double buttonHeight = height ?? 40;
 
     return SizedBox(
-      width: double.infinity,
+      width: width,
+      height: buttonHeight,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 20),
+          backgroundColor: background,
+          disabledBackgroundColor: colorScheme.outline,
           shape: RoundedRectangleBorder(
-            borderRadius: borderRadius ?? BorderRadius.circular(12),
+            borderRadius: borderRadius ?? radii.defaultRadiusValue,
           ),
-          backgroundColor: !isActive
-              ? colorScheme.outline
-              : (buttonColor ?? colorScheme.primary),
+          padding: padding ?? const EdgeInsets.symmetric(horizontal: 16),
+          elevation: 0,
         ),
         onPressed: (isLoading || !isActive) ? null : onPressed,
-        child: isLoading
-            ? const CircularProgressIndicator(color: Colors.white)
-            : Text(
-                text,
-                style: textScheme.label.copyWith(
-                  fontSize: 20,
-                  color: textColor ?? colorScheme.surface,
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 250),
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeInCubic,
+          child: isLoading
+              ? SizedBox(
+                  key: const ValueKey('loader'),
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.6,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      textColor ?? colorScheme.onPrimary,
+                    ),
+                  ),
+                )
+              : Text(
+                  key: const ValueKey('text'),
+                  text,
+                  textAlign: TextAlign.center,
+                  style: textScheme.title.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: textColor ?? colorScheme.onPrimary,
+                  ),
                 ),
-              ),
+        ),
       ),
     );
   }

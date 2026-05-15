@@ -1,0 +1,128 @@
+// ignore_for_file: sort_constructors_first
+
+import 'dart:async';
+
+import 'package:locnet_app/features/conversation/subfeatures/private/data/data.dart';
+import 'package:locnet_app/features/conversation/subfeatures/private/domain/domain.dart';
+import 'package:locnet_app/features/message/domain/domain.dart';
+import 'package:locnet_app/features/message/subfeatures/private_message/data/repositories/private_message_repo/i_private_message_repo.dart';
+import 'package:locnet_app/mock/mock.dart';
+
+final class MockPrivateMessageRepo implements IPrivateMessageRepo {
+  MockPrivateMessageRepo({
+    required MockInMemoryBackend backendStorage,
+  }) : _backendStorage = backendStorage;
+
+  final MockInMemoryBackend _backendStorage;
+
+  static final StreamController<PrivateConversationMessageUpdateRec>
+      _messagesUpdatesController =
+      StreamController<PrivateConversationMessageUpdateRec>.broadcast();
+
+  static Stream<PrivateConversationMessageUpdateRec> get messagesUpdates =>
+      _messagesUpdatesController.stream;
+
+  @override
+  Future<PrivateMessage> sendMessage({required PrivateMessage message}) async {
+    _messagesUpdatesController.add((
+      updateType: PrivateConversationMessageUpdateType.created,
+      message: message,
+    ));
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+    final dto = _backendStorage.addPrivateMessage(newMessage: message);
+    final sentMessage = message.copyWith(
+      id: dto.id,
+      deliveryStatus: MessageDeliveryStatus.sent,
+      attachments: message.attachments
+          .map((a) => a.copyWith(messageId: dto.id))
+          .toList(),
+    );
+    _messagesUpdatesController.add((
+      updateType: PrivateConversationMessageUpdateType.created,
+      message: sentMessage,
+    ));
+    return sentMessage;
+  }
+
+  @override
+  Future<PrivateMessage> editMessage({
+    required PrivateMessage updatedMessage,
+  }) async {
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+    final dto = _backendStorage.updatePrivateMessage(
+      updatedMessage: updatedMessage,
+    );
+    final storedMessage = PrivateMessage.fromDto(dto);
+    _messagesUpdatesController.add((
+      updateType: PrivateConversationMessageUpdateType.updated,
+      message: storedMessage,
+    ));
+    return storedMessage;
+  }
+
+  @override
+  Future<bool> deleteMessage({required PrivateMessage message}) async {
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+    final ok = _backendStorage.deletePrivateMessage(message: message);
+    if (ok) {
+      _messagesUpdatesController.add((
+        updateType: PrivateConversationMessageUpdateType.deleted,
+        message: message.copyWith(isDeleted: true),
+      ));
+    }
+    return ok;
+  }
+
+  @override
+  Future<PrivateMessage> toggleMessagePin({
+    required PrivateMessage message,
+    required bool isPinned,
+  }) async {
+    final updated = message.copyWith(isPinned: isPinned);
+    return editMessage(updatedMessage: updated);
+  }
+
+  @override
+  Future<List<LastReadPrivateMessage>> loadMessageReads({
+    required String conversationId,
+    required String messageId,
+  }) async {
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+    // No backing store for reads yet – return empty list.
+    return <LastReadPrivateMessage>[];
+  }
+
+  @override
+  Future<PrivateMessage> markMessageAsRead({
+    required String conversationId,
+    required String messageId,
+  }) async {
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+    final PrivateMessageDto? existingDto = _backendStorage.findPrivateMessage(
+      conversationId: conversationId,
+      messageId: messageId,
+    );
+    if (existingDto == null) {
+      throw StateError(
+        'markMessageAsRead: message $messageId not found in $conversationId',
+      );
+    }
+
+    final DateTime readAt = DateTime.now().toUtc();
+    final PrivateMessage updated = PrivateMessage.fromDto(existingDto).copyWith(
+      deliveryStatus: MessageDeliveryStatus.read,
+      readAt: readAt,
+      updatedAt: readAt,
+    );
+    final PrivateMessageDto storedDto = _backendStorage.updatePrivateMessage(
+      updatedMessage: updated,
+    );
+    final PrivateMessage stored = PrivateMessage.fromDto(storedDto);
+    _messagesUpdatesController.add((
+      updateType: PrivateConversationMessageUpdateType.updated,
+      message: stored,
+    ));
+    return stored;
+  }
+}
+

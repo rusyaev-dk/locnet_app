@@ -1,47 +1,137 @@
-import 'package:equatable/equatable.dart';
+// ignore_for_file: sort_constructors_first
 
-final class Session extends Equatable {
+import 'package:equatable/equatable.dart';
+import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/features/auth/data/data.dart';
+
+class Session extends Equatable {
   const Session({
-    required this.sessionToken,
-    required this.refreshToken,
+    required this.sessionId,
     required this.userId,
+    required this.refreshToken,
+    required this.accessToken,
+    required this.accessExpiresAt,
+    required this.refreshExpiresAt,
+    required this.isExpired,
+    required this.createdAt,
+    required this.updatedAt,
+    this.isTerminated,
+    this.terminatedAt,
+    this.ipAddress,
+    this.macAddress,
+    this.deviceName,
+    this.deviceType,
+    this.os,
   });
 
-  final String sessionToken;
-  final String refreshToken;
+  final String sessionId;
   final String userId;
+  final String refreshToken;
+  final String accessToken;
+  final DateTime accessExpiresAt;
+  final DateTime refreshExpiresAt;
+  final bool isExpired;
+  final bool? isTerminated;
+  final DateTime? terminatedAt;
+  final String? ipAddress;
+  final String? macAddress;
+  final String? deviceName;
+  final String? deviceType;
+  final String? os;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
-    'session_token': sessionToken,
-    'refresh_token': refreshToken,
-    'user_id': userId,
-  };
-
-  factory Session.fromJson(Map<String, dynamic> json) {
-    final String? sessionToken = json['session_token'];
-    final String? refreshToken = json['refresh_token'];
-
-    if (sessionToken == null || sessionToken.toString().isEmpty) {
-      throw ArgumentError('Missing or empty session token in JSON');
-    }
-
-    if (refreshToken == null || refreshToken.toString().isEmpty) {
-      throw ArgumentError('Missing or refresh session token in JSON');
-    }
-
-    final String? userId = json['user_id'];
-
-    if (userId == null || userId.toString().isEmpty) {
-      throw ArgumentError('Missing or empty session token in JSON');
-    }
-
+  factory Session.fromDto(SessionDto dto) {
     return Session(
-      sessionToken: sessionToken.toString(),
-      refreshToken: refreshToken.toString(),
-      userId: userId.toString(),
+      sessionId: dto.sessionId,
+      userId: dto.userId,
+      refreshToken: dto.refreshToken,
+      accessToken: dto.accessToken,
+      accessExpiresAt: dto.accessExpiresAt,
+      refreshExpiresAt: dto.refreshExpiresAt,
+      isExpired: dto.isExpired,
+      isTerminated: dto.isTerminated,
+      terminatedAt: dto.terminatedAt,
+      ipAddress: dto.ipAddress,
+      macAddress: dto.macAddress,
+      deviceName: dto.deviceName,
+      deviceType: dto.deviceType,
+      os: dto.os,
+      createdAt: dto.createdAt,
+      updatedAt: dto.updatedAt,
     );
   }
 
+  factory Session.fromJson(Map<String, dynamic> json) {
+    final String? legacyExpiresAt = json['expiresAt'] as String?;
+    final String? accessRaw =
+        json['accessExpiresAt'] as String? ?? legacyExpiresAt;
+    final String? refreshRaw =
+        json['refreshExpiresAt'] as String? ?? legacyExpiresAt;
+    if (accessRaw == null || accessRaw.isEmpty) {
+      throw const FormatException('Session JSON is missing accessExpiresAt');
+    }
+    if (refreshRaw == null || refreshRaw.isEmpty) {
+      throw const FormatException('Session JSON is missing refreshExpiresAt');
+    }
+    return Session(
+      sessionId: json['sessionId'] as String,
+      userId: json['userId'] as String,
+      refreshToken: json['refreshToken'] as String,
+      accessToken: json['accessToken'] as String,
+      accessExpiresAt: DateTimeFormatter.parse(accessRaw),
+      refreshExpiresAt: DateTimeFormatter.parse(refreshRaw),
+      isExpired: json['isExpired'] as bool,
+      isTerminated: json['isTerminated'] as bool?,
+      terminatedAt: json['terminatedAt'] != null
+          ? DateTimeFormatter.parse(json['terminatedAt'])
+          : null,
+      ipAddress: json['ipAddress'] as String?,
+      macAddress: json['macAddress'] as String?,
+      deviceName: json['deviceName'] as String?,
+      deviceType: json['deviceType'] as String?,
+      os: json['os'] as String?,
+      createdAt: DateTimeFormatter.parse(json['createdAt']),
+      updatedAt: DateTimeFormatter.parse(json['updatedAt']),
+    );
+  }
+
+  Map<String, dynamic> toJson() => <String, dynamic>{
+    'sessionId': sessionId,
+    'userId': userId,
+    'refreshToken': refreshToken,
+    'accessToken': accessToken,
+    'accessExpiresAt': accessExpiresAt.toIso8601String(),
+    'refreshExpiresAt': refreshExpiresAt.toIso8601String(),
+    'isExpired': isExpired,
+    'isTerminated': isTerminated,
+    'terminatedAt': terminatedAt?.toIso8601String(),
+    'ipAddress': ipAddress,
+    'macAddress': macAddress,
+    'deviceName': deviceName,
+    'deviceType': deviceType,
+    'os': os,
+    'createdAt': createdAt.toIso8601String(),
+    'updatedAt': updatedAt.toIso8601String(),
+  };
+
   @override
-  List<Object?> get props => [sessionToken, refreshToken, userId];
+  List<Object?> get props => <Object?>[
+    sessionId,
+    userId,
+    refreshToken,
+    accessToken,
+    accessExpiresAt,
+    refreshExpiresAt,
+    isExpired,
+    isTerminated,
+    terminatedAt,
+    ipAddress,
+    macAddress,
+    deviceName,
+    deviceType,
+    os,
+    createdAt,
+    updatedAt,
+  ];
 }

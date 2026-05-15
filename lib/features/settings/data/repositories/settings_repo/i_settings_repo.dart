@@ -1,7 +1,27 @@
 abstract interface class ISettingsRepo {
-  Future<bool> changeLocale(String newLocale);
-  Future<String> getCurrentLocale();
+  Future<bool> changeLanguage({required String newLanguageCode});
+  Future<String> getCurrentLanguageCode();
 
-  Future<bool> changeThemeMode(String themeCode);
+  Future<bool> changeThemeMode({required String newThemeCode});
   Future<String> getCurrentThemeMode();
+
+  Future<bool> changeTextScale({required String newTextScaleCode});
+  Future<String> getCurrentTextScaleCode();
+  Future<bool> changeElementScale({required String newElementScaleCode});
+  Future<String> getCurrentElementScaleCode();
+
+  Future<bool> saveChatSetting({required String key, required bool value});
+  Future<bool> getChatSetting({required String key, required bool fallback});
+
+  Future<bool> saveNotificationSetting({
+    required String key,
+    required bool value,
+  });
+  Future<bool> getNotificationSetting({
+    required String key,
+    required bool fallback,
+  });
+
+  Future<bool> saveNotificationSoundIndex({required int value});
+  Future<int> getNotificationSoundIndex({required int fallback});
 }

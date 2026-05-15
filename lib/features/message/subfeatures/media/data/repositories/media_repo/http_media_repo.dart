@@ -1,0 +1,216 @@
+import 'package:dio/dio.dart';
+import 'package:locnet_app/app/exceptions.dart';
+import 'package:locnet_app/core/data/data.dart';
+import 'package:locnet_app/features/message/subfeatures/media/data/models/models.dart';
+import 'package:locnet_app/features/message/subfeatures/media/data/repositories/media_repo/i_media_repo.dart';
+
+class HttpMediaRepo implements IMediaRepo {
+  HttpMediaRepo({required IHttpClient httpClient}) : _httpClient = httpClient;
+
+  final IHttpClient _httpClient;
+  final Map<String, MediaDownloadInfoDto> _downloadInfoCache =
+      <String, MediaDownloadInfoDto>{};
+
+  @override
+  Future<MediaInitUploadResponseDto> initUpload({
+    required MediaInitUploadRequestDto request,
+  }) async {
+    try {
+      final Response<dynamic> response = await _httpClient.post(
+        path: ApiEndpoints.mediaInit,
+        data: request.toJson(),
+      );
+      final dynamic data = response.data;
+      if (data is! Map<String, Object?>) {
+        throw AppUnknownException(
+          message: 'Invalid media init response format',
+          error: data,
+          stackTrace: StackTrace.current,
+        );
+      }
+      return MediaInitUploadResponseDto.fromJson(data);
+    } on AppException {
+      rethrow;
+    } catch (e, st) {
+      throw AppUnknownException(
+        message: 'Failed to init media upload',
+        error: e,
+        stackTrace: st,
+      );
+    }
+  }
+
+  @override
+  Future<String?> uploadBytes({
+    required String uploadUrl,
+    required List<int> bytes,
+    required Map<String, String> requiredHeaders,
+  }) async {
+    try {
+      final Response<dynamic> response = await _httpClient.put(
+        path: uploadUrl,
+        baseUrl: '',
+        data: bytes,
+        headers: requiredHeaders,
+      );
+      return response.headers.value('etag');
+    } on AppException {
+      rethrow;
+    } catch (e, st) {
+      throw AppUnknownException(
+        message: 'Failed to upload media bytes',
+        error: e,
+        stackTrace: st,
+      );
+    }
+  }
+
+  @override
+  Future<MediaCompleteUploadResponseDto> completeUpload({
+    required String mediaId,
+    String? etag,
+    int? contentLength,
+  }) async {
+    try {
+      final Response<dynamic> response = await _httpClient.post(
+        path: ApiEndpoints.mediaComplete(mediaId),
+        data: <String, Object?>{
+          if (etag != null && etag.isNotEmpty) 'etag': etag,
+          if (contentLength != null) 'contentLength': contentLength,
+        },
+      );
+      final dynamic data = response.data;
+      final Map<String, Object?> payload = switch (data) {
+        final Map<String, Object?> map
+            when map['data'] is Map<String, Object?> =>
+          map['data'] as Map<String, Object?>,
+        final Map<String, Object?> map => map,
+        _ => <String, Object?>{
+          'mediaId': mediaId,
+          'status': 'ready',
+          'metadata': <String, Object?>{
+            'mediaId': mediaId,
+            'sizeBytes': contentLength ?? 0,
+            'etag': etag,
+          },
+        },
+      };
+      return MediaCompleteUploadResponseDto.fromJson(payload);
+    } on AppException {
+      rethrow;
+    } catch (e, st) {
+      throw AppUnknownException(
+        message: 'Failed to complete media upload',
+        error: e,
+        stackTrace: st,
+      );
+    }
+  }
+
+  @override
+  Future<MediaMetadataDto> getMetadata({required String mediaId}) async {
+    try {
+      final Response<dynamic> response = await _httpClient.get(
+        path: ApiEndpoints.mediaMetadata(mediaId),
+      );
+      final dynamic data = response.data;
+      if (data is Map<String, Object?>) {
+        final Map<String, Object?> payload =
+            data['data'] is Map<String, Object?>
+            ? data['data'] as Map<String, Object?>
+            : data;
+        return MediaMetadataDto.fromJson(payload);
+      }
+      return MediaMetadataDto.fromJson(<String, Object?>{'mediaId': mediaId});
+    } on AppException {
+      rethrow;
+    } catch (e, st) {
+      throw AppUnknownException(
+        message: 'Failed to fetch media metadata',
+        error: e,
+        stackTrace: st,
+      );
+    }
+  }
+
+  @override
+  Future<MediaDownloadInfoDto> getDownloadInfo({
+    required String mediaId,
+    String? scope,
+    String? scopeId,
+  }) async {
+    try {
+      // Gateway: user_profile files use presigned GET without scope query
+      // ("public or owner path"); scope/scopeId are for contextual media only.
+      final bool omitScopeQuery =
+          scope != null && scope.toLowerCase() == 'user_profile';
+      final String? requestScope = omitScopeQuery ? null : scope;
+      final String? requestScopeId = omitScopeQuery ? null : scopeId;
+
+      final String cacheKey = omitScopeQuery
+          ? '$mediaId::user_profile_public'
+          : '$mediaId::${requestScope ?? ''}::${requestScopeId ?? ''}';
+      final MediaDownloadInfoDto? cached = _downloadInfoCache[cacheKey];
+      if (cached != null) {
+        return cached;
+      }
+
+      final Response<dynamic> response = await _httpClient.get(
+        path: ApiEndpoints.mediaDownload(mediaId),
+        uriParameters: <String, dynamic>{
+          if (requestScope != null && requestScope.isNotEmpty) 'scope': requestScope,
+          if (requestScopeId != null && requestScopeId.isNotEmpty)
+            'scopeId': requestScopeId,
+        },
+      );
+      final dynamic data = response.data;
+      if (data is! Map<String, Object?>) {
+        throw AppUnknownException(
+          message: 'Invalid media download response format',
+          error: data,
+          stackTrace: StackTrace.current,
+        );
+      }
+      final Map<String, Object?> payload = data['data'] is Map<String, Object?>
+          ? data['data'] as Map<String, Object?>
+          : data;
+      final MediaDownloadInfoDto dto = MediaDownloadInfoDto.fromJson(payload);
+      _downloadInfoCache[cacheKey] = dto;
+      return dto;
+    } on AppException {
+      rethrow;
+    } catch (e, st) {
+      throw AppUnknownException(
+        message: 'Failed to fetch media download info',
+        error: e,
+        stackTrace: st,
+      );
+    }
+  }
+
+  @override
+  Future<MediaDeleteResponseDto> deleteMedia({required String mediaId}) async {
+    try {
+      final Response<dynamic> response = await _httpClient.delete(
+        path: ApiEndpoints.media(mediaId),
+      );
+      final dynamic data = response.data;
+      if (data is! Map<String, Object?>) {
+        throw AppUnknownException(
+          message: 'Invalid media delete response format',
+          error: data,
+          stackTrace: StackTrace.current,
+        );
+      }
+      return MediaDeleteResponseDto.fromJson(data);
+    } on AppException {
+      rethrow;
+    } catch (e, st) {
+      throw AppUnknownException(
+        message: 'Failed to delete media',
+        error: e,
+        stackTrace: st,
+      );
+    }
+  }
+}

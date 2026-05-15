@@ -1,3 +1,3 @@
-export 'auth_repo_impl.dart';
+export 'http_auth_repo.dart';
 export 'i_auth_repo.dart';
-export 'auth_repo_mock.dart';
+export 'mock_auth_repo.dart';

@@ -1,0 +1,414 @@
+import 'package:bloc/bloc.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:equatable/equatable.dart';
+import 'package:locnet_app/app/app.dart';
+import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/features/auth/domain/domain.dart';
+import 'package:stream_transform/stream_transform.dart';
+
+part 'registration_event.dart';
+part 'registration_state.dart';
+
+class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
+  RegistrationBloc({
+    required AuthInteractor authInteractor,
+    required ILogger logger,
+  }) : _authInteractor = authInteractor,
+       _logger = logger,
+       super(const RegistrationState()) {
+    on<RegistrationFirstNameUpdated>(_onFirstNameUpdated);
+    on<RegistrationLastNameUpdated>(_onLastNameUpdated);
+    on<RegistrationDescriptionUpdated>(_onDescriptionUpdated);
+    on<RegistrationUsernameUpdated>(
+      _onUsernameUpdated,
+      transformer: _debounceDroppable(const Duration(milliseconds: 350)),
+    );
+    on<RegistrationPasswordUpdated>(_onPasswordUpdated);
+    on<RegistrationRepeatPasswordUpdated>(_onRepeatPasswordUpdated);
+  }
+
+  final AuthInteractor _authInteractor;
+  final ILogger _logger;
+  int _usernameValidationRequestId = 0;
+
+  Future<void> updateFirstName({String? newFirstName}) async {
+    add(RegistrationFirstNameUpdated(newFirstName: newFirstName));
+  }
+
+  Future<void> updateLastName({String? newLastName}) async {
+    add(RegistrationLastNameUpdated(newLastName: newLastName));
+  }
+
+  Future<void> updateDescription({String? newUserDescription}) async {
+    add(RegistrationDescriptionUpdated(newUserDescription: newUserDescription));
+  }
+
+  Future<void> updateUsername({String? newUsername}) async {
+    add(RegistrationUsernameUpdated(newUsername: newUsername));
+  }
+
+  Future<void> updatePassword({String? newPassword}) async {
+    add(RegistrationPasswordUpdated(newPassword: newPassword));
+  }
+
+  Future<void> updateRepeatPassword({String? newRepeatPassword}) async {
+    add(
+      RegistrationRepeatPasswordUpdated(newRepeatPassword: newRepeatPassword),
+    );
+  }
+
+  EventTransformer<T> _debounceDroppable<T>(Duration duration) {
+    return (events, mapper) =>
+        droppable<T>().call(events.debounce(duration), mapper);
+  }
+
+  Future<void> _onFirstNameUpdated(
+    RegistrationFirstNameUpdated event,
+    Emitter<RegistrationState> emit,
+  ) async {
+    try {
+      final String? newFirstName = event.newFirstName;
+      if (newFirstName == null || newFirstName.trim().isEmpty) {
+        emit(
+          state.copyWith(
+            firstName: null,
+            firstNameException: RequiredValueNotProvidedException(
+              message: "Firstname cannot be empty",
+            ),
+          ),
+        );
+        return;
+      }
+
+      try {
+        ProfileDataValidator.validateName(newFirstName);
+      } catch (e) {
+        emit(state.copyWith(firstName: newFirstName, firstNameException: e));
+        return;
+      }
+
+      emit(state.copyWith(firstName: newFirstName, firstNameException: null));
+    } catch (e, st) {
+      _logger.exception(e, st);
+
+      emit(
+        state.copyWith(
+          failure: e is AppException
+              ? e
+              : AppUnknownException(message: e.toString(), stackTrace: st),
+        ),
+      );
+    }
+  }
+
+  Future<void> _onLastNameUpdated(
+    RegistrationLastNameUpdated event,
+    Emitter<RegistrationState> emit,
+  ) async {
+    try {
+      final String? newLastName = event.newLastName;
+      if (newLastName == null || newLastName.trim().isEmpty) {
+        emit(
+          state.copyWith(
+            lastName: null,
+            lastNameException: RequiredValueNotProvidedException(
+              message: "Lastname cannot be empty",
+            ),
+          ),
+        );
+        return;
+      }
+
+      try {
+        ProfileDataValidator.validateName(newLastName);
+      } catch (e) {
+        emit(state.copyWith(lastName: newLastName, lastNameException: e));
+        return;
+      }
+
+      emit(state.copyWith(lastName: newLastName, lastNameException: null));
+    } catch (e, st) {
+      _logger.exception(e, st);
+
+      emit(
+        state.copyWith(
+          failure: e is AppException
+              ? e
+              : AppUnknownException(message: e.toString(), stackTrace: st),
+        ),
+      );
+    }
+  }
+
+  Future<void> _onDescriptionUpdated(
+    RegistrationDescriptionUpdated event,
+    Emitter<RegistrationState> emit,
+  ) async {
+    try {
+      final String? newUserDescription = event.newUserDescription;
+      if (newUserDescription == null || newUserDescription.trim().isEmpty) {
+        emit(state.copyWith(description: null, descriptionException: null));
+        return;
+      }
+
+      try {
+        ProfileDataValidator.validateUserDescription(newUserDescription);
+      } catch (e) {
+        return emit(
+          state.copyWith(
+            description: newUserDescription,
+            descriptionException: e,
+          ),
+        );
+      }
+
+      emit(
+        state.copyWith(
+          description: newUserDescription,
+          descriptionException: null,
+        ),
+      );
+    } catch (e, st) {
+      _logger.exception(e, st);
+
+      emit(
+        state.copyWith(
+          failure: e is AppException
+              ? e
+              : AppUnknownException(message: e.toString(), stackTrace: st),
+        ),
+      );
+    }
+  }
+
+  Future<void> _onUsernameUpdated(
+    RegistrationUsernameUpdated event,
+    Emitter<RegistrationState> emit,
+  ) async {
+    try {
+      final String? newUsername = event.newUsername;
+      if (newUsername == null || newUsername.trim().isEmpty) {
+        emit(
+          state.copyWith(
+            username: null,
+            usernameException: RequiredValueNotProvidedException(
+              message: "Username cannot be empty",
+            ),
+          ),
+        );
+        return;
+      }
+
+      try {
+        ProfileDataValidator.validateUsername(newUsername);
+      } catch (e) {
+        emit(state.copyWith(username: newUsername, usernameException: e));
+        return;
+      }
+
+      final int requestId = ++_usernameValidationRequestId;
+      emit(state.copyWith(username: newUsername, usernameException: null));
+
+      final bool isAvailable = await _authInteractor.validateRegisterLogin(
+        login: newUsername,
+      );
+
+      if (requestId != _usernameValidationRequestId) {
+        return;
+      }
+
+      if (!isAvailable) {
+        emit(
+          state.copyWith(
+            username: newUsername,
+            usernameException: AuthLoginAlreadyTakenException(
+              message: 'Username already taken',
+            ),
+          ),
+        );
+        return;
+      }
+
+      emit(state.copyWith(username: newUsername, usernameException: null));
+    } catch (e, st) {
+      _logger.exception(e, st);
+
+      emit(
+        state.copyWith(
+          failure: e is AppException
+              ? e
+              : AppUnknownException(message: e.toString(), stackTrace: st),
+        ),
+      );
+    }
+  }
+
+  Future<void> _onPasswordUpdated(
+    RegistrationPasswordUpdated event,
+    Emitter<RegistrationState> emit,
+  ) async {
+    try {
+      final String? newPassword = event.newPassword;
+      if (newPassword == null || newPassword.trim().isEmpty) {
+        emit(
+          state.copyWith(
+            password: null,
+            passwordException: RequiredValueNotProvidedException(
+              message: "Password cannot be empty",
+            ),
+          ),
+        );
+        return;
+      }
+
+      try {
+        PasswordValidator.validatePassword(newPassword);
+      } catch (e) {
+        emit(state.copyWith(password: newPassword, passwordException: e));
+        return;
+      }
+
+      final String? repeatPassword = state.repeatPassword;
+      if (repeatPassword != null &&
+          repeatPassword.isNotEmpty &&
+          repeatPassword != newPassword) {
+        emit(
+          state.copyWith(
+            password: newPassword,
+            passwordException: null,
+            repeatPasswordException: PasswordsMismatchException(
+              message: "Passwords don't match",
+            ),
+          ),
+        );
+        return;
+      }
+
+      emit(
+        state.copyWith(
+          password: newPassword,
+          passwordException: null,
+          repeatPasswordException:
+              repeatPassword != null &&
+                  repeatPassword.isNotEmpty &&
+                  repeatPassword == newPassword
+              ? null
+              : state.repeatPasswordException,
+        ),
+      );
+    } catch (e, st) {
+      _logger.exception(e, st);
+
+      emit(
+        state.copyWith(
+          failure: e is AppException
+              ? e
+              : AppUnknownException(message: e.toString(), stackTrace: st),
+        ),
+      );
+    }
+  }
+
+  Future<void> _onRepeatPasswordUpdated(
+    RegistrationRepeatPasswordUpdated event,
+    Emitter<RegistrationState> emit,
+  ) async {
+    try {
+      final String? newRepeatPassword = event.newRepeatPassword;
+      if (newRepeatPassword == null || newRepeatPassword.trim().isEmpty) {
+        emit(
+          state.copyWith(
+            repeatPassword: null,
+            repeatPasswordException: RequiredValueNotProvidedException(
+              message: "Repeat password cannot be empty",
+            ),
+          ),
+        );
+        return;
+      }
+
+      try {
+        final String? firstPassword = state.password;
+        final String repeatPasswordInput = newRepeatPassword;
+
+        if (firstPassword == null || firstPassword.isEmpty) {
+          throw PasswordsMismatchException(
+            message: "Passwords don't match",
+            stackTrace: StackTrace.current,
+          );
+        }
+
+        if (firstPassword != repeatPasswordInput) {
+          throw PasswordsMismatchException(
+            message: "Passwords don't match",
+            stackTrace: StackTrace.current,
+          );
+        }
+      } catch (e) {
+        emit(
+          state.copyWith(
+            repeatPassword: newRepeatPassword,
+            repeatPasswordException: e,
+          ),
+        );
+        return;
+      }
+
+      emit(
+        state.copyWith(
+          repeatPassword: newRepeatPassword,
+          repeatPasswordException: null,
+        ),
+      );
+    } catch (e, st) {
+      _logger.exception(e, st);
+
+      emit(
+        state.copyWith(
+          failure: e is AppException
+              ? e
+              : AppUnknownException(message: e.toString(), stackTrace: st),
+        ),
+      );
+    }
+  }
+
+  bool canRegister() {
+    final String? firstName = state.firstName;
+    final String? lastName = state.lastName;
+    final String? login = state.username;
+    final String? password = state.password;
+    final String? repeatPassword = state.repeatPassword;
+
+    final bool hasAllFilled =
+        firstName != null &&
+        firstName.isNotEmpty &&
+        lastName != null &&
+        lastName.isNotEmpty &&
+        login != null &&
+        login.isNotEmpty &&
+        password != null &&
+        password.isNotEmpty &&
+        repeatPassword != null &&
+        repeatPassword.isNotEmpty;
+
+    final bool passwordsMatch =
+        password != null &&
+        repeatPassword != null &&
+        password == repeatPassword;
+
+    final bool hasNoFieldExceptions =
+        state.firstNameException == null &&
+        state.lastNameException == null &&
+        state.descriptionException == null &&
+        state.usernameException == null &&
+        state.passwordException == null &&
+        state.repeatPasswordException == null;
+
+    return hasAllFilled && passwordsMatch && hasNoFieldExceptions;
+  }
+}
+
+class RegistrationCubit extends RegistrationBloc {
+  RegistrationCubit({required super.authInteractor, required super.logger});
+}

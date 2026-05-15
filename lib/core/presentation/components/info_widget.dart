@@ -11,6 +11,7 @@ class InfoWidget extends StatelessWidget {
     this.iconAnimationEffect,
     this.buttonText,
     this.onButtonPressed,
+    this.useErrorStyle = false,
   });
 
   final String text;
@@ -18,6 +19,8 @@ class InfoWidget extends StatelessWidget {
   final Effect? iconAnimationEffect;
   final String? buttonText;
   final VoidCallback? onButtonPressed;
+  /// When true, icon uses [ColorScheme.error] for visibility in dark theme.
+  final bool useErrorStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -30,9 +33,12 @@ class InfoWidget extends StatelessWidget {
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
 
+    final Color iconColor = useErrorStyle
+        ? colorScheme.error
+        : colorScheme.onSurfaceVariant;
     final Widget iconWidget = Icon(
       icon,
-      color: colorScheme.surfaceDim.withAlpha(170),
+      color: iconColor,
       size: 65,
     );
 
@@ -55,7 +61,7 @@ class InfoWidget extends StatelessWidget {
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
               style: textScheme.headline.copyWith(
-                color: colorScheme.surfaceDim.withAlpha(170),
+                color: colorScheme.onSurface,
               ),
             ),
             if (buttonText != null && onButtonPressed != null) ...[

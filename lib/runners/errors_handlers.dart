@@ -1,7 +1,7 @@
 part of 'app_runner.dart';
 
 /// Initializes global error handlers.
-void _initErrorHandlers(ILogger logger, AppEnv env) {
+void _initErrorHandlers(ILogger logger, AppEnvType env) {
   // Handle Flutter framework errors.
   FlutterError.onError = (details) {
     _showErrorScreen(details.exception, env, details.stack);
@@ -19,7 +19,7 @@ void _initErrorHandlers(ILogger logger, AppEnv env) {
 }
 
 /// Pushes the error screen on top of the current navigator.
-void _showErrorScreen(Object error, AppEnv env, StackTrace? stackTrace) {
+void _showErrorScreen(Object error, AppEnvType env, StackTrace? stackTrace) {
   WidgetsBinding.instance.addPostFrameCallback((_) {
     AppRouter.rootNavigatorKey.currentState?.push(
       MaterialPageRoute(

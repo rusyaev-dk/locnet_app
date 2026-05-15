@@ -1,0 +1,49 @@
+import 'package:dio/dio.dart';
+import 'package:locnet_app/app/app.dart';
+import 'package:locnet_app/core/core.dart';
+
+final class AcceptLanguageInterceptor extends Interceptor {
+  AcceptLanguageInterceptor({
+    required IUserCacheRepo userCacheRepo,
+    required ILogger logger,
+  }) : _userCacheRepo = userCacheRepo,
+       _logger = logger;
+
+  final IUserCacheRepo _userCacheRepo;
+  final ILogger _logger;
+
+  @override
+  void onRequest(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
+    if (_isPresignedStorageUrl(options.path)) {
+      handler.next(options);
+      return;
+    }
+
+    try {
+      final user = await _userCacheRepo.loadUser();
+      options.headers['Accept-Language'] = user.languageCode;
+    } on StorageException catch (e, st) {
+      _logger.exception(e, st);
+      options.headers['Accept-Language'] = AppConfig.defaultLanguageCode;
+    } catch (e, st) {
+      _logger.exception(e, st);
+      rethrow;
+    }
+
+    handler.next(options);
+  }
+
+  bool _isPresignedStorageUrl(String path) {
+    final Uri? uri = Uri.tryParse(path);
+    if (uri == null || !uri.hasScheme) {
+      return false;
+    }
+
+    final String algorithm = uri.queryParameters['X-Amz-Algorithm'] ?? '';
+    final String signature = uri.queryParameters['X-Amz-Signature'] ?? '';
+    return algorithm.isNotEmpty || signature.isNotEmpty;
+  }
+}

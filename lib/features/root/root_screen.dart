@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:locnet_app/core/core.dart';
-import 'package:locnet_app/features/settings/presentation/presentation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/features/auth/presentation/presentation.dart';
+import 'package:locnet_app/features/settings/presentation/presentation.dart';
 
 class RootScreen extends StatelessWidget {
   const RootScreen({required this.child, super.key});
@@ -12,9 +13,15 @@ class RootScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiToastListener(
       listeners: [
-        ToastListener<SettingsCubit, SettingsState, SettingsLoadedState>(
+        ToastListener<AuthCubit, AuthState, AuthFailureState>(
+          bloc: context.read<AuthCubit>(),
+          messageOf: (context, AuthFailureState state) =>
+              AuthExceptionsTranslator.translate(context, state.failure),
+        ),
+        ToastListener<SettingsCubit, SettingsState, SettingsState>(
           bloc: context.read<SettingsCubit>(),
-          messageOf: (SettingsLoadedState state) => state.message,
+          messageOf: (context, SettingsState state) =>
+              AppExceptionsTranslator.translate(context, state.failure),
         ),
       ],
       child: child,

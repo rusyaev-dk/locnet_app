@@ -1,63 +1,128 @@
 import 'package:flutter/material.dart';
-import 'package:locnet_app/features/auth/presentation/presentation.dart';
-import 'package:locnet_app/features/home/presentation/presentation.dart';
-import 'package:locnet_app/features/root/root_screen.dart';
-import 'package:locnet_app/features/splash/splash_screen.dart';
 import 'package:go_router/go_router.dart';
+import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/features/auth/presentation/presentation.dart';
+import 'package:locnet_app/features/conversations_list/presentation/presentation.dart';
+import 'package:locnet_app/features/passcode/presentation/controllers/passcode_flow_controller.dart';
+import 'package:locnet_app/features/passcode/presentation/screens/passcode_lock_screen.dart';
+import 'package:locnet_app/features/root/root_screen.dart';
+import 'package:locnet_app/features/side_panel/presentation/presentation.dart';
+import 'package:locnet_app/features/splash/splash_screen.dart';
 
 class AppRouter {
   AppRouter();
 
-  static final rootNavigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> rootNavigatorKey =
+      GlobalKey<NavigatorState>();
 
   static GoRouter createRouter({
     required bool includePrefixMatches,
     required List<NavigatorObserver> navigatorObservers,
-    required AuthRouterListenable authListenable,
+    required AuthFlowController authFlowController,
+    required PasscodeFlowController passcodeFlowController,
   }) {
     return GoRouter(
       initialLocation: '/',
       navigatorKey: rootNavigatorKey,
       debugLogDiagnostics: true,
-      refreshListenable: authListenable,
+      refreshListenable: Listenable.merge(<Listenable>[
+        authFlowController,
+        passcodeFlowController,
+      ]),
       observers: navigatorObservers,
-      redirect: (context, state) {
-        // All comments in English.
-        final AuthFlowStatus status = authListenable.status;
+      redirect: (BuildContext context, GoRouterState state) {
+        final AuthFlowStatus status = authFlowController.status;
         final String location = state.uri.path;
+        final bool isLocked = passcodeFlowController.isLocked;
 
-        // Keep Splash while loading.
         if (status == AuthFlowStatus.loading) {
+          final bool isAuthRoute =
+              location == AppRoutes.login || location == AppRoutes.registration;
+
+          if (isAuthRoute) {
+            return null;
+          }
+
           return location == '/' ? null : '/';
         }
 
-        // Route decisions after loading is done.
-        switch (status) {
-          case AuthFlowStatus.authenticated:
-            // Send any non-home location to home, except nested home children.
-            if (!location.startsWith('/home')) {
-              return '/home';
-            }
+        if (status == AuthFlowStatus.unauthenticated) {
+          final bool isAuthRoute =
+              location == AppRoutes.login || location == AppRoutes.registration;
+          if (isAuthRoute) {
             return null;
-
-          case AuthFlowStatus.unauthenticated:
-            // Force to registration unless already there.
-            if (location != '/registration') {
-              return '/registration';
-            }
-            return null;
-
-          case AuthFlowStatus.unknown:
-          case AuthFlowStatus.loading:
-            // handled above
-            return null;
+          }
+          return AppRoutes.login;
         }
+
+        if (status == AuthFlowStatus.authenticated) {
+          if (isLocked && location != AppRoutes.passcodeLock) {
+            return AppRoutes.passcodeLock;
+          }
+          if (location == AppRoutes.passcodeLock && !isLocked) {
+            return AppRoutes.conversations;
+          }
+
+          if (location == '/' ||
+              location == AppRoutes.login ||
+              location == AppRoutes.registration) {
+            return AppRoutes.conversations;
+          }
+
+          final bool isAppRoute =
+              location == AppRoutes.home ||
+              location.startsWith('${AppRoutes.conversations}/') ||
+              location == AppRoutes.conversations ||
+              location == AppRoutes.storage ||
+              location.startsWith('${AppRoutes.storage}/') ||
+              location == AppRoutes.passcodeLock;
+
+          if (isAppRoute) {
+            return null;
+          }
+
+          return AppRoutes.conversations;
+        }
+
+        return null;
       },
-      routes: [
+      routes: <RouteBase>[
         GoRoute(
           path: '/',
           name: 'splash',
-          builder: (context, _) => const SplashScreen(),
+          builder: (BuildContext context, GoRouterState _) {
+            return const SplashScreen();
+          },
+        ),
+        GoRoute(
+          path: '/registration',
+          name: 'registration',
+          pageBuilder: buildFadePage((
+            BuildContext context,
+            GoRouterState state,
+          ) {
+            return const RegistrationScreenWrapper(child: RegistrationScreen());
+          }),
+        ),
+        GoRoute(
+          path: '/login',
+          name: 'login',
+          pageBuilder: buildFadePage((
+            BuildContext context,
+            GoRouterState state,
+          ) {
+            return const LogInScreenWrapper(child: LogInScreen());
+          }),
+        ),
+        GoRoute(
+          path: AppRoutes.passcodeLock,
+          name: 'passcodeLock',
+          pageBuilder: buildFadePage((
+            BuildContext context,
+            GoRouterState state,
+          ) {
+            return const PasscodeLockScreen();
+          }),
         ),
         ShellRoute(
           pageBuilder: buildShellPageTransition((
@@ -65,13 +130,35 @@ class AppRouter {
             GoRouterState state,
             Widget child,
           ) {
-            return RootScreen(child: child);
+            return RootScreen(child: PanelScreen(child: child));
           }),
-          routes: [
-            GoRoute(
-              path: '/home',
-              name: 'home',
-              builder: (context, _) => const HomeScreen(),
+          routes: <RouteBase>[
+            ShellRoute(
+              builder:
+                  (BuildContext context, GoRouterState state, Widget child) {
+                    return ConversationsPanelWrapper(child: child);
+                  },
+              routes: <RouteBase>[
+                GoRoute(
+                  path: '/conversations',
+                  name: 'conversations',
+                  pageBuilder: buildNoTransitionPage((context, state) {
+                    return const ConversationsPanel();
+                  }),
+                ),
+                GoRoute(
+                  path: '/conversations/:conversationId',
+                  name: 'conversationDetails',
+                  pageBuilder: buildNoTransitionPage((context, state) {
+                    final String? selectedConversationId =
+                        state.pathParameters['conversationId'];
+
+                    return ConversationsPanel(
+                      selectedConversationId: selectedConversationId,
+                    );
+                  }),
+                ),
+              ],
             ),
           ],
         ),
@@ -80,43 +167,62 @@ class AppRouter {
   }
 }
 
-Page<dynamic> Function(BuildContext, GoRouterState) buildPageTransition(
+Page<dynamic> Function(BuildContext, GoRouterState) buildFadePage(
   Widget Function(BuildContext, GoRouterState) childBuilder,
-) => (BuildContext context, GoRouterState state) {
-  return CustomTransitionPage(
-    key: state.pageKey,
-    child: childBuilder(context, state),
-    transitionDuration: const Duration(milliseconds: 380),
-    reverseTransitionDuration: const Duration(milliseconds: 260),
-    transitionsBuilder: (context, animation, secondary, child) {
-      final Animation<double> opacity = CurvedAnimation(
-        parent: animation,
-        curve: Curves.easeOutCubic,
-        reverseCurve: Curves.easeInCubic,
-      );
-      return FadeTransition(opacity: opacity, child: child);
-    },
-  );
-};
+) {
+  return (BuildContext context, GoRouterState state) {
+    final bool disableAnimations =
+        MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+
+    return CustomTransitionPage<dynamic>(
+      key: state.pageKey,
+      transitionDuration: disableAnimations
+          ? Duration.zero
+          : const Duration(milliseconds: 180),
+      reverseTransitionDuration: disableAnimations
+          ? Duration.zero
+          : const Duration(milliseconds: 150),
+      child: childBuilder(context, state),
+      transitionsBuilder:
+          (
+            BuildContext context,
+            Animation<double> animation,
+            Animation<double> secondaryAnimation,
+            Widget child,
+          ) {
+            if (disableAnimations) return child;
+
+            final Animation<double> opacity = CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeOutCubic,
+              reverseCurve: Curves.easeInCubic,
+            );
+            return FadeTransition(opacity: opacity, child: child);
+          },
+    );
+  };
+}
 
 Page<dynamic> Function(BuildContext, GoRouterState, Widget)
 buildShellPageTransition(
   Widget Function(BuildContext, GoRouterState, Widget child) childBuilder,
 ) {
   return (BuildContext context, GoRouterState state, Widget child) {
-    return CustomTransitionPage(
+    // No animation for Shell: keeps panel navigation snappy on desktop.
+    return NoTransitionPage<dynamic>(
       key: state.pageKey,
       child: childBuilder(context, state, child),
-      transitionDuration: const Duration(milliseconds: 380),
-      reverseTransitionDuration: const Duration(milliseconds: 260),
-      transitionsBuilder: (context, animation, secondary, child) {
-        final Animation<double> opacity = CurvedAnimation(
-          parent: animation,
-          curve: Curves.easeOutCubic,
-          reverseCurve: Curves.easeInCubic,
-        );
-        return FadeTransition(opacity: opacity, child: child);
-      },
+    );
+  };
+}
+
+Page<dynamic> Function(BuildContext, GoRouterState) buildNoTransitionPage(
+  Widget Function(BuildContext, GoRouterState) childBuilder,
+) {
+  return (BuildContext context, GoRouterState state) {
+    return NoTransitionPage<dynamic>(
+      key: state.pageKey,
+      child: childBuilder(context, state),
     );
   };
 }
