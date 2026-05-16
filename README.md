@@ -3,6 +3,26 @@
 **Требования:** Flutter 3.38.x, Dart 3.9.2+  
 **Платформы:** macOS, Windows, Web
 
+## Скриншоты
+
+### Регистрация
+
+![Регистрация](screenshots/registration.png)
+
+### Чат
+
+![Чат](screenshots/chat-1.png)
+
+![Чат](screenshots/chat-2.png)
+
+### Настройки
+
+![Профиль](screenshots/settings-profile.png)
+
+![Конфиденциальность](screenshots/settings-privacy.png)
+
+![Кеширование](screenshots/settings-cache.png)
+
 ## Архитектура
 
 ### Слои
