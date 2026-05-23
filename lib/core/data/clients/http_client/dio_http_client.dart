@@ -182,7 +182,7 @@ class DioHttpClient implements IHttpClient {
 
   Exception _mapDioError(DioException exception, StackTrace st) {
     if (exception.error is SocketException) {
-      return ApiException(
+      return ApiNetworkException(
         message: 'No internet',
         error: exception,
         stackTrace: st,

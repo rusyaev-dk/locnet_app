@@ -2903,6 +2903,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Нет подключения к интернету`
+  String get noInternetConnection {
+    return Intl.message(
+      'Нет подключения к интернету',
+      name: 'noInternetConnection',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Нет соединения с сервером`
+  String get noServerConnection {
+    return Intl.message(
+      'Нет соединения с сервером',
+      name: 'noServerConnection',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

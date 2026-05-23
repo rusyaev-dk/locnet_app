@@ -52,8 +52,14 @@ class AppProvidersWrapper extends StatelessWidget {
           create: (context) =>
               DioHttpClient(dio: appScope.dio, apiConfig: appScope.apiConfig),
         ),
-
         Provider<IAppEnvPreset>(create: (context) => envPreset),
+        Provider<IConnectivityService>(
+          create: (_) => ConnectivityService(),
+          dispose: (_, service) => service.dispose(),
+        ),
+        Provider<IServerConnectivityService>(
+          create: (_) => appScope.serverConnectivityService,
+        ),
       ],
       child: MultiRepositoryProvider(
         providers: [
@@ -216,6 +222,14 @@ class _BlocProviders extends StatelessWidget {
 
     return MultiBlocProvider(
       providers: [
+        BlocProvider<NetworkStatusCubit>(
+          lazy: false,
+          create: (context) => NetworkStatusCubit(
+            connectivityService: context.read<IConnectivityService>(),
+            serverConnectivityService:
+                context.read<IServerConnectivityService>(),
+          ),
+        ),
         BlocProvider(
           create: (context) => AuthCubit(
             authInteractor: context.read<AuthInteractor>(),

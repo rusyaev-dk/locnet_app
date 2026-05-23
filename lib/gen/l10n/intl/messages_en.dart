@@ -317,7 +317,13 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "modalKeyboardHintSelect": MessageLookupByLibrary.simpleMessage("Select"),
     "next": MessageLookupByLibrary.simpleMessage("Next"),
+    "noInternetConnection": MessageLookupByLibrary.simpleMessage(
+      "No internet connection",
+    ),
     "noLabel": MessageLookupByLibrary.simpleMessage("No"),
+    "noServerConnection": MessageLookupByLibrary.simpleMessage(
+      "No connection to server",
+    ),
     "notRegisteredYetQuestion": MessageLookupByLibrary.simpleMessage(
       "Not registered yet?",
     ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:locnet_app/app/app.dart';
 import 'package:locnet_app/core/core.dart';
+import 'package:locnet_app/uikit/uikit.dart';
 
 class InfoWidget extends StatelessWidget {
   const InfoWidget({
@@ -19,7 +20,6 @@ class InfoWidget extends StatelessWidget {
   final Effect? iconAnimationEffect;
   final String? buttonText;
   final VoidCallback? onButtonPressed;
-  /// When true, icon uses [ColorScheme.error] for visibility in dark theme.
   final bool useErrorStyle;
 
   @override
@@ -27,61 +27,51 @@ class InfoWidget extends StatelessWidget {
     assert(
       (buttonText != null && onButtonPressed != null) ||
           (buttonText == null && onButtonPressed == null),
-      'buttonText and onButtonPressed must be either provided both or none of them.',
+      'buttonText and onButtonPressed must be provided together or not at all.',
     );
 
     final colorScheme = context.colorScheme;
     final textScheme = context.textScheme;
+    final spacing = context.designTokens.spacing;
 
-    final Color iconColor = useErrorStyle
-        ? colorScheme.error
-        : colorScheme.onSurfaceVariant;
-    final Widget iconWidget = Icon(
-      icon,
-      color: iconColor,
-      size: 65,
-    );
+    final bool showIcon = !useErrorStyle && icon != null;
+
+    final Widget? iconWidget = showIcon
+        ? ConditionalWrapper(
+            condition: iconAnimationEffect != null,
+            child: Icon(icon, color: colorScheme.onSurfaceVariant, size: 28),
+            wrapper: (child) =>
+                Animate(effects: [iconAnimationEffect!], child: child),
+          )
+        : null;
 
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 50),
+      child: FractionallySizedBox(
+        widthFactor: 0.72,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ConditionalWrapper(
-              condition: iconAnimationEffect != null,
-              child: iconWidget,
-              wrapper: (child) =>
-                  Animate(effects: [iconAnimationEffect!], child: child),
-            ),
-            const SizedBox(height: 20),
+            if (iconWidget != null) ...[
+              iconWidget,
+              SizedBox(height: spacing.xs),
+            ],
             Text(
               text,
               textAlign: TextAlign.center,
-              maxLines: 3,
+              maxLines: 4,
               overflow: TextOverflow.ellipsis,
-              style: textScheme.headline.copyWith(
-                color: colorScheme.onSurface,
+              style: textScheme.subtitle.copyWith(
+                fontWeight: FontWeight.w400,
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
             if (buttonText != null && onButtonPressed != null) ...[
-              const SizedBox(height: 20),
-              TextButton(
-                onPressed: onButtonPressed,
-                style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  foregroundColor: colorScheme.primary,
-                  textStyle: textScheme.headline.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Text(buttonText!),
+              SizedBox(height: spacing.md),
+              AppPrimaryButton(
+                text: buttonText!,
+                onPressed: onButtonPressed!,
+                height: 36,
+                padding: EdgeInsets.symmetric(horizontal: spacing.md),
               ),
             ],
           ],

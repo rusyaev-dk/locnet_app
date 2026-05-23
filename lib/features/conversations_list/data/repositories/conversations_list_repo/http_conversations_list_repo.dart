@@ -13,15 +13,18 @@ class HttpConversationsListRepo implements IConversationsListRepo {
     required ApiConfig apiConfig,
     required ISessionCacheRepo sessionCacheRepo,
     required ILogger logger,
+    IServerConnectivityService? serverConnectivityService,
   }) : _httpClient = httpClient,
        _apiConfig = apiConfig,
        _sessionCacheRepo = sessionCacheRepo,
-       _logger = logger;
+       _logger = logger,
+       _serverConnectivity = serverConnectivityService;
 
   final IHttpClient _httpClient;
   final ApiConfig _apiConfig;
   final ISessionCacheRepo _sessionCacheRepo;
   final ILogger _logger;
+  final IServerConnectivityService? _serverConnectivity;
   io.Socket? _socket;
   bool _isSocketConnecting = false;
   final StreamController<ConversationsListUpdateRec> _updatesController =
@@ -169,12 +172,14 @@ class HttpConversationsListRepo implements IConversationsListRepo {
         })
         ..onConnect((_) {
           _socketLog('event: connect');
+          _serverConnectivity?.reportConnected();
         })
         ..onDisconnect((dynamic reason) {
           _socketLog('event: disconnect reason=$reason');
         })
         ..onReconnect((dynamic attempt) {
           _socketLog('event: reconnect attempt=$attempt');
+          _serverConnectivity?.reportConnected();
         })
         ..onReconnectAttempt((dynamic attempt) {
           _socketLog('event: reconnect_attempt attempt=$attempt');
@@ -191,17 +196,11 @@ class HttpConversationsListRepo implements IConversationsListRepo {
             _socketLog('connect_error contains jwt expired, trying reconnect');
             _tryReconnectWithFreshSessionToken();
           }
-          _updatesController.addError(
-            AppUnknownException(
-              message: 'Conversations socket connect error: $error',
-            ),
-          );
+          _serverConnectivity?.reportError();
         })
         ..onError((dynamic error) {
           _socketLog('event: error error=$error');
-          _updatesController.addError(
-            AppUnknownException(message: 'Conversations socket error: $error'),
-          );
+          _serverConnectivity?.reportError();
         })
         ..onPing((_) {
           _socketLog('event: ping');

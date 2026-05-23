@@ -246,7 +246,10 @@ class _GroupConversationScreenState extends State<GroupConversationScreen> {
                 case GroupConversationFailureState():
                   return InfoWidget(
                     icon: Icons.error,
-                    text: state.failure.toString(),
+                    text: AppExceptionsTranslator.translate(
+                      context,
+                      state.failure,
+                    ),
                     useErrorStyle: true,
                     buttonText: l10n.retry,
                     onButtonPressed: () =>

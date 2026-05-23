@@ -313,5 +313,7 @@
   "serverSocketUrl": "Socket URL",
   "serverSettingsSave": "Saqlash",
   "serverSettingsReset": "Tiklash",
-  "serverSettingsInvalidUrl": "URL http:// yoki https:// bilan boshlanishi kerak"
+  "serverSettingsInvalidUrl": "URL http:// yoki https:// bilan boshlanishi kerak",
+  "noInternetConnection": "Internet aloqasi yo'q",
+  "noServerConnection": "Server bilan aloqa yo'q"
 }

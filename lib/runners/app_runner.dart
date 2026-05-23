@@ -204,6 +204,7 @@ class AppRunner {
       routeObserver: TalkerRouteObserver(talker),
       dio: dio,
       logger: logger,
+      serverConnectivityService: ServerConnectivityService(),
     );
   }
 }

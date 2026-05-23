@@ -313,5 +313,7 @@
   "serverSocketUrl": "Socket URL",
   "serverSettingsSave": "Сохранить",
   "serverSettingsReset": "Сбросить",
-  "serverSettingsInvalidUrl": "URL должен начинаться с http:// или https://"
+  "serverSettingsInvalidUrl": "URL должен начинаться с http:// или https://",
+  "noInternetConnection": "Нет подключения к интернету",
+  "noServerConnection": "Нет соединения с сервером"
 }

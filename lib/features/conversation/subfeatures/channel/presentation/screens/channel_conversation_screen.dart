@@ -248,7 +248,10 @@ class _ChannelConversationScreenState extends State<ChannelConversationScreen> {
                 case ChannelConversationFailureState():
                   return InfoWidget(
                     icon: Icons.error,
-                    text: state.failure.toString(),
+                    text: AppExceptionsTranslator.translate(
+                      context,
+                      state.failure,
+                    ),
                     useErrorStyle: true,
                     buttonText: l10n.retry,
                     onButtonPressed: () =>

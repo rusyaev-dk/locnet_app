@@ -15,6 +15,7 @@ class AllConversationsListBloc
   AllConversationsListBloc({
     required ConversationsListInteractor conversationsListInteractor,
     required UserInteractor userInteractor,
+    required NetworkStatusCubit networkStatusCubit,
     required ILogger logger,
   }) : _conversationsListInteractor = conversationsListInteractor,
        _userInteractor = userInteractor,
@@ -26,6 +27,7 @@ class AllConversationsListBloc
     on<AllConversationsListConversationUpdatedEvent>(_onConversationUpdated);
     on<AllConversationsListConversationDeletedEvent>(_onConversationDeleted);
     on<AllConversationsListSocketErrorEvent>(_onSocketError);
+    on<_AllConversationsListNetworkRestoredEvent>(_onNetworkRestored);
 
     _conversationsUpdatesSub = _conversationsListInteractor.conversationsUpdates
         .listen(
@@ -45,6 +47,10 @@ class AllConversationsListBloc
             );
           },
         );
+
+    _networkSub = networkStatusCubit.stream
+        .where((NetworkStatus status) => status == NetworkStatus.online)
+        .listen((_) => add(const _AllConversationsListNetworkRestoredEvent()));
   }
 
   final ConversationsListInteractor _conversationsListInteractor;
@@ -52,6 +58,7 @@ class AllConversationsListBloc
   final ILogger _logger;
 
   StreamSubscription<ConversationsListUpdateRec>? _conversationsUpdatesSub;
+  StreamSubscription<NetworkStatus>? _networkSub;
 
   static const int _pageSize = 20;
 
@@ -124,6 +131,16 @@ class AllConversationsListBloc
               error: e,
               stackTrace: st,
             );
+
+      final bool isNetworkError =
+          appException is ApiNetworkException ||
+          appException is ApiTimeoutException;
+
+      final AllConversationsListState current = state;
+      if (isNetworkError && current is AllConversationsListLoadedState) {
+        emit(current.copyWith(isOffline: true));
+        return;
+      }
 
       emit(AllConversationsListFailureState(failure: appException));
     }
@@ -248,6 +265,18 @@ class AllConversationsListBloc
     AllConversationsListSocketErrorEvent event,
     Emitter<AllConversationsListState> emit,
   ) async {
+    final AllConversationsListState current = state;
+
+    if (current is AllConversationsListLoadedState) {
+      final bool isNetworkError =
+          event.failure is ApiNetworkException ||
+          event.failure is ApiTimeoutException;
+      if (isNetworkError) {
+        emit(current.copyWith(isOffline: true));
+        return;
+      }
+    }
+
     emit(AllConversationsListFailureState(failure: event.failure));
   }
 
@@ -303,8 +332,22 @@ class AllConversationsListBloc
     );
   }
 
+  Future<void> _onNetworkRestored(
+    _AllConversationsListNetworkRestoredEvent event,
+    Emitter<AllConversationsListState> emit,
+  ) async {
+    final AllConversationsListState current = state;
+    if (current is AllConversationsListLoadedState && current.isOffline) {
+      emit(current.copyWith(isOffline: false));
+      add(const AllConversationsListLoadEvent());
+    } else if (current is AllConversationsListFailureState) {
+      add(const AllConversationsListLoadEvent());
+    }
+  }
+
   @override
   Future<void> close() async {
+    await _networkSub?.cancel();
     await _conversationsUpdatesSub?.cancel();
     await _conversationsListInteractor.dispose();
     return super.close();

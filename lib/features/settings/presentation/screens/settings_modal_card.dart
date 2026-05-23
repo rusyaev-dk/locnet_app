@@ -50,7 +50,10 @@ class SettingsModalCard extends StatelessWidget {
             case SettingsFailureState():
               return InfoWidget(
                 icon: Icons.error,
-                text: state.failure.toString(),
+                text: AppExceptionsTranslator.translate(
+                  context,
+                  state.failure,
+                ),
                 useErrorStyle: true,
                 iconAnimationEffect: const ShakeEffect(),
               );

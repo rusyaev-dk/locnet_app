@@ -93,7 +93,13 @@ final class AuthCubit extends Cubit<AuthState> {
         return;
       }
 
-      emit(AuthAuthenticatedState(user: restored.$2, session: restored.$1));
+      emit(
+        AuthAuthenticatedState(
+          user: restored.$2,
+          session: restored.$1,
+          isSessionRestore: true,
+        ),
+      );
     } catch (e, st) {
       _logger.exception("Restore session failed: $e", st);
       emit(const AuthUnauthenticatedState());

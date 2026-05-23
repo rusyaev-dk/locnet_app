@@ -69,3 +69,9 @@ final class AllConversationsListSocketErrorEvent
   @override
   List<Object?> get props => <Object?>[failure];
 }
+
+/// Dispatched internally when network connectivity is restored.
+final class _AllConversationsListNetworkRestoredEvent
+    extends AllConversationsListEvent {
+  const _AllConversationsListNetworkRestoredEvent();
+}

@@ -11,6 +11,7 @@ class AppExceptionsTranslator {
         AppUnknownException: (s) => s.appUnknownException,
 
         // API exceptions
+        ApiNetworkException: (s) => s.noServerConnection,
         ApiUnauthorizedException: (s) => s.apiUnauthorizedException,
         ApiServerException: (s) => s.apiServerException,
         ApiValidationException: (s) => s.apiValidationException,

@@ -167,11 +167,13 @@ class _AppState extends State<_App> with WidgetsBindingObserver {
           routerConfig: widget.router,
           builder: (context, child) {
             final mediaQuery = MediaQuery.of(context);
-            return MediaQuery(
-              data: mediaQuery.copyWith(
-                textScaler: TextScaler.linear(textScaleFactor),
+            return ConnectivityBanner(
+              child: MediaQuery(
+                data: mediaQuery.copyWith(
+                  textScaler: TextScaler.linear(textScaleFactor),
+                ),
+                child: child ?? const SizedBox.shrink(),
               ),
-              child: child ?? const SizedBox.shrink(),
             );
           },
         );

@@ -26,6 +26,7 @@ class ForwardTargetPickerModalWrapper extends StatelessWidget {
           conversationsListInteractor: context
               .read<ConversationsListInteractor>(),
           userInteractor: context.read<UserInteractor>(),
+          networkStatusCubit: context.read<NetworkStatusCubit>(),
           logger: context.read<ILogger>(),
         )..add(const AllConversationsListLoadEvent()),
         child: child,

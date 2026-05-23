@@ -325,7 +325,13 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "modalKeyboardHintSelect": MessageLookupByLibrary.simpleMessage("Tanlash"),
     "next": MessageLookupByLibrary.simpleMessage("Keyingi"),
+    "noInternetConnection": MessageLookupByLibrary.simpleMessage(
+      "Internet aloqasi yo\'q",
+    ),
     "noLabel": MessageLookupByLibrary.simpleMessage("Yoʻq"),
+    "noServerConnection": MessageLookupByLibrary.simpleMessage(
+      "Server bilan aloqa yo\'q",
+    ),
     "notRegisteredYetQuestion": MessageLookupByLibrary.simpleMessage(
       "Roʻyxatdan oʻtmagansizmi?",
     ),

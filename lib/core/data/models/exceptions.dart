@@ -83,3 +83,13 @@ final class ApiTimeoutException extends ApiException {
     super.statusCode,
   });
 }
+
+/// Network is unreachable (SocketException, no internet).
+/// Distinct from ApiException: the server was never reached at all.
+final class ApiNetworkException extends ApiException {
+  ApiNetworkException({
+    required super.message,
+    super.stackTrace,
+    super.error,
+  });
+}

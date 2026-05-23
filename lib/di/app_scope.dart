@@ -23,6 +23,7 @@ final class AppScope {
     required this.talker,
     required this.routeObserver,
     required this.logger,
+    required this.serverConnectivityService,
   });
 
   final AppEnvType env;
@@ -37,6 +38,9 @@ final class AppScope {
   final Talker talker;
   final TalkerRouteObserver routeObserver;
   final ILogger logger;
+
+  /// Reports server socket reachability to the global banner.
+  final IServerConnectivityService serverConnectivityService;
 
   AppDatabase get db => storageAggregator.db;
 }

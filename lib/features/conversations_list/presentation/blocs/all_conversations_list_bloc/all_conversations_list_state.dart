@@ -32,6 +32,7 @@ final class AllConversationsListLoadedState extends AllConversationsListState {
     this.page = 1,
     this.isLoadingMore = false,
     this.hasMore = true,
+    this.isOffline = false,
     super.failure,
   });
 
@@ -41,17 +42,23 @@ final class AllConversationsListLoadedState extends AllConversationsListState {
   final bool hasMore;
   final String currentUserId;
 
+  /// True when the last known network error is a connectivity failure.
+  /// Cached data remains visible; the banner indicates offline mode.
+  final bool isOffline;
+
   AllConversationsListLoadedState copyWith({
     int? page,
     List<ConversationTile>? conversationTiles,
     bool? isLoadingMore,
     bool? hasMore,
+    bool? isOffline,
   }) {
     return AllConversationsListLoadedState(
       page: page ?? this.page,
       conversationTiles: conversationTiles ?? this.conversationTiles,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       hasMore: hasMore ?? this.hasMore,
+      isOffline: isOffline ?? this.isOffline,
       failure: failure,
       currentUserId: currentUserId,
     );
@@ -64,6 +71,7 @@ final class AllConversationsListLoadedState extends AllConversationsListState {
     page,
     isLoadingMore,
     hasMore,
+    isOffline,
     failure,
   ];
 }

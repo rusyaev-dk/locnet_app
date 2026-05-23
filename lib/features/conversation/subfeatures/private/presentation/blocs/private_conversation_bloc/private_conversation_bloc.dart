@@ -36,7 +36,12 @@ class PrivateConversationBloc
 
     _messagesUpdatesSubscription = _privateConversationInteractor
         .messagesUpdates
-        .listen(_onMessagesUpdatesStreamEvent);
+        .listen(
+          _onMessagesUpdatesStreamEvent,
+          onError: (Object e, StackTrace st) {
+            _logger.exception(e, st);
+          },
+        );
   }
 
   final PrivateConversationInteractor _privateConversationInteractor;

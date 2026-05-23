@@ -17,15 +17,18 @@ class HttpPrivateConversationRepo implements IPrivateConversationRepo {
     required ApiConfig apiConfig,
     ISessionCacheRepo? sessionCacheRepo,
     ILogger? logger,
+    IServerConnectivityService? serverConnectivityService,
   }) : _httpClient = httpClient,
        _apiConfig = apiConfig,
        _sessionCacheRepo = sessionCacheRepo,
-       _logger = logger;
+       _logger = logger,
+       _serverConnectivity = serverConnectivityService;
 
   final IHttpClient _httpClient;
   final ApiConfig _apiConfig;
   final ISessionCacheRepo? _sessionCacheRepo;
   final ILogger? _logger;
+  final IServerConnectivityService? _serverConnectivity;
   io.Socket? _socket;
   bool _isSocketConnecting = false;
 
@@ -434,12 +437,14 @@ class HttpPrivateConversationRepo implements IPrivateConversationRepo {
         })
         ..onConnect((_) {
           _socketLog('event: connect');
+          _serverConnectivity?.reportConnected();
         })
         ..onDisconnect((dynamic reason) {
           _socketLog('event: disconnect reason=$reason');
         })
         ..onReconnect((dynamic attempt) {
           _socketLog('event: reconnect attempt=$attempt');
+          _serverConnectivity?.reportConnected();
         })
         ..onReconnectAttempt((dynamic attempt) {
           _socketLog('event: reconnect_attempt attempt=$attempt');
@@ -456,15 +461,11 @@ class HttpPrivateConversationRepo implements IPrivateConversationRepo {
             _socketLog('connect_error contains jwt expired, trying reconnect');
             _tryReconnectWithFreshSessionToken();
           }
-          _messagesUpdatesController.addError(
-            AppUnknownException(message: 'Socket connect error: $error'),
-          );
+          _serverConnectivity?.reportError();
         })
         ..onError((dynamic error) {
           _socketLog('event: error error=$error');
-          _messagesUpdatesController.addError(
-            AppUnknownException(message: 'Socket error: $error'),
-          );
+          _serverConnectivity?.reportError();
         })
         ..onPing((_) {
           _socketLog('event: ping');

@@ -69,6 +69,7 @@ final class StageEnvPreset implements IAppEnvPreset {
         apiConfig: _appScope.apiConfig,
         sessionCacheRepo: _sessionCacheRepo,
         logger: _appScope.logger,
+        serverConnectivityService: _appScope.serverConnectivityService,
       ),
       tilesDao: _db.conversationTilesDao,
     );
@@ -114,6 +115,7 @@ final class StageEnvPreset implements IAppEnvPreset {
         apiConfig: _appScope.apiConfig,
         sessionCacheRepo: _sessionCacheRepo,
         logger: _appScope.logger,
+        serverConnectivityService: _appScope.serverConnectivityService,
       ),
       messagesDao: _db.privateMessagesDao,
     );

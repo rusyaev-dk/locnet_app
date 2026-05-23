@@ -20,7 +20,8 @@ class PasscodeLockCubit extends Cubit<PasscodeLockState> {
   bool _authSessionActive = false;
 
   void _onAuthState(AuthState authState) {
-    if (authState is AuthUnauthenticatedState || authState is AuthFailureState) {
+    if (authState is AuthUnauthenticatedState ||
+        authState is AuthFailureState) {
       _authSessionActive = false;
       onSessionCleared();
       return;
@@ -29,16 +30,19 @@ class PasscodeLockCubit extends Cubit<PasscodeLockState> {
       final bool firstAuth = !_authSessionActive;
       _authSessionActive = true;
       if (firstAuth) {
-        unawaited(initialize());
+        unawaited(initialize(lockOnStartup: authState.isSessionRestore));
       }
     }
   }
 
-  /// After session restore or login: applies local passcode settings.
-  Future<void> initialize() async {
+  Future<void> initialize({bool lockOnStartup = false}) async {
     final settings = await _interactor.getSettings();
     if (!settings.isEnabled) {
       emit(const PasscodeLockDisabledState());
+      return;
+    }
+    if (lockOnStartup) {
+      emit(const PasscodeLockLockedState());
       return;
     }
     final bool shouldLock = await _interactor.shouldLock();

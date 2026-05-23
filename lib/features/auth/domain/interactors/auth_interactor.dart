@@ -193,27 +193,56 @@ class AuthInteractor {
       }
 
       if (cachedSession.accessExpiresAt.isAfter(now)) {
-        final User user = await _userRepo.getUserById(
-          userId: cachedSession.userId,
-        );
-        return (cachedSession, user);
+        try {
+          final User user = await _userRepo.getUserById(
+            userId: cachedSession.userId,
+          );
+          return (cachedSession, user);
+        } on ApiNetworkException catch (e, st) {
+          _logger.exception('Server unreachable, using cached user: $e', st);
+          final User cachedUser = await _userCacheRepo.loadUser();
+          return (cachedSession, cachedUser);
+        } on ApiTimeoutException catch (e, st) {
+          _logger.exception('Request timed out, using cached user: $e', st);
+          final User cachedUser = await _userCacheRepo.loadUser();
+          return (cachedSession, cachedUser);
+        }
       }
 
       final DeviceInfo deviceInfo = await _deviceInfoRepo.getDeviceInfo();
 
-      final Session refreshedSession = await _authRepo.refresh(
-        refreshToken: cachedSession.refreshToken,
-        sessionId: cachedSession.sessionId,
-        deviceInfo: deviceInfo,
-      );
+      late final Session activeSession;
+      try {
+        final Session refreshedSession = await _authRepo.refresh(
+          refreshToken: cachedSession.refreshToken,
+          sessionId: cachedSession.sessionId,
+          deviceInfo: deviceInfo,
+        );
+        await _tryCacheSession(refreshedSession);
+        activeSession = refreshedSession;
+      } on ApiNetworkException catch (e, st) {
+        _logger.exception('Server unreachable during refresh, using cached session: $e', st);
+        activeSession = cachedSession;
+      } on ApiTimeoutException catch (e, st) {
+        _logger.exception('Refresh timed out, using cached session: $e', st);
+        activeSession = cachedSession;
+      }
 
-      await _tryCacheSession(refreshedSession);
-      final User user = await _userRepo.getUserById(
-        userId: refreshedSession.userId,
-      );
-      await _tryCacheUser(user);
-
-      return (refreshedSession, user);
+      try {
+        final User user = await _userRepo.getUserById(
+          userId: activeSession.userId,
+        );
+        await _tryCacheUser(user);
+        return (activeSession, user);
+      } on ApiNetworkException catch (e, st) {
+        _logger.exception('Server unreachable, using cached user: $e', st);
+        final User cachedUser = await _userCacheRepo.loadUser();
+        return (activeSession, cachedUser);
+      } on ApiTimeoutException catch (e, st) {
+        _logger.exception('Request timed out, using cached user: $e', st);
+        final User cachedUser = await _userCacheRepo.loadUser();
+        return (activeSession, cachedUser);
+      }
     } on StorageException catch (e, st) {
       _logger.exception(e, st);
       return null;
