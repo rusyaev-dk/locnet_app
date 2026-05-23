@@ -698,4 +698,7 @@ class HttpPrivateConversationRepo implements IPrivateConversationRepo {
 
     return normalized;
   }
+
+  @override
+  Future<void> trimCachedMessages({required String conversationId}) async {}
 }

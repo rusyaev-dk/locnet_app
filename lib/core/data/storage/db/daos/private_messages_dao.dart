@@ -92,15 +92,52 @@ class PrivateMessagesDao extends DatabaseAccessor<AppDatabase>
 
     if (cutoffRow == null) return;
 
-    await (delete(privateMessagesTable)..where(
-          (t) =>
-              t.conversationId.equals(conversationId) &
-              t.createdAtMs.isSmallerThanValue(cutoffRow.createdAtMs),
-        ))
-        .go();
+    await transaction(() async {
+      final toDelete = await (select(privateMessagesTable)
+            ..where(
+              (t) =>
+                  t.conversationId.equals(conversationId) &
+                  t.createdAtMs.isSmallerThanValue(cutoffRow.createdAtMs),
+            ))
+          .get();
+      final ids = toDelete.map((m) => m.id).toList();
+
+      if (ids.isNotEmpty) {
+        await (delete(privateMessageAttachmentsTable)
+              ..where((t) => t.messageId.isIn(ids)))
+            .go();
+      }
+
+      await (delete(privateMessagesTable)
+            ..where(
+              (t) =>
+                  t.conversationId.equals(conversationId) &
+                  t.createdAtMs.isSmallerThanValue(cutoffRow.createdAtMs),
+            ))
+          .go();
+    });
   }
 
-  Future<void> deleteByConversation(String conversationId) => (delete(
-    privateMessagesTable,
-  )..where((t) => t.conversationId.equals(conversationId))).go();
+  Future<void> deleteByConversation(String conversationId) =>
+      deleteByConversationIds([conversationId]);
+
+  Future<void> deleteByConversationIds(List<String> conversationIds) =>
+      transaction(() async {
+        if (conversationIds.isEmpty) return;
+
+        final messages = await (select(privateMessagesTable)
+              ..where((t) => t.conversationId.isIn(conversationIds)))
+            .get();
+        final messageIds = messages.map((m) => m.id).toList();
+
+        if (messageIds.isNotEmpty) {
+          await (delete(privateMessageAttachmentsTable)
+                ..where((t) => t.messageId.isIn(messageIds)))
+              .go();
+        }
+
+        await (delete(privateMessagesTable)
+              ..where((t) => t.conversationId.isIn(conversationIds)))
+            .go();
+      });
 }

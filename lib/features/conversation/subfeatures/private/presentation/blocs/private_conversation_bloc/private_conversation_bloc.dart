@@ -586,6 +586,18 @@ class PrivateConversationBloc
   @override
   Future<void> close() async {
     await _messagesUpdatesSubscription?.cancel();
+
+    final PrivateConversationState currentState = state;
+    if (currentState is PrivateConversationLoadedState) {
+      try {
+        await _privateConversationInteractor.trimCachedMessages(
+          conversationId: currentState.conversation.conversationId,
+        );
+      } catch (e, _) {
+        _logger.warning('Failed to trim cached messages: $e');
+      }
+    }
+
     return super.close();
   }
 }

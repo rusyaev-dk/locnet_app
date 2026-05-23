@@ -71,4 +71,9 @@ final class PrivateConversationInteractor {
 
   Stream<PrivateConversationMessageUpdateRec> get messagesUpdates =>
       _privateConversationRepo.messagesUpdates;
+
+  Future<void> trimCachedMessages({required String conversationId}) =>
+      _privateConversationRepo.trimCachedMessages(
+        conversationId: conversationId,
+      );
 }

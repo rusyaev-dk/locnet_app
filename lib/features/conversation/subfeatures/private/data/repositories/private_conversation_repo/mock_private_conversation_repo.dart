@@ -125,4 +125,7 @@ final class MockPrivateConversationRepo implements IPrivateConversationRepo {
     }
     return result;
   }
+
+  @override
+  Future<void> trimCachedMessages({required String conversationId}) async {}
 }

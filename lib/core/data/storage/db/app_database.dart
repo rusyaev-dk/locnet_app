@@ -56,7 +56,21 @@ class AppDatabase extends _$AppDatabase {
 
   Future<void> evictStale() async {
     await mediaDownloadCacheDao.deleteExpired();
+
+    final allTiles = await conversationTilesDao.getAllTiles();
+    if (allTiles.length > 50) {
+      final evictedIds = allTiles.skip(50).map((t) => t.id).toList();
+      await privateMessagesDao.deleteByConversationIds(evictedIds);
+    }
+
     await conversationTilesDao.keepOnlyRecent();
+
+    final remaining = await conversationTilesDao.getAllTiles();
+    for (final tile in remaining) {
+      await privateMessagesDao.keepRecentPerConversation(
+        conversationId: tile.id,
+      );
+    }
   }
 
   Future<void> clearAll() async {

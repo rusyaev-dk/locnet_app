@@ -103,6 +103,10 @@ final class DriftCachedPrivateConversationRepo
     newNotificationsStatus: newNotificationsStatus,
   );
 
+  @override
+  Future<void> trimCachedMessages({required String conversationId}) =>
+      _messagesDao.keepRecentPerConversation(conversationId: conversationId);
+
   Future<void> _refreshMessagesFromNetwork({
     required String conversationId,
   }) async {

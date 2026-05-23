@@ -36,4 +36,7 @@ abstract interface class IPrivateConversationRepo {
   });
 
   Stream<PrivateConversationMessageUpdateRec> get messagesUpdates;
+
+  /// Trims locally cached messages for [conversationId] (no-op without DB cache).
+  Future<void> trimCachedMessages({required String conversationId});
 }
