@@ -14,6 +14,7 @@ import 'package:locnet_app/core/data/data.dart';
 import 'package:locnet_app/core/data/storage/db/db.dart';
 import 'package:locnet_app/core/data/storage/db/encryption/encryption.dart';
 import 'package:locnet_app/core/presentation/navigation/router.dart';
+import 'package:locnet_app/core/utils/tls_config.dart';
 import 'package:locnet_app/core/utils/utils.dart';
 import 'package:locnet_app/di/di.dart';
 import 'package:locnet_app/features/error/error_screen.dart';
@@ -53,6 +54,10 @@ class AppRunner {
 
       await dotenv.load(fileName: 'env/${env.toString()}');
       logger.log('Environment file loaded. Env type: ${env.name}');
+
+      final bool checkCert = dotenv.env['CHECK_TLS_CERT'] == 'true';
+      applyTlsConfig(checkCert: checkCert);
+      logger.log('TLS cert check: $checkCert');
 
       await _initApp();
       _initErrorHandlers(logger, env);
@@ -115,7 +120,9 @@ class AppRunner {
     required AppEnvType env,
     required TimerRunner timerRunner,
   }) async {
-    logger.log('Build type: ${env.name}');
+    logger
+      ..log('Build type: ${env.name}')
+      ..log('TLS cert verification: ${dotenv.env['CHECK_TLS_CERT']}');
 
     final dio = Dio();
 
